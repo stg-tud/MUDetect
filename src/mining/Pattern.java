@@ -3,10 +3,9 @@
  */
 package mining;
 
-import exas.ExasFeature;
 import groum.GROUMGraph;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -14,12 +13,9 @@ import java.util.HashSet;
  * @author Nguyen Anh Hoan
  *
  */
-public class Pattern implements Serializable {
-	private static final long serialVersionUID = 2L;
-	public static final int minSize = 2, maxSize = 20;
-	public static int minFreq = 6, maxFreq = 10000;
-	
-	public static HashMap<String, HashSet<Pattern>> all = new HashMap<String, HashSet<Pattern>>();
+public class Pattern {
+	public static final int minSize = 3, maxSize = 10;
+	public static int minFreq = 3, maxFreq = 1000;
 	
 	public static int nextID = 1;
 	private int id;
@@ -27,25 +23,38 @@ public class Pattern implements Serializable {
 	private Fragment representative;
 	private int freq = 0;
 	private HashSet<Fragment> fragments = new HashSet<Fragment>();
-	private int hashCode;
 	
-	public Pattern()
-	{
-		
+	public Pattern(HashSet<Fragment> group, int freq) {
+		fragments = group;
+		for (Fragment f : fragments) {
+			size = f.getNodes().size();
+			representative = f;
+			break;
+		}
+		//computeFrequency();
+		this.freq = freq;
 	}
-	/**
-	 * @return the index
-	 */
+	
+	public void add2Lattice(ArrayList<Lattice> lattices) {
+		setId();
+		Lattice l = null;
+		if (lattices.size() < size) {
+			int s = size - lattices.size();
+			while (s > 0) {
+				l = new Lattice();
+				l.setStep(lattices.size() + 1);
+				lattices.add(l);
+				s--;
+			}
+		} else
+			l = lattices.get(size - 1);
+		l.add(this);
+	}
+	
 	public int getId() {
 		return id;
 	}
-
-	/**
-	 * @param index the index to set
-	 */
-	public void setId(int index) {
-		this.id = index;
-	}
+	
 	public void setId() {
 		this.id = nextID++;
 	}
@@ -76,7 +85,7 @@ public class Pattern implements Serializable {
 	 */
 	public void setRepresentative(Fragment representative) {
 		this.representative = representative;
-		representative.toGraphics("output/patterns/changes", String.valueOf(id));
+		//representative.toGraphics("D:/temp/output/patterns/changes", String.valueOf(id));
 	}
 
 	/**
@@ -106,31 +115,10 @@ public class Pattern implements Serializable {
 	public void setFragments(HashSet<Fragment> fragments) {
 		this.fragments = fragments;
 	}
-
-	/**
-	 * @return the hashCode
-	 */
-	public int getHashCode() {
-		return hashCode;
-	}
-
-	/**
-	 * @param hashCode the hashCode to set
-	 */
-	public void setHashCode() {
-		Hash hash = new Hash();
-		Hash.reset(1, 1, ExasFeature.numOfFeatures);
-		this.hashCode = hash.hashEuclidean(this.representative)[0];
-	}
-	public void setHashCode(int hashCode) {
-		this.hashCode = hashCode;
-	}
 	
-	public void computeFrequency()
-	{
+	public void computeFrequency() {
 		HashMap<GROUMGraph, HashSet<Fragment>> fragmentOfGraph = new HashMap<GROUMGraph, HashSet<Fragment>>();
-		for (Fragment f : fragments)
-		{
+		for (Fragment f : fragments) {
 			GROUMGraph g = f.getGraph();
 			HashSet<Fragment> fs = fragmentOfGraph.get(g);
 			if (fs == null)
@@ -139,22 +127,16 @@ public class Pattern implements Serializable {
 			fragmentOfGraph.put(g, fs);
 		}
 		if (fragmentOfGraph.size() >= Pattern.minFreq)
-		{
 			this.freq = fragmentOfGraph.size();
-		}
-		else
-		{
+		else {
 			this.freq = 0;
-			for (GROUMGraph g : fragmentOfGraph.keySet())
-			{
+			for (GROUMGraph g : fragmentOfGraph.keySet()) {
 				HashSet<Fragment> fs = fragmentOfGraph.get(g);
 				HashSet<Fragment> cluster = new HashSet<Fragment>();
-				for (Fragment f : fs)
-				{
+				for (Fragment f : fs) {
 					boolean isOverlap = false;
 					for (Fragment c : cluster)
-						if (c.overlap(f))
-						{
+						if (c.overlap(f)) {
 							isOverlap = true;
 							break;
 						}
@@ -166,8 +148,7 @@ public class Pattern implements Serializable {
 		}
 	}
 	
-	public boolean contains(Fragment fragment)
-	{
+	public boolean contains(Fragment fragment) {
 		if (this.size < fragment.getNodes().size())
 			return false;
 		for (Fragment f : fragments)
@@ -175,31 +156,35 @@ public class Pattern implements Serializable {
 				return true;
 		return false;
 	}
-	public boolean contains(Pattern other)
-	{
+	
+	public boolean contains(Pattern other) {
 		if (this.size < other.getSize())
 			return false;
 		for (Fragment f : other.getFragments())
-			if (!contains(f))
-				return false;
-		return true;
+			if (contains(f))
+				return true;
+		return false;
 	}
-	public boolean extendsAll(Pattern p)
-	{
-		HashSet<Fragment> genFragments = new HashSet<Fragment>();
-		for (Fragment f : fragments)
-			genFragments.add(f.getGenParent());
-		return genFragments.equals(p.getFragments());
+
+	public boolean contains(HashSet<Fragment> g) {
+		for (Fragment f : g)
+			if (contains(f))
+				return true;
+		return false;
 	}
-	public void delete()
-	{
-		Lattice.all.get(size - 1).remove(this);
+	
+	public void delete(ArrayList<Lattice> lattices) {
+		lattices.get(size - 1).remove(this);
 		this.representative = null;
 		for (Fragment f : this.fragments)
-		{
 			f.delete();
-		}
 		this.fragments.clear();
-		//this.fragments = null;
+	}
+
+	public void clear() {
+		this.representative = null;
+		for (Fragment f : this.fragments)
+			f.delete();
+		this.fragments.clear();
 	}
 }

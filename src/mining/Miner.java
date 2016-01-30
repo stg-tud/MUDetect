@@ -8,245 +8,295 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import exas.ExasFeature;
-
 import utils.FileIO;
-
 import groum.GROUMBuilder;
 import groum.GROUMGraph;
 import groum.GROUMNode;
 
 /**
  * @author hoan
- *
+ * 
  */
 public class Miner {
-	private String path = "";
-	private HashSet<String> exploredLables = new HashSet<String>();
+	private String path = "", projectName;
+	public ArrayList<Lattice> lattices = new ArrayList<Lattice>();
 	
-	public Miner(String path) {
-		Hash.init(1, 1, 1, 1000000);
+	public Miner(String path, String projectName) {
 		this.path = path;
+		this.projectName = projectName;
 	}
 	
-	public void mineJava()
-	{
+	public void mine() {
 		GROUMBuilder gb = new GROUMBuilder(path);
 		gb.build();
 		ArrayList<GROUMGraph> groums = gb.getGroums();
 		mine(groums);
 	}
-	
-	public void mine(ArrayList<GROUMGraph> groums)
-	{
-		
-		/*for (GROUMGraph g : groums)
-			g.toGraphics("output");*/
-		
+
+	public void mine(ArrayList<GROUMGraph> groums) {
 		HashMap<String, HashSet<GROUMNode>> nodesOfLabel = new HashMap<String, HashSet<GROUMNode>>();
-		for (GROUMGraph groum : groums)
-		{
-			for (GROUMNode node : groum.getNodes())
-			{
-				node.setGraph(groum);
+		for (GROUMGraph groum : groums) {
+			for (GROUMNode node : groum.getNodes()) {
 				String label = node.getLabel();
-				if (node.isFunctionInvocation())
-				{
-					HashSet<GROUMNode> nodes = nodesOfLabel.get(label);
-					if (nodes == null)
-						nodes = new HashSet<GROUMNode>();
-					nodes.add(node);
-					nodesOfLabel.put(label, nodes);
-				}
+				HashSet<GROUMNode> nodes = nodesOfLabel.get(label);
+				if (nodes == null)
+					nodes = new HashSet<GROUMNode>();
+				nodes.add(node);
+				nodesOfLabel.put(label, nodes);
 			}
 		}
 		Lattice l = new Lattice();
 		l.setStep(1);
-		Lattice.all.add(l);
-		for (String label : new HashSet<String>(nodesOfLabel.keySet()))
-		{
+		lattices.add(l);
+		for (String label : new HashSet<String>(nodesOfLabel.keySet())) {
 			HashSet<GROUMNode> nodes = nodesOfLabel.get(label);
-			if (nodes.size() < Pattern.minFreq)
-			{
+			if (nodes.size() < Pattern.minFreq) {
 				for (GROUMNode node : nodes)
 					node.delete();
 				nodesOfLabel.remove(label);
-			}
+			} else if (!GROUMNode.isCore(label))
+				nodesOfLabel.remove(label);
+			else if (nodes.size() > groums.size() / 2)
+				nodesOfLabel.remove(label);
 		}
-		for (String label : nodesOfLabel.keySet())
-		{
+		for (String label : nodesOfLabel.keySet()) {
 			HashSet<GROUMNode> nodes = nodesOfLabel.get(label);
-			Pattern p = new Pattern();
-			for (GROUMNode node : nodes)
-			{
+			HashSet<Fragment> fragments = new HashSet<>();
+			for (GROUMNode node : nodes) {
 				Fragment f = new Fragment(node);
-				p.getFragments().add(f);
+				fragments.add(f);
 			}
-			if (Lattice.allContains(p))
-				continue;
-			p.setId();
-			p.setSize(1);
-			l.add(p);
-			System.out.println("{Extending pattern of size " + p.getSize()
-					+ " occurences: " + p.getFragments().size()
-					+ " with label " + label
-					+ " features: " + ExasFeature.numOfFeatures 
-					+ " patterns: " + Pattern.nextID
-					+ " fragments: " + Fragment.numofFragments
-					+ " next fragment: " + Fragment.nextFragmentId);
+			Pattern p = new Pattern(fragments, fragments.size());
 			extend(p);
-			System.out.println("}");
-			exploredLables.add(label);
 		}
-		Lattice.filter();
-		for(int step = Pattern.minSize - 1; step < Lattice.all.size(); step++)
-		{
-			Lattice lat = Lattice.all.get(step);
+		System.out.println("Done mining.");
+		Lattice.filter(lattices);
+		System.out.println("Done filtering.");
+		File dir = new File("output/patterns" + "/" + FileIO.getSimpleFileName(this.path) + "-" + (System.currentTimeMillis() / 1000));
+		for (int step = Pattern.minSize; step <= lattices.size(); step++) {
+			Lattice lat = lattices.get(step - 1);
 			int c = 0;
-			for (Pattern p : lat.getPatterns())
-			{
+			for (Pattern p : lat.getPatterns()) {
 				c++;
-				File patternDir = new File("output/patterns/" + FileIO.getSimpleFileName(this.path) + "/" + lat.getStep() + "/" + c + "_" + p.getId());
+				File patternDir = new File(dir.getAbsolutePath() + "/" + step + "/" + c + "_" + p.getId());
 				if (!patternDir.exists())
 					patternDir.mkdirs();
-				/*for (Fragment f : p.getFragments())
-					f.toGraphics(patternDir.getAbsolutePath(), f.getId() + "_" + f.getGraph().getName());*/
-				Fragment f = p.getRepresentative();
-				f.toGraphics(patternDir.getAbsolutePath(), f.getId() + "_" + f.getGraph().getName());
+				Fragment rf = p.getRepresentative();
+				rf.toGraphics(patternDir.getAbsolutePath(), rf.getId() + "");
+				StringBuilder sb = new StringBuilder();
+				for (Fragment f : p.getFragments()) {
+					String name = f.getGraph().getName();
+					sb.append(name + "\n");
+					String[] parts = name.split(",");
+					sb.append("https://github.com/" + projectName + "/commit/"
+							+ parts[0].substring(0, parts[0].indexOf('.')) + "/"
+							+ parts[1]
+							+ "\n");
+				}
+				FileIO.writeStringToFile(sb.toString(),
+						patternDir.getAbsolutePath() + "/locations.txt");
 			}
 		}
-		
+		System.out.println("Done reporting.");
 	}
-	
-	private void extend(Pattern pattern)
-	{
-		/*System.out.println("Extending pattern of size " + pattern.getSize()
-				+ " occurences: " + pattern.getFragments().size()
-				+ " features: " + ExasFeature.numOfFeatures 
-				+ " patterns: " + Pattern.nextID
-				+ " fragments: " + Fragment.numofFragments
-				+ " next fragment: " + Fragment.nextFragmentId);*/
-		/*if (pattern.getFragments().size() > 10000)
-			System.err.println();*/
-		HashMap<String, Integer> nodesOfLabel = new HashMap<String, Integer>();
-		for (Fragment fragment : pattern.getFragments())
-		{
-			for (String label : fragment.getNeighbors().keySet())
-			{
-				if (!exploredLables.contains(label))
-				{
-					int c = fragment.getNeighbors().get(label).size();
-					if (nodesOfLabel.containsKey(label))
-						c += nodesOfLabel.get(label);
-					nodesOfLabel.put(label, c);
+
+	private void extend(Pattern pattern) {
+		int patternSize = 0;
+		if (pattern.getSize() >= Pattern.maxSize)
+			for(GROUMNode node : pattern.getRepresentative().getNodes())
+				if(node.isFunctionInvocation())
+					patternSize++;
+		if(patternSize >= Pattern.maxSize) {
+			pattern.add2Lattice(lattices);
+			return;
+		}
+		HashMap<String, HashMap<Fragment, HashSet<ArrayList<GROUMNode>>>> labelFragmentExtendableNodes = new HashMap<>();
+		for (Fragment f : pattern.getFragments()) {
+			HashMap<String, HashSet<ArrayList<GROUMNode>>> xns = f.extend();
+			for (String label : xns.keySet()) {
+				HashMap<Fragment, HashSet<ArrayList<GROUMNode>>> fens = labelFragmentExtendableNodes.get(label);
+				if (fens == null) {
+					fens = new HashMap<>();
+					labelFragmentExtendableNodes.put(label, fens);
 				}
+				fens.put(f, xns.get(label));
 			}
 		}
-		HashSet<String> allNeighborLabels = new HashSet<String>(nodesOfLabel.keySet());
-		for (String label : new HashSet<String>(nodesOfLabel.keySet()))
-			if (nodesOfLabel.get(label) < Pattern.minFreq)
-			{
-				//exploredLables.add(label);
-				nodesOfLabel.remove(label);
-			}
-		boolean allExtended = false;
-		for (String label : nodesOfLabel.keySet())
-		{
-			System.out.println("\tLabel: " + label);
-			System.out.print("\t\tGenerate fragments ... ");
-			HashMap<Integer, HashSet<Fragment>> mapFragments = new HashMap<Integer, HashSet<Fragment>>();
-			for (Fragment fragment : pattern.getFragments())
-			{
-				HashSet<GROUMNode> nodes = fragment.getNeighbors().get(label);
-				if (nodes != null)
-				{
-					for (GROUMNode node : nodes)
-					{
-						Fragment xFragment = new Fragment(fragment, node);
-						int hashCode = xFragment.getHashCode();
-						HashSet<Fragment> fs = mapFragments.get(hashCode);
-						if (fs == null)
-							fs = new HashSet<Fragment>();
-						else
-						{
-							boolean isSame = false;
-							for (Fragment f : fs)
-								if (f.isSameAs(xFragment))
-								{
-									isSame = true;
-									break;
-								}
-							if (isSame)
-							{
-								xFragment.delete();
-								continue;
-							}
-						}
-						xFragment.addNeighbors(fragment, node);
-						fs.add(xFragment);
-						mapFragments.put(hashCode, fs);
-					}
+		for (String label : new HashSet<String>(labelFragmentExtendableNodes.keySet())) {
+			HashMap<Fragment, HashSet<ArrayList<GROUMNode>>> fens = labelFragmentExtendableNodes.get(label);
+			if (fens.size() < Pattern.minFreq)
+				labelFragmentExtendableNodes.remove(label);
+		}
+		HashSet<Fragment> group = new HashSet<>();
+		int xfreq = 0;
+		for (String label : labelFragmentExtendableNodes.keySet()) {
+			HashMap<Fragment, HashSet<ArrayList<GROUMNode>>> fens = labelFragmentExtendableNodes.get(label);
+			HashSet<Fragment> xfs = new HashSet<>();
+			for (Fragment f : fens.keySet()) {
+				for (ArrayList<GROUMNode> ens : fens.get(f)) {
+					Fragment xf = new Fragment(f, ens);
+					xfs.add(xf);
 				}
 			}
-			System.out.println("done");
-			for (int hashCode : mapFragments.keySet())
-			{
-				HashSet<Fragment> fs = mapFragments.get(hashCode);
-				if (fs.size() < Pattern.minFreq)
-					continue;
-				Pattern xp = new Pattern();
-				xp.setFragments(fs);
-				xp.computeFrequency();
-				if (xp.getFreq() >= Pattern.minFreq)
-				{
-					if (Lattice.allContains(xp))
-						continue;
-					xp.setId();
-					for (Fragment f : fs)
-					{
-						xp.setRepresentative(f);
-						xp.setSize(f.getNodes().size());
-						break;
-					}
-					Lattice l = new Lattice();
-					if (Lattice.all.size() < xp.getSize())
-					{
-						l.setStep(xp.getSize());
-						Lattice.all.add(l);
+			boolean isGiant = isGiant(xfs, pattern, label);
+			System.out.println("\tTrying with label " + label + ": " + xfs.size());
+			HashSet<Fragment> g = new HashSet<>();
+			int freq = mine(g, xfs, pattern, isGiant);
+			if (freq > xfreq && !Lattice.contains(lattices, g)) {
+				group = g;
+				xfreq = freq;
+			}
+		}
+		System.out.println("Done trying all labels");
+		if (xfreq >= Pattern.minFreq) {
+			Pattern xp = new Pattern(group, xfreq);
+			ArrayList<String> labels = new ArrayList<>();
+			Fragment rep = null, xrep = null;
+			for (Fragment f : group) {
+				xrep = f;
+				break;
+			}
+			for (Fragment f : pattern.getFragments()) {
+				rep = f;
+				break;
+			}
+			for (int j = rep.getNodes().size(); j < xrep.getNodes().size(); j++)
+				labels.add(xrep.getNodes().get(j).getLabel());
+			System.out.println("{Extending pattern of size " + rep.getNodes().size()
+					+ " " + rep.getNodes()
+					+ " occurences: " + pattern.getFragments().size()
+					+ " frequency: " + pattern.getFreq()
+					+ " with label " + labels
+					+ " occurences: " + group.size()
+					+ " frequency: " + xfreq
+					+ " patterns: " + Pattern.nextID 
+					+ " fragments: " + Fragment.numofFragments 
+					+ " next fragment: " + Fragment.nextFragmentId);
+			pattern.clear();
+			extend(xp);
+			System.out.println("}");
+		} else
+			pattern.add2Lattice(lattices);
+	}
+
+	private boolean isGiant(HashSet<Fragment> xfs, Pattern pattern, String label) {
+		return /*(GROUMNode.isMethod(label) || GROUMNode.isLiteral(label)) && */isGiant(xfs, pattern);
+	}
+
+	private boolean isGiant(HashSet<Fragment> xfs, Pattern pattern) {
+		return pattern.getSize() > 1 
+				&& (xfs.size() > Pattern.maxFreq || xfs.size() > pattern.getFragments().size() * pattern.getSize() * pattern.getSize());
+	}
+
+	private int mine(HashSet<Fragment> result, HashSet<Fragment> fragments, Pattern pattern, boolean isGiant) {
+		HashMap<Integer, HashSet<Fragment>> buckets = new HashMap<>();
+		for (Fragment f : fragments) {
+			int h = f.getVectorHashCode();
+			HashSet<Fragment> bucket = buckets.get(h);
+			if (bucket == null) {
+				bucket = new HashSet<>();
+				buckets.put(h, bucket);
+			}
+			bucket.add(f);
+		}
+		HashSet<HashSet<Fragment>> groups = new HashSet<>();
+		for (int h : buckets.keySet()) {
+			HashSet<Fragment> bucket = buckets.get(h);
+			group(groups, bucket);
+		}
+		HashSet<Fragment> group = new HashSet<>();
+		int xfreq = Pattern.minFreq - 1;
+		for (HashSet<Fragment> g : groups) {
+			int freq = computeFrequency(g, isGiant && isGiant(g, pattern));
+			if (freq > xfreq) {
+				group = g;
+				xfreq = freq;
+			}
+		}
+		result.addAll(group);
+		return xfreq;
+	}
+
+	private int computeFrequency(HashSet<Fragment> fragments, boolean isGiant) {
+		HashMap<GROUMGraph, ArrayList<Fragment>> fragmentsOfGraph = new HashMap<GROUMGraph, ArrayList<Fragment>>();
+		for (Fragment f : fragments) {
+			GROUMGraph g = f.getGraph();
+			ArrayList<Fragment> fs = fragmentsOfGraph.get(g);
+			if (fs == null)
+				fs = new ArrayList<Fragment>();
+			fs.add(f);
+			fragmentsOfGraph.put(g, fs);
+		}
+		int freq = 0;
+		for (GROUMGraph g : fragmentsOfGraph.keySet()) {
+			ArrayList<Fragment> fs = fragmentsOfGraph.get(g);
+			int i = 0;
+			while (i < fs.size() - 1) {
+				Fragment f = fs.get(i);
+				int j = i + 1;
+				while (j < fs.size()) {
+					if (f.overlap(fs.get(j))) {
+						if (isGiant)
+							fragments.remove(fs.get(j));
+						fs.remove(j);
 					}
 					else
-						l = Lattice.all.get(xp.getSize() - 1);
-					l.add(xp);
-					if (xp.getFragments().size() <= Pattern.maxFreq)
-					{
-						String prefix = "";
-						for (int i = 1; i < xp.getSize(); i++)
-							prefix += " ";
-						System.out.println(prefix + "{Extended pattern of size " + pattern.getSize()
-								+ " occurences: " + pattern.getFragments().size()
-								+ " with label " + label
-								+ " features: " + ExasFeature.numOfFeatures 
-								+ " patterns: " + Pattern.nextID
-								+ " fragments: " + Fragment.numofFragments
-								+ " next fragment: " + Fragment.nextFragmentId);
-						extend(xp);
-						System.out.println(prefix + "}");
-					}
-					if (xp.extendsAll(pattern))
-					{
-						pattern.delete();
-						for (Fragment f : xp.getFragments())
-							f.setGenParent(null);
-						allExtended = true;
-								break;
-					}
+						j++;
 				}
+				i++;
 			}
-			if (allExtended)
+			freq += i;
+		}	
+		return freq;
+	}
+
+	private void group(HashSet<HashSet<Fragment>> groups, HashSet<Fragment> bucket) {
+		while (!bucket.isEmpty()) {
+			Fragment f = null;
+			for (Fragment fragment : bucket) {
+				f = fragment;
 				break;
-			exploredLables.add(label);
+			}
+			group(f, groups, bucket);
 		}
-		//exploredLables.removeAll(allNeighborLabels);
-		exploredLables.removeAll(nodesOfLabel.keySet());
+	}
+
+	private void group(Fragment f, HashSet<HashSet<Fragment>> groups, HashSet<Fragment> bucket) {
+		HashSet<Fragment> group = new HashSet<>();
+		HashSet<Fragment> fs = new HashSet<>();
+		group.add(f);
+		fs.add(f.getGenFragmen());
+		bucket.remove(f);
+		f.setGenFragmen(null);
+		for (Fragment g : new HashSet<Fragment>(bucket)) {
+			if (f.getVector().equals(g.getVector())) {
+				group.add(g);
+				fs.add(g.getGenFragmen());
+				bucket.remove(g);
+				g.setGenFragmen(null);
+			}
+		}
+		if (fs.size() >= Pattern.minFreq && group.size() >= Pattern.minFreq) {
+			removeDuplicates(group);
+			if (group.size() >= Pattern.minFreq)
+				groups.add(group);
+		}
+	}
+
+	private void removeDuplicates(HashSet<Fragment> group) {
+		ArrayList<Fragment> l = new ArrayList<>(group);
+		int i = 0;
+		while (i < l.size() - 1) {
+			Fragment f = l.get(i);
+			int j = i + 1;
+			while (j < l.size()) {
+				if (f.isSameAs(l.get(j)))
+					l.remove(j);
+				else
+					j++;
+			}
+			i++;
+		}
+		group.retainAll(l);
 	}
 }

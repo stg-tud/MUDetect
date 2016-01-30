@@ -1,87 +1,56 @@
 package exas;
 
+import groum.GROUMNode;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public abstract class ExasFeature {
-	public static int MAX_LENGTH = 8;
-	public static int numOfFeatures = 0, numOfBranches = 0;
-	
-	private int id, frequency = 0;
-	
-	protected HashMap<ExasSingleFeature, ExasSequentialFeature> next = new HashMap<ExasSingleFeature, ExasSequentialFeature>();
-	
-	protected ExasFeature()
-	{
-		this.id = ++numOfFeatures;
+public class ExasFeature {
+	public static final int MAX_LENGTH = 4 * 2 - 1;
+	private static HashMap<String, Integer> edgeFeatures = new HashMap<>();
+	static {
+		edgeFeatures.put("_cond_", 0);
+		edgeFeatures.put("_control_", 1);
+		edgeFeatures.put("_def_",  2);
+		edgeFeatures.put("_dep_",  3);
+		edgeFeatures.put("_para_", 4);
+		edgeFeatures.put("_qual_", 5);
+		edgeFeatures.put("_recv_", 6);
+		edgeFeatures.put("_ref_", 7);
 	}
 	
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public int getFrequency() {
-		return frequency;
+	private HashMap<String, Integer> nodeFeatures = new HashMap<>();
+	
+	public ExasFeature(ArrayList<GROUMNode> nodes) {
+		for (int i = 0; i < nodes.size(); i++)
+			nodeFeatures.put(nodes.get(i).getLabel(), i + 1);
 	}
 
-	public void setFrequency(int frequency) {
-		this.frequency = frequency;
+	private int getNodeFeature(String label) {
+		return nodeFeatures.get(label);
 	}
-
-	abstract public int getFeatureLength();
 	
-	public static ExasFeature getFeature(ArrayList<ExasSingleFeature> sequence)
-	{
-		if (sequence.size() == 1)
-			return sequence.get(0);
-		ExasFeature feature = sequence.get(0);
-		int i = 1;
-		while (i < sequence.size())
-		{
-			ExasSingleFeature s = sequence.get(i);
-			if (feature.next.containsKey(s))
-			{
-				feature = feature.next.get(s);
+	private int getEdgeFeature(String label) {
+		return edgeFeatures.get(label);
+	}
+	
+	public int getFeature(ArrayList<String> labels) {
+		int f = 0, s;
+		for (int i = 0; i < labels.size(); i++) {
+			if (i % 2 == 0) {
+				s = getNodeFeature(labels.get(i));
 			}
-			else
-			{
-				feature = new ExasSequentialFeature(sequence.subList(0, i+1), feature, s);
+			else {
+				s = getEdgeFeature(labels.get(i));
+				s = s << 5;
+				f = f << 8;
 			}
-			i++;
+			f += s;
 		}
-		return feature;
-	}
-	
-	public static ExasSingleFeature getFeature(String label)
-	{
-		ExasSingleFeature f = ExasSingleFeature.features.get(label);
-		if (f == null)
-			f = new ExasSingleFeature(label);
 		return f;
 	}
-	
-	@Override
-	abstract public String toString();
 
-	public int compareTo(ExasFeature other) {
-		if (getFeatureLength() < other.getFeatureLength())
-			return -1;
-		if (getFeatureLength() > other.getFeatureLength())
-			return 1;
-		if (this instanceof ExasSingleFeature)
-		{
-			return ((ExasSingleFeature)this).getLabel().compareTo(((ExasSingleFeature)other).getLabel());
-		}
-		for (int i = 0; i < getFeatureLength(); i++)
-		{
-			int c = ((ExasSequentialFeature)this).getSequence().get(i).getLabel().compareTo(((ExasSequentialFeature)other).getSequence().get(i).getLabel());
-			if (c != 0)
-				return c;
-		}
-		return 0;
+	public int getFeature(String label) {
+		return getNodeFeature(label);
 	}
 }
