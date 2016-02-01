@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.eclipse.jdt.core.dom.ASTNode;
-
 public class GROUMNode implements Serializable {
 	private static final long serialVersionUID = 4L;
 	public static final int TYPE_FIELD = 0;
@@ -257,47 +255,8 @@ public class GROUMNode implements Serializable {
 		outEdges.add(edge);
 	}
 	
-	public HashMap<String, HashSet<GROUMNode>> getNeighbors()
-	{
-		HashMap<String, HashSet<GROUMNode>> neighbors = new HashMap<String, HashSet<GROUMNode>>();
-		for (GROUMEdge e : inEdges)
-		{
-			if (e.isCore())
-			{
-				GROUMNode n = e.getSrc();
-				String label = n.getLabel();
-				HashSet<GROUMNode> ns = neighbors.get(label);
-				if (ns == null)
-					ns = new HashSet<GROUMNode>();
-				ns.add(n);
-				neighbors.put(label, ns);
-			}
-		}
-		for (GROUMEdge e : outEdges)
-		{
-			if (e.isCore())
-			{
-				GROUMNode n = e.getDest();
-				String label = n.getLabel();
-				HashSet<GROUMNode> ns = neighbors.get(label);
-				if (ns == null)
-					ns = new HashSet<GROUMNode>();
-				ns.add(n);
-				neighbors.put(label, ns);
-			}
-		}
-		return neighbors;
-	}
-	
-	public boolean isCore()
-	{
-		//return webType != NodeType.Action;
-		return true;
-	}
-	
-	public boolean isFunctionInvocation()
-	{
-		return type == TYPE_METHOD || getLabel().endsWith("()");
+	public boolean isMethod() {
+		return type == TYPE_METHOD;
 	}
 	
 	public void delete() {
@@ -308,12 +267,11 @@ public class GROUMNode implements Serializable {
 		graph.removeNode(this);
 	}
 	
-	public String toString()
-	{
+	@Override
+	public String toString() {
 		return label;
 	}
-	/*public String toString()
-	{
+	/*public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(labelOfID.get(this.className) + "." + labelOfID.get(this.objectName) + "." + labelOfID.get(this.labelID) + "\r\n");
 		buf.append("Type: " + this.singletonType + "\r\n");
@@ -321,8 +279,4 @@ public class GROUMNode implements Serializable {
 		
 		return buf.toString();
 	}*/
-	public static boolean isCore(String label)
-	{
-		return label.endsWith("()");
-	}
 }

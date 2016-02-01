@@ -34,15 +34,19 @@ public class Miner {
 	}
 
 	public void mine(ArrayList<GROUMGraph> groums) {
+		HashSet<String> coreLabels = new HashSet<>();
 		HashMap<String, HashSet<GROUMNode>> nodesOfLabel = new HashMap<String, HashSet<GROUMNode>>();
 		for (GROUMGraph groum : groums) {
 			for (GROUMNode node : groum.getNodes()) {
+				node.setGraph(groum);
 				String label = node.getLabel();
 				HashSet<GROUMNode> nodes = nodesOfLabel.get(label);
 				if (nodes == null)
 					nodes = new HashSet<GROUMNode>();
 				nodes.add(node);
 				nodesOfLabel.put(label, nodes);
+				if (node.isMethod())
+					coreLabels.add(label);
 			}
 		}
 		Lattice l = new Lattice();
@@ -54,7 +58,7 @@ public class Miner {
 				for (GROUMNode node : nodes)
 					node.delete();
 				nodesOfLabel.remove(label);
-			} else if (!GROUMNode.isCore(label))
+			} else if (!coreLabels.contains(label))
 				nodesOfLabel.remove(label);
 			else if (nodes.size() > groums.size() / 2)
 				nodesOfLabel.remove(label);
@@ -104,7 +108,7 @@ public class Miner {
 		int patternSize = 0;
 		if (pattern.getSize() >= Pattern.maxSize)
 			for(GROUMNode node : pattern.getRepresentative().getNodes())
-				if(node.isFunctionInvocation())
+				if(node.isMethod())
 					patternSize++;
 		if(patternSize >= Pattern.maxSize) {
 			pattern.add2Lattice(lattices);

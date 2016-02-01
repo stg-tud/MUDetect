@@ -35,6 +35,7 @@ public class ASTTypeBindingVisitor extends ASTVisitor {
 		this.fieldType = fieldType;
 	}
 	//for variable dec in parameter list
+	@Override
 	public boolean visit(SingleVariableDeclaration singVarDec){
 		String variable = singVarDec.getName().toString();
 		String type = utils.FileIO.getSimpleClassName(singVarDec.getType().toString());
@@ -54,6 +55,7 @@ public class ASTTypeBindingVisitor extends ASTVisitor {
 		return true;
 	}
 	//"for" express
+	@Override
 	public boolean visit(VariableDeclarationExpression varDecExp) {
 		// System.out.print("BINDING:");
 		List<VariableDeclarationFragment> varDecFrag = varDecExp.fragments();
@@ -79,6 +81,7 @@ public class ASTTypeBindingVisitor extends ASTVisitor {
 
 		return true;
 	}
+	@Override
 	public boolean visit(VariableDeclarationStatement varDecStat) {
 		// System.out.print("BINDING:");
 		List<VariableDeclarationFragment> varDecFrag = varDecStat.fragments();
@@ -104,6 +107,7 @@ public class ASTTypeBindingVisitor extends ASTVisitor {
 
 		return true;
 	}
+	@Override
 	public void preVisit(ASTNode node) {
 		/*for(int i = 0; i < indent; i++)
     		System.out.print("\t");
@@ -113,6 +117,7 @@ public class ASTTypeBindingVisitor extends ASTVisitor {
     	
 		scopedTypes.push(new HashSet<String>());
 	}
+	@Override
 	public void postVisit(ASTNode node) 
 	{
 		HashSet<String> types = scopedTypes.pop();
@@ -127,6 +132,7 @@ public class ASTTypeBindingVisitor extends ASTVisitor {
     		System.out.print("\t");
     	System.out.println("}" + (scopedMethods.isEmpty() ? "" : scopedMethods.peek()));*/
 	}
+	@Override
 	public boolean visit(MethodInvocation node)
 	{
 		String objectName = (node.getExpression() != null) ? node.getExpression().toString() : "this";
@@ -227,6 +233,7 @@ public class ASTTypeBindingVisitor extends ASTVisitor {
 		
 		return true;
 	}
+	@Override
 	public boolean visit(SimpleName node)
 	{
 		int pType = node.getParent().getNodeType();
@@ -268,6 +275,7 @@ public class ASTTypeBindingVisitor extends ASTVisitor {
 		
 		return true;
 	}
+	@Override
 	public boolean visit(FieldAccess node)
 	{
 		String objectName = node.getExpression().toString();
@@ -304,6 +312,7 @@ public class ASTTypeBindingVisitor extends ASTVisitor {
 		
 		return true;
 	}
+	@Override
 	public boolean visit(ClassInstanceCreation node)
 	{
 		String typeName = utils.FileIO.getSimpleClassName(node.getType().toString());
@@ -311,6 +320,7 @@ public class ASTTypeBindingVisitor extends ASTVisitor {
 		
 		return true;
 	}
+	@Override
 	public boolean visit(CastExpression node)
 	{
 		String type = utils.FileIO.getSimpleClassName(node.getType().toString());
@@ -318,6 +328,7 @@ public class ASTTypeBindingVisitor extends ASTVisitor {
 		
 		return true;
 	}
+	@Override
 	public boolean visit(InstanceofExpression node)
 	{
 		String type = utils.FileIO.getSimpleClassName(node.getRightOperand().toString());
@@ -325,30 +336,35 @@ public class ASTTypeBindingVisitor extends ASTVisitor {
 		
 		return true;
 	}
+	@Override
 	public boolean visit(SuperMethodInvocation node)
 	{
 		node.setProperty("TypeBinding", fieldType.get("super"));
 		
 		return true;
 	}
+	@Override
 	public boolean visit(ConstructorInvocation node)
 	{
 		node.setProperty("TypeBinding", fieldType.get("this"));
 		
 		return true;
 	}
+	@Override
 	public boolean visit(SuperConstructorInvocation node)
 	{
 		node.setProperty("TypeBinding", fieldType.get("super"));
 		
 		return true;
 	}
+	@Override
 	public boolean visit(SuperFieldAccess node)
 	{
 		node.setProperty("TypeBinding", fieldType.get("super"));
 		
 		return true;
 	}
+	@Override
 	public boolean visit(Assignment node)
 	{
 		

@@ -349,6 +349,7 @@ public class GROUMGraph implements Serializable {
 		graph.toGraphics(path + "/" + name, "png");
 	}
 	
+	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		HashMap<String,Integer> countLabel = new HashMap<String,Integer>();

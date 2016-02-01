@@ -12,7 +12,7 @@ public class ExasFeature {
 		edgeFeatures.put("_cond_", 0);
 		edgeFeatures.put("_control_", 1);
 		edgeFeatures.put("_def_",  2);
-		edgeFeatures.put("_dep_",  3);
+		edgeFeatures.put(".",  3);
 		edgeFeatures.put("_para_", 4);
 		edgeFeatures.put("_qual_", 5);
 		edgeFeatures.put("_recv_", 6);

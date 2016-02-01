@@ -68,10 +68,7 @@ public class GROUMEdge {
 	public void setLabel(String label) {
 		this.label = label;
 	}
-	public boolean isCore()
-	{
-		return src.isCore() || dest.isCore();
-	}
+	
 	public void delete() {
 		this.src.getOutEdges().remove(this);
 		this.dest.getInEdges().remove(this);

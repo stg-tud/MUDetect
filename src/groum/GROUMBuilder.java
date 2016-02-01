@@ -26,8 +26,6 @@ import org.eclipse.jdt.core.dom.InstanceofExpression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
-import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -50,32 +48,25 @@ public class GROUMBuilder {
 	
 	private HashMap<Integer, HashSet<Integer>> dataDependencies = new HashMap<Integer, HashSet<Integer>>();
 
-	public GROUMBuilder(String path)
-	{
+	public GROUMBuilder(String path) {
 		this.path = path;
 	}
 	
-	public void build()
-	{
+	public void build() {
 		build(new File(path));
 	}
 	
-	private void build(File file)
-	{
-		if (file.isDirectory())
-		{
+	private void build(File file) {
+		if (file.isDirectory()) {
 			for (File sub : file.listFiles())
 				build(sub);
-		}
-		else if (file.isFile() && file.getName().endsWith(".java"))
-		{
+		} else if (file.isFile() && file.getName().endsWith(".java")) {
 			String content = FileIO.readStringFromFile(file.getAbsolutePath());
 			fileID = GROUMNode.fileNames.size();
 			GROUMNode.fileNames.add(file.getAbsolutePath());
 			lines = new ArrayList<Integer>();
 			int charCount = -1;
-	    	do
-	    	{
+	    	do {
 	    		charCount++;
 	    		lines.add(charCount);
 	    		charCount = content.indexOf("\n", charCount);
@@ -130,8 +121,7 @@ public class GROUMBuilder {
 			aGraph.addDataDependency();
 			aGraph.removeNonDependents();
 			aGraph.cleanUp();
-			if(aGraph.getNodes().size() > 0)
-			{
+			if(aGraph.getNodes().size() > 0) {
 				aGraph.setId(groums.size()+1);
 				groums.add(aGraph);
 				if(maxGroumSize < aGraph.getNodes().size())

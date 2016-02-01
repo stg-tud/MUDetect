@@ -3,8 +3,6 @@ package utils;
 import java.util.HashSet;
 import java.util.Scanner;
 
-import org.eclipse.jdt.core.dom.PrimitiveType;
-
 public class LibraryUtil {
 	public static HashSet<String> jdkClassQualifiedNames = new HashSet<String>();
 	public static HashSet<String> jdkLangClassSimpleNames = new HashSet<String>();

@@ -242,7 +242,7 @@ public class Fragment {
 		tempNodes.addAll(fragment.nodes);
 		tempNodes.retainAll(this.nodes);
 		for (GROUMNode node : tempNodes)
-			if (node.isFunctionInvocation())
+			if (node.isMethod())
 				return true;
 		return false;
 	}
@@ -392,8 +392,7 @@ public class Fragment {
 		}
 		HashMap<String, HashSet<ArrayList<GROUMNode>>> lens = new HashMap<>();
 		for (GROUMNode node : ens) {
-			if (node.isFunctionInvocation() 
-					&& node.getLabel().equals(nodes.get(nodes.size() - 1).getLabel())) 
+			if (node.getLabel().equals(nodes.get(nodes.size() - 1).getLabel())) 
 				continue;
 			if (node.getType() == GROUMNode.TYPE_CONTROL) {
 				HashSet<GROUMNode> ins = node.getInNodes(), outs = node.getOutNodes();
@@ -408,7 +407,7 @@ public class Fragment {
 					if (found) {
 						found = false;
 						for (GROUMNode n : outs) {
-							if (n.isFunctionInvocation() && nodes.contains(n)) {
+							if (n.isMethod() && nodes.contains(n)) {
 								found = true;
 								break;
 							}
@@ -425,7 +424,7 @@ public class Fragment {
 							s.add(l);
 						} else {
 							for (GROUMNode next : outs) {
-								if (next.isFunctionInvocation()) {
+								if (next.isMethod()) {
 									String label = node.getLabel() + "-" + next.getLabel();
 									HashSet<ArrayList<GROUMNode>> s = lens.get(label);
 									if (s == null) {
@@ -454,6 +453,16 @@ public class Fragment {
 						}
 					}
 				}
+			} else {
+				String label = node.getLabel();
+				HashSet<ArrayList<GROUMNode>> s = lens.get(label);
+				if (s == null) {
+					s = new HashSet<>();
+					lens.put(label, s);
+				}
+				ArrayList<GROUMNode> l = new ArrayList<>();
+				l.add(node);
+				s.add(l);
 			}
 		}
 		return lens;

@@ -39,8 +39,8 @@ public class ASTFieldVisitor extends ASTVisitor{
 		return imports;
 	}
 
+	@Override
 	public void preVisit(ASTNode node) {
-		 int index = 0;
 		 mapTree.put(node, new ArrayList<ASTNode>());
 		 
 		 //Add child node to its parent
@@ -52,6 +52,7 @@ public class ASTFieldVisitor extends ASTVisitor{
 			 
 	}
 	
+	@Override
 	public boolean visit(ImportDeclaration node)
 	{
 		if(!node.toString().contains("*"))
@@ -59,6 +60,7 @@ public class ASTFieldVisitor extends ASTVisitor{
 		
 		return true;
 	}
+	@Override
 	public boolean visit(TypeDeclaration node)
     {
     	if(node.getParent().getNodeType() == ASTNode.COMPILATION_UNIT)
@@ -77,6 +79,7 @@ public class ASTFieldVisitor extends ASTVisitor{
     	return true;
     }
 	
+	@Override
 	public boolean visit(FieldDeclaration fieldDec){
 		List<VariableDeclarationFragment> varDecFrag = fieldDec.fragments();
 		for (VariableDeclarationFragment fragment : varDecFrag) {

@@ -252,6 +252,7 @@ public class JavaASTUtil {
 		return new ASTVisitor() {
 			private ArrayList<String> names = new ArrayList<>();
 			
+			@Override
 			public boolean visit(org.eclipse.jdt.core.dom.SimpleName node) {
 				names.add(node.getIdentifier());
 				return false;
