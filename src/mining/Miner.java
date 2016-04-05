@@ -91,11 +91,11 @@ public class Miner {
 				for (Fragment f : p.getFragments()) {
 					String name = f.getGraph().getName();
 					sb.append(name + "\n");
-					String[] parts = name.split(",");
+					/*String[] parts = name.split(",");
 					sb.append("https://github.com/" + projectName + "/commit/"
 							+ parts[0].substring(0, parts[0].indexOf('.')) + "/"
 							+ parts[1]
-							+ "\n");
+							+ "\n");*/
 				}
 				FileIO.writeStringToFile(sb.toString(),
 						patternDir.getAbsolutePath() + "/locations.txt");
@@ -235,7 +235,7 @@ public class Miner {
 		for (GROUMGraph g : fragmentsOfGraph.keySet()) {
 			ArrayList<Fragment> fs = fragmentsOfGraph.get(g);
 			int i = 0;
-			while (i < fs.size() - 1) {
+			while (i < fs.size()) {
 				Fragment f = fs.get(i);
 				int j = i + 1;
 				while (j < fs.size()) {
