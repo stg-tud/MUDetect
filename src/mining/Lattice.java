@@ -65,33 +65,25 @@ public class Lattice {
 	}
 	
 	public static boolean contains(ArrayList<Lattice> lattices, Pattern p) {
-		System.out.print("Check occurences in minded patterns ... ");
 		for (int i =  lattices.size() - 1; i >= p.getSize(); i--) {
 			Lattice l = lattices.get(i);
-			if (l.contains(p)) {
-				System.out.println("yes");
+			if (l.contains(p))
 				return true;
-			}
 		}
-		System.out.println("no");
 		return false;
 	}
 
 	public static boolean contains(ArrayList<Lattice> lattices, HashSet<Fragment> g) {
-		System.out.print("Check occurences in minded patterns ... ");
 		int size = 0;
 		for (Fragment f : g) {
 			size = f.getNodes().size();
 			break;
 		}
-		for (int i =  lattices.size() - 1; i >= size; i--) {
+		for (int i =  lattices.size() - 1; i >= size - 1; i--) {
 			Lattice l = lattices.get(i);
-			if (l.contains(g)) {
-				System.out.println("yes");
+			if (l.contains(g))
 				return true;
-			}
 		}
-		System.out.println("no");
 		return false;
 	}
 }
