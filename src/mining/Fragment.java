@@ -344,14 +344,17 @@ public class Fragment {
 		dg.toGraphics(path + "/" + name, "png");
 	}
 	
-	public void delete()
-	{
-		try {
-			this.finalize();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
+	public void delete() {
+		this.genFragmen = null;
+		this.graph = null;
+		this.nodes.clear();
+		this.vector.clear();
 		numofFragments--;
+	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		delete();
 	}
 	
 	HashSet<Fragment> exactCloneList(HashSet<Fragment> group, Fragment frag) {

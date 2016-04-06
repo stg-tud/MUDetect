@@ -172,19 +172,16 @@ public class Pattern {
 				return true;
 		return false;
 	}
-	
-	public void delete(ArrayList<Lattice> lattices) {
-		lattices.get(size - 1).remove(this);
-		this.representative = null;
-		for (Fragment f : this.fragments)
-			f.delete();
-		this.fragments.clear();
-	}
 
 	public void clear() {
 		this.representative = null;
 		for (Fragment f : this.fragments)
 			f.delete();
 		this.fragments.clear();
+	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		clear();
 	}
 }

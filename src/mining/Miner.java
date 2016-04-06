@@ -72,6 +72,7 @@ public class Miner {
 			}
 			Pattern p = new Pattern(fragments, fragments.size());
 			extend(p);
+			p.clear();
 		}
 		System.out.println("Done mining.");
 		Lattice.filter(lattices);
@@ -132,7 +133,7 @@ public class Miner {
 				labelFragmentExtendableNodes.remove(label);
 		}
 		HashSet<Fragment> group = new HashSet<>();
-		int xfreq = 0;
+		int xfreq = Pattern.minFreq - 1;
 		for (String label : labelFragmentExtendableNodes.keySet()) {
 			HashMap<Fragment, HashSet<ArrayList<GROUMNode>>> fens = labelFragmentExtendableNodes.get(label);
 			HashSet<Fragment> xfs = new HashSet<>();
