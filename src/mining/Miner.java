@@ -90,8 +90,9 @@ public class Miner {
 				rf.toGraphics(patternDir.getAbsolutePath(), rf.getId() + "");
 				StringBuilder sb = new StringBuilder();
 				for (Fragment f : p.getFragments()) {
+					String fileName = GROUMNode.fileNames.get(f.getGraph().getFileID());
 					String name = f.getGraph().getName();
-					sb.append(name + "\n");
+					sb.append(fileName + "," + name + "\n");
 					/*String[] parts = name.split(",");
 					sb.append("https://github.com/" + projectName + "/commit/"
 							+ parts[0].substring(0, parts[0].indexOf('.')) + "/"

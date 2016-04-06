@@ -116,7 +116,7 @@ public class GROUMBuilder {
 			GROUMGraph aGraph = traverse(null, root);
 			aGraph.setFileID(fileID);
 			MethodDeclaration method = (MethodDeclaration)root;
-			aGraph.setName(className + "." + method.getName().getIdentifier());
+			aGraph.setName(className + "." + method.getName().getIdentifier() + "(" + method.parameters().size() + ")");
 			aGraph.prune();
 			aGraph.addDataDependency();
 			aGraph.removeNonDependents();
