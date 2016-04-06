@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Random;
 
 /**
  * @author Nguyen Anh Hoan
@@ -466,6 +467,19 @@ public class Fragment {
 				ArrayList<GROUMNode> l = new ArrayList<>();
 				l.add(node);
 				s.add(l);
+			}
+		}
+		Random r = new Random();
+		for (String label : lens.keySet()) {
+			HashSet<ArrayList<GROUMNode>> s = lens.get(label);
+			if (s.size() > 50) {
+				ArrayList<ArrayList<GROUMNode>> l = new ArrayList<>(s);
+				s.clear();
+				for (int i = 0; i < 50; i++) {
+					int j = r.nextInt(l.size());
+					s.add(l.get(j));
+					l.remove(j);
+				}
 			}
 		}
 		return lens;
