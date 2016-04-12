@@ -66,16 +66,31 @@ public class GROUMNode implements Serializable {
 		setLabel();
 	}
 
+	public GROUMNode(HashMap<String, String> attributes) {
+		this.id = ++numOfNodes;
+		switch (attributes.get("shape")) {
+		case "box": this.type = TYPE_METHOD; break;
+		case "diamond": this.type = TYPE_CONTROL; break;
+		default: this.type = TYPE_FIELD;
+		}
+		this.label = attributes.get("label");
+		int index = this.label.lastIndexOf('.');
+		this.classNameId = convertLabel(this.label.substring(0, index));
+		this.methodId = convertLabel(this.label.substring(index + 1));
+		//setLabel(String.valueOf((this.classNameId << 16) + methodId));
+		setLabel();
+	}
+
 	public static int convertLabel(String label){
 		//System.out.println(label + " with id " + index);
-		if (GROUMNode.idOfLabel.get(label) == null){
-			int index = GROUMNode.idOfLabel.size()+1;
-			GROUMNode.idOfLabel.put(label, index);
-			GROUMNode.labelOfID.put(index,label);
+		if (idOfLabel.get(label) == null){
+			int index = idOfLabel.size()+1;
+			idOfLabel.put(label, index);
+			labelOfID.put(index,label);
 			return index;
 		}
 		else
-			return GROUMNode.idOfLabel.get(label);
+			return idOfLabel.get(label);
 	}
 	
 	public int getId() {
@@ -83,7 +98,7 @@ public class GROUMNode implements Serializable {
 	}
 	
 	public String getMethod() {
-		return GROUMNode.labelOfID.get(methodId);
+		return labelOfID.get(methodId);
 	}
 	
 	public int getMethodID() {

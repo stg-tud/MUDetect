@@ -1,11 +1,13 @@
 package groum;
 
 import graphics.DotGraph;
+import utils.FileIO;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Scanner;
 import java.util.Vector;
 
 
@@ -23,6 +25,52 @@ public class GROUMGraph implements Serializable {
 	
 	public GROUMGraph() {
 		this.id = nextId++;
+	}
+	
+	public GROUMGraph(File file) {
+		this.id = nextId++;
+		this.name = file.getAbsolutePath();
+		if (!file.getName().endsWith(".dot"))
+			throw new IllegalArgumentException(file.getAbsolutePath());
+		String content = FileIO.readStringFromFile(file.getAbsolutePath());
+		Scanner sc = new Scanner(content);
+		HashMap<String, GROUMNode> nodes = new HashMap<>();
+		String e = " -> ";
+		while (sc.hasNextLine()) {
+			String line = sc.nextLine();
+			if (line.equals("}"))
+				break;
+			if (Character.isDigit(line.charAt(0))) {
+				if (line.contains(e)) {
+					int index = line.indexOf(e);
+					String id1 = line.substring(0, index), id2 = line.substring(index + e.length(), line.indexOf(" ", index + e.length()));
+					HashMap<String, String> attributes = getAttributes(line.substring(index + e.length()));
+					new GROUMEdge(nodes.get(id1), nodes.get(id2), attributes.get("label"));
+				} else {
+					int index = line.indexOf(' ');
+					String id = line.substring(0, index);
+					HashMap<String, String> attributes = getAttributes(line.substring(index+1));
+					GROUMNode node = new GROUMNode(attributes);
+					nodes.put(id, node);
+				}
+			}
+		}
+		sc.close();
+		this.nodes = new HashSet<>(nodes.values());
+	}
+
+	private HashMap<String, String> getAttributes(String line) {
+		HashMap<String, String> attributes = new HashMap<>();
+		int s = line.indexOf('['), e = line.indexOf(']');
+		String[] parts = line.substring(s+1, e).split(" ");
+		for (String part : parts) {
+			int index = part.indexOf('=');
+			String name = part.substring(0, index), value = part.substring(index+1);
+			if (value.startsWith("\""))
+				value = value.substring(1, value.length()-1);
+			attributes.put(name, value);
+		}
+		return attributes;
 	}
 
 	public void addNode(GROUMNode node) 

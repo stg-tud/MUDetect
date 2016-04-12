@@ -62,7 +62,7 @@ public class DotGraph {
 			for(GROUMEdge out : node.getOutEdges())
 			{
 				int eId = ids.get(out.getDest());
-				graph.append(addEdge(sId, eId, null, null, null));
+				graph.append(addEdge(sId, eId, null, null, out.getLabel()));
 			}
 		}
 
