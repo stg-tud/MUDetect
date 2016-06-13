@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -23,6 +24,11 @@ import org.eclipse.jdt.core.dom.PrefixExpression;
 import org.eclipse.jdt.core.dom.QualifiedType;
 import org.eclipse.jdt.core.dom.TagElement;
 import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.eclipse.jdt.core.dom.Assignment.Operator;
 import org.eclipse.jdt.internal.core.dom.NaiveASTFlattener;
 
 public class JavaASTUtil {
@@ -56,6 +62,10 @@ public class JavaASTUtil {
 		NaiveASTFlattener flatterner = new NaiveASTFlattener();
 		node.accept(flatterner);
 		return flatterner.getResult();
+	}
+
+	public static boolean isLiteral(int astNodeType) {
+		return ASTNode.nodeClassForType(astNodeType).getSimpleName().endsWith("Literal");
 	}
 
 	public static boolean isLiteral(ASTNode node) {
@@ -117,6 +127,17 @@ public class JavaASTUtil {
 		return flatterner.getResult();
 	}
 
+	public static String getSimpleType(VariableDeclarationFragment f) {
+		ASTNode p = f.getParent();
+		if (p instanceof FieldDeclaration)
+			return getSimpleType(((FieldDeclaration) p).getType());
+		if (p instanceof VariableDeclarationStatement)
+			return getSimpleType(((VariableDeclarationStatement) p).getType());
+		if (p instanceof VariableDeclarationExpression)
+			return getSimpleType(((VariableDeclarationExpression) p).getType());
+		throw new UnsupportedOperationException("Get type of a declaration!!!");
+	}
+
 	public static String getSimpleType(Type type) {
 		if (type.isArrayType()) {
 			ArrayType t = (ArrayType) type;
@@ -128,14 +149,22 @@ public class JavaASTUtil {
 			return getSimpleType(t.getType());
 		}
 		else if (type.isPrimitiveType()) {
-			return type.toString();
+			String pt = type.toString();
+			if (pt.equals("byte") || pt.equals("short") || pt.equals("int") || pt.equals("long") 
+					|| pt.equals("float") || pt.equals("double"))
+				return "number";
+			return pt;
 		}
 		else if (type.isQualifiedType()) {
 			QualifiedType t = (QualifiedType) type;
 			return t.getName().getIdentifier();
 		}
 		else if (type.isSimpleType()) {
-			return type.toString();
+			String pt = type.toString();
+			if (pt.equals("Byte") || pt.equals("Short") || pt.equals("Integer") || pt.equals("Long") 
+					|| pt.equals("Float") || pt.equals("Double"))
+				return "number";
+			return pt;
 		}
 		else if (type.isWildcardType()) {
 			//WildcardType t = (WildcardType) type;
@@ -205,6 +234,20 @@ public class JavaASTUtil {
 		}
 		System.err.println("ERROR: Declare a variable with unknown type!!!");
 		System.exit(0);
+		return null;
+	}
+
+	public static String getInfixOperator(Operator operator) {
+		if (operator == Operator.ASSIGN)
+			return null;
+		String op = operator.toString();
+		return op.substring(0, op.length() - 1);
+	}
+	
+	public static TypeDeclaration getType(TypeDeclaration td, String name) {
+		for (TypeDeclaration inner : td.getTypes())
+			if (inner.getName().getIdentifier().equals(name))
+				return inner;
 		return null;
 	}
 
