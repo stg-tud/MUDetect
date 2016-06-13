@@ -45,7 +45,7 @@ public class EGroumBuilder {
 	public void build() {
 		buildStandardJars();
 		buildHierarchy(new File(path));
-		build(new File(path));
+		buildGroums(new File(path));
 	}
 
 	private void buildStandardJars() {
@@ -278,12 +278,27 @@ public class EGroumBuilder {
 		return className;
 	}
 
-	private void build(File file) {
+	private void buildGroums(File file) {
 		if (file.isDirectory()) {
 			for (File sub : file.listFiles())
-				build(sub);
+				buildGroums(sub);
 		} else if (file.isFile() && file.getName().endsWith(".java")) {
-			
+			CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(FileIO.readStringFromFile(file.getAbsolutePath()));
+			for (int i = 0 ; i < cu.types().size(); i++)
+				if (cu.types().get(i) instanceof TypeDeclaration)
+					buildGroums((TypeDeclaration) cu.types().get(i));
 		}
+	}
+
+	private void buildGroums(TypeDeclaration type) {
+		for (MethodDeclaration method : type.getMethods())
+			buildGroums(method);
+		for (TypeDeclaration inner : type.getTypes())
+			buildGroums(inner);
+	}
+
+	private void buildGroums(MethodDeclaration method) {
+		EGroumGraph g = new EGroumGraph(method, new EGroumBuildingContext(false));
+		egroums.add(g);
 	}
 }
