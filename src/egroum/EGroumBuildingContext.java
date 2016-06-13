@@ -6,11 +6,13 @@ import java.util.Stack;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ArrayAccess;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.NumberLiteral;
 import org.eclipse.jdt.core.dom.QualifiedName;
@@ -22,7 +24,8 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import utils.JavaASTUtil;
 
 public class EGroumBuildingContext {
-	public static HashMap<String, HashMap<String, String>> typeFieldTypes = new HashMap<>();
+	public static HashMap<String, HashMap<String, String>> typeFieldType = new HashMap<>();
+	public static HashMap<String, HashMap<String, HashSet<String>>> typeMethodExceptions = new HashMap<>();
 	
 	private MethodDeclaration method;
 	protected boolean interprocedural;
@@ -43,47 +46,52 @@ public class EGroumBuildingContext {
 		ASTNode p = this.method.getParent();
 		if (p != null) {
 			if (p instanceof TypeDeclaration)
-				buildFieldTypes((TypeDeclaration) p);
+				buildFieldType((TypeDeclaration) p);
 			else if (p instanceof EnumDeclaration)
-				buildFieldTypes((EnumDeclaration) p);
+				buildFieldType((EnumDeclaration) p);
 		}
 	}
 	
-	private void buildFieldTypes(EnumDeclaration ed) {
+	private void buildFieldType(EnumDeclaration ed) {
 		for (int i = 0; i < ed.bodyDeclarations().size(); i++) {
 			if (ed.bodyDeclarations().get(i) instanceof FieldDeclaration) {
 				FieldDeclaration f = (FieldDeclaration) ed.bodyDeclarations().get(i);
 				String type = JavaASTUtil.getSimpleType(f.getType());
 				for (int j = 0; j < f.fragments().size(); j++) {
 					VariableDeclarationFragment vdf = (VariableDeclarationFragment) f.fragments().get(j);
-					this.fieldTypes.put(vdf.getName().getIdentifier(), type);
+					buildFieldType(vdf.getName().getIdentifier(), type);
 				}
 			}
 		}
 		ASTNode p = ed.getParent();
 		if (p != null) {
 			if (p instanceof TypeDeclaration)
-				buildFieldTypes((TypeDeclaration) p);
+				buildFieldType((TypeDeclaration) p);
 			else if (p instanceof EnumDeclaration)
-				buildFieldTypes((EnumDeclaration) p);
+				buildFieldType((EnumDeclaration) p);
 		}
 	}
 
-	private void buildFieldTypes(TypeDeclaration td) {
+	private void buildFieldType(TypeDeclaration td) {
 		for (FieldDeclaration f : td.getFields()) {
 			String type = JavaASTUtil.getSimpleType(f.getType());
 			for (int i = 0; i < f.fragments().size(); i++) {
 				VariableDeclarationFragment vdf = (VariableDeclarationFragment) f.fragments().get(i);
-				this.fieldTypes.put(vdf.getName().getIdentifier(), type);
+				buildFieldType(vdf.getName().getIdentifier(), type);
 			}
 		}
 		ASTNode p = td.getParent();
 		if (p != null) {
 			if (p instanceof TypeDeclaration)
-				buildFieldTypes((TypeDeclaration) p);
+				buildFieldType((TypeDeclaration) p);
 			else if (p instanceof EnumDeclaration)
-				buildFieldTypes((EnumDeclaration) p);
+				buildFieldType((EnumDeclaration) p);
 		}
+	}
+
+	private void buildFieldType(String name, String type) {
+		if (!this.fieldTypes.containsKey(name))
+			this.fieldTypes.put(name, type);
 	}
 
 	public void addMethodTry(EGroumActionNode node) {
@@ -192,7 +200,7 @@ public class EGroumBuildingContext {
 
 	private void buildSuperFieldTypes(TypeDeclaration td) {
 		if (td.getSuperclassType() != null) {
-			String stype = JavaASTUtil.getSimpleType(td.getSuperclassType());
+			String stype = JavaASTUtil.getCompactType(td.getSuperclassType());
 			buildSuperFieldTypes(stype);
 		}
 		ASTNode p = td.getParent();
@@ -201,6 +209,34 @@ public class EGroumBuildingContext {
 	}
 
 	private void buildSuperFieldTypes(String stype) {
-		//TODO
+		String qn = getQualifiedType(stype);
+		HashMap<String, String> superFieldType = typeFieldType.get(qn);
+		for (String name : superFieldType.keySet())
+			buildFieldType(name, superFieldType.get(name));
+	}
+
+	private String getQualifiedType(String stype) {
+		int index = stype.indexOf('.');
+		String qual = null;
+		if (index > -1) {
+			if (Character.isLowerCase(stype.charAt(0)))
+				return stype;
+			qual = stype.substring(0, index);
+		}
+		CompilationUnit cu = (CompilationUnit) this.method.getRoot();
+		for (int i = 0; i < cu.imports().size(); i++) {
+			ImportDeclaration id = (ImportDeclaration) cu.imports().get(i);
+			if (!id.isOnDemand() && !id.isStatic()) {
+				String qn = id.getName().getFullyQualifiedName();
+				if (qn.endsWith("." + stype))
+					return qn;
+				if (qual != null && qn.endsWith("." + qual))
+					return qn + stype.substring(qual.length());
+			}
+		}
+		String pkg = "";
+		if (cu.getPackage() != null)
+			pkg = cu.getPackage().getName().getFullyQualifiedName();
+		return pkg + "." + stype;
 	}
 }

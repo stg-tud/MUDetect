@@ -17,10 +17,12 @@ import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.PostfixExpression;
 import org.eclipse.jdt.core.dom.PrefixExpression;
+import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.QualifiedType;
 import org.eclipse.jdt.core.dom.TagElement;
 import org.eclipse.jdt.core.dom.Type;
@@ -138,6 +140,43 @@ public class JavaASTUtil {
 		throw new UnsupportedOperationException("Get type of a declaration!!!");
 	}
 
+	public static String getCompactType(Type type) {
+		if (type.isArrayType()) {
+			ArrayType t = (ArrayType) type;
+			return getCompactType(t.getComponentType()) + "[]";
+		}
+		else if (type.isParameterizedType()) {
+			ParameterizedType t = (ParameterizedType) type;
+			return getCompactType(t.getType());
+		}
+		else if (type.isPrimitiveType()) {
+			String pt = type.toString();
+			if (pt.equals("byte") || pt.equals("short") || pt.equals("int") || pt.equals("long") 
+					|| pt.equals("float") || pt.equals("double"))
+				return "number";
+			return pt;
+		}
+		else if (type.isQualifiedType()) {
+			QualifiedType t = (QualifiedType) type;
+			return getCompactType(t.getQualifier()) + "." + t.getName().getIdentifier();
+		}
+		else if (type.isSimpleType()) {
+			String pt = type.toString();
+			if (pt.equals("Byte") || pt.equals("Short") || pt.equals("Integer") || pt.equals("Long") 
+					|| pt.equals("Float") || pt.equals("Double"))
+				return "number";
+			return pt;
+		}
+		else if (type.isWildcardType()) {
+			//WildcardType t = (WildcardType) type;
+			System.err.println("ERROR: Declare a variable with wildcard type!!!");
+			System.exit(0);
+		}
+		System.err.println("ERROR: Declare a variable with unknown type!!!");
+		System.exit(0);
+		return null;
+	}
+
 	public static String getSimpleType(Type type) {
 		if (type.isArrayType()) {
 			ArrayType t = (ArrayType) type;
@@ -235,6 +274,13 @@ public class JavaASTUtil {
 		System.err.println("ERROR: Declare a variable with unknown type!!!");
 		System.exit(0);
 		return null;
+	}
+
+	public static String getSimpleName(Name name) {
+		if (name.isSimpleName())
+			return name.toString();
+		QualifiedName qn = (QualifiedName) name;
+		return qn.getName().getIdentifier();
 	}
 
 	public static String getInfixOperator(Operator operator) {
