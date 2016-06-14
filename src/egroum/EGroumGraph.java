@@ -123,9 +123,9 @@ public class EGroumGraph implements Serializable {
 		adjustReturnNodes();
 		adjustControlEdges();
 		context.removeScope();
-		prune();
+		/*prune();
 		buildClosure();
-		cleanUp();
+		cleanUp();*/
 	}
 
 	public EGroumGraph(EGroumBuildingContext context) {
