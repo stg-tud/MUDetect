@@ -1904,8 +1904,7 @@ public class EGroumGraph implements Serializable {
 						if (in.type == Type.REFERENCE) {
 							isRef = true;
 							EGroumDataEdge out = (EGroumDataEdge) node.outEdges.get(0);
-							out.source = in.source;
-							in.source.outEdges.add(out);
+							new EGroumDataEdge(in.source, out.target, out.type);
 						}
 					}
 				}
