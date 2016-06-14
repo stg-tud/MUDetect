@@ -1,7 +1,7 @@
 /**
  * 
  */
-package groum;
+package tests;
 
 import egroum.EGroumBuilder;
 import egroum.EGroumGraph;

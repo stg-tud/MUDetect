@@ -123,6 +123,9 @@ public class EGroumGraph implements Serializable {
 		adjustReturnNodes();
 		adjustControlEdges();
 		context.removeScope();
+		prune();
+		buildClosure();
+		cleanUp();
 	}
 
 	public EGroumGraph(EGroumBuildingContext context) {
@@ -1673,7 +1676,7 @@ public class EGroumGraph implements Serializable {
 		return nodes.isEmpty();
 	}
 
-	private void buildClosure() {
+	public void buildClosure() {
 		HashSet<EGroumNode> doneNodes = new HashSet<EGroumNode>();
 		for (EGroumNode node : nodes)
 			if (!doneNodes.contains(node))
