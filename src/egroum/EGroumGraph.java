@@ -1953,4 +1953,62 @@ public class EGroumGraph implements Serializable {
 		}
 		return true;
 	}
+
+	public void deleteAssignmentNodes() {
+		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
+			if (node.isAssignment()) {
+				for (EGroumEdge ie : node.getInEdges()) {
+					if (ie.isParameter()) {
+						EGroumNode n = ie.source;
+						for (EGroumEdge oe : node.getOutEdges())
+							if (oe.isDef() && !n.getOutNodes().contains(oe.target))
+								new EGroumDataEdge(n, oe.target, ((EGroumDataEdge) oe).type); // shortcut definition edges before deleting this assignment
+					}
+				}
+				node.delete();
+			}
+	}
+
+	public void deleteUnaryOperationNodes() {
+		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
+			if (node.astNodeType == ASTNode.PREFIX_EXPRESSION || node.astNodeType == ASTNode.POSTFIX_EXPRESSION)
+				node.delete();
+	}
+
+	@SuppressWarnings("unused")
+	private void deleteAssignmentEdges() {
+		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
+			if (node.isAssignment()) {
+				for (EGroumEdge e : new HashSet<EGroumEdge>(node.getOutEdges()))
+					if (!e.isDef())
+						e.delete();
+				if (node.getOutEdges().isEmpty())
+					node.delete();
+			}
+	}
+	
+	public void collapseLiterals() {
+		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
+			HashMap<String, ArrayList<EGroumNode>> labelLiterals = new HashMap<>();
+			for (EGroumNode n : node.getInNodes()) {
+				if (n.isLiteral()) {
+					String label = n.getLabel();
+					ArrayList<EGroumNode> lits = labelLiterals.get(label);
+					if (lits == null) {
+						lits = new ArrayList<>();
+						labelLiterals.put(label, lits);
+					}
+					lits.add(n);
+				}
+			}
+			for (String label : labelLiterals.keySet()) {
+				ArrayList<EGroumNode> lits = labelLiterals.get(label);
+				if (lits.size() > 1) {
+					((EGroumDataNode) lits.get(1)).dataName = label + "*";
+					for (int i = 2; i < lits.size(); i++)
+						lits.get(i).delete();
+				}
+			}
+		}
+	}
 }

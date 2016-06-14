@@ -34,6 +34,11 @@ public class Miner {
 	}
 
 	public void mine(ArrayList<EGroumGraph> groums) {
+		for (EGroumGraph groum : groums) {
+			groum.deleteAssignmentNodes();
+			//groum.deleteUnaryOperationNodes();
+			groum.collapseLiterals();
+		}
 		HashSet<String> coreLabels = new HashSet<>();
 		HashMap<String, HashSet<EGroumNode>> nodesOfLabel = new HashMap<String, HashSet<EGroumNode>>();
 		for (EGroumGraph groum : groums) {

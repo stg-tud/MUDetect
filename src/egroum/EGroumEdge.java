@@ -1,5 +1,7 @@
 package egroum;
 
+import egroum.EGroumDataEdge.Type;
+
 public abstract class EGroumEdge {
 	protected EGroumNode source;
 	protected EGroumNode target;
@@ -20,4 +22,20 @@ public abstract class EGroumEdge {
 	}
 
 	public abstract String getExasLabel();
+
+	public boolean isParameter() {
+		return this instanceof EGroumDataEdge && ((EGroumDataEdge) this).type == Type.PARAMETER;
+	}
+
+	public boolean isDef() {
+		return this instanceof EGroumDataEdge && ((EGroumDataEdge) this).type == Type.DEFINITION;
+	}
+
+	public void delete() {
+		this.source.outEdges.remove(this);
+		this.target.inEdges.remove(this);
+		// FIXME
+		/*this.source = null;
+		this.target = null;*/
+	}
 }

@@ -295,6 +295,17 @@ public abstract class EGroumNode {
 		return defs;
 	}
 
+	public ArrayList<EGroumNode> getReferences() {
+		ArrayList<EGroumNode> refs = new ArrayList<>();
+		if (this instanceof EGroumDataNode) {
+			for (EGroumEdge e : this.outEdges) {
+				if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.REFERENCE)
+					refs.add(e.target);
+			}
+		}
+		return refs;
+	}
+
 	public boolean hasInEdge(EGroumNode node, String label) {
 		for (EGroumEdge e : inEdges)
 			if (e.source == node && e.getLabel().equals(label))
@@ -333,6 +344,10 @@ public abstract class EGroumNode {
 			s.add(e.target);
 		}
 		return true;
+	}
+
+	public boolean isAssignment() {
+		return astNodeType == ASTNode.ASSIGNMENT;
 	}
 
 	public HashSet<EGroumNode> getInNodes() {

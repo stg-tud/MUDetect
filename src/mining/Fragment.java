@@ -473,10 +473,145 @@ public class Fragment {
 					l.add(node);
 					s.add(l);
 				} else {
-					
+					HashSet<EGroumNode> ins = node.getInNodes(), outs = node.getOutNodes();
+					if (!ins.isEmpty() && !outs.isEmpty()) {
+						boolean found = false;
+						for (EGroumNode n : ins) {
+							if (nodes.contains(n)) {
+								found = true;
+								break;
+							}
+						}
+						if (found) {
+							found = false;
+							for (EGroumNode n : outs) {
+								if (n.isCoreAction() && nodes.contains(n)) {
+									found = true;
+									break;
+								}
+							}
+							if (found) {
+								String label = node.getLabel();
+								HashSet<ArrayList<EGroumNode>> s = lens.get(label);
+								if (s == null) {
+									s = new HashSet<>();
+									lens.put(label, s);
+								}
+								ArrayList<EGroumNode> l = new ArrayList<>();
+								l.add(node);
+								s.add(l);
+							} else {
+								for (EGroumNode next : outs) {
+									if (next.isCoreAction()) {
+										String label = node.getLabel() + "-" + next.getLabel();
+										HashSet<ArrayList<EGroumNode>> s = lens.get(label);
+										if (s == null) {
+											s = new HashSet<>();
+											lens.put(label, s);
+										}
+										ArrayList<EGroumNode> l = new ArrayList<>();
+										l.add(node);
+										l.add(next);
+										s.add(l);
+									}
+								}
+							}
+						} /*else {
+							for (EGroumNode next : ins) {
+								String label = node.getLabel() + "-" + next.getLabel();
+								HashSet<ArrayList<EGroumNode>> s = lens.get(label);
+								if (s == null) {
+									s = new HashSet<>();
+									lens.put(label, s);
+								}
+								ArrayList<EGroumNode> l = new ArrayList<>();
+								l.add(node);
+								l.add(next);
+								s.add(l);
+							}
+						}*/
+					}
 				}
 			} else if (node instanceof EGroumDataNode) {
-				
+				if (node.isDefinition()) {
+					ArrayList<EGroumNode> refs = node.getReferences();
+					if (refs.isEmpty())
+						continue;
+					boolean found = false;
+					for (EGroumNode ref : refs)
+						if (nodes.contains(ref)) {
+							found = true;
+							break;
+						}
+					if (found) {
+						String label = node.getLabel();
+						HashSet<ArrayList<EGroumNode>> s = lens.get(label);
+						if (s == null) {
+							s = new HashSet<>();
+							lens.put(label, s);
+						}
+						ArrayList<EGroumNode> l = new ArrayList<>();
+						l.add(node);
+						s.add(l);
+					} else {
+						for (EGroumNode next : refs) {
+							String label = node.getLabel() + "-" + next.getLabel();
+							HashSet<ArrayList<EGroumNode>> s = lens.get(label);
+							if (s == null) {
+								s = new HashSet<>();
+								lens.put(label, s);
+							}
+							ArrayList<EGroumNode> l = new ArrayList<>();
+							l.add(node);
+							l.add(next);
+							s.add(l);
+						}
+					}
+				} else {
+					ArrayList<EGroumNode> defs = node.getDefinitions();
+					if (defs.isEmpty()) {
+						String label = node.getLabel();
+						HashSet<ArrayList<EGroumNode>> s = lens.get(label);
+						if (s == null) {
+							s = new HashSet<>();
+							lens.put(label, s);
+						}
+						ArrayList<EGroumNode> l = new ArrayList<>();
+						l.add(node);
+						s.add(l);
+					} else {
+						boolean found = false;
+						for (EGroumNode def : defs)
+							if (nodes.contains(def)) {
+								found = true;
+								break;
+							}
+						if (found) {
+							String label = node.getLabel();
+							HashSet<ArrayList<EGroumNode>> s = lens.get(label);
+							if (s == null) {
+								s = new HashSet<>();
+								lens.put(label, s);
+							}
+							ArrayList<EGroumNode> l = new ArrayList<>();
+							l.add(node);
+							s.add(l);
+						} else {
+							for (EGroumNode next : defs) {
+								String label = node.getLabel() + "-" + next.getLabel();
+								HashSet<ArrayList<EGroumNode>> s = lens.get(label);
+								if (s == null) {
+									s = new HashSet<>();
+									lens.put(label, s);
+								}
+								ArrayList<EGroumNode> l = new ArrayList<>();
+								l.add(node);
+								l.add(next);
+								s.add(l);
+							}
+						}
+					}
+				}
 			}
 		}
 		Random r = new Random();
