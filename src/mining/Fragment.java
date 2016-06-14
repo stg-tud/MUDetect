@@ -5,9 +5,6 @@ package mining;
 
 import exas.ExasFeature;
 import graphics.DotGraph;
-import groum.GROUMEdge;
-import groum.GROUMGraph;
-import groum.GROUMNode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,6 +12,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
+
+import egroum.EGroumActionNode;
+import egroum.EGroumControlNode;
+import egroum.EGroumDataNode;
+import egroum.EGroumEdge;
+import egroum.EGroumGraph;
+import egroum.EGroumNode;
 
 /**
  * @author Nguyen Anh Hoan
@@ -28,8 +32,8 @@ public class Fragment {
 	
 	private int id = -1;
 	private Fragment genFragmen;
-	private ArrayList<GROUMNode> nodes = new ArrayList<>();
-	private GROUMGraph graph;
+	private ArrayList<EGroumNode> nodes = new ArrayList<>();
+	private EGroumGraph graph;
 	private HashMap<Integer, Integer> vector = new HashMap<>();
 	private int idSum = 0;
 	
@@ -38,7 +42,7 @@ public class Fragment {
 		numofFragments++;
 	}
 	
-	public Fragment(GROUMNode node) {
+	public Fragment(EGroumNode node) {
 		this();
 		this.graph = node.getGraph();
 		nodes.add(node);
@@ -46,14 +50,14 @@ public class Fragment {
 		vector.put(1, 1);
 	}
 	
-	public Fragment(Fragment fragment, ArrayList<GROUMNode> ens) {
+	public Fragment(Fragment fragment, ArrayList<EGroumNode> ens) {
 		this();
 		this.genFragmen = fragment;
 		this.graph = fragment.graph;
-		this.nodes = new ArrayList<GROUMNode>(fragment.getNodes());
+		this.nodes = new ArrayList<EGroumNode>(fragment.getNodes());
 		this.idSum = fragment.getIdSum();
 		this.vector = new HashMap<Integer, Integer>(fragment.getVector());
-		for (GROUMNode en : ens) {
+		for (EGroumNode en : ens) {
 			this.nodes.add(en);
 			this.idSum += en.getId();
 			ExasFeature exasFeature = new ExasFeature(nodes);
@@ -61,19 +65,19 @@ public class Fragment {
 		}
 	}
 	
-	public void buildVector(GROUMNode node, ExasFeature exasFeature) {
+	public void buildVector(EGroumNode node, ExasFeature exasFeature) {
 		ArrayList<String> sequence = new ArrayList<>();
 		sequence.add(node.getLabel());
 		backwardDFS(node, node, sequence, exasFeature);
 	}
 	
-	private void backwardDFS(GROUMNode firstNode, GROUMNode lastNode, ArrayList<String> sequence, ExasFeature exasFeature) {
+	private void backwardDFS(EGroumNode firstNode, EGroumNode lastNode, ArrayList<String> sequence, ExasFeature exasFeature) {
 		forwardDFS(firstNode, lastNode, sequence, exasFeature);
 		
 		if(sequence.size() < ExasFeature.MAX_LENGTH) {
-			for(GROUMEdge e : firstNode.getInEdges()) {
-				if (nodes.contains(e.getSrc())) {
-					GROUMNode n = e.getSrc();
+			for(EGroumEdge e : firstNode.getInEdges()) {
+				if (nodes.contains(e.getSource())) {
+					EGroumNode n = e.getSource();
 					sequence.add(0, e.getLabel());
 					sequence.add(0, n.getLabel());
 					backwardDFS(n, lastNode, sequence, exasFeature);
@@ -84,14 +88,14 @@ public class Fragment {
 		}
 	}
 	
-	private void forwardDFS(GROUMNode firstNode, GROUMNode lastNode, ArrayList<String> sequence, ExasFeature exasFeature) {
+	private void forwardDFS(EGroumNode firstNode, EGroumNode lastNode, ArrayList<String> sequence, ExasFeature exasFeature) {
 		int feature = exasFeature.getFeature(sequence);
 		addFeature(feature, vector);
 		
 		if(sequence.size() < ExasFeature.MAX_LENGTH) {
-			for(GROUMEdge e : lastNode.getOutEdges()) {
-				if (nodes.contains(e.getDest())) {
-					GROUMNode n = e.getDest();
+			for(EGroumEdge e : lastNode.getOutEdges()) {
+				if (nodes.contains(e.getTarget())) {
+					EGroumNode n = e.getTarget();
 					sequence.add(e.getLabel());
 					sequence.add(n.getLabel());
 					forwardDFS(firstNode, n, sequence, exasFeature);
@@ -124,10 +128,10 @@ public class Fragment {
 		this.genFragmen = genFragmen;
 	}
 
-	public ArrayList<GROUMNode> getNodes() {
+	public ArrayList<EGroumNode> getNodes() {
 		return nodes;
 	}
-	public void setNodes(ArrayList<GROUMNode> nodes) {
+	public void setNodes(ArrayList<EGroumNode> nodes) {
 		this.nodes = nodes;
 	}
 	
@@ -147,13 +151,13 @@ public class Fragment {
 	/**
 	 * @return the graph
 	 */
-	public GROUMGraph getGraph() {
+	public EGroumGraph getGraph() {
 		return graph;
 	}
 	/**
 	 * @param graph the graph to set
 	 */
-	public void setGraph(GROUMGraph graph) {
+	public void setGraph(EGroumGraph graph) {
 		this.graph = graph;
 	}
 	
@@ -227,7 +231,7 @@ public class Fragment {
 	/**
 	 * 
 	 */
-	public boolean contains(GROUMNode node) {
+	public boolean contains(EGroumNode node) {
 		return this.nodes.contains(node);
 	}
 	public boolean overlap(Fragment fragment) {
@@ -239,11 +243,11 @@ public class Fragment {
 			System.err.println("NULL fragment in checking overlap");
 			return false;
 		}
-		HashSet<GROUMNode> tempNodes = new HashSet<GROUMNode>();
+		HashSet<EGroumNode> tempNodes = new HashSet<EGroumNode>();
 		tempNodes.addAll(fragment.nodes);
 		tempNodes.retainAll(this.nodes);
-		for (GROUMNode node : tempNodes)
-			if (node.isMethod())
+		for (EGroumNode node : tempNodes)
+			if (node.isCoreAction())
 				return true;
 		return false;
 	}
@@ -259,30 +263,30 @@ public class Fragment {
 		result.append("Fragment " + this.id + ": " + 
 				this.nodes.size() + " nodes\r\n");
 		try {
-			result.append("File: " + GROUMNode.fileNames.get(this.graph.getFileID()) + "\r\n");
+			result.append("File: " + EGroumNode.fileNames.get(this.graph.getFileID()) + "\r\n");
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 			System.err.println(this.graph);
 			System.err.println(this.graph.getFileID());
-			System.err.println(GROUMNode.fileNames.get(this.graph.getFileID()));
+			System.err.println(EGroumNode.fileNames.get(this.graph.getFileID()));
 		}
 		//result.append("Vector: " + this.gramVector + "\r\n");
 		result.append(this.nodes.size() + " Nodes: ");
-		for(GROUMNode node : this.nodes)
+		for(EGroumNode node : this.nodes)
 			result.append(node.getLabel() + " ");
 		result.append("\r\n");
-		for (GROUMNode node : this.nodes) {
+		for (EGroumNode node : this.nodes) {
 			result.append("Node: " + node.getId() + 
 					" - Label: " + node.getLabel() + 
 					"\tLines: " + node.getStartLine() + "-->" + node.getEndLine() + "\r\n");
 		}
 		result.append("Edges:\r\n");
-		HashSet<GROUMNode> nodes = new HashSet<GROUMNode>(this.nodes);
-		LinkedList<GROUMNode> queue = new LinkedList<GROUMNode>();
-		for(GROUMNode node : nodes)
+		HashSet<EGroumNode> nodes = new HashSet<EGroumNode>(this.nodes);
+		LinkedList<EGroumNode> queue = new LinkedList<EGroumNode>();
+		for(EGroumNode node : nodes)
 		{
-			HashSet<GROUMNode> tmp = new HashSet<GROUMNode>(node.getOutNodes());
+			HashSet<EGroumNode> tmp = new HashSet<EGroumNode>(node.getOutNodes());
 			tmp.retainAll(nodes);
 			if(tmp.isEmpty())
 				queue.add(node);
@@ -290,10 +294,10 @@ public class Fragment {
 		nodes.removeAll(queue);
 		while(!queue.isEmpty())
 		{
-			GROUMNode node = queue.poll();
-			HashSet<GROUMNode> tmp = new HashSet<GROUMNode>(node.getInNodes());
+			EGroumNode node = queue.poll();
+			HashSet<EGroumNode> tmp = new HashSet<EGroumNode>(node.getInNodes());
 			tmp.retainAll(this.nodes);
-			for(GROUMNode n : tmp)
+			for(EGroumNode n : tmp)
 			{
 				//result.append(node.getLabel() + "-->" + n.getLabel() + " ");
 				result.append(node.getId() + "<--" + n.getId() + " ");
@@ -312,25 +316,25 @@ public class Fragment {
 		DotGraph dg = new DotGraph(graph);
 		graph.append(dg.addStart());
 
-		HashMap<GROUMNode, Integer> ids = new HashMap<GROUMNode, Integer>();
+		HashMap<EGroumNode, Integer> ids = new HashMap<EGroumNode, Integer>();
 		// add nodes
 		int id = 0;
-		for(GROUMNode node : nodes) {
+		for(EGroumNode node : nodes) {
 			id++;
 			ids.put(node, id);
-			if(node.getType() == GROUMNode.TYPE_CONTROL)
+			if(node instanceof EGroumControlNode)
 				graph.append(dg.addNode(id, node.getLabel(), DotGraph.SHAPE_DIAMOND, null, null, null));
-			else if (node.getType() == GROUMNode.TYPE_METHOD)
+			else if (node instanceof EGroumActionNode)
 				graph.append(dg.addNode(id, node.getLabel(), DotGraph.SHAPE_BOX, DotGraph.STYLE_ROUNDED, null, null));
 			else
 				graph.append(dg.addNode(id, node.getLabel(), DotGraph.SHAPE_ELLIPSE, null, null, null));
 		}
 		// add edges
-		for(GROUMNode node : nodes) {
+		for(EGroumNode node : nodes) {
 			int sId = ids.get(node);
-			for(GROUMEdge out : node.getOutEdges()) {
-				if (nodes.contains(out.getDest())) {
-					int eId = ids.get(out.getDest());
+			for(EGroumEdge out : node.getOutEdges()) {
+				if (nodes.contains(out.getTarget())) {
+					int eId = ids.get(out.getTarget());
 					graph.append(dg.addEdge(sId, eId, null, null, out.getLabel()));
 				}
 			}
@@ -340,7 +344,7 @@ public class Fragment {
 		File dir = new File(path);
 		if (!dir.exists())
 			dir.mkdirs();
-		//name += "_ " + FileIO.getSimpleFileName(GROUMNode.fileNames.get(this.graph.getFileID()));
+		//name += "_ " + FileIO.getSimpleFileName(EGroumNode.fileNames.get(this.graph.getFileID()));
 		dg.toDotFile(new File(path + "/" + name + ".dot"));
 		dg.toGraphics(path + "/" + name, "png");
 	}
@@ -382,27 +386,27 @@ public class Fragment {
 		return res;
 	}
 
-	public HashMap<String, HashSet<ArrayList<GROUMNode>>> extend() {
-		HashSet<GROUMNode> ens = new HashSet<>();
-		for (GROUMNode node : nodes) {
-			for (GROUMNode n : node.getInNodes()) {
+	public HashMap<String, HashSet<ArrayList<EGroumNode>>> extend() {
+		HashSet<EGroumNode> ens = new HashSet<>();
+		for (EGroumNode node : nodes) {
+			for (EGroumNode n : node.getInNodes()) {
 				if (!nodes.contains(n))
 					ens.add(n);
 			}
-			for (GROUMNode n : node.getOutNodes()) {
+			for (EGroumNode n : node.getOutNodes()) {
 				if (!nodes.contains(n))
 					ens.add(n);
 			}
 		}
-		HashMap<String, HashSet<ArrayList<GROUMNode>>> lens = new HashMap<>();
-		for (GROUMNode node : ens) {
+		HashMap<String, HashSet<ArrayList<EGroumNode>>> lens = new HashMap<>();
+		for (EGroumNode node : ens) {
 			if (node.getLabel().equals(nodes.get(nodes.size() - 1).getLabel())) 
 				continue;
-			if (node.getType() == GROUMNode.TYPE_CONTROL) {
-				HashSet<GROUMNode> ins = node.getInNodes(), outs = node.getOutNodes();
+			if (node instanceof EGroumControlNode) {
+				HashSet<EGroumNode> ins = node.getInNodes(), outs = node.getOutNodes();
 				if (!ins.isEmpty() && !outs.isEmpty()) {
 					boolean found = false;
-					for (GROUMNode n : ins) {
+					for (EGroumNode n : ins) {
 						if (nodes.contains(n)) {
 							found = true;
 							break;
@@ -410,70 +414,76 @@ public class Fragment {
 					}
 					if (found) {
 						found = false;
-						for (GROUMNode n : outs) {
-							if (n.isMethod() && nodes.contains(n)) {
+						for (EGroumNode n : outs) {
+							if (n.isCoreAction() && nodes.contains(n)) {
 								found = true;
 								break;
 							}
 						}
 						if (found) {
 							String label = node.getLabel();
-							HashSet<ArrayList<GROUMNode>> s = lens.get(label);
+							HashSet<ArrayList<EGroumNode>> s = lens.get(label);
 							if (s == null) {
 								s = new HashSet<>();
 								lens.put(label, s);
 							}
-							ArrayList<GROUMNode> l = new ArrayList<>();
+							ArrayList<EGroumNode> l = new ArrayList<>();
 							l.add(node);
 							s.add(l);
 						} else {
-							for (GROUMNode next : outs) {
-								if (next.isMethod()) {
+							for (EGroumNode next : outs) {
+								if (next.isCoreAction()) {
 									String label = node.getLabel() + "-" + next.getLabel();
-									HashSet<ArrayList<GROUMNode>> s = lens.get(label);
+									HashSet<ArrayList<EGroumNode>> s = lens.get(label);
 									if (s == null) {
 										s = new HashSet<>();
 										lens.put(label, s);
 									}
-									ArrayList<GROUMNode> l = new ArrayList<>();
+									ArrayList<EGroumNode> l = new ArrayList<>();
 									l.add(node);
 									l.add(next);
 									s.add(l);
 								}
 							}
 						}
-					} else {
-						for (GROUMNode next : ins) {
+					} /*else {
+						for (EGroumNode next : ins) {
 							String label = node.getLabel() + "-" + next.getLabel();
-							HashSet<ArrayList<GROUMNode>> s = lens.get(label);
+							HashSet<ArrayList<EGroumNode>> s = lens.get(label);
 							if (s == null) {
 								s = new HashSet<>();
 								lens.put(label, s);
 							}
-							ArrayList<GROUMNode> l = new ArrayList<>();
+							ArrayList<EGroumNode> l = new ArrayList<>();
 							l.add(node);
 							l.add(next);
 							s.add(l);
 						}
+					}*/
+				}
+			} else if (node instanceof EGroumActionNode){
+				if (node.isCoreAction()) {
+					String label = node.getLabel();
+					HashSet<ArrayList<EGroumNode>> s = lens.get(label);
+					if (s == null) {
+						s = new HashSet<>();
+						lens.put(label, s);
 					}
+					ArrayList<EGroumNode> l = new ArrayList<>();
+					l.add(node);
+					s.add(l);
+				} else {
+					
 				}
-			} else {
-				String label = node.getLabel();
-				HashSet<ArrayList<GROUMNode>> s = lens.get(label);
-				if (s == null) {
-					s = new HashSet<>();
-					lens.put(label, s);
-				}
-				ArrayList<GROUMNode> l = new ArrayList<>();
-				l.add(node);
-				s.add(l);
+			} else if (node instanceof EGroumDataNode) {
+				
 			}
 		}
 		Random r = new Random();
 		for (String label : lens.keySet()) {
-			HashSet<ArrayList<GROUMNode>> s = lens.get(label);
+			HashSet<ArrayList<EGroumNode>> s = lens.get(label);
 			if (s.size() > 50) {
-				ArrayList<ArrayList<GROUMNode>> l = new ArrayList<>(s);
+				ArrayList<ArrayList<EGroumNode>> l = new ArrayList<>(s);
 				s.clear();
 				for (int i = 0; i < 50; i++) {
 					int j = r.nextInt(l.size());

@@ -1,27 +1,91 @@
 package egroum;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.InfixExpression;
 
 import egroum.EGroumDataEdge.Type;
 import utils.JavaASTUtil;
 
 public abstract class EGroumNode {
 	protected static final String PREFIX_DUMMY = "dummy_";
+	public static int numOfNodes = 0;
+	private static HashSet<Integer> invocationTypes = new HashSet<>(), controlTypes = new HashSet<>(), literalTypes = new HashSet<>();
+	private static HashMap<String, Character> infixExpressionLables = new HashMap<>();
+	static {
+		invocationTypes.add(ASTNode.ARRAY_ACCESS);
+		invocationTypes.add(ASTNode.ARRAY_CREATION);
+		invocationTypes.add(ASTNode.ARRAY_INITIALIZER);
+		invocationTypes.add(ASTNode.ASSERT_STATEMENT);
+		invocationTypes.add(ASTNode.BREAK_STATEMENT);
+		invocationTypes.add(ASTNode.CAST_EXPRESSION);
+		invocationTypes.add(ASTNode.CLASS_INSTANCE_CREATION);
+		invocationTypes.add(ASTNode.CONSTRUCTOR_INVOCATION);
+		invocationTypes.add(ASTNode.CONTINUE_STATEMENT);
+		invocationTypes.add(ASTNode.INSTANCEOF_EXPRESSION);
+		invocationTypes.add(ASTNode.METHOD_INVOCATION);
+		invocationTypes.add(ASTNode.RETURN_STATEMENT);
+		invocationTypes.add(ASTNode.SUPER_CONSTRUCTOR_INVOCATION);
+		invocationTypes.add(ASTNode.SUPER_METHOD_INVOCATION);
+		invocationTypes.add(ASTNode.THROW_STATEMENT);
+		
+		controlTypes.add(ASTNode.CATCH_CLAUSE);
+		controlTypes.add(ASTNode.DO_STATEMENT);
+		controlTypes.add(ASTNode.ENHANCED_FOR_STATEMENT);
+		controlTypes.add(ASTNode.FOR_STATEMENT);
+		controlTypes.add(ASTNode.IF_STATEMENT);
+		controlTypes.add(ASTNode.SWITCH_STATEMENT);
+		controlTypes.add(ASTNode.SYNCHRONIZED_STATEMENT);
+		controlTypes.add(ASTNode.TRY_STATEMENT);
+		controlTypes.add(ASTNode.WHILE_STATEMENT);
+		
+		literalTypes.add(ASTNode.BOOLEAN_LITERAL);
+		literalTypes.add(ASTNode.CHARACTER_LITERAL);
+		literalTypes.add(ASTNode.NULL_LITERAL);
+		literalTypes.add(ASTNode.NUMBER_LITERAL);
+		literalTypes.add(ASTNode.STRING_LITERAL);
+		literalTypes.add(ASTNode.TYPE_LITERAL);
+		
+		// Arithmetic Operators
+		infixExpressionLables.put(InfixExpression.Operator.DIVIDE.toString(), 'a');
+		infixExpressionLables.put(InfixExpression.Operator.MINUS.toString(), 'a');
+		infixExpressionLables.put(InfixExpression.Operator.PLUS.toString(), 'a');
+		infixExpressionLables.put(InfixExpression.Operator.REMAINDER.toString(), 'a');
+		infixExpressionLables.put(InfixExpression.Operator.TIMES.toString(), 'a');
+		// Equality and Relational Operators
+		infixExpressionLables.put(InfixExpression.Operator.EQUALS.toString(), 'r');
+		infixExpressionLables.put(InfixExpression.Operator.GREATER.toString(), 'r');
+		infixExpressionLables.put(InfixExpression.Operator.GREATER_EQUALS.toString(), 'r');
+		infixExpressionLables.put(InfixExpression.Operator.LESS.toString(), 'r');
+		infixExpressionLables.put(InfixExpression.Operator.LESS_EQUALS.toString(), 'r');
+		infixExpressionLables.put(InfixExpression.Operator.NOT_EQUALS.toString(), 'r');
+		// Conditional Operators
+		infixExpressionLables.put(InfixExpression.Operator.CONDITIONAL_AND.toString(), 'c');
+		infixExpressionLables.put(InfixExpression.Operator.CONDITIONAL_OR.toString(), 'c');
+		// Bitwise and Bit Shift Operators
+		infixExpressionLables.put(InfixExpression.Operator.AND.toString(), 'b');
+		infixExpressionLables.put(InfixExpression.Operator.OR.toString(), 'b');
+		infixExpressionLables.put(InfixExpression.Operator.XOR.toString(), 'b');
+		infixExpressionLables.put(InfixExpression.Operator.LEFT_SHIFT.toString(), 's');
+		infixExpressionLables.put(InfixExpression.Operator.RIGHT_SHIFT_SIGNED.toString(), 's');
+		infixExpressionLables.put(InfixExpression.Operator.RIGHT_SHIFT_UNSIGNED.toString(), 's');
+	}
 	
+	protected int id;
 	protected ASTNode astNode;
 	protected int astNodeType;
 	protected String key;
 	protected EGroumNode control;
 	protected String dataType;
+	protected EGroumGraph graph;
 	protected ArrayList<EGroumEdge> inEdges = new ArrayList<EGroumEdge>();
 	protected ArrayList<EGroumEdge> outEdges = new ArrayList<EGroumEdge>();
 
-	public int version;
-	
 	public EGroumNode(ASTNode astNode, int nodeType) {
+		this.id = ++numOfNodes;
 		this.astNode = astNode;
 		this.astNodeType = nodeType;
 	}
@@ -29,6 +93,18 @@ public abstract class EGroumNode {
 	public EGroumNode(ASTNode astNode, int nodeType, String key) {
 		this(astNode, nodeType);
 		this.key = key;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public EGroumGraph getGraph() {
+		return graph;
+	}
+
+	public void setGraph(EGroumGraph groum) {
+		this.graph = groum;
 	}
 	
 	public String getDataType() {
@@ -257,5 +333,27 @@ public abstract class EGroumNode {
 			s.add(e.target);
 		}
 		return true;
+	}
+
+	public HashSet<EGroumNode> getInNodes() {
+		HashSet<EGroumNode> nodes = new HashSet<>();
+		for (EGroumEdge e : this.inEdges)
+			nodes.add(e.source);
+		return nodes;
+	}
+
+	public HashSet<EGroumNode> getOutNodes() {
+		HashSet<EGroumNode> nodes = new HashSet<>();
+		for (EGroumEdge e : this.outEdges)
+			nodes.add(e.target);
+		return nodes;
+	}
+
+	public boolean isCoreAction() {
+		return isCoreAction(astNodeType);
+	}
+
+	public static boolean isCoreAction(int astNodeType) {
+		return invocationTypes.contains(astNodeType);
 	}
 }

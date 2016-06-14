@@ -1,9 +1,9 @@
 package exas;
 
-import groum.GROUMNode;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import egroum.EGroumNode;
 
 public class ExasFeature {
 	public static final int MAX_LENGTH = 4 * 2 - 1;
@@ -21,7 +21,7 @@ public class ExasFeature {
 	
 	private HashMap<String, Integer> nodeFeatures = new HashMap<>();
 	
-	public ExasFeature(ArrayList<GROUMNode> nodes) {
+	public ExasFeature(ArrayList<EGroumNode> nodes) {
 		for (int i = 0; i < nodes.size(); i++)
 			nodeFeatures.put(nodes.get(i).getLabel(), i + 1);
 	}

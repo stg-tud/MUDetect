@@ -24,6 +24,7 @@ import org.eclipse.jdt.core.dom.PostfixExpression;
 import org.eclipse.jdt.core.dom.PrefixExpression;
 import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.QualifiedType;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TagElement;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -104,29 +105,13 @@ public class JavaASTUtil {
 	}
 
 	public static String buildSignature(MethodDeclaration method) {
-		NaiveASTFlattener flatterner = new NaiveASTFlattener() {
-			@Override
-			public boolean visit(MethodDeclaration node) {
-				return super.visit(node);
-			}
-			
-			@Override
-			public boolean visit(Javadoc node) {
-				return false;
-			}
-			
-			@Override
-			public boolean visit(Block node) {
-				return false;
-			}
-			@Override
-			public boolean visit(ExpressionStatement node) {
-				node.getExpression().accept(this);
-				return false;
-			}
-		};
-		method.accept(flatterner);
-		return flatterner.getResult();
+		StringBuilder sb = new StringBuilder();
+		sb.append(method.getName().getIdentifier() + "#");
+		for (int i = 0; i < method.parameters().size(); i++) {
+			SingleVariableDeclaration svd = (SingleVariableDeclaration) method.parameters().get(i);
+			sb.append(JavaASTUtil.getSimpleType(svd.getType()));
+		}
+		return sb.toString();
 	}
 
 	public static String getSimpleType(VariableDeclarationFragment f) {

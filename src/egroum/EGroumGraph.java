@@ -70,6 +70,7 @@ import utils.JavaASTUtil;
 public class EGroumGraph implements Serializable {
 	private static final long serialVersionUID = -5128703931982211886L;
 	
+	private String filePath, name;
 	private EGroumBuildingContext context;
 	private HashMap<String, HashSet<EGroumDataNode>> defStore = new HashMap<>();
 	protected EGroumNode entryNode, endNode;
@@ -82,7 +83,6 @@ public class EGroumGraph implements Serializable {
 	protected HashSet<EGroumNode> statementSinks = new HashSet<>();
 	protected HashSet<EGroumNode> breaks = new HashSet<>();
 	protected HashSet<EGroumNode> returns = new HashSet<>();
-	protected HashSet<EGroumNode> changedNodes = new HashSet<>();
 	
 	public EGroumGraph(MethodDeclaration md, EGroumBuildingContext context) {
 		this(context);
@@ -144,12 +144,24 @@ public class EGroumGraph implements Serializable {
 		}
 	}
 
-	public HashSet<EGroumNode> getNodes() {
-		return nodes;
+	public String getFilePath() {
+		return filePath;
 	}
 
-	public HashSet<EGroumNode> getChangedNodes() {
-		return changedNodes;
+	public void setFilePath(String filepath) {
+		this.filePath = filepath;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public HashSet<EGroumNode> getNodes() {
+		return nodes;
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, ASTNode node) {
@@ -1320,7 +1332,6 @@ public class EGroumGraph implements Serializable {
 						&& ((EGroumDataEdge) e).type == Type.DEPENDENCE)
 					statementSources.add(e.target);
 		nodes.remove(node);
-		changedNodes.remove(node);
 		statementNodes.remove(node);
 		dataSources.remove(node);
 		statementSources.remove(node);

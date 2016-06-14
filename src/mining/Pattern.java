@@ -3,10 +3,7 @@
  */
 package mining;
 
-import groum.GROUMGraph;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -114,38 +111,6 @@ public class Pattern {
 	 */
 	public void setFragments(HashSet<Fragment> fragments) {
 		this.fragments = fragments;
-	}
-	
-	public void computeFrequency() {
-		HashMap<GROUMGraph, HashSet<Fragment>> fragmentOfGraph = new HashMap<GROUMGraph, HashSet<Fragment>>();
-		for (Fragment f : fragments) {
-			GROUMGraph g = f.getGraph();
-			HashSet<Fragment> fs = fragmentOfGraph.get(g);
-			if (fs == null)
-				fs = new HashSet<Fragment>();
-			fs.add(f);
-			fragmentOfGraph.put(g, fs);
-		}
-		if (fragmentOfGraph.size() >= Pattern.minFreq)
-			this.freq = fragmentOfGraph.size();
-		else {
-			this.freq = 0;
-			for (GROUMGraph g : fragmentOfGraph.keySet()) {
-				HashSet<Fragment> fs = fragmentOfGraph.get(g);
-				HashSet<Fragment> cluster = new HashSet<Fragment>();
-				for (Fragment f : fs) {
-					boolean isOverlap = false;
-					for (Fragment c : cluster)
-						if (c.overlap(f)) {
-							isOverlap = true;
-							break;
-						}
-					if (!isOverlap)
-						cluster.add(f);
-				}
-				this.freq += cluster.size();
-			}	
-		}
 	}
 	
 	public boolean contains(Fragment fragment) {

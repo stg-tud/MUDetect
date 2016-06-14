@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import egroum.EGroumBuilder;
+import egroum.EGroumGraph;
+import egroum.EGroumNode;
 import utils.FileIO;
-import groum.GROUMBuilder;
-import groum.GROUMGraph;
-import groum.GROUMNode;
 
 /**
  * @author hoan
@@ -27,25 +27,25 @@ public class Miner {
 	}
 	
 	public void mine() {
-		GROUMBuilder gb = new GROUMBuilder(path);
+		EGroumBuilder gb = new EGroumBuilder(path);
 		gb.build();
-		ArrayList<GROUMGraph> groums = gb.getGroums();
+		ArrayList<EGroumGraph> groums = gb.getGroums();
 		mine(groums);
 	}
 
-	public void mine(ArrayList<GROUMGraph> groums) {
+	public void mine(ArrayList<EGroumGraph> groums) {
 		HashSet<String> coreLabels = new HashSet<>();
-		HashMap<String, HashSet<GROUMNode>> nodesOfLabel = new HashMap<String, HashSet<GROUMNode>>();
-		for (GROUMGraph groum : groums) {
-			for (GROUMNode node : groum.getNodes()) {
+		HashMap<String, HashSet<EGroumNode>> nodesOfLabel = new HashMap<String, HashSet<EGroumNode>>();
+		for (EGroumGraph groum : groums) {
+			for (EGroumNode node : groum.getNodes()) {
 				node.setGraph(groum);
 				String label = node.getLabel();
-				HashSet<GROUMNode> nodes = nodesOfLabel.get(label);
+				HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
 				if (nodes == null)
-					nodes = new HashSet<GROUMNode>();
+					nodes = new HashSet<EGroumNode>();
 				nodes.add(node);
 				nodesOfLabel.put(label, nodes);
-				if (node.isMethod())
+				if (node.isCoreAction())
 					coreLabels.add(label);
 			}
 		}
@@ -53,9 +53,9 @@ public class Miner {
 		l.setStep(1);
 		lattices.add(l);
 		for (String label : new HashSet<String>(nodesOfLabel.keySet())) {
-			HashSet<GROUMNode> nodes = nodesOfLabel.get(label);
+			HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
 			if (nodes.size() < Pattern.minFreq) {
-				for (GROUMNode node : nodes)
+				for (EGroumNode node : nodes)
 					node.delete();
 				nodesOfLabel.remove(label);
 			} else if (!coreLabels.contains(label))
@@ -64,9 +64,9 @@ public class Miner {
 				nodesOfLabel.remove(label);
 		}
 		for (String label : nodesOfLabel.keySet()) {
-			HashSet<GROUMNode> nodes = nodesOfLabel.get(label);
+			HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
 			HashSet<Fragment> fragments = new HashSet<>();
-			for (GROUMNode node : nodes) {
+			for (EGroumNode node : nodes) {
 				Fragment f = new Fragment(node);
 				fragments.add(f);
 			}
@@ -90,7 +90,7 @@ public class Miner {
 				rf.toGraphics(patternDir.getAbsolutePath(), rf.getId() + "");
 				StringBuilder sb = new StringBuilder();
 				for (Fragment f : p.getFragments()) {
-					String fileName = GROUMNode.fileNames.get(f.getGraph().getFileID());
+					String fileName = f.getGraph().getFilePath();
 					String name = f.getGraph().getName();
 					sb.append(fileName + "," + name + "\n");
 					/*String[] parts = name.split(",");
@@ -109,18 +109,18 @@ public class Miner {
 	private void extend(Pattern pattern) {
 		int patternSize = 0;
 		if (pattern.getSize() >= Pattern.maxSize)
-			for(GROUMNode node : pattern.getRepresentative().getNodes())
-				if(node.isMethod())
+			for(EGroumNode node : pattern.getRepresentative().getNodes())
+				if(node.isCoreAction())
 					patternSize++;
 		if(patternSize >= Pattern.maxSize) {
 			pattern.add2Lattice(lattices);
 			return;
 		}
-		HashMap<String, HashMap<Fragment, HashSet<ArrayList<GROUMNode>>>> labelFragmentExtendableNodes = new HashMap<>();
+		HashMap<String, HashMap<Fragment, HashSet<ArrayList<EGroumNode>>>> labelFragmentExtendableNodes = new HashMap<>();
 		for (Fragment f : pattern.getFragments()) {
-			HashMap<String, HashSet<ArrayList<GROUMNode>>> xns = f.extend();
+			HashMap<String, HashSet<ArrayList<EGroumNode>>> xns = f.extend();
 			for (String label : xns.keySet()) {
-				HashMap<Fragment, HashSet<ArrayList<GROUMNode>>> fens = labelFragmentExtendableNodes.get(label);
+				HashMap<Fragment, HashSet<ArrayList<EGroumNode>>> fens = labelFragmentExtendableNodes.get(label);
 				if (fens == null) {
 					fens = new HashMap<>();
 					labelFragmentExtendableNodes.put(label, fens);
@@ -129,17 +129,17 @@ public class Miner {
 			}
 		}
 		for (String label : new HashSet<String>(labelFragmentExtendableNodes.keySet())) {
-			HashMap<Fragment, HashSet<ArrayList<GROUMNode>>> fens = labelFragmentExtendableNodes.get(label);
+			HashMap<Fragment, HashSet<ArrayList<EGroumNode>>> fens = labelFragmentExtendableNodes.get(label);
 			if (fens.size() < Pattern.minFreq)
 				labelFragmentExtendableNodes.remove(label);
 		}
 		HashSet<Fragment> group = new HashSet<>();
 		int xfreq = Pattern.minFreq - 1;
 		for (String label : labelFragmentExtendableNodes.keySet()) {
-			HashMap<Fragment, HashSet<ArrayList<GROUMNode>>> fens = labelFragmentExtendableNodes.get(label);
+			HashMap<Fragment, HashSet<ArrayList<EGroumNode>>> fens = labelFragmentExtendableNodes.get(label);
 			HashSet<Fragment> xfs = new HashSet<>();
 			for (Fragment f : fens.keySet()) {
-				for (ArrayList<GROUMNode> ens : fens.get(f)) {
+				for (ArrayList<EGroumNode> ens : fens.get(f)) {
 					Fragment xf = new Fragment(f, ens);
 					xfs.add(xf);
 				}
@@ -186,7 +186,7 @@ public class Miner {
 	}
 
 	private boolean isGiant(HashSet<Fragment> xfs, Pattern pattern, String label) {
-		return /*(GROUMNode.isMethod(label) || GROUMNode.isLiteral(label)) && */isGiant(xfs, pattern);
+		return /*(EGroumNode.isMethod(label) || EGroumNode.isLiteral(label)) && */isGiant(xfs, pattern);
 	}
 
 	private boolean isGiant(HashSet<Fragment> xfs, Pattern pattern) {
@@ -224,9 +224,9 @@ public class Miner {
 	}
 
 	private int computeFrequency(HashSet<Fragment> fragments, boolean isGiant) {
-		HashMap<GROUMGraph, ArrayList<Fragment>> fragmentsOfGraph = new HashMap<GROUMGraph, ArrayList<Fragment>>();
+		HashMap<EGroumGraph, ArrayList<Fragment>> fragmentsOfGraph = new HashMap<EGroumGraph, ArrayList<Fragment>>();
 		for (Fragment f : fragments) {
-			GROUMGraph g = f.getGraph();
+			EGroumGraph g = f.getGraph();
 			ArrayList<Fragment> fs = fragmentsOfGraph.get(g);
 			if (fs == null)
 				fs = new ArrayList<Fragment>();
@@ -234,7 +234,7 @@ public class Miner {
 			fragmentsOfGraph.put(g, fs);
 		}
 		int freq = 0;
-		for (GROUMGraph g : fragmentsOfGraph.keySet()) {
+		for (EGroumGraph g : fragmentsOfGraph.keySet()) {
 			ArrayList<Fragment> fs = fragmentsOfGraph.get(g);
 			int i = 0;
 			while (i < fs.size()) {

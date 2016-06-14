@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.zip.ZipException;
-
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
@@ -27,14 +25,13 @@ import com.sun.org.apache.bcel.internal.classfile.ClassParser;
 import com.sun.org.apache.bcel.internal.classfile.Field;
 import com.sun.org.apache.bcel.internal.classfile.JavaClass;
 import com.sun.org.apache.bcel.internal.classfile.Method;
-import com.sun.org.apache.bcel.internal.classfile.Utility;
 import com.sun.org.apache.bcel.internal.generic.Type;
 
 import utils.FileIO;
 import utils.JavaASTUtil;
 
 public class EGroumBuilder {
-	private ArrayList<EGroumGraph> egroums = new ArrayList<>();
+	private ArrayList<EGroumGraph> groums = new ArrayList<>();
 	private String path;
 	private int consumed_chars;
 	
@@ -42,6 +39,10 @@ public class EGroumBuilder {
 		this.path = path;
 	}
 	
+	public ArrayList<EGroumGraph> getGroums() {
+		return groums;
+	}
+
 	public void build() {
 		buildStandardJars();
 		buildHierarchy(new File(path));
@@ -286,19 +287,21 @@ public class EGroumBuilder {
 			CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(FileIO.readStringFromFile(file.getAbsolutePath()));
 			for (int i = 0 ; i < cu.types().size(); i++)
 				if (cu.types().get(i) instanceof TypeDeclaration)
-					buildGroums((TypeDeclaration) cu.types().get(i));
+					buildGroums((TypeDeclaration) cu.types().get(i), file.getAbsolutePath(), "");
 		}
 	}
 
-	private void buildGroums(TypeDeclaration type) {
+	private void buildGroums(TypeDeclaration type, String path, String prefix) {
 		for (MethodDeclaration method : type.getMethods())
-			buildGroums(method);
+			buildGroums(method, path, prefix + type.getName().getIdentifier() + ".");
 		for (TypeDeclaration inner : type.getTypes())
-			buildGroums(inner);
+			buildGroums(inner, path, prefix + type.getName().getIdentifier() + ".");
 	}
 
-	private void buildGroums(MethodDeclaration method) {
+	private void buildGroums(MethodDeclaration method, String filepath, String name) {
 		EGroumGraph g = new EGroumGraph(method, new EGroumBuildingContext(false));
-		egroums.add(g);
+		g.setFilePath(filepath);
+		g.setName(name + JavaASTUtil.buildSignature(method));
+		groums.add(g);
 	}
 }
