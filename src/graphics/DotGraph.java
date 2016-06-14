@@ -6,6 +6,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 
+import egroum.EGroumActionNode;
+import egroum.EGroumControlEdge;
+import egroum.EGroumControlNode;
+import egroum.EGroumDataEdge;
+import egroum.EGroumDataEdge.Type;
+import egroum.EGroumEdge;
+import egroum.EGroumEntryNode;
+import egroum.EGroumGraph;
+import egroum.EGroumNode;
 import groum.GROUMEdge;
 import groum.GROUMGraph;
 import groum.GROUMNode;
@@ -22,9 +31,74 @@ public class DotGraph {
 
 	private StringBuilder graph = new StringBuilder();
 
-	public DotGraph(StringBuilder sb) {
-		this.graph = sb;
+	public DotGraph(EGroumGraph groum) {
+		graph.append(addStart());
+
+		HashMap<EGroumNode, Integer> ids = new HashMap<EGroumNode, Integer>();
+		// add nodes
+		int id = 0;
+		for(EGroumNode node : groum.getNodes()) {
+			id++;
+			ids.put(node, id);
+			String label = node.getLabel();
+			/*if(node.getType() == GROUMNode.TYPE_ENTRY)
+				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getMethodID()), SHAPE_DIAMOND, null, null, null));
+				graph.append(addNode(id, node.getLabel(), SHAPE_ELLIPSE, null, null, null));
+			else */if (node instanceof EGroumControlNode)
+				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getMethodID()), SHAPE_DIAMOND, null, null, null));
+				graph.append(addNode(id, label, SHAPE_DIAMOND, null, null, null));
+			/*else if(node.getType() == GROUMNode.TYPE_DATA)
+				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getClassNameId()) + "." + node.getMethod(), SHAPE_BOX, STYLE_ROUNDED, null, null));
+				graph.append(addNode(id, node.getLabel(), SHAPE_BOX, null, null, null));*/
+			else if(node instanceof EGroumActionNode)
+				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getClassNameId()) + "." + node.getMethod(), SHAPE_BOX, STYLE_ROUNDED, null, null));
+				graph.append(addNode(id, label, SHAPE_BOX, STYLE_ROUNDED, null, null));
+			else
+				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getMethodID()), SHAPE_DIAMOND, null, null, null));
+				graph.append(addNode(id, label, SHAPE_ELLIPSE, null, null, null));
+		}
+		// add file name
+		//String fileName = GROUMNode.fileNames.get(groum.getFileID());
+		//graph.append(addNode(++id, fileName.replace('\\', '#'), DotGraph.STYLE_ROUNDED, null, null, null));
+		// add edges
+		for (EGroumNode node : groum.getNodes()) {
+			if (!ids.containsKey(node)) continue;
+			int tId = ids.get(node);
+			HashMap<String, Integer> numOfEdges = new HashMap<>();
+			for (EGroumEdge e : node.getInEdges()) {
+				if (!ids.containsKey(e.getSource())) continue;
+				int sId = ids.get(e.getSource());
+				String label = e.getLabel();
+				if (e instanceof EGroumDataEdge) {
+					if (e.getTarget() instanceof EGroumEntryNode || ((EGroumDataEdge) e).getType() != Type.DEPENDENCE) {
+						int n = 1;
+						if (numOfEdges.containsKey(label))
+							n += numOfEdges.get(label);
+						numOfEdges.put(label, n);
+						graph.append(addEdge(sId, tId, STYLE_DOTTED, null,
+								label + (((EGroumDataEdge) e).getType() == Type.PARAMETER ? n : "")));
+					}
+				} else if (e instanceof EGroumControlEdge) {
+					EGroumNode s = e.getSource();
+					if (s instanceof EGroumEntryNode || s instanceof EGroumControlNode) {
+						int n = 0;
+						for (EGroumEdge out : s.getOutEdges()) {
+							if (out.getLabel().equals(label))
+								n++;
+							if (out == e)
+								break;
+						}
+						graph.append(addEdge(sId, tId, null, null, label + n));
+					} else
+						graph.append(addEdge(sId, tId, null, null, label));
+				} else
+					graph.append(addEdge(sId, tId, null, null, label));
+			}
+		}
+
+		graph.append(addEnd());
 	}
+	
 	public DotGraph(GROUMGraph groum) {
 		graph.append(addStart());
 
@@ -67,6 +141,10 @@ public class DotGraph {
 		}
 
 		graph.append(addEnd());
+	}
+
+	public DotGraph(StringBuilder graph) {
+		this.graph = graph;
 	}
 
 	public String addStart()

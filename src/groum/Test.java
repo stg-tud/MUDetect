@@ -3,6 +3,9 @@
  */
 package groum;
 
+import egroum.EGroumBuilder;
+import egroum.EGroumGraph;
+
 /**
  * @author hoan
  *
@@ -13,10 +16,9 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		GROUMBuilder gb = new GROUMBuilder("input/" + "TestGrum3.java");
+		EGroumBuilder gb = new EGroumBuilder("input/" + "Test.java");
 		gb.build();
-		for (GROUMGraph groum : gb.getGroums())
-		{
+		for (EGroumGraph groum : gb.getGroums()) {
 			groum.toGraphics("output");
 		}
 	}

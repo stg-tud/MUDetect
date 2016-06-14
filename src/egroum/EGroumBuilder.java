@@ -64,7 +64,7 @@ public class EGroumBuilder {
 			else if (file.getName().endsWith(".java")) {
 				CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(FileIO.readStringFromFile(file.getAbsolutePath()));
 				for (int i = 0 ; i < cu.types().size(); i++)
-					buildHierarchy((AbstractTypeDeclaration) cu.types().get(i), cu.getPackage().getName().getFullyQualifiedName() + ".");
+					buildHierarchy((AbstractTypeDeclaration) cu.types().get(i), cu.getPackage() == null ? "" : cu.getPackage().getName().getFullyQualifiedName() + ".");
 			}
 		}
 	}
@@ -170,7 +170,7 @@ public class EGroumBuilder {
 							EGroumBuildingContext.typeMethodExceptions.put(className, methodExceptions);
 					} catch (IOException | ClassFormatException e) {
 						System.err.println(jarFilePath);
-						e.printStackTrace();
+						System.err.println(e.getMessage());
 					}
 				}
 			}

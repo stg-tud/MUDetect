@@ -1,5 +1,6 @@
 package egroum;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,6 +66,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
 import egroum.EGroumDataEdge.Type;
+import graphics.DotGraph;
 import utils.JavaASTUtil;
 
 public class EGroumGraph implements Serializable {
@@ -2010,5 +2012,11 @@ public class EGroumGraph implements Serializable {
 				}
 			}
 		}
+	}
+
+	public void toGraphics(String path){
+		DotGraph graph = new DotGraph(this);
+		graph.toDotFile(new File(path + "/" + name + ".dot"));
+		graph.toGraphics(path + "/" + name, "png");
 	}
 }
