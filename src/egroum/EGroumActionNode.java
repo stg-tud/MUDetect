@@ -29,7 +29,7 @@ public class EGroumActionNode extends EGroumNode {
 
 	@Override
 	public String getLabel() {
-		return name + (parameterTypes == null ? "" : buildParameters());
+		return dataType == null ? name : dataType;
 	}
 
 	@Override
