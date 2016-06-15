@@ -107,7 +107,7 @@ public class JavaASTUtil {
 		sb.append(method.getName().getIdentifier() + "#");
 		for (int i = 0; i < method.parameters().size(); i++) {
 			SingleVariableDeclaration svd = (SingleVariableDeclaration) method.parameters().get(i);
-			sb.append(JavaASTUtil.getSimpleType(svd.getType()));
+			sb.append(JavaASTUtil.getSimpleType(svd.getType()) + "#");
 		}
 		return sb.toString();
 	}
