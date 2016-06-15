@@ -1878,14 +1878,13 @@ public class EGroumGraph implements Serializable {
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
 			if (node instanceof EGroumDataNode) {
 				EGroumDataNode dn = (EGroumDataNode) node;
-				if (dn.isDummy() && dn.isDefinition() && dn.outEdges.size() <= 1) {
+				ArrayList<EGroumNode> refs = dn.getReferences();
+				if (refs.size() == 1 && refs.get(0).getDefinitions().size() == 1) {
 					EGroumNode a = dn.inEdges.get(0).source;
 					EGroumNode s = a.inEdges.get(1).source;
-					EGroumNode ref = dn.outEdges.get(0).target;
-					EGroumEdge e = ref.outEdges.get(0);
-					e.source = s;
-					s.outEdges.add(e);
-					ref.outEdges.clear();
+					EGroumNode ref = refs.get(0);
+					EGroumDataEdge e = (EGroumDataEdge) ref.outEdges.get(0);
+					new EGroumDataEdge(s, e.target, e.type);
 					delete(a);
 					delete(dn);
 					delete(ref);
