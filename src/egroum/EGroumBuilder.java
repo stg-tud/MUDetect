@@ -284,11 +284,16 @@ public class EGroumBuilder {
 			for (File sub : file.listFiles())
 				buildGroums(sub);
 		} else if (file.isFile() && file.getName().endsWith(".java")) {
-			CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(FileIO.readStringFromFile(file.getAbsolutePath()));
-			for (int i = 0 ; i < cu.types().size(); i++)
-				if (cu.types().get(i) instanceof TypeDeclaration)
-					buildGroums((TypeDeclaration) cu.types().get(i), file.getAbsolutePath(), "");
+			String sourceCode = FileIO.readStringFromFile(file.getAbsolutePath());
+			buildGroums(sourceCode, file.getAbsolutePath());
 		}
+	}
+
+	public void buildGroums(String sourceCode, String path) {
+		CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(sourceCode);
+		for (int i = 0 ; i < cu.types().size(); i++)
+			if (cu.types().get(i) instanceof TypeDeclaration)
+				buildGroums((TypeDeclaration) cu.types().get(i), path, "");
 	}
 
 	private void buildGroums(TypeDeclaration type, String path, String prefix) {

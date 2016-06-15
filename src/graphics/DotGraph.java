@@ -189,6 +189,7 @@ public class DotGraph {
 	{
 		return this.graph.toString();
 	}
+	
 	public void toDotFile(File file)
 	{
 		try {
@@ -213,5 +214,12 @@ public class DotGraph {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void toPNG(File path, String name) {
+		if (!path.exists()) path.mkdirs();
+		String targetPath = new File(path, name).getAbsolutePath();
+		toDotFile(new File(targetPath + ".dot"));
+		toGraphics(targetPath, "png");
 	}
 }
