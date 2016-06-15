@@ -123,10 +123,12 @@ public class EGroumGraph implements Serializable {
 		adjustReturnNodes();
 		adjustControlEdges();
 		context.removeScope();
+		addDefinitions();
 		prune();
 		//buildClosure();
 		deleteTemporaryDataNodes();
 		deleteReferences();
+		deleteAssignmentNodes();
 		cleanUp();
 	}
 
@@ -1884,7 +1886,8 @@ public class EGroumGraph implements Serializable {
 					EGroumNode s = a.inEdges.get(1).source;
 					EGroumNode ref = refs.get(0);
 					EGroumDataEdge e = (EGroumDataEdge) ref.outEdges.get(0);
-					new EGroumDataEdge(s, e.target, e.type);
+					if (!s.hasOutNode(e.target))
+						new EGroumDataEdge(s, e.target, e.type);
 					delete(a);
 					delete(dn);
 					delete(ref);
@@ -1903,7 +1906,8 @@ public class EGroumGraph implements Serializable {
 						if (in.type == Type.REFERENCE) {
 							isRef = true;
 							EGroumDataEdge out = (EGroumDataEdge) node.outEdges.get(0);
-							new EGroumDataEdge(in.source, out.target, out.type);
+							if (!in.source.hasOutNode(out.target))
+								new EGroumDataEdge(in.source, out.target, out.type);
 						}
 					}
 				}
@@ -1958,7 +1962,7 @@ public class EGroumGraph implements Serializable {
 				addDefinitions((EGroumDataNode) node, defs);
 	}
 
-	public void addDefinitions(EGroumDataNode node, HashMap<String, EGroumNode> defs) {
+	private void addDefinitions(EGroumDataNode node, HashMap<String, EGroumNode> defs) {
 		if (node.getDefinitions().isEmpty() && node.getQualifier() == null) {
 			EGroumNode def = defs.get(node.key);
 			if (def == null) {
@@ -2013,7 +2017,7 @@ public class EGroumGraph implements Serializable {
 								new EGroumDataEdge(n, oe.target, ((EGroumDataEdge) oe).type); // shortcut definition edges before deleting this assignment
 					}
 				}
-				node.delete();
+				delete(node);
 			}
 	}
 

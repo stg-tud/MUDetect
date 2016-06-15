@@ -35,7 +35,6 @@ public class Miner {
 
 	public void mine(ArrayList<EGroumGraph> groums) {
 		for (EGroumGraph groum : groums) {
-			groum.deleteAssignmentNodes();
 			//groum.deleteUnaryOperationNodes();
 			groum.collapseLiterals();
 		}
