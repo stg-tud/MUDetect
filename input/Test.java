@@ -29,7 +29,7 @@ class Test {
 	void testTry(Test t) {
 		try {
 			t.m();
-			//new FileOutputStream(new File(""));
+			new FileOutputStream(new File(""));
 		} catch (Exception e){
 			t.n();
 			e.printStackTrace();

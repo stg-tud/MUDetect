@@ -26,6 +26,7 @@ import utils.JavaASTUtil;
 public class EGroumBuildingContext {
 	public static HashMap<String, HashMap<String, String>> typeFieldType = new HashMap<>();
 	public static HashMap<String, HashMap<String, HashSet<String>>> typeMethodExceptions = new HashMap<>();
+	public static HashMap<String, HashSet<String>> exceptionHierarchy = new HashMap<>();
 	
 	private MethodDeclaration method;
 	protected boolean interprocedural;
@@ -117,7 +118,7 @@ public class EGroumBuildingContext {
 		for (EGroumActionNode node : stkTrys.peek())
 			if (node.exceptionTypes != null) {
 				for (String type : node.exceptionTypes)
-					if (isSubType(type, catchExceptionType)) {
+					if (isSuperType(catchExceptionType, type)) {
 						trys.add(node);
 						break;
 					}
@@ -125,11 +126,19 @@ public class EGroumBuildingContext {
 		return trys;
 	}
 
-	private boolean isSubType(String type, String otherType) {
+	private boolean isSuperType(String type, String otherType) {
 		if (type == null) 
 			return false;
 		if (type.equals(otherType))
 			return true;
+		HashSet<String> subs = exceptionHierarchy.get(type);
+		if (subs != null) {
+			if (subs.contains(otherType))
+				return true;
+			for (String sub : subs)
+				if (isSuperType(sub, otherType))
+					return true;
+		}
 		return false;
 	}
 
@@ -253,5 +262,23 @@ public class EGroumBuildingContext {
 		if (methodExceptions != null)
 			return methodExceptions.get(method);
 		return null;
+	}
+
+	public static void buildExceptionHierarchy() {
+		HashSet<String> exceptionTypes = new HashSet<>();
+		buildExceptionHierarchy("Throwable", exceptionTypes);
+		for (String type : new HashSet<String>(exceptionHierarchy.keySet()))
+			if (!exceptionTypes.contains(type))
+				exceptionHierarchy.remove(type);
+	}
+
+	private static void buildExceptionHierarchy(String type, HashSet<String> exceptionTypes) {
+		if (exceptionTypes.contains(type))
+			return;
+		exceptionTypes.add(type);
+		HashSet<String> subs = exceptionHierarchy.get(type);
+		if (subs != null)
+			for (String sub : subs)
+				buildExceptionHierarchy(sub, exceptionTypes);
 	}
 }

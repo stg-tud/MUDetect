@@ -67,6 +67,7 @@ public class EGroumBuilder {
 					buildHierarchy((AbstractTypeDeclaration) cu.types().get(i), cu.getPackage() == null ? "" : cu.getPackage().getName().getFullyQualifiedName() + ".");
 			}
 		}
+		EGroumBuildingContext.buildExceptionHierarchy();
 	}
 
 	private void buildHierarchy(AbstractTypeDeclaration type, String prefix) {
@@ -80,6 +81,15 @@ public class EGroumBuilder {
 
 	private void buildHierarchy(TypeDeclaration type, String prefix) {
 		String className = prefix + type.getName().getIdentifier();
+		if (type.getSuperclassType() != null) {
+			String stype = JavaASTUtil.getSimpleType(type.getSuperclassType());
+			HashSet<String> subs =  EGroumBuildingContext.exceptionHierarchy.get(stype);
+			if (subs == null) {
+				subs = new HashSet<>();
+				EGroumBuildingContext.exceptionHierarchy.put(stype, subs);
+			}
+			subs.add(className);
+		}
 		HashMap<String, String> fieldTypes = EGroumBuildingContext.typeFieldType.get(className);
 		if (fieldTypes == null)
 			fieldTypes = new HashMap<>();
@@ -171,6 +181,15 @@ public class EGroumBuilder {
 							buildJar(method, methodExceptions);
 						if (!methodExceptions.isEmpty())
 							EGroumBuildingContext.typeMethodExceptions.put(simpleClassName, methodExceptions);
+						if (jc.getSuperclassName() != null) {
+							String stype = FileIO.getSimpleClassName(jc.getSuperclassName());
+							HashSet<String> subs =  EGroumBuildingContext.exceptionHierarchy.get(stype);
+							if (subs == null) {
+								subs = new HashSet<>();
+								EGroumBuildingContext.exceptionHierarchy.put(stype, subs);
+							}
+							subs.add(simpleClassName);
+						}
 					} catch (IOException | ClassFormatException e) {
 						System.err.println(jarFilePath);
 						System.err.println(e.getMessage());
