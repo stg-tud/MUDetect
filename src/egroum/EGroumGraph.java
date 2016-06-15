@@ -1878,7 +1878,7 @@ public class EGroumGraph implements Serializable {
 
 	private void deleteTemporaryDataNodes() {
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
-			if (node instanceof EGroumDataNode) {
+			if (node.isDefinition()) {
 				EGroumDataNode dn = (EGroumDataNode) node;
 				ArrayList<EGroumNode> refs = dn.getReferences();
 				if (refs.size() == 1 && refs.get(0).getDefinitions().size() == 1) {
