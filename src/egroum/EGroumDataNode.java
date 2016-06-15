@@ -32,8 +32,6 @@ public class EGroumDataNode extends EGroumNode {
 
 	@Override
 	public String getLabel() {
-		if (astNodeType == ASTNode.CHARACTER_LITERAL || astNodeType == ASTNode.STRING_LITERAL)
-			return dataType + "(lit(" + dataName.substring(1, dataName.length()-1) + "))";
 		return dataType + "(" + dataName + ")";
 	}
 

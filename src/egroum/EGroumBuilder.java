@@ -133,6 +133,8 @@ public class EGroumBuilder {
 
 	private void buildHierarchy(MethodDeclaration method, HashMap<String, HashSet<String>> methodExceptions) {
 		String name = method.getName().getIdentifier();
+		if (method.isConstructor())
+			name = "<init>";
 		HashSet<String> exceptions = methodExceptions.get(name);
 		if (exceptions == null)
 			exceptions = new HashSet<>();
@@ -161,13 +163,14 @@ public class EGroumBuilder {
 							buildJar(field, fieldTypes);
 						if (!fieldTypes.isEmpty())
 							EGroumBuildingContext.typeFieldType.put(className, fieldTypes);
-						HashMap<String, HashSet<String>> methodExceptions = EGroumBuildingContext.typeMethodExceptions.get(className);
+						String simpleClassName = className.substring(className.lastIndexOf('.') + 1);
+						HashMap<String, HashSet<String>> methodExceptions = EGroumBuildingContext.typeMethodExceptions.get(simpleClassName);
 						if (methodExceptions == null)
 							methodExceptions = new HashMap<>();
 						for (Method method : jc.getMethods())
 							buildJar(method, methodExceptions);
 						if (!methodExceptions.isEmpty())
-							EGroumBuildingContext.typeMethodExceptions.put(className, methodExceptions);
+							EGroumBuildingContext.typeMethodExceptions.put(simpleClassName, methodExceptions);
 					} catch (IOException | ClassFormatException e) {
 						System.err.println(jarFilePath);
 						System.err.println(e.getMessage());

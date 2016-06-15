@@ -99,6 +99,11 @@ public class EGroumBuildingContext {
 			stkTrys.get(i).add(node);
 	}
 
+	public void addMethodTrys(HashSet<EGroumActionNode> nodes) {
+		for (int i = 0; i < stkTrys.size(); i++)
+			stkTrys.get(i).addAll(nodes);
+	}
+
 	public void pushTry() {
 		stkTrys.push(new HashSet<EGroumActionNode>());
 	}
@@ -107,11 +112,11 @@ public class EGroumBuildingContext {
 		return stkTrys.pop();
 	}
 
-	public HashSet<EGroumActionNode> getTrys(ITypeBinding catchExceptionType) {
+	public HashSet<EGroumActionNode> getTrys(String catchExceptionType) {
 		HashSet<EGroumActionNode> trys = new HashSet<>();
 		for (EGroumActionNode node : stkTrys.peek())
 			if (node.exceptionTypes != null) {
-				for (ITypeBinding type : node.exceptionTypes)
+				for (String type : node.exceptionTypes)
 					if (isSubType(type, catchExceptionType)) {
 						trys.add(node);
 						break;
@@ -120,17 +125,20 @@ public class EGroumBuildingContext {
 		return trys;
 	}
 
+	private boolean isSubType(String type, String otherType) {
+		if (type == null) 
+			return false;
+		if (type.equals(otherType))
+			return true;
+		return false;
+	}
+
 	private boolean isSubType(ITypeBinding type, ITypeBinding catchExceptionType) {
 		if (type == null) 
 			return false;
 		if (type.equals(catchExceptionType))
 			return true;
 		return isSubType(type.getSuperclass(), catchExceptionType);
-	}
-
-	public void addMethodTrys(HashSet<EGroumActionNode> nodes) {
-		for (int i = 0; i < stkTrys.size(); i++)
-			stkTrys.get(i).addAll(nodes);
 	}
 
 	public String getKey(ArrayAccess astNode) {
@@ -238,5 +246,12 @@ public class EGroumBuildingContext {
 		if (cu.getPackage() != null)
 			pkg = cu.getPackage().getName().getFullyQualifiedName();
 		return pkg + "." + stype;
+	}
+
+	public static HashSet<String> getExceptions(String type, String method) {
+		HashMap<String, HashSet<String>> methodExceptions = typeMethodExceptions.get(type);
+		if (methodExceptions != null)
+			return methodExceptions.get(method);
+		return null;
 	}
 }

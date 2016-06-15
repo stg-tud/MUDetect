@@ -26,6 +26,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TagElement;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.UnionType;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
@@ -36,10 +37,10 @@ public class JavaASTUtil {
 
 	public static ASTNode parseSource(String source) {
 		Map options = JavaCore.getOptions();
-		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_5);
-		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_5);
-		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_5);
-		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_7);
+		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_7);
+		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_7);
+		ASTParser parser = ASTParser.newParser(AST.JLS4);
     	parser.setSource(source.toCharArray());
     	parser.setCompilerOptions(options);
     	ASTNode ast = parser.createAST(null);
@@ -48,9 +49,9 @@ public class JavaASTUtil {
 	
 	public static ASTNode parseSource(String source, int kind) {
 		Map options = JavaCore.getOptions();
-		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_5);
-		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_5);
-		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_5);
+		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_7);
+		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_7);
+		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_7);
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
     	parser.setSource(source.toCharArray());
     	parser.setCompilerOptions(options);
@@ -127,30 +128,31 @@ public class JavaASTUtil {
 		if (type.isArrayType()) {
 			ArrayType t = (ArrayType) type;
 			return getCompactType(t.getComponentType()) + "[]";
-		}
-		else if (type.isParameterizedType()) {
+		} else if (type.isParameterizedType()) {
 			ParameterizedType t = (ParameterizedType) type;
 			return getCompactType(t.getType());
-		}
-		else if (type.isPrimitiveType()) {
+		} else if (type.isPrimitiveType()) {
 			String pt = type.toString();
 			if (pt.equals("byte") || pt.equals("short") || pt.equals("int") || pt.equals("long") 
 					|| pt.equals("float") || pt.equals("double"))
 				return "number";
 			return pt;
-		}
-		else if (type.isQualifiedType()) {
+		} else if (type.isQualifiedType()) {
 			QualifiedType t = (QualifiedType) type;
 			return getCompactType(t.getQualifier()) + "." + t.getName().getIdentifier();
-		}
-		else if (type.isSimpleType()) {
+		} else if (type.isSimpleType()) {
 			String pt = type.toString();
 			if (pt.equals("Byte") || pt.equals("Short") || pt.equals("Integer") || pt.equals("Long") 
 					|| pt.equals("Float") || pt.equals("Double"))
 				return "number";
 			return pt;
-		}
-		else if (type.isWildcardType()) {
+		} else if (type.isUnionType()) {
+			UnionType ut = (UnionType) type;
+			String s = getCompactType((Type) ut.types().get(0));
+			for (int i = 1; i < ut.types().size(); i++)
+				s += "|" + getCompactType((Type) ut.types().get(i));
+			return s;
+		} else if (type.isWildcardType()) {
 			//WildcardType t = (WildcardType) type;
 			System.err.println("ERROR: Declare a variable with wildcard type!!!");
 			System.exit(0);
@@ -165,30 +167,31 @@ public class JavaASTUtil {
 			ArrayType t = (ArrayType) type;
 			return getSimpleType(t.getComponentType()) + "[]";
 			//return type.toString();
-		}
-		else if (type.isParameterizedType()) {
+		} else if (type.isParameterizedType()) {
 			ParameterizedType t = (ParameterizedType) type;
 			return getSimpleType(t.getType());
-		}
-		else if (type.isPrimitiveType()) {
+		} else if (type.isPrimitiveType()) {
 			String pt = type.toString();
 			if (pt.equals("byte") || pt.equals("short") || pt.equals("int") || pt.equals("long") 
 					|| pt.equals("float") || pt.equals("double"))
 				return "number";
 			return pt;
-		}
-		else if (type.isQualifiedType()) {
+		} else if (type.isQualifiedType()) {
 			QualifiedType t = (QualifiedType) type;
 			return t.getName().getIdentifier();
-		}
-		else if (type.isSimpleType()) {
+		} else if (type.isSimpleType()) {
 			String pt = type.toString();
 			if (pt.equals("Byte") || pt.equals("Short") || pt.equals("Integer") || pt.equals("Long") 
 					|| pt.equals("Float") || pt.equals("Double"))
 				return "number";
 			return pt;
-		}
-		else if (type.isWildcardType()) {
+		} else if (type.isUnionType()) {
+			UnionType ut = (UnionType) type;
+			String s = getSimpleType((Type) ut.types().get(0));
+			for (int i = 1; i < ut.types().size(); i++)
+				s += "|" + getSimpleType((Type) ut.types().get(i));
+			return s;
+		} else if (type.isWildcardType()) {
 			//WildcardType t = (WildcardType) type;
 			System.err.println("ERROR: Declare a variable with wildcard type!!!");
 			System.exit(0);
@@ -203,21 +206,22 @@ public class JavaASTUtil {
 			ArrayType t = (ArrayType) type;
 			return getQualifiedType(t.getComponentType()) + "[]";
 			//return type.toString();
-		}
-		else if (type.isParameterizedType()) {
+		} else if (type.isParameterizedType()) {
 			ParameterizedType t = (ParameterizedType) type;
 			return getQualifiedType(t.getType());
-		}
-		else if (type.isPrimitiveType()) {
+		} else if (type.isPrimitiveType()) {
 			return type.toString();
-		}
-		else if (type.isQualifiedType()) {
+		} else if (type.isQualifiedType()) {
 			return type.toString();
-		}
-		else if (type.isSimpleType()) {
+		} else if (type.isSimpleType()) {
 			return type.toString();
-		}
-		else if (type.isWildcardType()) {
+		} else if (type.isUnionType()) {
+			UnionType ut = (UnionType) type;
+			String s = getQualifiedType((Type) ut.types().get(0));
+			for (int i = 1; i < ut.types().size(); i++)
+				s += "|" + getQualifiedType((Type) ut.types().get(i));
+			return s;
+		} else if (type.isWildcardType()) {
 			//WildcardType t = (WildcardType) type;
 			System.err.println("ERROR: Declare a variable with wildcard type!!!");
 			System.exit(0);
@@ -232,24 +236,25 @@ public class JavaASTUtil {
 			ArrayType t = (ArrayType) type;
 			return getSimpleType(t.getComponentType(), typeParameters) + "[]";
 			//return type.toString();
-		}
-		else if (type.isParameterizedType()) {
+		} else if (type.isParameterizedType()) {
 			ParameterizedType t = (ParameterizedType) type;
 			return getSimpleType(t.getType(), typeParameters);
-		}
-		else if (type.isPrimitiveType()) {
+		} else if (type.isPrimitiveType()) {
 			return type.toString();
-		}
-		else if (type.isQualifiedType()) {
+		} else if (type.isQualifiedType()) {
 			QualifiedType t = (QualifiedType) type;
 			return t.getName().getIdentifier();
-		}
-		else if (type.isSimpleType()) {
+		} else if (type.isSimpleType()) {
 			if (typeParameters.contains(type.toString()))
 				return "Object";
 			return type.toString();
-		}
-		else if (type.isWildcardType()) {
+		} else if (type.isUnionType()) {
+			UnionType ut = (UnionType) type;
+			String s = getSimpleType((Type) ut.types().get(0), typeParameters);
+			for (int i = 1; i < ut.types().size(); i++)
+				s += "|" + getSimpleType((Type) ut.types().get(i), typeParameters);
+			return s;
+		} else if (type.isWildcardType()) {
 			//WildcardType t = (WildcardType) type;
 			System.err.println("ERROR: Declare a variable with wildcard type!!!");
 			System.exit(0);

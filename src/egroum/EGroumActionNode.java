@@ -10,7 +10,7 @@ public class EGroumActionNode extends EGroumNode {
 	public static final String RECURSIVE = "recur";
 	protected String name;
 	protected String[] parameterTypes;
-	protected ITypeBinding[] exceptionTypes;
+	protected HashSet<String> exceptionTypes;
 
 	public EGroumActionNode(EGroumNode control, String branch, ASTNode astNode, int nodeType, String key, String type, String name) {
 		super(astNode, nodeType, key);
@@ -22,9 +22,9 @@ public class EGroumActionNode extends EGroumNode {
 		this.name = name;
 	}
 
-	public EGroumActionNode(EGroumNode control, String branch, ASTNode astNode, int nodeType, String key, String type, String name, ITypeBinding[] exceptionTypes) {
+	public EGroumActionNode(EGroumNode control, String branch, ASTNode astNode, int nodeType, String key, String type, String name, HashSet<String> exceptions) {
 		this(control, branch, astNode, nodeType, key, type, name);
-		this.exceptionTypes = exceptionTypes;
+		this.exceptionTypes = exceptions;
 	}
 
 	@Override

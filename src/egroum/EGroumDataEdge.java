@@ -1,7 +1,7 @@
 package egroum;
 
 public class EGroumDataEdge extends EGroumEdge {
-	public enum Type {RECEIVER, PARAMETER, DEFINITION, REFERENCE, CONDITION, DEPENDENCE, QUALIFIER, MAP}
+	public enum Type {RECEIVER, PARAMETER, DEFINITION, REFERENCE, CONDITION, DEPENDENCE, QUALIFIER}
 	
 	protected Type type;
 
@@ -26,7 +26,6 @@ public class EGroumDataEdge extends EGroumEdge {
 		case CONDITION: return "cond";
 		case DEPENDENCE: return "dep";
 		case QUALIFIER: return "qual";
-		case MAP: return "map";
 		default: return "";
 		}
 	}
@@ -41,7 +40,6 @@ public class EGroumDataEdge extends EGroumEdge {
 		case CONDITION: return "_cond_";
 		case DEPENDENCE: return "_dep_";
 		case QUALIFIER: return "_qual_";
-		case MAP: return "_map_";
 		default: return "_data_";
 		}
 	}
