@@ -568,6 +568,8 @@ public class EGroumGraph implements Serializable {
 		EGroumDataNode node = new EGroumDataNode(name, name.getNodeType(),
 				"" + name.getStartPosition(), type,
 				name.getIdentifier(), false, true);
+		if (astNode.getInitializer() == null)
+			return new EGroumGraph(context, node);
 		EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(null, ASTNode.NULL_LITERAL, "null", "", "null"));
 		pdg.mergeSequentialData(new EGroumActionNode(control, branch,
 				astNode, ASTNode.ASSIGNMENT, null, null, "="), Type.PARAMETER);
