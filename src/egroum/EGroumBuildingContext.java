@@ -11,7 +11,6 @@ import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.NumberLiteral;
@@ -140,14 +139,6 @@ public class EGroumBuildingContext {
 					return true;
 		}
 		return false;
-	}
-
-	private boolean isSubType(ITypeBinding type, ITypeBinding catchExceptionType) {
-		if (type == null) 
-			return false;
-		if (type.equals(catchExceptionType))
-			return true;
-		return isSubType(type.getSuperclass(), catchExceptionType);
 	}
 
 	public String getKey(ArrayAccess astNode) {

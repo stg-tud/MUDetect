@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 
 public class EGroumActionNode extends EGroumNode {
 	public static final String RECURSIVE = "recur";
@@ -39,7 +38,7 @@ public class EGroumActionNode extends EGroumNode {
 		return name.substring(index + 1);
 	}
 
-	private String buildParameters() {
+	public String buildParameters() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("(");
 		if (parameterTypes.length > 0) {

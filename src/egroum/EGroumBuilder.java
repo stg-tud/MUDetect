@@ -33,7 +33,6 @@ import utils.JavaASTUtil;
 public class EGroumBuilder {
 	private ArrayList<EGroumGraph> groums = new ArrayList<>();
 	private String path;
-	private int consumed_chars;
 	
 	public EGroumBuilder(String path) {
 		this.path = path;
@@ -234,8 +233,6 @@ public class EGroumBuilder {
 	 * Modify com.sun.org.apache.bcel.internal.classfile.Utility.signatureToString(signature, false)
 	 */
 	private String signatureToString(String signature) {
-	    consumed_chars = 1; // This is the default, read just one char like `B'
-
 	    try {
 	      switch(signature.charAt(0)) {
 	      case 'B' : return "number"; //return "byte";
@@ -251,8 +248,6 @@ public class EGroumBuilder {
 	        if(index < 0)
 	          throw new ClassFormatException("Invalid signature: " + signature);
 
-	        consumed_chars = index + 1; // "Lblabla;" `L' and `;' are removed
-
 	        return compactClassName(signature.substring(1, index));
 	      }
 
@@ -262,7 +257,6 @@ public class EGroumBuilder {
 	      case '[' : { // Array declaration
 	        int n;
 	        StringBuffer brackets;
-	        int consumed_chars; // Shadows global var
 
 	        brackets = new StringBuffer(); // Accumulate []'s
 
@@ -270,12 +264,9 @@ public class EGroumBuilder {
 	        for(n=0; signature.charAt(n) == '['; n++)
 	          brackets.append("[]");
 
-	        consumed_chars = n; // Remember value
-
 	        // The rest of the string denotes a `<field_type>'
 	        String type = signatureToString(signature.substring(n));
 
-	        this.consumed_chars += consumed_chars;
 	        return type + brackets.toString();
 	      }
 

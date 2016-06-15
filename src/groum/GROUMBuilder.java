@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.eclipse.jdt.core.dom.AST;
@@ -775,17 +774,16 @@ public class GROUMBuilder {
 		else return low;
 	}
 	
-	private HashSet<ASTNode> getParameters(List arguments)
-	{
+	private HashSet<ASTNode> getParameters(List<?> arguments) {
 		HashSet<ASTNode> parameters = new HashSet<ASTNode>();
-		for (int i = 0; i < arguments.size(); i++)
-		{
+		for (int i = 0; i < arguments.size(); i++) {
 			ASTNode arg = (ASTNode) arguments.get(i);
 			parameters.addAll(getParameters(arg));
 		}
 		
 		return parameters;
 	}
+	
 	private HashSet<ASTNode> getParameters(ASTNode arg) {
 		HashSet<ASTNode> parameters = new HashSet<ASTNode>();
 		if (arg != null)
@@ -860,19 +858,14 @@ public class GROUMBuilder {
 		return parameters;
 	}
 	
-	private int getId(Object obj)
-	{
-		return GROUMNode.convertLabel(obj.toString());
+	private int getId(ASTNode node) {
+		return GROUMNode.convertLabel(node.toString());
 	}
 	
-	private HashSet<Integer> getIds(Set set)
-	{
+	private HashSet<Integer> getIds(Set<ASTNode> set) {
 		HashSet<Integer> ids = new HashSet<Integer>();
-		Iterator iter = set.iterator();
-		while (iter.hasNext())
-		{
-			ids.add(getId(iter.next()));
-		}
+		for (ASTNode node : set)
+			ids.add(getId(node));
 		
 		return ids;
 	}
