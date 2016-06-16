@@ -23,7 +23,8 @@ class Test {
 	}
 	
 	void m() throws Exception {
-		
+		for (int i : a)
+			a(i);
 	}
 	
 	void testTry(Test t) {
@@ -33,6 +34,8 @@ class Test {
 		} catch (Exception | Error e){
 			t.n();
 			e.printStackTrace();
+		} finally {
+			t.z();
 		}
 	}
 }

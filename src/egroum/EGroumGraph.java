@@ -1059,12 +1059,17 @@ public class EGroumGraph implements Serializable {
 		SimpleName name = astNode.getException().getName();
 		String type = JavaASTUtil.getSimpleType(astNode.getException().getType());
 		context.addLocalVariable(name.getIdentifier(), "" + name.getStartPosition(), type);
+		EGroumDataNode en = new EGroumDataNode(name, name.getNodeType(),
+				"" + name.getStartPosition(), type, name.getIdentifier(), false, true);
+		EGroumGraph pdg = new EGroumGraph(context);
+		pdg.mergeSequentialData(en, Type.DEFINITION);
+		pdg.mergeSequentialData(new EGroumDataNode(null, en.astNodeType, en.key, en.dataType, en.dataName), Type.REFERENCE);
 		EGroumControlNode node = new EGroumControlNode(control, branch,
 				astNode, astNode.getNodeType());
-		EGroumGraph pdg = new EGroumGraph(context, node);
-		pdg.mergeSequential(new EGroumGraph(context, new EGroumDataNode(name, name.getNodeType(),
-				"" + name.getStartPosition(), type, name.getIdentifier(), false, true)));
-		pdg.mergeSequential(buildPDG(node, "", astNode.getBody()));
+		pdg.mergeSequentialData(node, Type.CONDITION);
+		EGroumGraph bg = buildPDG(node, "", astNode.getBody());
+		if (!bg.isEmpty())
+			pdg.mergeSequential(bg);
 		HashSet<EGroumActionNode> nodes = new HashSet<>();
 		if (astNode.getException().getType().isUnionType()) {
 			UnionType ut = (UnionType) astNode.getException().getType();
@@ -1076,7 +1081,7 @@ public class EGroumGraph implements Serializable {
 		else
 			nodes = context.getTrys(JavaASTUtil.getSimpleType(astNode.getException().getType()));
 		for (EGroumActionNode n : nodes)
-			new EGroumControlEdge(n, node, "catch");
+			new EGroumDataEdge(n, en, Type.THROW);
 		context.removeScope();
 		return pdg;
 	}
@@ -1956,7 +1961,7 @@ public class EGroumGraph implements Serializable {
 	private void addDefinitions() {
 		HashMap<String, EGroumNode> defs = new HashMap<>();
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
-			if (node instanceof EGroumDataNode && !node.isLiteral() && !node.isDefinition())
+			if (node instanceof EGroumDataNode && !node.isLiteral() && !node.isDefinition() && !((EGroumDataNode) node).isException())
 				addDefinitions((EGroumDataNode) node, defs);
 	}
 

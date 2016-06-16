@@ -62,6 +62,13 @@ public class EGroumDataNode extends EGroumNode {
 				return true;
 		return false;
 	}
+
+	public boolean isException() {
+		for (EGroumEdge e : inEdges)
+			if (((EGroumDataEdge) e).type == Type.THROW)
+				return true;
+		return false;
+	}
 	
 	@Override
 	public boolean isSame(EGroumNode node) {
