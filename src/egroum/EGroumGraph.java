@@ -126,7 +126,7 @@ public class EGroumGraph implements Serializable {
 		context.removeScope();
 		addDefinitions();
 		prune();
-		//buildClosure();
+		buildClosure();
 		deleteTemporaryDataNodes();
 		deleteReferences();
 		deleteAssignmentNodes();
@@ -1711,7 +1711,7 @@ public class EGroumGraph implements Serializable {
 		for (EGroumNode node : nodes)
 			if (!doneNodes.contains(node))
 				buildDataClosure(node, doneNodes);
-		buildSequentialClosure();
+		//buildSequentialClosure();
 		doneNodes.clear();
 		doneNodes = new HashSet<EGroumNode>();
 		for (EGroumNode node : nodes)
@@ -1802,8 +1802,12 @@ public class EGroumGraph implements Serializable {
 				if (!doneNodes.contains(inNode))
 					buildControlClosure(inNode, doneNodes);
 				for (EGroumEdge e1 : inNode.getInEdges()) {
-					if ((node instanceof EGroumActionNode || node instanceof EGroumControlNode) && !node.hasInEdge(e1))
-						new EGroumControlEdge(e1.getSource(), node, e1.getLabel());
+					if ((node instanceof EGroumActionNode || node instanceof EGroumControlNode) && !node.hasInEdge(e1)) {
+						if (e1 instanceof EGroumControlEdge)
+							new EGroumControlEdge(e1.source, node, ((EGroumControlEdge) e1).label);
+						else if (e1 instanceof EGroumDataEdge)
+							new EGroumDataEdge(e1.source, node, ((EGroumDataEdge) e1).type);
+					}
 				}
 			}
 		}
