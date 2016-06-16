@@ -2011,7 +2011,9 @@ public class EGroumGraph implements Serializable {
 
 	public void cleanUp() {
 		clearDefStore();
-		for (EGroumNode node : nodes) {
+		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
+			if (node instanceof EGroumEntryNode || node instanceof EGroumControlNode)
+				delete(node);
 			node.astNode = null;
 			int i = 0;
 			while (i < node.inEdges.size()) {

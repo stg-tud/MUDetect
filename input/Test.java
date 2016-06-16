@@ -31,6 +31,7 @@ class Test {
 		try {
 			t.m();
 			new FileOutputStream(new File(new String(new char[]{})));
+			t.finalize();
 		} catch (Exception | Error e){
 			t.n();
 			e.printStackTrace();
