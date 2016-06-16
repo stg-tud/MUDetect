@@ -60,6 +60,7 @@ import org.eclipse.jdt.core.dom.ThisExpression;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.TypeLiteral;
+import org.eclipse.jdt.core.dom.UnionType;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
@@ -1056,9 +1057,7 @@ public class EGroumGraph implements Serializable {
 			CatchClause astNode) {
 		context.addScope();
 		SimpleName name = astNode.getException().getName();
-		String type = "Throwable";
-		if (!astNode.getException().getType().isUnionType())
-			type = JavaASTUtil.getSimpleType(astNode.getException().getType());
+		String type = JavaASTUtil.getSimpleType(astNode.getException().getType());
 		context.addLocalVariable(name.getIdentifier(), "" + name.getStartPosition(), type);
 		EGroumControlNode node = new EGroumControlNode(control, branch,
 				astNode, astNode.getNodeType());
@@ -1066,7 +1065,16 @@ public class EGroumGraph implements Serializable {
 		pdg.mergeSequential(new EGroumGraph(context, new EGroumDataNode(name, name.getNodeType(),
 				"" + name.getStartPosition(), type, name.getIdentifier(), false, true)));
 		pdg.mergeSequential(buildPDG(node, "", astNode.getBody()));
-		HashSet<EGroumActionNode> nodes = context.getTrys(JavaASTUtil.getSimpleType(astNode.getException().getType()));
+		HashSet<EGroumActionNode> nodes = new HashSet<>();
+		if (astNode.getException().getType().isUnionType()) {
+			UnionType ut = (UnionType) astNode.getException().getType();
+			for (int i = 0; i < ut.types().size(); i++) {
+				org.eclipse.jdt.core.dom.Type t = (org.eclipse.jdt.core.dom.Type) ut.types().get(i);
+				nodes.addAll(context.getTrys(JavaASTUtil.getSimpleType(t)));
+			}
+		}
+		else
+			nodes = context.getTrys(JavaASTUtil.getSimpleType(astNode.getException().getType()));
 		for (EGroumActionNode n : nodes)
 			new EGroumControlEdge(n, node, "catch");
 		context.removeScope();

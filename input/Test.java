@@ -30,7 +30,7 @@ class Test {
 		try {
 			t.m();
 			new FileOutputStream(new File(""));
-		} catch (Exception e){
+		} catch (Exception | Error e){
 			t.n();
 			e.printStackTrace();
 		}
