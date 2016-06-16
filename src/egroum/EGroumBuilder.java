@@ -190,14 +190,14 @@ public class EGroumBuilder {
 							subs.add(simpleClassName);
 						}
 					} catch (IOException | ClassFormatException e) {
-						System.err.println(jarFilePath);
+						System.err.println("Error in parsing class file: " + entry.getName());
 						System.err.println(e.getMessage());
 					}
 				}
 			}
 			jarFile.close();
 		} catch (IOException e) {
-			System.err.println(jarFilePath);
+			System.err.println("Error in parsing jar file: " + jarFilePath);
 			e.printStackTrace();
 		}
 	}
