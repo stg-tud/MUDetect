@@ -396,17 +396,31 @@ public class EGroumGraph implements Serializable {
 		if (astNode.getBody().statements().isEmpty())
 			return new EGroumGraph(context);
 		context.pushTry();
+		EGroumControlNode tn = new EGroumControlNode(control, branch, astNode, astNode.getNodeType());
 		EGroumGraph pdg = buildPDG(control, branch, astNode.getBody());
+		pdg.nodes.add(tn);
 		EGroumGraph[] gs = new EGroumGraph[astNode.catchClauses().size()];
 		for (int i = 0; i < astNode.catchClauses().size(); i++) {
 			CatchClause cc = (CatchClause) astNode.catchClauses().get(i);
-			gs[i] = buildPDG(control, branch, cc);
+			gs[i] = buildPDG(tn, "", cc);
 		}
 		EGroumGraph cg = new EGroumGraph(context);
 		cg.mergeBranches(gs);
 		pdg.mergeSequential(cg);
+		int off = 0;
 		if (astNode.getFinally() != null) {
-			pdg.mergeSequential(buildPDG(control, branch, astNode.getFinally()));
+			EGroumControlNode fn = new EGroumControlNode(tn, "", astNode.getFinally(), astNode.getFinally().getNodeType());
+			EGroumGraph fg = new EGroumGraph(context, fn);
+			fg.mergeSequential(buildPDG(fn, "", astNode.getFinally()));
+			pdg.mergeSequential(fg);
+			off = 1;
+		}
+		for (int i = 0; i < tn.outEdges.size(); i++) {
+			EGroumEdge e = tn.outEdges.get(i);
+			if (e.target.astNodeType == ASTNode.CATCH_CLAUSE) {
+				tn.outEdges.remove(i);
+				tn.outEdges.add(tn.outEdges.size() - off, e);
+			}
 		}
 		/*
 		 * pdg.sinks.remove(node); pdg.statementSinks.remove(node);
@@ -1062,11 +1076,11 @@ public class EGroumGraph implements Serializable {
 		SimpleName name = astNode.getException().getName();
 		String type = JavaASTUtil.getSimpleType(astNode.getException().getType());
 		context.addLocalVariable(name.getIdentifier(), "" + name.getStartPosition(), type);
-		EGroumDataNode en = new EGroumDataNode(name, name.getNodeType(),
+		EGroumDataNode cn = new EGroumDataNode(name, name.getNodeType(),
 				"" + name.getStartPosition(), type, name.getIdentifier(), false, true);
 		EGroumGraph pdg = new EGroumGraph(context);
-		pdg.mergeSequentialData(en, Type.DEFINITION);
-		pdg.mergeSequentialData(new EGroumDataNode(null, en.astNodeType, en.key, en.dataType, en.dataName), Type.REFERENCE);
+		pdg.mergeSequentialData(cn, Type.DEFINITION);
+		pdg.mergeSequentialData(new EGroumDataNode(null, cn.astNodeType, cn.key, cn.dataType, cn.dataName), Type.REFERENCE);
 		EGroumControlNode node = new EGroumControlNode(control, branch,
 				astNode, astNode.getNodeType());
 		pdg.mergeSequentialData(node, Type.CONDITION);
@@ -1083,8 +1097,14 @@ public class EGroumGraph implements Serializable {
 		}
 		else
 			nodes = context.getTrys(JavaASTUtil.getSimpleType(astNode.getException().getType()));
-		for (EGroumActionNode n : nodes)
-			new EGroumDataEdge(n, en, Type.THROW);
+		for (EGroumActionNode n : nodes) {
+			new EGroumDataEdge(n, cn, Type.THROW);
+			EGroumControlEdge e = (EGroumControlEdge) n.getInEdge(n.control);
+			e.source = control;
+			e.label = "";
+			control.outEdges.add(e);
+			n.control.outEdges.remove(e);
+		}
 		context.removeScope();
 		return pdg;
 	}

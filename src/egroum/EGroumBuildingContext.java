@@ -1,5 +1,6 @@
 package egroum;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Stack;
@@ -29,7 +30,7 @@ public class EGroumBuildingContext {
 	
 	private MethodDeclaration method;
 	protected boolean interprocedural;
-	private Stack<HashSet<EGroumActionNode>> stkTrys = new Stack<>();
+	private Stack<ArrayList<EGroumActionNode>> stkTrys = new Stack<>();
 	private Stack<HashMap<String, String>> localVariables = new Stack<>(), localVariableTypes = new Stack<>();
 	private HashMap<String, String> fieldTypes = new HashMap<>();
 	
@@ -99,16 +100,11 @@ public class EGroumBuildingContext {
 			stkTrys.get(i).add(node);
 	}
 
-	public void addMethodTrys(HashSet<EGroumActionNode> nodes) {
-		for (int i = 0; i < stkTrys.size(); i++)
-			stkTrys.get(i).addAll(nodes);
-	}
-
 	public void pushTry() {
-		stkTrys.push(new HashSet<EGroumActionNode>());
+		stkTrys.push(new ArrayList<EGroumActionNode>());
 	}
 	
-	public HashSet<EGroumActionNode> popTry() {
+	public ArrayList<EGroumActionNode> popTry() {
 		return stkTrys.pop();
 	}
 
