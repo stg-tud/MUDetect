@@ -30,7 +30,7 @@ class Test {
 	void testTry(Test t) {
 		try {
 			t.m();
-			new FileOutputStream(new File(""));
+			new FileOutputStream(new File(new String(new char[]{})));
 		} catch (Exception | Error e){
 			t.n();
 			e.printStackTrace();

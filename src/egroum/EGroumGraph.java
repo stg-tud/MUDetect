@@ -1784,7 +1784,7 @@ public class EGroumGraph implements Serializable {
 						if (!doneNodes.contains(inNode))
 							buildDataClosure(inNode, doneNodes);
 						for (EGroumEdge e1 : inNode.inEdges) {
-							if (e1 instanceof EGroumDataEdge && !(e1.source instanceof EGroumDataNode)) {
+							if (e1 instanceof EGroumDataEdge && ((EGroumDataEdge) e1).type != Type.THROW && !(e1.source instanceof EGroumDataNode)) {
 								if (!node.hasInEdge(e1.source, label))
 									new EGroumDataEdge(e1.source, node, de.type);
 							}
@@ -2011,7 +2011,7 @@ public class EGroumGraph implements Serializable {
 	public void cleanUp() {
 		clearDefStore();
 		for (EGroumNode node : nodes) {
-			//node.astNode = null;
+			node.astNode = null;
 			int i = 0;
 			while (i < node.inEdges.size()) {
 				EGroumEdge e = node.inEdges.get(i);
