@@ -405,6 +405,9 @@ public class EGroumGraph implements Serializable {
 		EGroumGraph cg = new EGroumGraph(context);
 		cg.mergeBranches(gs);
 		pdg.mergeSequential(cg);
+		if (astNode.getFinally() != null) {
+			pdg.mergeSequential(buildPDG(control, branch, astNode.getFinally()));
+		}
 		/*
 		 * pdg.sinks.remove(node); pdg.statementSinks.remove(node);
 		 */
