@@ -762,7 +762,7 @@ public class EGroumGraph implements Serializable {
 			pgs[i + 1] = buildArgumentPDG(control, branch,
 					(Expression) astNode.arguments().get(i));
 		String type = pgs[0].getOnlyOut().dataType;
-		HashSet<String> exceptions = EGroumBuildingContext.getExceptions(type, astNode.getName().getIdentifier());
+		HashSet<String> exceptions = EGroumBuildingContext.getExceptions(type, astNode.getName().getIdentifier() + "(" + astNode.arguments().size() + ")");
 		EGroumActionNode node = new EGroumActionNode(control, branch,
 				astNode, astNode.getNodeType(), null, 
 				type + "." + astNode.getName().getIdentifier() + "()", 
@@ -1044,7 +1044,7 @@ public class EGroumGraph implements Serializable {
 			numOfParameters++;
 		}
 		String type = JavaASTUtil.getSimpleType(astNode.getType());
-		HashSet<String> exceptions = EGroumBuildingContext.getExceptions(type, "<init>");
+		HashSet<String> exceptions = EGroumBuildingContext.getExceptions(type, "<init>" + "(" + astNode.arguments().size() + ")");
 		EGroumActionNode node = new EGroumActionNode(control, branch,
 				astNode, astNode.getNodeType(), null, type + ".<init>", "<init>", exceptions);
 		if (exceptions != null)
@@ -1719,6 +1719,7 @@ public class EGroumGraph implements Serializable {
 				buildControlClosure(node, doneNodes);
 	}
 
+	@SuppressWarnings("unused")
 	private void buildSequentialClosure() {
 		HashMap<EGroumNode, ArrayList<EGroumNode>> preNodesOfNode = new HashMap<>();
 		preNodesOfNode.put(entryNode, new ArrayList<EGroumNode>());

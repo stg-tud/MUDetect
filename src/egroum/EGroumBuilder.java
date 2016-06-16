@@ -144,6 +144,7 @@ public class EGroumBuilder {
 		String name = method.getName().getIdentifier();
 		if (method.isConstructor())
 			name = "<init>";
+		name += "(" + method.parameters().size() + ")";
 		HashSet<String> exceptions = methodExceptions.get(name);
 		if (exceptions == null)
 			exceptions = new HashSet<>();
@@ -212,6 +213,7 @@ public class EGroumBuilder {
 
 	private void buildJar(Method method, HashMap<String, HashSet<String>> methodExceptions) {
 		String name = method.getName();
+		name += "(" + method.getArgumentTypes().length + ")";
 		HashSet<String> exceptions = methodExceptions.get(name);
 		if (exceptions == null)
 			exceptions = new HashSet<>();
