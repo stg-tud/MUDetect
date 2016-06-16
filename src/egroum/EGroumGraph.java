@@ -1719,7 +1719,7 @@ public class EGroumGraph implements Serializable {
 				buildControlClosure(node, doneNodes);
 	}
 
-	public void buildSequentialClosure() {
+	private void buildSequentialClosure() {
 		HashMap<EGroumNode, ArrayList<EGroumNode>> preNodesOfNode = new HashMap<>();
 		preNodesOfNode.put(entryNode, new ArrayList<EGroumNode>());
 		for (EGroumNode node : nodes) {
@@ -1770,22 +1770,23 @@ public class EGroumGraph implements Serializable {
 	private void buildDataClosure(EGroumNode node, HashSet<EGroumNode> doneNodes) {
 		if (node.getDefinitions().isEmpty()) {
 			for (EGroumEdge e : new HashSet<EGroumEdge>(node.getInEdges())) {
-				if (e instanceof EGroumDataEdge) {
+				if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type != Type.THROW) {
 					String label = e.getLabel();
-					ArrayList<EGroumNode> inNodes = e.getSource().getDefinitions();
+					EGroumDataEdge de = (EGroumDataEdge) e;
+					ArrayList<EGroumNode> inNodes = e.source.getDefinitions();
 					if (inNodes.isEmpty())
-						inNodes.add(e.getSource());
+						inNodes.add(e.source);
 					else
 						for (EGroumNode inNode : inNodes)
 							if (!node.hasInEdge(inNode, label))
-								new EGroumDataEdge(inNode, node, ((EGroumDataEdge) e).type);
+								new EGroumDataEdge(inNode, node, de.type);
 					for (EGroumNode inNode : inNodes) {
 						if (!doneNodes.contains(inNode))
 							buildDataClosure(inNode, doneNodes);
-						for (EGroumEdge e1 : inNode.getInEdges()) {
-							if (e1 instanceof EGroumDataEdge && !(e1.getSource() instanceof EGroumDataNode)) {
-								if (!node.hasInEdge(e1.getSource(), label))
-									new EGroumDataEdge(e1.getSource(), node, ((EGroumDataEdge) e).type);
+						for (EGroumEdge e1 : inNode.inEdges) {
+							if (e1 instanceof EGroumDataEdge && !(e1.source instanceof EGroumDataNode)) {
+								if (!node.hasInEdge(e1.source, label))
+									new EGroumDataEdge(e1.source, node, de.type);
 							}
 						}
 					}
@@ -1814,7 +1815,7 @@ public class EGroumGraph implements Serializable {
 		doneNodes.add(node);
 	}
 
-	public void prune() {
+	private void prune() {
 		//pruneReturnNodes();
 		delete(endNode);
 		pruneDataNodes();
