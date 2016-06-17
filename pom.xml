@@ -6,10 +6,23 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>GrouMiner</name>
 	<dependencies>
+		<!-- http://mvnrepository.com/artifact/org.eclipse.tycho/org.eclipse.jdt.core -->
 		<dependency>
-			<groupId>org.eclipse.jdt</groupId>
+			<groupId>org.eclipse.tycho</groupId>
 			<artifactId>org.eclipse.jdt.core</artifactId>
-			<version>3.10.0</version>
+			<version>3.11.1.v20150902-1521</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/org.eclipse.core/runtime -->
+		<dependency>
+			<groupId>org.eclipse.core</groupId>
+			<artifactId>runtime</artifactId>
+			<version>3.10.0-v20140318-2214</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/org.eclipse.birt.runtime/org.eclipse.core.resources -->
+		<dependency>
+			<groupId>org.eclipse.birt.runtime</groupId>
+			<artifactId>org.eclipse.core.resources</artifactId>
+			<version>3.10.0.v20150423-0755</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
