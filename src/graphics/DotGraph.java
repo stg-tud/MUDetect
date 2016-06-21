@@ -70,7 +70,7 @@ public class DotGraph {
 				int sId = ids.get(e.getSource());
 				String label = e.getLabel();
 				if (e instanceof EGroumDataEdge) {
-					if (e.getTarget() instanceof EGroumEntryNode || ((EGroumDataEdge) e).getType() != Type.DEPENDENCE) {
+					/*if (e.getTarget() instanceof EGroumEntryNode || ((EGroumDataEdge) e).getType() != Type.DEPENDENCE)*/ {
 						int n = 1;
 						if (numOfEdges.containsKey(label))
 							n += numOfEdges.get(label);

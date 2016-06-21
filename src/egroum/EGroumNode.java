@@ -244,23 +244,6 @@ public abstract class EGroumNode {
 		return -1;
 	}
 
-	public void addNeighbors(HashSet<EGroumNode> nodes) {
-		for (EGroumEdge e : inEdges)
-			if (!(e instanceof EGroumDataEdge) || (((EGroumDataEdge) e).type != Type.DEPENDENCE && ((EGroumDataEdge) e).type != Type.REFERENCE)) {
-				if (!e.source.isEmptyNode() && !nodes.contains(e.source)) {
-					nodes.add(e.source);
-					e.source.addNeighbors(nodes);
-				}
-			}
-		for (EGroumEdge e : outEdges)
-			if (!(e instanceof EGroumDataEdge) || (((EGroumDataEdge) e).type != Type.DEPENDENCE && ((EGroumDataEdge) e).type != Type.REFERENCE)) {
-				if (!e.target.isEmptyNode() && !nodes.contains(e.target)) {
-					nodes.add(e.target);
-					e.target.addNeighbors(nodes);
-				}
-			}
-	}
-
 	public boolean isSame(EGroumNode node) {
 		if (key == null && node.key != null)
 			return false;
@@ -293,6 +276,17 @@ public abstract class EGroumNode {
 			}
 		}
 		return defs;
+	}
+
+	public HashSet<EGroumNode> getCatchClauses() {
+		HashSet<EGroumNode> ccs = new HashSet<>();
+		for (EGroumEdge e : inEdges) {
+			if (e.source.astNodeType == ASTNode.CATCH_CLAUSE)
+				ccs.add(e.source);
+			if (e instanceof EGroumControlEdge)
+				ccs.addAll(e.source.getCatchClauses());
+		}
+		return ccs;
 	}
 
 	public ArrayList<EGroumNode> getReferences() {
@@ -332,18 +326,6 @@ public abstract class EGroumNode {
 			if (e.target == target)
 				return true;
 		return false;
-	}
-
-	public boolean isValid() {
-		HashSet<EGroumNode> s = new HashSet<>();
-		for (EGroumEdge e : outEdges) {
-			if(e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.DEPENDENCE)
-				continue;
-			if (s.contains(e.target))
-				return false;
-			s.add(e.target);
-		}
-		return true;
 	}
 
 	public boolean isAssignment() {

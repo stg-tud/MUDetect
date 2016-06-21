@@ -29,22 +29,6 @@ public class EGroumControlNode extends EGroumNode {
 	public String toString() {
 		return getLabel();
 	}
-
-	public EGroumGraph getBody() {
-		EGroumGraph g = new EGroumGraph(null);
-		g.nodes.add(this);
-		for (EGroumEdge e : outEdges) {
-			EGroumNode node = e.target;
-			if (!node.isEmptyNode())
-				g.nodes.add(node);
-		}
-		for (EGroumEdge e : outEdges) {
-			EGroumNode node = e.target;
-			node.addNeighbors(g.nodes);
-		}
-		g.nodes.remove(this);
-		return g;
-	}
 	
 	@Override
 	public boolean isSame(EGroumNode node) {
