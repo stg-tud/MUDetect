@@ -3,20 +3,23 @@ package exas;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import egroum.EGroumDataEdge;
+import egroum.EGroumDataEdge.Type;
 import egroum.EGroumNode;
 
 public class ExasFeature {
 	public static final int MAX_LENGTH = 4 * 2 - 1;
 	private static HashMap<String, Integer> edgeFeatures = new HashMap<>();
 	static {
-		edgeFeatures.put("_cond_", 0);
-		edgeFeatures.put("_control_", 1);
-		edgeFeatures.put("_def_",  2);
-		edgeFeatures.put(".",  3);
-		edgeFeatures.put("_para_", 4);
-		edgeFeatures.put("_qual_", 5);
-		edgeFeatures.put("_recv_", 6);
-		edgeFeatures.put("_ref_", 7);
+		edgeFeatures.put(EGroumDataEdge.getExasLabel(Type.CONDITION), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getExasLabel(Type.DEFINITION),  edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getExasLabel(Type.ORDER), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getExasLabel(Type.PARAMETER), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getExasLabel(Type.QUALIFIER), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getExasLabel(Type.RECEIVER), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getExasLabel(Type.REFERENCE), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getExasLabel(Type.THROW), edgeFeatures.size());
+		edgeFeatures.put("_control_", edgeFeatures.size());
 	}
 	
 	private HashMap<String, Integer> nodeFeatures = new HashMap<>();

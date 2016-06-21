@@ -18,6 +18,10 @@ public class EGroumDataEdge extends EGroumEdge {
 
 	@Override
 	public String getLabel() {
+		return getLabel(type);
+	}
+
+	public static String getLabel(Type type) {
 		switch (type) {
 		case RECEIVER: return "recv";
 		case PARAMETER: return "para";
@@ -34,6 +38,10 @@ public class EGroumDataEdge extends EGroumEdge {
 
 	@Override
 	public String getExasLabel() {
+		return getExasLabel(type);
+	}
+	
+	public static String getExasLabel(Type type) {
 		switch (type) {
 		case RECEIVER: return "_recv_";
 		case PARAMETER: return "_para_";
