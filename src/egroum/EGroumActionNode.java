@@ -76,6 +76,21 @@ public class EGroumActionNode extends EGroumNode {
 		return (overlap(defs, preDefs) || overlap(fields, preFields));
 	}
 
+	public boolean hasBackwardDataDependence(EGroumNode node) {
+		if (node instanceof EGroumActionNode)
+			return hasBackwardDataDependence((EGroumActionNode) node);
+		if (node instanceof EGroumDataNode) {
+			HashSet<EGroumNode> defs = new HashSet<>(), preDefs = new HashSet<>();
+			HashSet<String> fields = new HashSet<>(), preFields = new HashSet<>();
+			getDefinitions(defs, fields);
+			preDefs.addAll(node.getDefinitions());
+			if (preDefs.isEmpty())
+				preFields.add(node.key);
+			return (overlap(defs, preDefs) || overlap(fields, preFields));
+		}
+		return false;
+	}
+
 	private <E> boolean overlap(HashSet<E> s1, HashSet<E> s2) {
 		HashSet<E> c = new HashSet<>(s1);
 		c.retainAll(s2);

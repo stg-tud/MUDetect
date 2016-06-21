@@ -1801,8 +1801,14 @@ public class EGroumGraph implements Serializable {
 					if ((node instanceof EGroumActionNode || node instanceof EGroumControlNode) && !node.hasInEdge(e1)) {
 						if (e1 instanceof EGroumControlEdge)
 							new EGroumControlEdge(e1.source, node, ((EGroumControlEdge) e1).label);
-						else if (e1 instanceof EGroumDataEdge)
-							new EGroumDataEdge(e1.source, node, ((EGroumDataEdge) e1).type);
+						else if (e1 instanceof EGroumDataEdge) {
+							if (node instanceof EGroumActionNode) { 
+								if (((EGroumActionNode) node).hasBackwardDataDependence(e1.source))
+									new EGroumDataEdge(e1.source, node, ((EGroumDataEdge) e1).type);
+							}
+							else
+								new EGroumDataEdge(e1.source, node, ((EGroumDataEdge) e1).type);
+						}
 					}
 				}
 			}
