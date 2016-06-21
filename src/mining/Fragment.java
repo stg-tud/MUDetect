@@ -402,76 +402,9 @@ public class Fragment {
 		for (EGroumNode node : ens) {
 			if (node.getLabel().equals(nodes.get(nodes.size() - 1).getLabel())) 
 				continue;
-			if (node instanceof EGroumControlNode) {
-				HashSet<EGroumNode> ins = node.getInNodes(), outs = node.getOutNodes();
-				if (!ins.isEmpty() && !outs.isEmpty()) {
-					boolean found = false;
-					for (EGroumNode n : ins) {
-						if (nodes.contains(n)) {
-							found = true;
-							break;
-						}
-					}
-					if (found) {
-						found = false;
-						for (EGroumNode n : outs) {
-							if (n.isCoreAction() && nodes.contains(n)) {
-								found = true;
-								break;
-							}
-						}
-						if (found) {
-							String label = node.getLabel();
-							HashSet<ArrayList<EGroumNode>> s = lens.get(label);
-							if (s == null) {
-								s = new HashSet<>();
-								lens.put(label, s);
-							}
-							ArrayList<EGroumNode> l = new ArrayList<>();
-							l.add(node);
-							s.add(l);
-						} else {
-							for (EGroumNode next : outs) {
-								if (next.isCoreAction()) {
-									String label = node.getLabel() + "-" + next.getLabel();
-									HashSet<ArrayList<EGroumNode>> s = lens.get(label);
-									if (s == null) {
-										s = new HashSet<>();
-										lens.put(label, s);
-									}
-									ArrayList<EGroumNode> l = new ArrayList<>();
-									l.add(node);
-									l.add(next);
-									s.add(l);
-								}
-							}
-						}
-					} /*else {
-						for (EGroumNode next : ins) {
-							String label = node.getLabel() + "-" + next.getLabel();
-							HashSet<ArrayList<EGroumNode>> s = lens.get(label);
-							if (s == null) {
-								s = new HashSet<>();
-								lens.put(label, s);
-							}
-							ArrayList<EGroumNode> l = new ArrayList<>();
-							l.add(node);
-							l.add(next);
-							s.add(l);
-						}
-					}*/
-				}
-			} else if (node instanceof EGroumActionNode){
+			if (node instanceof EGroumActionNode){
 				if (node.isCoreAction()) {
-					String label = node.getLabel();
-					HashSet<ArrayList<EGroumNode>> s = lens.get(label);
-					if (s == null) {
-						s = new HashSet<>();
-						lens.put(label, s);
-					}
-					ArrayList<EGroumNode> l = new ArrayList<>();
-					l.add(node);
-					s.add(l);
+					add(node, lens);
 				} else {
 					HashSet<EGroumNode> ins = node.getInNodes(), outs = node.getOutNodes();
 					if (!ins.isEmpty() && !outs.isEmpty()) {
@@ -491,124 +424,49 @@ public class Fragment {
 								}
 							}
 							if (found) {
-								String label = node.getLabel();
-								HashSet<ArrayList<EGroumNode>> s = lens.get(label);
-								if (s == null) {
-									s = new HashSet<>();
-									lens.put(label, s);
-								}
-								ArrayList<EGroumNode> l = new ArrayList<>();
-								l.add(node);
-								s.add(l);
+								add(node, lens);
 							} else {
 								for (EGroumNode next : outs) {
 									if (next.isCoreAction()) {
-										String label = node.getLabel() + "-" + next.getLabel();
-										HashSet<ArrayList<EGroumNode>> s = lens.get(label);
-										if (s == null) {
-											s = new HashSet<>();
-											lens.put(label, s);
-										}
-										ArrayList<EGroumNode> l = new ArrayList<>();
-										l.add(node);
-										l.add(next);
-										s.add(l);
+										add(node, next, lens);
 									}
 								}
 							}
-						} /*else {
-							for (EGroumNode next : ins) {
-								String label = node.getLabel() + "-" + next.getLabel();
-								HashSet<ArrayList<EGroumNode>> s = lens.get(label);
-								if (s == null) {
-									s = new HashSet<>();
-									lens.put(label, s);
+						} else {
+							found = false;
+							for (EGroumNode n : outs) {
+								if (n.isCoreAction() && nodes.contains(n)) {
+									found = true;
+									break;
 								}
-								ArrayList<EGroumNode> l = new ArrayList<>();
-								l.add(node);
-								l.add(next);
-								s.add(l);
 							}
-						}*/
+							if (found) {
+								for (EGroumNode next : ins) {
+									add(node, next, lens);
+								}
+							}
+						}
 					}
 				}
 			} else if (node instanceof EGroumDataNode) {
-				if (node.isDefinition()) {
-					ArrayList<EGroumNode> refs = node.getReferences();
-					if (refs.isEmpty())
-						continue;
-					boolean found = false;
-					for (EGroumNode ref : refs)
-						if (nodes.contains(ref)) {
-							found = true;
-							break;
-						}
-					if (found) {
-						String label = node.getLabel();
-						HashSet<ArrayList<EGroumNode>> s = lens.get(label);
-						if (s == null) {
-							s = new HashSet<>();
-							lens.put(label, s);
-						}
-						ArrayList<EGroumNode> l = new ArrayList<>();
-						l.add(node);
-						s.add(l);
-					} else {
-						for (EGroumNode next : refs) {
-							String label = node.getLabel() + "-" + next.getLabel();
-							HashSet<ArrayList<EGroumNode>> s = lens.get(label);
-							if (s == null) {
-								s = new HashSet<>();
-								lens.put(label, s);
-							}
-							ArrayList<EGroumNode> l = new ArrayList<>();
-							l.add(node);
-							l.add(next);
-							s.add(l);
+				if (node.isLiteral()) {
+					add(node, lens);
+				} else {
+					int count = 0;
+					HashSet<EGroumNode> outs = node.getOutNodes();
+					for (EGroumNode next : outs) {
+						if (nodes.contains(next)) {
+							count++;
+							if (count == 2)
+								break;
 						}
 					}
-				} else {
-					ArrayList<EGroumNode> defs = node.getDefinitions();
-					if (defs.isEmpty()) {
-						String label = node.getLabel();
-						HashSet<ArrayList<EGroumNode>> s = lens.get(label);
-						if (s == null) {
-							s = new HashSet<>();
-							lens.put(label, s);
-						}
-						ArrayList<EGroumNode> l = new ArrayList<>();
-						l.add(node);
-						s.add(l);
-					} else {
-						boolean found = false;
-						for (EGroumNode def : defs)
-							if (nodes.contains(def)) {
-								found = true;
-								break;
-							}
-						if (found) {
-							String label = node.getLabel();
-							HashSet<ArrayList<EGroumNode>> s = lens.get(label);
-							if (s == null) {
-								s = new HashSet<>();
-								lens.put(label, s);
-							}
-							ArrayList<EGroumNode> l = new ArrayList<>();
-							l.add(node);
-							s.add(l);
-						} else {
-							for (EGroumNode next : defs) {
-								String label = node.getLabel() + "-" + next.getLabel();
-								HashSet<ArrayList<EGroumNode>> s = lens.get(label);
-								if (s == null) {
-									s = new HashSet<>();
-									lens.put(label, s);
-								}
-								ArrayList<EGroumNode> l = new ArrayList<>();
-								l.add(node);
-								l.add(next);
-								s.add(l);
-							}
+					if (count == 2)
+						add(node, lens);
+					else if (count == 1) {
+						for (EGroumNode next : outs) {
+							if (!nodes.contains(next))
+								add(node, next, lens);
 						}
 					}
 				}
@@ -628,5 +486,30 @@ public class Fragment {
 			}
 		}
 		return lens;
+	}
+
+	private void add(EGroumNode node, HashMap<String, HashSet<ArrayList<EGroumNode>>> lens) {
+		String label = node.getLabel();
+		HashSet<ArrayList<EGroumNode>> s = lens.get(label);
+		if (s == null) {
+			s = new HashSet<>();
+			lens.put(label, s);
+		}
+		ArrayList<EGroumNode> l = new ArrayList<>();
+		l.add(node);
+		s.add(l);
+	}
+
+	private void add(EGroumNode node, EGroumNode next, HashMap<String, HashSet<ArrayList<EGroumNode>>> lens) {
+		String label = node.getLabel() + "-" + next.getLabel();
+		HashSet<ArrayList<EGroumNode>> s = lens.get(label);
+		if (s == null) {
+			s = new HashSet<>();
+			lens.put(label, s);
+		}
+		ArrayList<EGroumNode> l = new ArrayList<>();
+		l.add(node);
+		l.add(next);
+		s.add(l);
 	}
 }

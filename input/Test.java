@@ -1,16 +1,17 @@
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 
 class Test {
 	void m1(Object o) {
-		int i = o.hashCode();
+		int i = 0; //o.hashCode();
 		if (i > 0)
 			o.hashCode();
 	}
 
-	void m2(Object o) {
-		o.hashCode();
-		o.hashCode();
+	void m2(ArrayList<String> l) {
+		if (l.isEmpty())
+			l.add("");
 	}
 
 	void m3(int i) {
