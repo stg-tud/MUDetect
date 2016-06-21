@@ -14,6 +14,16 @@ class Test {
 			l.add("");
 	}
 
+	void m22(ArrayList<String> l) {
+		if (l.isEmpty())
+			l.add("");
+	}
+
+	void m23(ArrayList<String> l) {
+		if (l.isEmpty())
+			l.add("");
+	}
+
 	void m3(int i) {
 		if (i < 0) {
 			i = -i;

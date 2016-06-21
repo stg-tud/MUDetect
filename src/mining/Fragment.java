@@ -325,7 +325,7 @@ public class Fragment {
 			if(node instanceof EGroumControlNode)
 				graph.append(dg.addNode(id, node.getLabel(), DotGraph.SHAPE_DIAMOND, null, null, null));
 			else if (node instanceof EGroumActionNode)
-				graph.append(dg.addNode(id, node.getLabel(), DotGraph.SHAPE_BOX, DotGraph.STYLE_ROUNDED, null, null));
+				graph.append(dg.addNode(id, node.getLabel(), DotGraph.SHAPE_BOX, null, null, null));
 			else
 				graph.append(dg.addNode(id, node.getLabel(), DotGraph.SHAPE_ELLIPSE, null, null, null));
 		}

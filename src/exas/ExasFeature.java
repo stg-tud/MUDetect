@@ -11,14 +11,14 @@ public class ExasFeature {
 	public static final int MAX_LENGTH = 4 * 2 - 1;
 	private static HashMap<String, Integer> edgeFeatures = new HashMap<>();
 	static {
-		edgeFeatures.put(EGroumDataEdge.getExasLabel(Type.CONDITION), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getExasLabel(Type.DEFINITION),  edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getExasLabel(Type.ORDER), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getExasLabel(Type.PARAMETER), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getExasLabel(Type.QUALIFIER), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getExasLabel(Type.RECEIVER), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getExasLabel(Type.REFERENCE), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getExasLabel(Type.THROW), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONDITION), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.DEFINITION),  edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.ORDER), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.PARAMETER), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.QUALIFIER), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.RECEIVER), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.REFERENCE), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.THROW), edgeFeatures.size());
 		edgeFeatures.put("_control_", edgeFeatures.size());
 	}
 	

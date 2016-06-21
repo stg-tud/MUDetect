@@ -52,7 +52,7 @@ public class DotGraph {
 				graph.append(addNode(id, node.getLabel(), SHAPE_BOX, null, null, null));*/
 			else if(node instanceof EGroumActionNode)
 				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getClassNameId()) + "." + node.getMethod(), SHAPE_BOX, STYLE_ROUNDED, null, null));
-				graph.append(addNode(id, label, SHAPE_BOX, STYLE_ROUNDED, null, null));
+				graph.append(addNode(id, label, SHAPE_BOX, null, null, null));
 			else
 				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getMethodID()), SHAPE_DIAMOND, null, null, null));
 				graph.append(addNode(id, label, SHAPE_ELLIPSE, null, null, null));
@@ -121,7 +121,7 @@ public class DotGraph {
 				graph.append(addNode(id, node.getLabel(), SHAPE_BOX, null, null, null));*/
 			else if(node.getType() == GROUMNode.TYPE_METHOD)
 				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getClassNameId()) + "." + node.getMethod(), SHAPE_BOX, STYLE_ROUNDED, null, null));
-				graph.append(addNode(id, label, SHAPE_BOX, STYLE_ROUNDED, null, null));
+				graph.append(addNode(id, label, SHAPE_BOX, null, null, null));
 			else
 				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getMethodID()), SHAPE_DIAMOND, null, null, null));
 				graph.append(addNode(id, label, SHAPE_ELLIPSE, null, null, null));
