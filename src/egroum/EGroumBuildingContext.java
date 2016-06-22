@@ -108,9 +108,9 @@ public class EGroumBuildingContext {
 		return stkTrys.pop();
 	}
 
-	public HashSet<EGroumActionNode> getTrys(String catchExceptionType) {
+	public HashSet<EGroumActionNode> getTrys(String catchExceptionType, ArrayList<EGroumActionNode> triedMethods) {
 		HashSet<EGroumActionNode> trys = new HashSet<>();
-		for (EGroumActionNode node : stkTrys.peek())
+		for (EGroumActionNode node : triedMethods)
 			if (node.exceptionTypes != null) {
 				for (String type : node.exceptionTypes)
 					if (isSuperType(catchExceptionType, type)) {
@@ -213,35 +213,50 @@ public class EGroumBuildingContext {
 	}
 
 	private void buildSuperFieldTypes(String stype) {
-		String qn = getQualifiedType(stype);
-		HashMap<String, String> superFieldType = typeFieldType.get(qn);
-		for (String name : superFieldType.keySet())
-			buildFieldType(name, superFieldType.get(name));
+		ArrayList<String> qns = getQualifiedTypes(stype);
+		for (String qn : qns) {
+			HashMap<String, String> superFieldType = typeFieldType.get(qn);
+			if (superFieldType != null) {
+				for (String name : superFieldType.keySet())
+					buildFieldType(name, superFieldType.get(name));
+				break;
+			}
+		}
 	}
 
-	private String getQualifiedType(String stype) {
+	private ArrayList<String> getQualifiedTypes(String stype) {
+		ArrayList<String> qts = new ArrayList<>();
 		int index = stype.indexOf('.');
 		String qual = null;
 		if (index > -1) {
-			if (Character.isLowerCase(stype.charAt(0)))
-				return stype;
+			if (Character.isLowerCase(stype.charAt(0))) {
+				qts.add(stype);
+				return qts;
+			}
 			qual = stype.substring(0, index);
 		}
 		CompilationUnit cu = (CompilationUnit) this.method.getRoot();
 		for (int i = 0; i < cu.imports().size(); i++) {
 			ImportDeclaration id = (ImportDeclaration) cu.imports().get(i);
-			if (!id.isOnDemand() && !id.isStatic()) {
+			if (id.isOnDemand()) {
+				qts.add(id.getName().getFullyQualifiedName() + "." + stype);
+			} else if (!id.isStatic()) {
 				String qn = id.getName().getFullyQualifiedName();
-				if (qn.endsWith("." + stype))
-					return qn;
-				if (qual != null && qn.endsWith("." + qual))
-					return qn + stype.substring(qual.length());
+				if (qn.endsWith("." + stype)) {
+					qts.add(qn);
+					return qts;
+				}
+				if (qual != null && qn.endsWith("." + qual)) {
+					qts.add(qn + stype.substring(qual.length()));
+					return qts;
+				}
 			}
 		}
 		String pkg = "";
 		if (cu.getPackage() != null)
 			pkg = cu.getPackage().getName().getFullyQualifiedName();
-		return pkg + "." + stype;
+		qts.add(0, pkg + "." + stype);
+		return qts;
 	}
 
 	public static HashSet<String> getExceptions(String type, String method) {

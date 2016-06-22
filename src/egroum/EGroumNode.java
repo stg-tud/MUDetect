@@ -258,11 +258,9 @@ public abstract class EGroumNode {
 		return false;
 	}
 
-	public EGroumNode getQualtifier() {
+	public EGroumNode getQualifier() {
 		if (this instanceof EGroumDataNode)
-			for (EGroumEdge e : inEdges)
-				if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.QUALIFIER)
-					return e.source;
+			return ((EGroumDataNode) this).getQualifier();
 		return null;
 	}
 
@@ -324,7 +322,7 @@ public abstract class EGroumNode {
 
 	public boolean hasInNode(EGroumNode preNode) {
 		for (EGroumEdge e : inEdges)
-			if (e.source == preNode)
+			if (e.source == preNode && (!(e instanceof EGroumDataEdge) || ((EGroumDataEdge) e).type != Type.DEPENDENCE))
 				return true;
 		return false;
 	}

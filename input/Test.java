@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 class Test {
 	void m1(Object o) {
-		int i = 0; //o.hashCode();
+		int i = 0; // o.hashCode();
 		if (i > 0)
 			o.hashCode();
 	}
@@ -29,22 +29,22 @@ class Test {
 			i = -i;
 			m(i);
 			return;
-		}
-		else m(i++);
+		} else
+			m(i++);
 		if (true) {
 			i = -i;
 			m(i);
 			return;
-		}
-		else i++;
+		} else
+			i++;
 		m(i);
 	}
-	
-	void m(int index) throws Exception {
+
+	void m(int[] a) throws Exception {
 		for (int i : a)
-			a(i);
+			return a[i];
 	}
-	
+
 	void testTry(Test t) {
 		int i = 0;
 		try {
@@ -52,7 +52,7 @@ class Test {
 			t.m(i);
 			new FileOutputStream(new File(""));
 			t.finalize();
-		} catch (Exception | Error e){
+		} catch (Exception | Error e) {
 			t.n();
 			e.printStackTrace();
 		} finally {
@@ -60,17 +60,14 @@ class Test {
 		}
 	}
 	
-	public void showSourceLine(ISourceLocation sourceLocation,boolean highlight){
-	    showSourceLine(sourceLocation.getSourceFile().getAbsolutePath());
-	}
-
-	public void showSourceLine(String filePath, int lineNumber, boolean highlight) {
-		currHighlightEnd = 0;
-		editorPane.setText(readFile(filePath, lineNumber));
-		try {
-			editorPane.getHighlighter().addHighlight(currHighlightEnd);
-		} catch (BadLocationException ble) {
-		}
-	}
-
+    void aspectJTask(Path toolsJar) {        
+        String url = null;
+        /*try {
+            url = "file:";
+        } catch (Throwable t)*/ {
+            StringBuffer sb = new StringBuffer(new A());
+            sb.append(url);
+            sb.append(url);
+        }
+    }
 }

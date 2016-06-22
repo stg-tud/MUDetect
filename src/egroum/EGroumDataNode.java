@@ -81,6 +81,7 @@ public class EGroumDataNode extends EGroumNode {
 		return key.startsWith(PREFIX_DUMMY);
 	}
 
+	@Override
 	public EGroumNode getQualifier() {
 		for (EGroumEdge e : inEdges)
 			if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.QUALIFIER)
