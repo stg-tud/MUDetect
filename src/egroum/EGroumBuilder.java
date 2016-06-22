@@ -199,7 +199,8 @@ public class EGroumBuilder {
 			jarFile.close();
 		} catch (IOException e) {
 			System.err.println("Error in parsing jar file: " + jarFilePath);
-			e.printStackTrace();
+			//e.printStackTrace();
+			System.err.println(e.getMessage());
 		}
 	}
 

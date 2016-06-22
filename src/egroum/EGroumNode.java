@@ -258,6 +258,14 @@ public abstract class EGroumNode {
 		return false;
 	}
 
+	public EGroumNode getQualtifier() {
+		if (this instanceof EGroumDataNode)
+			for (EGroumEdge e : inEdges)
+				if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.QUALIFIER)
+					return e.source;
+		return null;
+	}
+
 	public EGroumNode getDefinition() {
 		if (this instanceof EGroumDataNode && this.inEdges.size() == 1 && this.inEdges.get(0) instanceof EGroumDataEdge) {
 			EGroumDataEdge e = (EGroumDataEdge) this.inEdges.get(0);

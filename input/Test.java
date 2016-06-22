@@ -59,4 +59,18 @@ class Test {
 			t.z(i);
 		}
 	}
+	
+	public void showSourceLine(ISourceLocation sourceLocation,boolean highlight){
+	    showSourceLine(sourceLocation.getSourceFile().getAbsolutePath());
+	}
+
+	public void showSourceLine(String filePath, int lineNumber, boolean highlight) {
+		currHighlightEnd = 0;
+		editorPane.setText(readFile(filePath, lineNumber));
+		try {
+			editorPane.getHighlighter().addHighlight(currHighlightEnd);
+		} catch (BadLocationException ble) {
+		}
+	}
+
 }

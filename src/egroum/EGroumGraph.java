@@ -1377,6 +1377,9 @@ public class EGroumGraph implements Serializable {
 		statementSources.remove(node);
 		sinks.remove(node);
 		statementSinks.remove(node);
+		EGroumNode qual = node.getQualtifier();
+		if (qual != null)
+			delete(qual);
 		node.delete();
 	}
 
@@ -1905,15 +1908,8 @@ public class EGroumGraph implements Serializable {
 				EGroumDataNode dn = (EGroumDataNode) node;
 				ArrayList<EGroumNode> refs = dn.getReferences();
 				if (refs.size() == 1 && refs.get(0).getDefinitions().size() == 1) {
-					EGroumNode a = dn.inEdges.get(0).source;
-					EGroumNode s = a.inEdges.get(1).source;
-					EGroumNode ref = refs.get(0);
-					EGroumDataEdge e = (EGroumDataEdge) ref.outEdges.get(0);
-					if (!s.hasOutNode(e.target))
-						new EGroumDataEdge(s, e.target, e.type);
-					delete(a);
 					delete(dn);
-					delete(ref);
+					delete(refs.get(0));
 				}
 			}
 		}
