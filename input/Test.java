@@ -40,23 +40,19 @@ class Test {
 		m(i);
 	}
 
-	void m(int[] a) throws Exception {
+	void m() throws Exception {
 		for (int i : a)
 			return a[i];
 	}
 
 	void testTry(Test t) {
-		int i = 0;
 		try {
-			i = 1;
-			t.m(i);
-			new FileOutputStream(new File(""));
+			t.m();
 			t.finalize();
 		} catch (Exception | Error e) {
 			t.n();
-			e.printStackTrace();
 		} finally {
-			t.z(i);
+			t.z();
 		}
 	}
 	
@@ -66,8 +62,9 @@ class Test {
             url = "file:";
         } catch (Throwable t)*/ {
             StringBuffer sb = new StringBuffer(new A());
+            String s = url + "";
             sb.append(url);
-            sb.append(url);
+            sb.append(s);
         }
     }
 }

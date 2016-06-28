@@ -5,6 +5,8 @@ import java.util.HashSet;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
+import egroum.EGroumDataEdge.Type;
+
 public class EGroumActionNode extends EGroumNode {
 	public static final String RECURSIVE = "recur";
 	protected String name;
@@ -87,6 +89,23 @@ public class EGroumActionNode extends EGroumNode {
 			if (preDefs.isEmpty())
 				preFields.add(node.key);
 			return (overlap(defs, preDefs) || overlap(fields, preFields));
+		}
+		return false;
+	}
+
+	public boolean hasBackwardThrowDependence(EGroumNode node) {
+		if (node instanceof EGroumDataNode) {
+			ArrayList<EGroumNode> preDefs = node.getDefinitions();
+			if (preDefs.isEmpty())
+				preDefs.add(node);
+			for (EGroumNode predef : preDefs) {
+				for (EGroumEdge e : predef.inEdges) {
+					if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.THROW) {
+						if (hasBackwardDataDependence(e.source))
+							return true;
+					}
+				}
+			}
 		}
 		return false;
 	}
