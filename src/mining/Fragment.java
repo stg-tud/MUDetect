@@ -455,7 +455,7 @@ public class Fragment {
 					int count = 0;
 					HashSet<EGroumNode> outs = node.getOutNodes();
 					for (EGroumNode next : outs) {
-						if (nodes.contains(next)) {
+						if (next instanceof EGroumActionNode && nodes.contains(next)) {
 							count++;
 							if (count == 2)
 								break;
