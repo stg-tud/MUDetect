@@ -58,9 +58,9 @@ class Test {
 	
     void aspectJTask(Path toolsJar) {        
         String url = null;
-        /*try {
+        try {
             url = "file:";
-        } catch (Throwable t)*/ {
+        } catch (Throwable t) {
             StringBuffer sb = new StringBuffer(new A());
             String s = url + "";
             sb.append(url);
