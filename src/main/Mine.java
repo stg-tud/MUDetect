@@ -17,6 +17,7 @@ public class Mine {
 	public static void main(String[] args) {
 		long start = System.currentTimeMillis();
 		Miner miner = new Miner("D:/systems/aspectj-1.5.3-src", "");
+		//Miner miner = new Miner("input", "");
 		miner.mine();
 		long end = System.currentTimeMillis();
 		System.out.println((end - start) / 1000);

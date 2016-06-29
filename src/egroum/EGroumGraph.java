@@ -72,7 +72,7 @@ import utils.JavaASTUtil;
 
 public class EGroumGraph implements Serializable {
 	private static final long serialVersionUID = -5128703931982211886L;
-	private static final int MAX_BRANCHES = 10;
+	private static final int MAX_BRANCHES = 100;
 	
 	private String filePath, name;
 	private EGroumBuildingContext context;
@@ -139,10 +139,10 @@ public class EGroumGraph implements Serializable {
 		deleteControlNodes();
 		cleanUp();
 	}
-
+	
 	private boolean isTooDense() {
 		for (EGroumNode node : nodes)
-			if (node.outEdges.size() > MAX_BRANCHES)
+			if (node instanceof EGroumDataNode && node.outEdges.size() > MAX_BRANCHES)
 				return true;
 		return false;
 	}
@@ -1903,17 +1903,17 @@ public class EGroumGraph implements Serializable {
 						if (in.type == Type.REFERENCE) {
 							isRef = true;
 							if (!node.outEdges.isEmpty()) {
-								EGroumDataEdge out = (EGroumDataEdge) node.outEdges.get(0);
-								if (!in.source.hasOutNode(out.target))
-									new EGroumDataEdge(in.source, out.target, out.type);
+								for (int i = 0; i < node.outEdges.size(); i++) {
+									EGroumDataEdge out = (EGroumDataEdge) node.outEdges.get(i);
+									if (!in.source.hasOutNode(out.target))
+										new EGroumDataEdge(in.source, out.target, out.type);
+								}
 							}
 						}
 					}
 				}
-				if (isRef) {
-					node.outEdges.clear();
+				if (isRef)
 					delete(node);
-				}
 			}
 		}
 	}

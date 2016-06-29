@@ -465,7 +465,7 @@ public class Fragment {
 						add(node, lens);
 					else if (count == 1) {
 						for (EGroumNode next : outs) {
-							if (!nodes.contains(next))
+							if (next instanceof EGroumActionNode && !nodes.contains(next))
 								add(node, next, lens);
 						}
 					}
