@@ -18,6 +18,7 @@ import utils.FileIO;
  * 
  */
 public class Miner {
+	public double maxSingleNodePrevalence = 0.5;
 	private String path = "", projectName;
 	public ArrayList<Lattice> lattices = new ArrayList<Lattice>();
 	public String output_path = "output/patterns";
@@ -63,7 +64,7 @@ public class Miner {
 				nodesOfLabel.remove(label);
 			} else if (!coreLabels.contains(label))
 				nodesOfLabel.remove(label);
-			else if (nodes.size() > groums.size() / 2)
+			else if (nodes.size() > groums.size() * maxSingleNodePrevalence)
 				nodesOfLabel.remove(label);
 		}
 		for (String label : nodesOfLabel.keySet()) {
