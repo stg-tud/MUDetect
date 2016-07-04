@@ -32,7 +32,7 @@ public class DotGraph {
 	private StringBuilder graph = new StringBuilder();
 
 	public DotGraph(EGroumGraph groum) {
-		graph.append(addStart());
+		graph.append(addStart(groum.getName()));
 
 		HashMap<EGroumNode, Integer> ids = new HashMap<EGroumNode, Integer>();
 		// add nodes
@@ -100,7 +100,7 @@ public class DotGraph {
 	}
 	
 	public DotGraph(GROUMGraph groum) {
-		graph.append(addStart());
+		graph.append(addStart(groum.getName()));
 
 		HashMap<GROUMNode, Integer> ids = new HashMap<GROUMNode, Integer>();
 		// add nodes
@@ -147,9 +147,9 @@ public class DotGraph {
 		this.graph = graph;
 	}
 
-	public String addStart()
+	public String addStart(String name)
 	{
-		return "digraph G {\n";
+		return "digraph \"" + name + "\" {\n";
 	}
 	public String addNode(int id, String label, String shape, String style, String borderColor, String fontColor)
 	{

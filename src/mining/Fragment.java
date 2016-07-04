@@ -314,7 +314,7 @@ public class Fragment {
 	public void toGraphics(String path, String name) {
 		StringBuilder graph = new StringBuilder();
 		DotGraph dg = new DotGraph(graph);
-		graph.append(dg.addStart());
+		graph.append(dg.addStart("" + getId()));
 
 		HashMap<EGroumNode, Integer> ids = new HashMap<EGroumNode, Integer>();
 		// add nodes
