@@ -98,14 +98,6 @@ public class EGroumActionNode extends EGroumNode {
 			preDefs.addAll(node.getDefinitions());
 			if (preDefs.isEmpty())
 				preFields.add(node.key);
-			EGroumNode qual = node.getQualifier();
-			if (qual != null) {
-				ArrayList<EGroumNode> tmpDefs = qual.getDefinitions();
-				if (tmpDefs.isEmpty())
-					preFields.add(qual.key);
-				else
-					preDefs.addAll(tmpDefs);
-			}
 			return (overlap(defs, preDefs) || overlap(fields, preFields));
 		}
 		return false;
@@ -140,15 +132,13 @@ public class EGroumActionNode extends EGroumNode {
 				ArrayList<EGroumNode> tmpDefs = e.source.getDefinitions();
 				if (tmpDefs.isEmpty())
 					fields.add(e.source.key);
-				else
+				else {
 					defs.addAll(tmpDefs);
-				EGroumNode qual = e.source.getQualifier();
-				if (qual != null) {
-					tmpDefs = qual.getDefinitions();
-					if (tmpDefs.isEmpty())
-						fields.add(qual.key);
-					else
-						defs.addAll(tmpDefs);
+					for (EGroumNode def : new HashSet<EGroumNode>(defs)) {
+						EGroumNode qual = def.getQualifier();
+						if (qual != null)
+							defs.addAll(qual.getDefinitions());
+					}
 				}
 			}
 		}

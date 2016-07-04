@@ -5,7 +5,8 @@ import java.io.FileReader;
 import java.util.ArrayList;
 
 class Test {
-	void m1(Object o) {
+	void m1(Object o1) {
+		Object o = new Object();
 		int j = 0; // o.hashCode();
 		if (o.j > 0)
 			o.hashCode();
@@ -41,6 +42,10 @@ class Test {
 		} else
 			i++;
 		m(i);
+	}
+	
+	void m() throws Exception {
+		
 	}
 
 	void testTry(Test t) {
