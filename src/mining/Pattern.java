@@ -11,7 +11,7 @@ import java.util.HashSet;
  *
  */
 public class Pattern {
-	public static final int minSize = 3, maxSize = 10;
+	public static int minSize = 3, maxSize = 10;
 	public static int minFreq = 6, maxFreq = 1000;
 	
 	public static int nextID = 1;
