@@ -28,6 +28,16 @@ public class EGroumActionNode extends EGroumNode {
 		this.exceptionTypes = exceptions;
 	}
 
+	public EGroumActionNode(EGroumActionNode node) {
+		super(node.astNode, node.astNodeType, node.key);
+		if (node.control != null) {
+			this.control = node.control;
+		}
+		this.dataType = node.dataType;
+		this.name = node.name;
+		this.exceptionTypes = node.exceptionTypes;
+	}
+
 	@Override
 	public String getLabel() {
 		return dataType == null ? name : dataType;
@@ -88,6 +98,14 @@ public class EGroumActionNode extends EGroumNode {
 			preDefs.addAll(node.getDefinitions());
 			if (preDefs.isEmpty())
 				preFields.add(node.key);
+			EGroumNode qual = node.getQualifier();
+			if (qual != null) {
+				ArrayList<EGroumNode> tmpDefs = qual.getDefinitions();
+				if (tmpDefs.isEmpty())
+					preFields.add(qual.key);
+				else
+					preDefs.addAll(tmpDefs);
+			}
 			return (overlap(defs, preDefs) || overlap(fields, preFields));
 		}
 		return false;
@@ -124,6 +142,37 @@ public class EGroumActionNode extends EGroumNode {
 					fields.add(e.source.key);
 				else
 					defs.addAll(tmpDefs);
+				EGroumNode qual = e.source.getQualifier();
+				if (qual != null) {
+					tmpDefs = qual.getDefinitions();
+					if (tmpDefs.isEmpty())
+						fields.add(qual.key);
+					else
+						defs.addAll(tmpDefs);
+				}
+			}
+		}
+	}
+	
+	@Override
+	public void buildControlClosure(HashSet<EGroumNode> doneNodes) {
+		for (EGroumEdge e : new HashSet<EGroumEdge>(this.getInEdges())) {
+			if (e instanceof EGroumControlEdge) {
+				EGroumNode inNode = e.source;
+				if (!doneNodes.contains(inNode))
+					inNode.buildControlClosure(doneNodes);
+				for (EGroumEdge e1 : inNode.inEdges) {
+					if (!this.hasInEdge(e1)) {
+						if (e1 instanceof EGroumControlEdge)
+							new EGroumControlEdge(e1.source, this, ((EGroumControlEdge) e1).label);
+						else {
+							if (this.hasBackwardDataDependence(e1.source))
+								new EGroumDataEdge(e1.source, this, ((EGroumDataEdge) e1).type);
+							else if (this.hasBackwardThrowDependence(e1.source))
+								new EGroumDataEdge(e1.source, this, ((EGroumDataEdge) e1).type);
+						}
+					}
+				}
 			}
 		}
 	}

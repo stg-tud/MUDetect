@@ -7,7 +7,7 @@ import java.util.ArrayList;
 class Test {
 	void m1(Object o) {
 		int j = 0; // o.hashCode();
-		if (j > 0)
+		if (o.j > 0)
 			o.hashCode();
 	}
 
@@ -17,8 +17,9 @@ class Test {
 	}
 
 	void m22(ArrayList<String> l) {
-		if (l.isEmpty())
-			l.add("");
+		int len = l.size();
+		if (len > 0)
+			l.add(len-1, "");
 	}
 
 	void m23(ArrayList<String> l) {

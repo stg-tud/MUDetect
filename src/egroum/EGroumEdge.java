@@ -38,4 +38,11 @@ public abstract class EGroumEdge {
 		/*this.source = null;
 		this.target = null;*/
 	}
+
+	public static void createEdge(EGroumNode source, EGroumNode target, EGroumEdge e) {
+		if (e instanceof EGroumDataEdge)
+			new EGroumDataEdge(source, target, ((EGroumDataEdge) e).type);
+		if (e instanceof EGroumControlEdge)
+			new EGroumControlEdge(source, target, ((EGroumControlEdge) e).label);
+	}
 }

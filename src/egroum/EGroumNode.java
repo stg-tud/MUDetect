@@ -306,13 +306,6 @@ public abstract class EGroumNode {
 		return refs;
 	}
 
-	public boolean hasInEdge(EGroumNode node, String label) {
-		for (EGroumEdge e : inEdges)
-			if (e.source == node && e.getLabel().equals(label))
-				return true;
-		return false;
-	}
-
 	public boolean hasInEdge(EGroumEdge edge) {
 		for (EGroumEdge e : inEdges)
 			if (e.source == edge.source && e.getLabel().equals(edge.getLabel()))
@@ -358,5 +351,64 @@ public abstract class EGroumNode {
 
 	public static boolean isCoreAction(int astNodeType) {
 		return invocationTypes.contains(astNodeType);
+	}
+
+	public void buildControlClosure(HashSet<EGroumNode> doneNodes) {
+		if (this instanceof EGroumControlNode) {
+			((EGroumControlNode) this).buildControlClosure(doneNodes);
+		} else if (this instanceof EGroumActionNode)
+			((EGroumActionNode) this).buildControlClosure(doneNodes);
+		doneNodes.add(this);
+	}
+
+	public void buildDataClosure(HashSet<EGroumNode> doneNodes) {
+		if (this instanceof EGroumActionNode || this instanceof EGroumDataNode) {
+			for (EGroumEdge e : new HashSet<EGroumEdge>(this.inEdges)) {
+				if (!(e instanceof EGroumDataEdge))
+					continue;
+				if (!(e.source instanceof EGroumDataNode))
+					continue;
+				EGroumDataEdge de = (EGroumDataEdge) e;
+				if (this instanceof EGroumActionNode && de.type != Type.RECEIVER && de.type != Type.PARAMETER)
+					continue;
+				if (this instanceof EGroumDataNode && de.type != Type.QUALIFIER)
+					continue;
+				for (EGroumNode def : de.source.getDefinitions()) {
+					for (EGroumEdge e1 : def.inEdges) {
+						if (e1 instanceof EGroumDataEdge && ((EGroumDataEdge) e1).type == Type.DEFINITION) {
+							if (!doneNodes.contains(e1.source))
+								e1.source.buildDataClosure(doneNodes);
+							for (EGroumEdge e2 : e1.source.inEdges)
+								if (e2 instanceof EGroumDataEdge && ((EGroumDataEdge) e2).getType() == Type.PARAMETER && !this.hasInEdge(e2))
+									new EGroumDataEdge(e2.source, this, de.type);
+							break;
+						}
+					}
+				}
+			}
+		}
+		doneNodes.add(this);
+	}
+
+	public void buildSequentialClosure(HashSet<EGroumNode> doneNodes, HashMap<EGroumNode, HashSet<EGroumNode>> preNodesOfNode) {
+		HashSet<EGroumNode> preNodes = new HashSet<>();
+		for (EGroumEdge e : this.inEdges) {
+			preNodes.add(e.source);
+			if (!doneNodes.contains(e.source))
+				e.source.buildSequentialClosure(doneNodes, preNodesOfNode);
+			preNodes.addAll(preNodesOfNode.get(e.source));
+		}
+		preNodesOfNode.put(this, preNodes);
+		doneNodes.add(this);
+	}
+
+	public static EGroumNode createNode(EGroumNode node) {
+		if (node instanceof EGroumActionNode)
+			return new EGroumActionNode((EGroumActionNode) node);
+		if (node instanceof EGroumControlNode)
+			return new EGroumControlNode((EGroumControlNode) node);
+		if (node instanceof EGroumDataNode)
+			return new EGroumDataNode((EGroumDataNode) node);
+		return null;
 	}
 }

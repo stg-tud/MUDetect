@@ -38,7 +38,6 @@ import org.eclipse.jdt.core.dom.InstanceofExpression;
 import org.eclipse.jdt.core.dom.LabeledStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.NullLiteral;
 import org.eclipse.jdt.core.dom.NumberLiteral;
@@ -68,6 +67,7 @@ import org.eclipse.jdt.core.dom.WhileStatement;
 
 import egroum.EGroumDataEdge.Type;
 import graphics.DotGraph;
+import mining.Fragment;
 import utils.JavaASTUtil;
 
 public class EGroumGraph implements Serializable {
@@ -78,7 +78,6 @@ public class EGroumGraph implements Serializable {
 	private EGroumBuildingContext context;
 	private HashMap<String, HashSet<EGroumDataNode>> defStore = new HashMap<>();
 	protected EGroumNode entryNode, endNode;
-	protected EGroumDataNode[] parameters;
 	protected HashSet<EGroumNode> nodes = new HashSet<EGroumNode>();
 	protected HashSet<EGroumNode> statementNodes = new HashSet<>();
 	protected HashSet<EGroumDataNode> dataSources = new HashSet<>();
@@ -92,27 +91,12 @@ public class EGroumGraph implements Serializable {
 		this(context);
 		context.addScope();
 		context.setMethod(md);
-		int numOfParameters = 0;
-		if (Modifier.isStatic(md.getModifiers()))
-			parameters = new EGroumDataNode[md.parameters().size()];
-		else {
-			parameters = new EGroumDataNode[md.parameters().size() + 1];
-			parameters[numOfParameters++] = new EGroumDataNode(
-					null, ASTNode.THIS_EXPRESSION, "this", "this", "this");
-		}
 		entryNode = new EGroumEntryNode(md, ASTNode.METHOD_DECLARATION, "START");
 		nodes.add(entryNode);
 		statementNodes.add(entryNode);
 		for (int i = 0; i < md.parameters().size(); i++) {
-			SingleVariableDeclaration d = (SingleVariableDeclaration) md
-					.parameters().get(i);
-			String id = d.getName().getIdentifier();
-			//context.addLocalVariable(id, "" + d.getStartPosition());
+			SingleVariableDeclaration d = (SingleVariableDeclaration) md.parameters().get(i);
 			mergeSequential(buildPDG(entryNode, "", d));
-			String[] info = context.getLocalVariableInfo(id);
-			this.parameters[numOfParameters++] = new EGroumDataNode(
-					d.getName(), ASTNode.SIMPLE_NAME, info[0], info[1],
-					"PARAM_" + d.getName().getIdentifier(), false, true);
 		}
 		if (context.interprocedural)
 			context.pushTry();
@@ -165,6 +149,26 @@ public class EGroumGraph implements Serializable {
 			statementNodes.add(node);
 			statementSources.add(node);
 			statementSinks.add(node);
+		}
+	}
+
+	public EGroumGraph(Fragment f) {
+		this.name = f.getGraph().getName();
+		this.filePath = f.getGraph().filePath;
+		HashMap<EGroumNode, EGroumNode> map = new HashMap<>();
+		for (EGroumNode node : f.getNodes()) {
+			EGroumNode cn = EGroumNode.createNode(node);
+			cn.setGraph(this);
+			map.put(node, cn);
+			this.nodes.add(cn);
+		}
+		for (EGroumNode node : f.getNodes()) {
+			EGroumNode cn = map.get(node);
+			for (EGroumEdge e : node.getInEdges()) {
+				EGroumNode s = e.source;
+				if (map.containsKey(s))
+					EGroumEdge.createEdge(map.get(s), cn, e);
+			}
 		}
 	}
 
@@ -1695,14 +1699,14 @@ public class EGroumGraph implements Serializable {
 		HashSet<EGroumNode> doneNodes = new HashSet<EGroumNode>();
 		for (EGroumNode node : nodes)
 			if (!doneNodes.contains(node))
-				buildDataClosure(node, doneNodes);
+				node.buildDataClosure(doneNodes);
 		buildSequentialClosure();
 		doneNodes.clear();
 		pruneTemporaryDataDependence();
 		doneNodes = new HashSet<EGroumNode>();
 		for (EGroumNode node : nodes)
 			if (!doneNodes.contains(node))
-				buildControlClosure(node, doneNodes);
+				node.buildControlClosure(doneNodes);
 	}
 
 	private void buildSequentialClosure() {
@@ -1712,7 +1716,7 @@ public class EGroumGraph implements Serializable {
 		doneNodes.add(entryNode);
 		for (EGroumNode node : nodes) {
 			if (!doneNodes.contains(node))
-				buildSequentialClosure(node, doneNodes, preNodesOfNode);
+				node.buildSequentialClosure(doneNodes, preNodesOfNode);
 		}
 		for (EGroumNode node : preNodesOfNode.keySet()) {
 			if (node.isCoreAction()) {
@@ -1749,74 +1753,6 @@ public class EGroumGraph implements Serializable {
 				}
 			}
 		}
-	}
-
-	private void buildSequentialClosure(EGroumNode node, HashSet<EGroumNode> doneNodes, HashMap<EGroumNode, HashSet<EGroumNode>> preNodesOfNode) {
-		HashSet<EGroumNode> preNodes = new HashSet<>();
-		for (EGroumEdge e : node.inEdges) {
-			preNodes.add(e.source);
-			if (!doneNodes.contains(e.source))
-				buildSequentialClosure(e.source, doneNodes, preNodesOfNode);
-			preNodes.addAll(preNodesOfNode.get(e.source));
-		}
-		preNodesOfNode.put(node, preNodes);
-		doneNodes.add(node);
-	}
-
-	private void buildDataClosure(EGroumNode node, HashSet<EGroumNode> doneNodes) {
-		if (node.getDefinitions().isEmpty()) {
-			for (EGroumEdge e : new HashSet<EGroumEdge>(node.getInEdges())) {
-				if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type != Type.THROW && ((EGroumDataEdge) e).type != Type.DEPENDENCE) {
-					String label = e.getLabel();
-					EGroumDataEdge de = (EGroumDataEdge) e;
-					ArrayList<EGroumNode> inNodes = e.source.getDefinitions();
-					if (inNodes.isEmpty())
-						inNodes.add(e.source);
-					else
-						for (EGroumNode inNode : inNodes)
-							if (!node.hasInEdge(inNode, label))
-								new EGroumDataEdge(inNode, node, de.type);
-					for (EGroumNode inNode : inNodes) {
-						if (!doneNodes.contains(inNode))
-							buildDataClosure(inNode, doneNodes);
-						for (EGroumEdge e1 : inNode.inEdges) {
-							if (e1 instanceof EGroumDataEdge && ((EGroumDataEdge) e1).type != Type.DEPENDENCE && ((EGroumDataEdge) e1).type != Type.THROW) {
-								if (!node.hasInEdge(e1.source, label))
-									new EGroumDataEdge(e1.source, node, de.type);
-							}
-						}
-					}
-				}
-			}
-		}
-		doneNodes.add(node);
-	}
-
-	private void buildControlClosure(EGroumNode node, HashSet<EGroumNode> doneNodes) {
-		for (EGroumEdge e : new HashSet<EGroumEdge>(node.getInEdges())) {
-			if (e instanceof EGroumControlEdge) {
-				EGroumNode inNode = e.source;
-				if (!doneNodes.contains(inNode))
-					buildControlClosure(inNode, doneNodes);
-				for (EGroumEdge e1 : inNode.getInEdges()) {
-					if ((node instanceof EGroumActionNode || node instanceof EGroumControlNode) && !node.hasInEdge(e1)) {
-						if (e1 instanceof EGroumControlEdge)
-							new EGroumControlEdge(e1.source, node, ((EGroumControlEdge) e1).label);
-						else if (e1 instanceof EGroumDataEdge) {
-							if (node instanceof EGroumActionNode) { 
-								if (((EGroumActionNode) node).hasBackwardDataDependence(e1.source))
-									new EGroumDataEdge(e1.source, node, ((EGroumDataEdge) e1).type);
-								else if (((EGroumActionNode) node).hasBackwardThrowDependence(e1.source))
-									new EGroumDataEdge(e1.source, node, ((EGroumDataEdge) e1).type);
-							}
-							else
-								new EGroumDataEdge(e1.source, node, ((EGroumDataEdge) e1).type);
-						}
-					}
-				}
-			}
-		}
-		doneNodes.add(node);
 	}
 
 	private void pruneTemporaryDataDependence() {
@@ -1883,9 +1819,16 @@ public class EGroumGraph implements Serializable {
 				if (refs.size() == 1 && refs.get(0).getDefinitions().size() == 1) {
 					EGroumNode ref = refs.get(0);
 					for (EGroumEdge ie : dn.inEdges)
-						if (ie instanceof EGroumDataEdge && ((EGroumDataEdge) ie).type == Type.DEFINITION)
-							for (EGroumEdge oe : ref.outEdges)
-								new EGroumDataEdge(ie.source, oe.target, ((EGroumDataEdge) oe).type);
+						if (ie instanceof EGroumDataEdge && ((EGroumDataEdge) ie).type == Type.DEFINITION) {
+							EGroumNode an = ie.source;
+							for (EGroumEdge e : an.inEdges) {
+								if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.PARAMETER)
+									for (EGroumEdge oe : ref.outEdges)
+										new EGroumDataEdge(e.source, oe.target, ((EGroumDataEdge) oe).type);
+							}
+							delete(an);
+							break;
+						}
 					delete(dn);
 					delete(ref);
 				}
@@ -1970,9 +1913,6 @@ public class EGroumGraph implements Serializable {
 				nodes.add(def);
 			}
 			new EGroumDataEdge(def, node, Type.REFERENCE);
-			for (EGroumEdge e : node.outEdges)
-				if (!def.hasOutNode(e.getTarget()))
-					new EGroumDataEdge(def, e.getTarget(), ((EGroumDataEdge) e).type);
 		}
 	}
 
@@ -1995,7 +1935,7 @@ public class EGroumGraph implements Serializable {
 					if (ie.isParameter()) {
 						EGroumNode n = ie.source;
 						for (EGroumEdge oe : node.getOutEdges())
-							if ((/*n instanceof EGroumDataNode || */oe.isDef()) && !n.getOutNodes().contains(oe.target))
+							if ((oe.isDef()) && !n.getOutNodes().contains(oe.target))
 								new EGroumDataEdge(n, oe.target, ((EGroumDataEdge) oe).type); // shortcut definition edges before deleting this assignment
 					}
 				}
