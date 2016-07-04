@@ -27,10 +27,8 @@ public class Miner {
 	}
 	
 	public void mine() {
-		EGroumBuilder gb = new EGroumBuilder(path);
-		gb.build();
-		ArrayList<EGroumGraph> groums = gb.getGroums();
-		mine(groums);
+		EGroumBuilder gb = new EGroumBuilder();
+		mine(new ArrayList<>(gb.build(path)));
 	}
 
 	public void mine(ArrayList<EGroumGraph> groums) {

@@ -4,7 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,11 +37,10 @@ public class EGroumBuilderTest {
 	}
 
 	private EGroumGraph buildGroumForMethod(String code) {
-		EGroumBuilder builder = new EGroumBuilder("");
-		builder.buildGroums("class C { " + code + "}", "test");
-		List<EGroumGraph> groums = builder.getGroums();
+		EGroumBuilder builder = new EGroumBuilder();
+		ArrayList<EGroumGraph> groums = builder.buildGroums("class C { " + code + "}", "test");
 		assertThat(groums.size(), is(1));
-		return groums.get(0);
+		return groums.iterator().next();
 	}
 
 	private void print(EGroumGraph groum) {
