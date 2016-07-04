@@ -82,10 +82,9 @@ public class EGroumActionNode extends EGroumNode {
 
 	public boolean hasBackwardDataDependence(EGroumActionNode preNode) {
 		HashSet<EGroumNode> defs = new HashSet<>(), preDefs = new HashSet<>();
-		HashSet<String> fields = new HashSet<>(), preFields = new HashSet<>();
-		getDefinitions(defs, fields);
-		preNode.getDefinitions(preDefs, preFields);
-		return (overlap(defs, preDefs) || overlap(fields, preFields));
+		getDefinitions(defs);
+		preNode.getDefinitions(preDefs);
+		return overlap(defs, preDefs);
 	}
 
 	public boolean hasBackwardDataDependence(EGroumNode node) {
@@ -93,12 +92,16 @@ public class EGroumActionNode extends EGroumNode {
 			return hasBackwardDataDependence((EGroumActionNode) node);
 		if (node instanceof EGroumDataNode) {
 			HashSet<EGroumNode> defs = new HashSet<>(), preDefs = new HashSet<>();
-			HashSet<String> fields = new HashSet<>(), preFields = new HashSet<>();
-			getDefinitions(defs, fields);
+			getDefinitions(defs);
 			preDefs.addAll(node.getDefinitions());
-			if (preDefs.isEmpty())
-				preFields.add(node.key);
-			return (overlap(defs, preDefs) || overlap(fields, preFields));
+			for (EGroumNode def : preDefs) {
+				EGroumNode qual = def.getQualifier();
+				if (qual != null) {
+					ArrayList<EGroumNode> tmpDefs = qual.getDefinitions();
+					preDefs.addAll(tmpDefs);
+				}
+			}
+			return overlap(defs, preDefs);
 		}
 		return false;
 	}
@@ -126,19 +129,15 @@ public class EGroumActionNode extends EGroumNode {
 		return !c.isEmpty();
 	}
 
-	private void getDefinitions(HashSet<EGroumNode> defs, HashSet<String> fields) {
+	private void getDefinitions(HashSet<EGroumNode> defs) {
 		for (EGroumEdge e : inEdges) {
 			if (e.source instanceof EGroumDataNode) {
 				ArrayList<EGroumNode> tmpDefs = e.source.getDefinitions();
-				if (tmpDefs.isEmpty())
-					fields.add(e.source.key);
-				else {
-					defs.addAll(tmpDefs);
-					for (EGroumNode def : new HashSet<EGroumNode>(defs)) {
-						EGroumNode qual = def.getQualifier();
-						if (qual != null)
-							defs.addAll(qual.getDefinitions());
-					}
+				defs.addAll(tmpDefs);
+				for (EGroumNode def : new HashSet<EGroumNode>(defs)) {
+					EGroumNode qual = def.getQualifier();
+					if (qual != null)
+						defs.addAll(qual.getDefinitions());
 				}
 			}
 		}

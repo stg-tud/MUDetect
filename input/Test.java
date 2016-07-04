@@ -18,7 +18,7 @@ class Test {
 	}
 
 	void m22(ArrayList<String> l) {
-		int len = l.size();
+		int len = l.size(i);
 		if (len > 0)
 			l.add(len-1, "");
 	}
@@ -51,11 +51,11 @@ class Test {
 	void testTry(Test t) {
 		try {
 			t.m();
-			t.finalize();
-		} catch (Exception | Error e) {
 			t.n();
+		} catch (Exception | Error e) {
+			t.e();
 		} finally {
-			t.z();
+			t.finalize();
 		}
 	}
 
