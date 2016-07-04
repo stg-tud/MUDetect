@@ -20,6 +20,7 @@ import utils.FileIO;
 public class Miner {
 	private String path = "", projectName;
 	public ArrayList<Lattice> lattices = new ArrayList<Lattice>();
+	public String output_path = "output/patterns";
 	
 	public Miner(String path, String projectName) {
 		this.path = path;
@@ -79,7 +80,7 @@ public class Miner {
 		System.out.println("Done mining.");
 		Lattice.filter(lattices);
 		System.out.println("Done filtering.");
-		File dir = new File("output/patterns" + "/" + FileIO.getSimpleFileName(this.path) + "-" + (System.currentTimeMillis() / 1000));
+		File dir = new File(output_path, FileIO.getSimpleFileName(this.path) + "-" + (System.currentTimeMillis() / 1000));
 		for (int step = Pattern.minSize; step <= lattices.size(); step++) {
 			Lattice lat = lattices.get(step - 1);
 			int c = 0;
