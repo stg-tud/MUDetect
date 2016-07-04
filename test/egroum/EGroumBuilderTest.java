@@ -35,6 +35,11 @@ public class EGroumBuilderTest {
 	public void alternativeReassignments() {
 		print(buildGroumForMethod("void m(int i) { if (i < 0)	i = -i;	else i++; m(i); }"));
 	}
+	
+	@Test
+	public void controlChars() {
+		print(buildGroumForMethod("String cc() { return \" \\n \\t \\b \\f \\\\ \\\" \"; }"));
+	}
 
 	private EGroumGraph buildGroumForMethod(String code) {
 		EGroumBuilder builder = new EGroumBuilder();

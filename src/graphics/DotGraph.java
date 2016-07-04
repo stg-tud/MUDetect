@@ -154,7 +154,7 @@ public class DotGraph {
 	public String addNode(int id, String label, String shape, String style, String borderColor, String fontColor)
 	{
 		StringBuffer buf = new StringBuffer();
-		buf.append(id + " [label=\"" + label + "\"");
+		buf.append(id + " [label=\"" + escapeControlChars(label) + "\"");
 		if(shape != null && !shape.isEmpty())
 			buf.append(" shape=" + shape);
 		if(style != null && !style.isEmpty())
@@ -167,12 +167,19 @@ public class DotGraph {
 
 		return buf.toString();
 	}
+
+	private String escapeControlChars(String label) {
+		if (label == null)
+			return label;
+		else
+			return label.replace("\b", "\\b").replace("\f", "\\f").replace("\b", "\\b").replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t").replace("\"", "\\\"");
+	}
 	public String addEdge(int sId, int eId, String style, String color, String label)
 	{
 		StringBuffer buf = new StringBuffer();
 		if(label == null)
 			label = "";
-		buf.append(sId + " -> " + eId + " [label=\"" + label + "\"");
+		buf.append(sId + " -> " + eId + " [label=\"" + escapeControlChars(label) + "\"");
 		if(style != null && !style.isEmpty())
 			buf.append(" style=" + style);
 		if(color != null && !color.isEmpty())
