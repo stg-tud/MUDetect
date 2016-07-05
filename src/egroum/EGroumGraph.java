@@ -1889,10 +1889,11 @@ public class EGroumGraph implements Serializable {
 
 	private void addDefinitions(EGroumDataNode node, HashMap<String, EGroumNode> defs, HashSet<EGroumNode> doneNodes) {
 		if (node.getDefinitions().isEmpty()) {
-			EGroumNode def = defs.get(node.key);
+			String key = node.getDefKey();
+			EGroumNode def = defs.get(key);
 			if (def == null) {
 				def = new EGroumDataNode(null, node.astNodeType, node.key, node.dataType, node.dataName, true, true);
-				defs.put(node.key, def);
+				defs.put(key, def);
 				nodes.add(def);
 				EGroumNode qual = node.getQualifier();
 				if (qual != null) {
