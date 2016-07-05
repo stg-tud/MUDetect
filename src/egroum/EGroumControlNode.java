@@ -66,9 +66,10 @@ public class EGroumControlNode extends EGroumNode {
 			} else
 				buildConditionClosure((EGroumDataEdge) e);
 		}
+		doneNodes.add(this);
 	}
 
-	public void buildConditionClosure(EGroumDataEdge edge) {
+	private void buildConditionClosure(EGroumDataEdge edge) {
 		if (edge.type != Type.CONDITION)
 			return;
 		HashSet<EGroumNode> conditionNodes = new HashSet<>();

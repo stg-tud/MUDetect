@@ -166,6 +166,10 @@ public abstract class EGroumNode {
 		return false;
 	}
 
+	public boolean isDeclaration() {
+		return this instanceof EGroumDataNode && ((EGroumDataNode) this).isDeclaration;
+	}
+
 	public boolean isStatement() {
 		return control != null;
 	}
@@ -358,7 +362,8 @@ public abstract class EGroumNode {
 			((EGroumControlNode) this).buildControlClosure(doneNodes);
 		} else if (this instanceof EGroumActionNode)
 			((EGroumActionNode) this).buildControlClosure(doneNodes);
-		doneNodes.add(this);
+		else
+			doneNodes.add(this);
 	}
 
 	public void buildDataClosure(HashSet<EGroumNode> doneNodes) {
@@ -390,12 +395,12 @@ public abstract class EGroumNode {
 		doneNodes.add(this);
 	}
 
-	public void buildSequentialClosure(HashSet<EGroumNode> doneNodes, HashMap<EGroumNode, HashSet<EGroumNode>> preNodesOfNode) {
+	public void buildPreSequentialNodes(HashSet<EGroumNode> doneNodes, HashMap<EGroumNode, HashSet<EGroumNode>> preNodesOfNode) {
 		HashSet<EGroumNode> preNodes = new HashSet<>();
 		for (EGroumEdge e : this.inEdges) {
 			preNodes.add(e.source);
 			if (!doneNodes.contains(e.source))
-				e.source.buildSequentialClosure(doneNodes, preNodesOfNode);
+				e.source.buildPreSequentialNodes(doneNodes, preNodesOfNode);
 			preNodes.addAll(preNodesOfNode.get(e.source));
 		}
 		preNodesOfNode.put(this, preNodes);

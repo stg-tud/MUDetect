@@ -35,8 +35,8 @@ public abstract class EGroumEdge {
 		this.source.outEdges.remove(this);
 		this.target.inEdges.remove(this);
 		// FIXME
-		/*this.source = null;
-		this.target = null;*/
+		this.source = null;
+		this.target = null;
 	}
 
 	public static void createEdge(EGroumNode source, EGroumNode target, EGroumEdge e) {

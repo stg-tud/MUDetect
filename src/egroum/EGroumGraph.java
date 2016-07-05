@@ -668,7 +668,7 @@ public class EGroumGraph implements Serializable {
 			}
 		} else
 			pdg.mergeSequentialData(
-					new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS, node.key + "." + name,
+					new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS, node.key + "." + astNode.getName().getIdentifier(),
 							node.dataType + "." + astNode.getName().getIdentifier(),
 							astNode.getName().getIdentifier(), true, false), Type.QUALIFIER);
 		return pdg;
@@ -1394,7 +1394,7 @@ public class EGroumGraph implements Serializable {
 		sinks.remove(node);
 		statementSinks.remove(node);
 		EGroumNode qual = node.getQualifier();
-		if (qual != null)
+		if (qual != null && !qual.isDeclaration())
 			delete(qual);
 		node.delete();
 	}
@@ -1716,8 +1716,9 @@ public class EGroumGraph implements Serializable {
 		doneNodes.add(entryNode);
 		for (EGroumNode node : nodes) {
 			if (!doneNodes.contains(node))
-				node.buildSequentialClosure(doneNodes, preNodesOfNode);
+				node.buildPreSequentialNodes(doneNodes, preNodesOfNode);
 		}
+		doneNodes.clear();
 		for (EGroumNode node : preNodesOfNode.keySet()) {
 			if (node.isCoreAction()) {
 				for (EGroumNode preNode : preNodesOfNode.get(node)) {
@@ -1860,24 +1861,6 @@ public class EGroumGraph implements Serializable {
 		}
 	}
 
-	@SuppressWarnings("unused")
-	private void pruneDefNodes() {
-		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
-			if (node.isDefinition() && ((EGroumDataNode) node).isDeclaration
-					&& node.outEdges.isEmpty()) {
-				for (EGroumEdge e1 : new HashSet<EGroumEdge>(node.inEdges)) {
-					for (EGroumEdge e2 : new HashSet<EGroumEdge>(e1.source.inEdges)) {
-						if (e2 instanceof EGroumDataEdge
-								&& ((EGroumDataEdge) e2).type == Type.PARAMETER)
-							delete(e2.source);
-					}
-					delete(e1.source);
-				}
-				delete(node);
-			}
-		}
-	}
-
 	private void deleteEmptyStatementNodes() {
 		for (EGroumNode node : new HashSet<EGroumNode>(statementNodes)) {
 			if (node.isEmptyNode()) {
@@ -1917,6 +1900,10 @@ public class EGroumGraph implements Serializable {
 					def.inEdges.add(e);
 					node.inEdges.remove(e);
 				}
+			} else {
+				EGroumNode qual = node.getQualifier();
+				if (qual != null && !qual.isDeclaration())
+					delete(qual);
 			}
 			new EGroumDataEdge(def, node, Type.REFERENCE);
 		}

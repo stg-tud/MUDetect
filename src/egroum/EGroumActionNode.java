@@ -164,5 +164,6 @@ public class EGroumActionNode extends EGroumNode {
 				}
 			}
 		}
+		doneNodes.add(this);
 	}
 }
