@@ -155,10 +155,11 @@ public class EGroumActionNode extends EGroumNode {
 						if (e1 instanceof EGroumControlEdge)
 							new EGroumControlEdge(e1.source, this, ((EGroumControlEdge) e1).label);
 						else {
-							if (this.hasBackwardDataDependence(e1.source))
+							/*if (this.hasBackwardDataDependence(e1.source))
 								new EGroumDataEdge(e1.source, this, ((EGroumDataEdge) e1).type);
 							else if (this.hasBackwardThrowDependence(e1.source))
-								new EGroumDataEdge(e1.source, this, ((EGroumDataEdge) e1).type);
+								new EGroumDataEdge(e1.source, this, ((EGroumDataEdge) e1).type);*/
+							new EGroumDataEdge(e1.source, this, ((EGroumDataEdge) e1).type);
 						}
 					}
 				}

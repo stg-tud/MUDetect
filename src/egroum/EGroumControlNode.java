@@ -77,7 +77,8 @@ public class EGroumControlNode extends EGroumNode {
 		nodes.add(edge.source);
 		while (!nodes.isEmpty()) {
 			EGroumNode node = nodes.removeFirst();
-			conditionNodes.add(node);
+			if (node instanceof EGroumActionNode)
+				conditionNodes.add(node);
 			for (EGroumEdge e : node.inEdges) {
 				if (e instanceof EGroumDataEdge && !conditionNodes.contains(e.source)) {
 					EGroumDataEdge de = (EGroumDataEdge) e;
