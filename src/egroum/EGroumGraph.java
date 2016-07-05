@@ -1974,8 +1974,17 @@ public class EGroumGraph implements Serializable {
 	}
 
 	public void toGraphics(String path){
-		DotGraph graph = new DotGraph(this);
+		DotGraph graph = toDotGraph();
 		graph.toDotFile(new File(path + "/" + name + ".dot"));
 		graph.toGraphics(path + "/" + name, "png");
+	}
+
+	public DotGraph toDotGraph() {
+		return new DotGraph(this);
+	}
+	
+	@Override
+	public String toString() {
+		return toDotGraph().getGraph();
 	}
 }
