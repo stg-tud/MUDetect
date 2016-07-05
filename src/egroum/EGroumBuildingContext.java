@@ -96,8 +96,10 @@ public class EGroumBuildingContext {
 	}
 
 	public void addMethodTry(EGroumActionNode node) {
-		for (int i = 0; i < stkTrys.size(); i++)
-			stkTrys.get(i).add(node);
+		/*for (int i = 0; i < stkTrys.size(); i++)
+			stkTrys.get(i).add(node);*/
+		if (!stkTrys.isEmpty())
+			stkTrys.peek().add(node);
 	}
 
 	public void pushTry() {

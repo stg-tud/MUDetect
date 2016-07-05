@@ -389,6 +389,8 @@ public class Fragment {
 	public HashMap<String, HashSet<ArrayList<EGroumNode>>> extend() {
 		HashSet<EGroumNode> ens = new HashSet<>();
 		for (EGroumNode node : nodes) {
+			if (node instanceof EGroumDataNode)
+				continue;
 			for (EGroumNode n : node.getInNodes()) {
 				if (!nodes.contains(n))
 					ens.add(n);

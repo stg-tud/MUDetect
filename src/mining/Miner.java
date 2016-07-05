@@ -55,7 +55,7 @@ public class Miner {
 						&& node.getAstNodeType() != ASTNode.ASSERT_STATEMENT
 						&& node.getAstNodeType() != ASTNode.BREAK_STATEMENT
 						&& node.getAstNodeType() != ASTNode.CONTINUE_STATEMENT
-						&& node.getAstNodeType() != ASTNode.RETURN_STATEMENT 
+						&& node.getAstNodeType() != ASTNode.RETURN_STATEMENT
 						&& node.getAstNodeType() != ASTNode.THROW_STATEMENT)
 					coreLabels.add(label);
 			}
