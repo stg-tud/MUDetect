@@ -1118,8 +1118,9 @@ public class EGroumGraph implements Serializable {
 			CastExpression astNode) {
 		EGroumGraph pdg = buildArgumentPDG(control, branch,
 				astNode.getExpression());
+		String type = JavaASTUtil.getSimpleType(astNode.getType());
 		EGroumNode node = new EGroumActionNode(control, branch,
-				astNode, astNode.getNodeType(), null, JavaASTUtil.getSimpleType(astNode.getType()), JavaASTUtil.getSimpleType(astNode.getType()) + ".<cast>");
+				astNode, astNode.getNodeType(), null, type + ".<cast>", type + ".<cast>");
 		pdg.mergeSequentialData(node, Type.PARAMETER);
 		return pdg;
 	}
