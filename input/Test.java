@@ -3,12 +3,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
+import junit.framework.TestCase;
 
-class Test {
+class Test extends TestCase {
 	void m1(Object o1) {
 		Object o = new Object();
 		int j = 0; // o.hashCode();
-		if (o.j > 0)
+		if (o.j)
 			o.hashCode();
 	}
 
@@ -69,6 +70,17 @@ class Test {
 			sb.append(url);
 			sb.append(s);
 		}
+	}
+	
+	public void testGetDeclaredAdvice() {
+		Advice[] advice = sa.getDeclaredAdvice();
+		assertEquals(10,advice.length);
+		advice = sa.getDeclaredAdvice(AdviceKind.BEFORE);
+		assertEquals(2,advice.length);
+		advice = sa.getDeclaredAdvice(AdviceKind.AFTER);
+		assertEquals(2,advice.length);
+		advice = sa.getDeclaredAdvice(AdviceKind.AFTER_RETURNING);
+		assertEquals(2,advice.length);
 	}
 	
 	private String readFile(String filePath, int lineNumber) {
