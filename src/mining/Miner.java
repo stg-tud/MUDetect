@@ -76,7 +76,8 @@ public class Miner {
 			}
 			Pattern p = new Pattern(fragments, fragments.size());
 			extend(p);
-			p.clear();
+			if (Pattern.minSize > 1)
+				p.clear();
 		}
 		System.out.println("Done mining.");
 		Lattice.filter(lattices);
