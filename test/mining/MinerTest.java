@@ -4,28 +4,47 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 import egroum.EGroumBuilder;
 import egroum.EGroumGraph;
-import graphics.DotGraph;
 
 public class MinerTest {
 
+	
+	@Rule
+	public TestName testName = new TestName(); 
+	
 	@Test
-	public void mine() {
+	public void mineMinimalCode() {
 		ArrayList<EGroumGraph> groums = buildGroums(
 				"class C { void m(Object o) { o.hashCode(); } }",
 				"class C { void m(Object o) { o.hashCode(); } }");
-		System.out.println(new DotGraph(groums.iterator().next()).getGraph());
 		
 		List<Pattern> patterns = mine(groums);
 		
 		assertThat(patterns.size(), is(1));
+		print(patterns.get(0));
 	}
-	
+
+	@Test
+	public void mineLargerCode() {
+		ArrayList<EGroumGraph> groums = buildGroums(
+				"class C { void m(Object o) { if (o != null) { o.hashCode(); } o.equals(this); } }",
+				"class C { void m(Object o) { if (o != null) { o.hashCode(); } o.equals(this); } }");
+		
+		List<Pattern> patterns = mine(groums);
+		
+		print(patterns);
+		assertThat(patterns.size(), is(1));
+		print(patterns.get(0));
+	}
+
 	@Test
 	public void OOM() {
 		String targetSource = "class C { public static String decrypt(PublicKey publicKey, String cipherText)\n" + 
@@ -64,8 +83,10 @@ public class MinerTest {
 				"    return cipher;\n" + 
 				"  }}";
 		ArrayList<EGroumGraph> groums = buildGroums(targetSource, patternSource);
+		System.err.println(groums);
 		List<Pattern> patterns = mine(groums);
 		
+		print(patterns);
 		assertThat(patterns.size(), is(1));
 	}
 
@@ -91,5 +112,16 @@ public class MinerTest {
 			patterns.addAll(lattice.getPatterns());
 		}
 		return patterns;
+	}
+	
+	private void print(Pattern pattern) {
+		print(Arrays.asList(pattern));
+	}
+	
+	private void print(List<Pattern> patterns) {
+		System.err.println("Test '" + testName.getMethodName() + "':");
+		for (Pattern pattern : patterns) {
+			System.err.println(" - " + new EGroumGraph(pattern.getRepresentative()));
+		}
 	}
 }
