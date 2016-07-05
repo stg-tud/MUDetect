@@ -416,4 +416,8 @@ public abstract class EGroumNode {
 			return new EGroumDataNode((EGroumDataNode) node);
 		return null;
 	}
+
+	public static boolean isThisMethodCall(String label) {
+		return label.startsWith("this.") && label.endsWith("()");
+	}
 }

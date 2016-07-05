@@ -58,7 +58,7 @@ public class Miner {
 		lattices.add(l);
 		for (String label : new HashSet<String>(nodesOfLabel.keySet())) {
 			HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
-			if (nodes.size() < Pattern.minFreq) {
+			if (nodes.size() < Pattern.minFreq || EGroumNode.isThisMethodCall(label)) {
 				for (EGroumNode node : nodes)
 					node.delete();
 				nodesOfLabel.remove(label);
