@@ -167,7 +167,7 @@ public abstract class EGroumNode {
 	}
 
 	public boolean isDeclaration() {
-		return this instanceof EGroumDataNode && ((EGroumDataNode) this).isDeclaration;
+		return (this instanceof EGroumDataNode) && ((EGroumDataNode) this).isDeclaration;
 	}
 
 	public boolean isStatement() {

@@ -1881,12 +1881,13 @@ public class EGroumGraph implements Serializable {
 
 	private void addDefinitions() {
 		HashMap<String, EGroumNode> defs = new HashMap<>();
+		HashSet<EGroumNode> doneNodes = new HashSet<>();
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
-			if (node instanceof EGroumDataNode && !node.isLiteral() && !node.isDefinition() && !((EGroumDataNode) node).isException())
-				addDefinitions((EGroumDataNode) node, defs);
+			if (!doneNodes.contains(node) && node instanceof EGroumDataNode && !node.isLiteral() && !node.isDefinition() && !((EGroumDataNode) node).isException())
+				addDefinitions((EGroumDataNode) node, defs, doneNodes);
 	}
 
-	private void addDefinitions(EGroumDataNode node, HashMap<String, EGroumNode> defs) {
+	private void addDefinitions(EGroumDataNode node, HashMap<String, EGroumNode> defs, HashSet<EGroumNode> doneNodes) {
 		if (node.getDefinitions().isEmpty()) {
 			EGroumNode def = defs.get(node.key);
 			if (def == null) {
@@ -1902,11 +1903,15 @@ public class EGroumGraph implements Serializable {
 				}
 			} else {
 				EGroumNode qual = node.getQualifier();
-				if (qual != null && !qual.isDeclaration())
+				if (qual != null && !qual.isDeclaration()) {
+					if (!doneNodes.contains(qual))
+						addDefinitions((EGroumDataNode) qual, defs, doneNodes);
 					delete(qual);
+				}
 			}
 			new EGroumDataEdge(def, node, Type.REFERENCE);
 		}
+		doneNodes.add(node);
 	}
 
 	public void cleanUp() {
