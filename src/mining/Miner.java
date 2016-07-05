@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+
 import egroum.EGroumBuilder;
 import egroum.EGroumGraph;
 import egroum.EGroumNode;
@@ -49,7 +51,12 @@ public class Miner {
 					nodes = new HashSet<EGroumNode>();
 				nodes.add(node);
 				nodesOfLabel.put(label, nodes);
-				if (node.isCoreAction())
+				if (node.isCoreAction()
+						&& node.getAstNodeType() != ASTNode.ASSERT_STATEMENT
+						&& node.getAstNodeType() != ASTNode.BREAK_STATEMENT
+						&& node.getAstNodeType() != ASTNode.CONTINUE_STATEMENT
+						&& node.getAstNodeType() != ASTNode.RETURN_STATEMENT 
+						&& node.getAstNodeType() != ASTNode.THROW_STATEMENT)
 					coreLabels.add(label);
 			}
 		}
