@@ -395,16 +395,22 @@ public abstract class EGroumNode {
 		doneNodes.add(this);
 	}
 
-	public void buildPreSequentialNodes(HashSet<EGroumNode> doneNodes, HashMap<EGroumNode, HashSet<EGroumNode>> preNodesOfNode) {
+	public void buildPreSequentialNodes(HashSet<EGroumNode> visitedNodes, HashMap<EGroumNode, HashSet<EGroumNode>> preNodesOfNode) {
+		if (visitedNodes.contains(this))
+			throw new RuntimeException();
+		visitedNodes.add(this);
 		HashSet<EGroumNode> preNodes = new HashSet<>();
 		for (EGroumEdge e : this.inEdges) {
 			preNodes.add(e.source);
-			if (!doneNodes.contains(e.source))
-				e.source.buildPreSequentialNodes(doneNodes, preNodesOfNode);
-			preNodes.addAll(preNodesOfNode.get(e.source));
+			if (!visitedNodes.contains(e.source))
+				e.source.buildPreSequentialNodes(visitedNodes, preNodesOfNode);
+			HashSet<EGroumNode> s = preNodesOfNode.get(e.source);
+			if (s == null)
+				System.err.print("");
+			else
+				preNodes.addAll(s);
 		}
 		preNodesOfNode.put(this, preNodes);
-		doneNodes.add(this);
 	}
 
 	public static EGroumNode createNode(EGroumNode node) {

@@ -1695,13 +1695,13 @@ public class EGroumGraph implements Serializable {
 	private void buildSequentialClosure() {
 		HashMap<EGroumNode, HashSet<EGroumNode>> preNodesOfNode = new HashMap<>();
 		preNodesOfNode.put(entryNode, new HashSet<EGroumNode>());
-		HashSet<EGroumNode> doneNodes = new HashSet<>();
-		doneNodes.add(entryNode);
+		HashSet<EGroumNode> visitedNodes = new HashSet<>();
+		visitedNodes.add(entryNode);
 		for (EGroumNode node : nodes) {
-			if (!doneNodes.contains(node))
-				node.buildPreSequentialNodes(doneNodes, preNodesOfNode);
+			if (!visitedNodes.contains(node))
+				node.buildPreSequentialNodes(visitedNodes, preNodesOfNode);
 		}
-		doneNodes.clear();
+		visitedNodes.clear();
 		for (EGroumNode node : preNodesOfNode.keySet()) {
 			if (node.isCoreAction()) {
 				for (EGroumNode preNode : preNodesOfNode.get(node)) {
