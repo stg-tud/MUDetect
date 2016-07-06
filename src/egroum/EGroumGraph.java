@@ -701,7 +701,6 @@ public class EGroumGraph implements Serializable {
 			PostfixExpression astNode) {
 		EGroumGraph lg = buildArgumentPDG(control, branch, astNode.getOperand());
 		EGroumDataNode node = lg.getOnlyDataOut();
-		// FIXME handling postfix expression more precisely
 		EGroumGraph rg = new EGroumGraph(context, new EGroumDataNode(
 				null, ASTNode.NUMBER_LITERAL, "1", node.dataType, "1"));
 		EGroumActionNode op = new EGroumActionNode(control, branch,
@@ -1864,13 +1863,12 @@ public class EGroumGraph implements Serializable {
 
 	private void addDefinitions() {
 		HashMap<String, EGroumNode> defs = new HashMap<>();
-		HashSet<EGroumNode> doneNodes = new HashSet<>();
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
-			if (!doneNodes.contains(node) && node instanceof EGroumDataNode && !node.isLiteral() && !node.isDefinition() && !((EGroumDataNode) node).isException())
-				addDefinitions((EGroumDataNode) node, defs, doneNodes);
+			if (node instanceof EGroumDataNode && !node.isLiteral() && !node.isDefinition() && !((EGroumDataNode) node).isException())
+				addDefinitions((EGroumDataNode) node, defs);
 	}
 
-	private void addDefinitions(EGroumDataNode node, HashMap<String, EGroumNode> defs, HashSet<EGroumNode> doneNodes) {
+	private void addDefinitions(EGroumDataNode node, HashMap<String, EGroumNode> defs) {
 		if (node.getDefinitions().isEmpty()) {
 			String key = node.getDefKey();
 			EGroumNode def = defs.get(key);
@@ -1886,16 +1884,15 @@ public class EGroumGraph implements Serializable {
 					node.inEdges.remove(e);
 				}
 			} else {
-				EGroumNode qual = node.getQualifier();
-				if (qual != null && !qual.isDeclaration()) {
-					if (!doneNodes.contains(qual))
-						addDefinitions((EGroumDataNode) qual, defs, doneNodes);
-					delete(qual);
+				for (EGroumEdge e : new HashSet<EGroumEdge>(node.inEdges)) {
+					if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.QUALIFIER) {
+						if (!e.source.isDeclaration())
+							e.delete();
+					}
 				}
 			}
 			new EGroumDataEdge(def, node, Type.REFERENCE);
 		}
-		doneNodes.add(node);
 	}
 
 	public void cleanUp() {
