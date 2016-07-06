@@ -459,6 +459,8 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			SwitchStatement astNode) {
+		// FIXME
+		if (true) return new EGroumGraph(context);
 		EGroumControlNode snode = new EGroumControlNode(control, branch,
 				astNode, astNode.getNodeType());
 		EGroumGraph pdg = new EGroumGraph(context, snode);

@@ -15,10 +15,12 @@ import java.util.Random;
 
 import egroum.EGroumActionNode;
 import egroum.EGroumControlNode;
+import egroum.EGroumDataEdge;
 import egroum.EGroumDataNode;
 import egroum.EGroumEdge;
 import egroum.EGroumGraph;
 import egroum.EGroumNode;
+import egroum.EGroumDataEdge.Type;
 
 /**
  * @author Nguyen Anh Hoan
@@ -469,6 +471,10 @@ public class Fragment {
 						for (EGroumNode next : outs) {
 							if (next instanceof EGroumActionNode && !nodes.contains(next))
 								add(node, next, lens);
+						}
+						for (EGroumEdge e : node.getInEdges()) {
+							if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW)
+								add(node, e.getSource(), lens);
 						}
 					}
 				}
