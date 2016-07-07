@@ -405,10 +405,7 @@ public abstract class EGroumNode {
 			if (!visitedNodes.contains(e.source))
 				e.source.buildPreSequentialNodes(visitedNodes, preNodesOfNode);
 			HashSet<EGroumNode> s = preNodesOfNode.get(e.source);
-			if (s == null)
-				System.err.print("");
-			else
-				preNodes.addAll(s);
+			preNodes.addAll(s);
 		}
 		preNodesOfNode.put(this, preNodes);
 	}

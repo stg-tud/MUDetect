@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
@@ -120,6 +121,7 @@ public class EGroumGraph implements Serializable {
 		buildClosure();
 		deleteReferences();
 		deleteAssignmentNodes();
+		deleteUnreachableNodes();
 		deleteControlNodes();
 		cleanUp();
 	}
@@ -1771,31 +1773,6 @@ public class EGroumGraph implements Serializable {
 		}
 	}
 
-	@SuppressWarnings("unused")
-	private void pruneIsolatedNodes() {
-		HashSet<EGroumNode> isoNodes = new HashSet<EGroumNode>(nodes);
-		isoNodes.removeAll(getReachableNodes());
-		for (EGroumNode node : isoNodes)
-			delete(node);
-	}
-
-	private HashSet<EGroumNode> getReachableNodes() {
-		HashSet<EGroumNode> reachableNodes = new HashSet<>();
-		Stack<EGroumNode> stk = new Stack<>();
-		stk.push(entryNode);
-		while (!stk.isEmpty()) {
-			EGroumNode node = stk.pop();
-			reachableNodes.add(node);
-			for (EGroumEdge e : node.getOutEdges())
-				if (!reachableNodes.contains(e.getTarget()))
-					stk.push(e.getTarget());
-			for (EGroumEdge e : node.getInEdges())
-				if (!reachableNodes.contains(e.getSource()))
-					stk.push(e.getSource());
-		}
-		return reachableNodes;
-	}
-
 	private void deleteTemporaryDataNodes() {
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
 			if (node.isDefinition()) {
@@ -1904,6 +1881,25 @@ public class EGroumGraph implements Serializable {
 	public void deleteControlNodes() {
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
 			if (node instanceof EGroumEntryNode || node instanceof EGroumControlNode)
+				delete(node);
+	}
+
+	public void deleteUnreachableNodes() {
+		HashSet<EGroumNode> reachableNodes = new HashSet<>();
+		LinkedList<EGroumNode> q = new LinkedList<>();
+		q.add(entryNode);
+		while (!q.isEmpty()) {
+			EGroumNode n = q.removeFirst();
+			reachableNodes.add(n);
+			for (EGroumNode next : n.getInNodes())
+				if (!reachableNodes.contains(next))
+					q.add(next);
+			for (EGroumNode next : n.getOutNodes())
+				if (!reachableNodes.contains(next))
+					q.add(next);
+		}
+		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
+			if (!reachableNodes.containsAll(nodes))
 				delete(node);
 	}
 
