@@ -99,9 +99,11 @@ public class EGroumDataNode extends EGroumNode {
 			ArrayList<EGroumNode> defs = getDefinitions();
 			if (defs.isEmpty())
 				return key;
-			String k = "";
-			for (EGroumNode def : defs)
-				k += (def.astNode == null ?  def.key : def.astNode.getStartPosition()) + "|";
+			String k = defs.get(0).astNode == null ?  defs.get(0).key : defs.get(0).astNode.getStartPosition() + "";
+			for (int i = 1; i < defs.size(); i++) {
+				EGroumNode def = defs.get(i);
+				k += "|" + (def.astNode == null ?  def.key : def.astNode.getStartPosition());
+			}
 			return k;
 		}
 		if (qual instanceof EGroumDataNode)
