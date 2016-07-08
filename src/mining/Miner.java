@@ -67,7 +67,7 @@ public class Miner {
 			HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
 			if (nodes.size() < Pattern.minFreq || EGroumNode.isThisMethodCall(label)) {
 				for (EGroumNode node : nodes)
-					node.delete();
+					node.getGraph().delete(node);
 				nodesOfLabel.remove(label);
 			} else if (!coreLabels.contains(label))
 				nodesOfLabel.remove(label);

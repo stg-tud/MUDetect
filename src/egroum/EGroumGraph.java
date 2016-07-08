@@ -1352,7 +1352,7 @@ public class EGroumGraph implements Serializable {
 		clearDefStore();
 	}
 
-	private void delete(EGroumNode node) {
+	public void delete(EGroumNode node) {
 		if (statementSinks.contains(node))
 			for (EGroumEdge e : node.inEdges)
 				if (e instanceof EGroumDataEdge) {
