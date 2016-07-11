@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
-
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ArrayAccess;
 import org.eclipse.jdt.core.dom.ArrayCreation;
@@ -1141,8 +1139,9 @@ public class EGroumGraph implements Serializable {
 	public EGroumGraph buildPDG(EGroumNode control, String branch, List<?> l) {
 		EGroumGraph g = new EGroumGraph(context);
 		for (int i = 0; i < l.size(); i++) {
-			if (l.get(i) instanceof EmptyStatement) continue;
-			EGroumGraph pdg = buildPDG(control, branch, (ASTNode) l.get(i));
+			Object s = l.get(i);
+			if (s instanceof EmptyStatement) continue;
+			EGroumGraph pdg = buildPDG(control, branch, (ASTNode) s);
 			if (!pdg.isEmpty())
 				g.mergeSequential(pdg);
 			if (l.get(i) instanceof ReturnStatement || l.get(i) instanceof ThrowStatement || l.get(i).toString().startsWith("System.exit(")) {
@@ -1154,6 +1153,38 @@ public class EGroumGraph implements Serializable {
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, Assignment astNode) {
+		if (astNode.getLeftHandSide() instanceof ArrayAccess) {
+			ArrayAccess aa = (ArrayAccess) astNode.getLeftHandSide();
+			EGroumGraph ag = buildArgumentPDG(control, branch, aa.getArray());
+			String type = ag.getOnlyOut().dataType;
+			EGroumNode node = new EGroumActionNode(control, branch, aa, aa.getNodeType(), null, type + ".set()", "set()");
+			ag.mergeSequentialData(node, Type.RECEIVER);
+			EGroumGraph ig = buildArgumentPDG(control, branch, aa.getIndex());
+			ig.mergeSequentialData(node, Type.PARAMETER);
+			EGroumGraph vg = null;
+			if (astNode.getOperator() == Assignment.Operator.ASSIGN) {
+				vg = buildArgumentPDG(control, branch, astNode.getRightHandSide());
+			} else {
+				String op = JavaASTUtil.getInfixOperator(astNode.getOperator());
+				EGroumGraph g1 = buildPDG(control, branch, astNode.getLeftHandSide());
+				EGroumGraph g2 = buildArgumentPDG(control, branch, astNode.getRightHandSide());
+				EGroumActionNode opNode = new EGroumActionNode(control, branch, null, ASTNode.INFIX_EXPRESSION, null, null, op);
+				g1.mergeSequentialData(opNode, Type.PARAMETER);
+				g2.mergeSequentialData(opNode, Type.PARAMETER);
+				vg = new EGroumGraph(context);
+				vg.mergeParallel(g1, g2);
+				EGroumDataNode dummy = new EGroumDataNode(null, ASTNode.SIMPLE_NAME,
+						EGroumNode.PREFIX_DUMMY + astNode.getRightHandSide().getStartPosition() + "_"
+								+ astNode.getRightHandSide().getLength(), null, EGroumNode.PREFIX_DUMMY, false, true);
+				vg.mergeSequentialData(dummy, Type.DEFINITION);
+				vg.mergeSequentialData(new EGroumDataNode(null, dummy.astNodeType,
+						dummy.key, dummy.dataType, dummy.dataName), Type.REFERENCE);
+			}
+			vg.mergeSequentialData(node, Type.PARAMETER);
+			EGroumGraph pdg = new EGroumGraph(context);
+			pdg.mergeParallel(ag, ig, vg);
+			return pdg;
+		}
 		if (!(astNode.getLeftHandSide() instanceof Name))
 			return buildPDG(control, branch, astNode.getRightHandSide());
 		EGroumGraph lg = buildPDG(control, branch, astNode.getLeftHandSide());
@@ -1175,21 +1206,6 @@ public class EGroumGraph implements Serializable {
 			pdg.mergeSequentialData(lnode, Type.DEFINITION);
 		} else {
 			pdg = buildPDG(control, branch, astNode.getRightHandSide());
-			ArrayList<EGroumActionNode> rets = pdg.getReturns();
-			if (rets.size() > 0) {
-				for (EGroumActionNode ret : rets) {
-					ret.astNodeType = ASTNode.ASSIGNMENT;
-					ret.name = "=";
-					pdg.extend(ret, new EGroumDataNode(lnode), Type.DEFINITION);
-				}
-				pdg.nodes.addAll(lg.nodes);
-				pdg.statementNodes.addAll(lg.statementNodes);
-				lg.dataSources.remove(lnode);
-				pdg.dataSources.addAll(lg.dataSources);
-				pdg.statementSources.addAll(lg.statementSources);
-				lg.clear();
-				return pdg;
-			}
 			ArrayList<EGroumDataNode> defs = pdg.getDefinitions();
 			if (defs.isEmpty()) {
 				pdg.mergeSequentialData(new EGroumActionNode(control, branch,
@@ -1229,13 +1245,15 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			AssertStatement astNode) {
-		EGroumGraph pdg = buildArgumentPDG(control, branch,
+		// skip assert statement
+		return new EGroumGraph(context);
+		/*EGroumGraph pdg = buildArgumentPDG(control, branch,
 				astNode.getExpression());
 		EGroumNode node = new EGroumActionNode(control, branch,
 				astNode, astNode.getNodeType(), null, null, "assert");
 		pdg.mergeSequentialData(node, Type.PARAMETER);
 		// skip astNode.getMessage()
-		return pdg;
+		return pdg;*/
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
@@ -1432,12 +1450,12 @@ public class EGroumGraph implements Serializable {
 			ArrayAccess astNode) {
 		EGroumGraph ag = buildArgumentPDG(control, branch, astNode.getArray());
 		String type = ag.getOnlyOut().dataType;
-		EGroumNode node = new EGroumActionNode(control, branch, astNode, astNode.getNodeType(), null, type + "[.]", "[.]");
+		EGroumNode node = new EGroumActionNode(control, branch, astNode, astNode.getNodeType(), null, type + ".get()", "get()");
 		ag.mergeSequentialData(node, Type.RECEIVER);
 		EGroumGraph ig = buildArgumentPDG(control, branch, astNode.getIndex());
 		ig.mergeSequentialData(node, Type.PARAMETER);
 		EGroumGraph pdg = new EGroumGraph(context);
-		pdg.mergeBranches(ag, ig);
+		pdg.mergeParallel(ag, ig);
 		return pdg;
 	}
 
@@ -1840,8 +1858,8 @@ public class EGroumGraph implements Serializable {
 
 	private void addDefinitions() {
 		HashMap<String, EGroumNode> defs = new HashMap<>();
-		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
-			if (node instanceof EGroumDataNode && !node.isLiteral() && !node.isDefinition() && !((EGroumDataNode) node).isException())
+		for (EGroumNode node : this.dataSources)
+			if (!((EGroumDataNode) node).isException())
 				addDefinitions((EGroumDataNode) node, defs);
 	}
 
