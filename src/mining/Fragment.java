@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+
 import egroum.EGroumActionNode;
 import egroum.EGroumControlNode;
 import egroum.EGroumDataEdge;
@@ -453,7 +455,7 @@ public class Fragment {
 					}
 				}
 			} else if (node instanceof EGroumDataNode) {
-				if (node.isLiteral()) {
+				if (node.isLiteral() || node.getAstNodeType() == ASTNode.FIELD_ACCESS) {
 					add(node, lens);
 				} else {
 					int count = 0;
