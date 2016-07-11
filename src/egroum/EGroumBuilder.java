@@ -316,10 +316,11 @@ public class EGroumBuilder {
 	}
 
 	private EGroumGraph buildGroums(MethodDeclaration method, String filepath, String name) {
-		System.out.println(filepath + " " + name + JavaASTUtil.buildSignature(method));
+		String sig = JavaASTUtil.buildSignature(method);
+		System.out.println(filepath + " " + name + sig);
 		EGroumGraph g = new EGroumGraph(method, new EGroumBuildingContext(false));
 		g.setFilePath(filepath);
-		g.setName(name + JavaASTUtil.buildSignature(method));
+		g.setName(name + sig);
 		return g;
 	}
 }

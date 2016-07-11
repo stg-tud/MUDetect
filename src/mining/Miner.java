@@ -30,6 +30,10 @@ public class Miner {
 		this.projectName = projectName;
 	}
 	
+	public String getProjectName() {
+		return projectName;
+	}
+
 	public void mine() {
 		EGroumBuilder gb = new EGroumBuilder();
 		mine(new ArrayList<>(gb.build(path)));

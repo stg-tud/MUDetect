@@ -32,6 +32,7 @@ public class Pattern {
 		this.freq = freq;
 	}
 	
+	@SuppressWarnings("null")
 	public void add2Lattice(ArrayList<Lattice> lattices) {
 		setId();
 		Lattice l = null;

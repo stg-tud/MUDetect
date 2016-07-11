@@ -2,8 +2,6 @@ package egroum;
 
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Stack;
-
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import egroum.EGroumDataEdge.Type;
