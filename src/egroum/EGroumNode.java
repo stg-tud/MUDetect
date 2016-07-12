@@ -203,18 +203,25 @@ public abstract class EGroumNode {
 	}
 
 	private void adjustControl(EGroumNode empty, int index) {
-		EGroumControlEdge e = (EGroumControlEdge) getInEdge(control);
+		EGroumControlEdge e = getControlInEdge(control);
 		control.outEdges.remove(e);
 		e.source = empty.control;
 		empty.control.outEdges.add(index, e);
-		e.label = empty.getInEdge(empty.control).getLabel();
+		e.label = empty.getControlInEdge(empty.control).getLabel();
 		control = empty.control;
 	}
 
-	public EGroumEdge getInEdge(EGroumNode node) {
+	public EGroumControlEdge getControlInEdge(EGroumNode node) {
 		for (EGroumEdge e : inEdges)
-			if (e.source == node)
-				return e;
+			if (e.source == node && e instanceof EGroumControlEdge)
+				return (EGroumControlEdge) e;
+		return null;
+	}
+
+	public EGroumDataEdge getQualifierInEdge(EGroumNode node) {
+		for (EGroumEdge e : inEdges)
+			if (e.source == node && e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.QUALIFIER)
+				return (EGroumDataEdge) e;
 		return null;
 	}
 
@@ -396,8 +403,6 @@ public abstract class EGroumNode {
 	}
 
 	public void buildPreSequentialNodes(HashSet<EGroumNode> visitedNodes, HashMap<EGroumNode, HashSet<EGroumNode>> preNodesOfNode) {
-		if (visitedNodes.contains(this))
-			throw new RuntimeException();
 		visitedNodes.add(this);
 		HashSet<EGroumNode> preNodes = new HashSet<>();
 		for (EGroumEdge e : this.inEdges) {
@@ -405,7 +410,10 @@ public abstract class EGroumNode {
 			if (!visitedNodes.contains(e.source))
 				e.source.buildPreSequentialNodes(visitedNodes, preNodesOfNode);
 			HashSet<EGroumNode> s = preNodesOfNode.get(e.source);
-			preNodes.addAll(s);
+			if (s == null)
+				System.err.print("");
+			else
+				preNodes.addAll(s);
 		}
 		preNodesOfNode.put(this, preNodes);
 	}

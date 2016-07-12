@@ -1856,38 +1856,40 @@ public class EGroumGraph implements Serializable {
 		}
 	}
 
+	private HashMap<String, EGroumNode> defs = new HashMap<>();
 	private void addDefinitions() {
-		HashMap<String, EGroumNode> defs = new HashMap<>();
+		HashSet<EGroumNode> visitedNodes = new HashSet<>();
 		for (EGroumNode node : this.dataSources)
 			if (!((EGroumDataNode) node).isException())
-				addDefinitions((EGroumDataNode) node, defs);
+				addDefinitions((EGroumDataNode) node, defs, visitedNodes);
 	}
 
-	private void addDefinitions(EGroumDataNode node, HashMap<String, EGroumNode> defs) {
-		if (node.getDefinitions().isEmpty()) {
-			String key = node.getDefKey();
-			EGroumNode def = defs.get(key);
-			if (def == null) {
-				def = new EGroumDataNode(null, node.astNodeType, node.key, node.dataType, node.dataName, true, true);
-				defs.put(key, def);
-				nodes.add(def);
-				EGroumNode qual = node.getQualifier();
-				if (qual != null) {
-					EGroumEdge e = node.getInEdge(qual);
-					e.target = def;
-					def.inEdges.add(e);
-					node.inEdges.remove(e);
-				}
-			} else {
-				for (EGroumEdge e : new HashSet<EGroumEdge>(node.inEdges)) {
-					if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.QUALIFIER) {
-						if (!e.source.isDeclaration())
-							e.delete();
-					}
+	private void addDefinitions(EGroumDataNode node, HashMap<String, EGroumNode> defs, HashSet<EGroumNode> visitedNodes) {
+		visitedNodes.add(node);
+		String key = node.getDefKey();
+		EGroumNode def = defs.get(key);
+		if (def == null) {
+			def = new EGroumDataNode(null, node.astNodeType, node.key, node.dataType, node.dataName, true, true);
+			defs.put(key, def);
+			nodes.add(def);
+			EGroumNode qual = node.getQualifier();
+			if (qual != null) {
+				if (qual instanceof EGroumDataNode && !visitedNodes.contains(qual))
+					addDefinitions((EGroumDataNode) qual, defs, visitedNodes);
+				EGroumEdge e = node.getQualifierInEdge(qual);
+				e.target = def;
+				def.inEdges.add(e);
+				node.inEdges.remove(e);
+			}
+		} else {
+			for (EGroumEdge e : new HashSet<EGroumEdge>(node.inEdges)) {
+				if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.QUALIFIER) {
+					if (!e.source.isDeclaration())
+						e.delete();
 				}
 			}
-			new EGroumDataEdge(def, node, Type.REFERENCE);
 		}
+		new EGroumDataEdge(def, node, Type.REFERENCE);
 	}
 
 	public void cleanUp() {
