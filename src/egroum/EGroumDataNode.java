@@ -1,7 +1,5 @@
 package egroum;
 
-import java.util.ArrayList;
-
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import egroum.EGroumDataEdge.Type;
@@ -91,24 +89,6 @@ public class EGroumDataNode extends EGroumNode {
 			if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.QUALIFIER)
 				return e.source;
 		return null;
-	}
-
-	public String getDefKey() {
-		EGroumNode qual = getQualifier();
-		if (qual == null) {
-			ArrayList<EGroumNode> defs = getDefinitions();
-			if (defs.isEmpty())
-				return key;
-			String k = defs.get(0).astNode == null ?  defs.get(0).key : defs.get(0).astNode.getStartPosition() + "";
-			for (int i = 1; i < defs.size(); i++) {
-				EGroumNode def = defs.get(i);
-				k += "|" + (def.astNode == null ?  def.key : def.astNode.getStartPosition());
-			}
-			return k;
-		}
-		if (qual instanceof EGroumDataNode)
-			return ((EGroumDataNode) qual).getDefKey() + "." + key;
-		return qual.astNode.getStartPosition() + "." + key;
 	}
 
 	public void copyData(EGroumDataNode node) {

@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -58,10 +57,58 @@ public class EGroumBuilderTest {
 				+ "  throw new RuntimeException(); }"));
 	}
 	
-	@Test @Ignore
+	@Test
 	public void illegalOutNode() throws IOException {
 		FileSystem FileSystem = FileSystems.getDefault();
 		Path targetSourcePath = FileSystem.getPath("/Users/svenamann/Documents/PhD/API Misuse Benchmark/MUBench/checkouts/itext/5091/original-src/com/itextpdf/text");
+		ArrayList<EGroumGraph> groums = new EGroumBuilder().build(targetSourcePath.toString());
+		
+		for (EGroumGraph groum : groums) {
+			HashSet<EGroumNode> nodes = groum.getNodes();
+			for (EGroumNode node : nodes) {
+				for (EGroumNode outNode : node.getOutNodes()) {
+					assertThat(nodes, hasItem(outNode));
+				}
+			}
+		}
+	}
+	
+	@Test
+	public void illegalOutNode1() throws IOException {
+		FileSystem FileSystem = FileSystems.getDefault();
+		Path targetSourcePath = FileSystem.getPath("T:\\repos\\itext\\5090\\original-src");
+		ArrayList<EGroumGraph> groums = new EGroumBuilder().build(targetSourcePath.toString());
+		
+		for (EGroumGraph groum : groums) {
+			HashSet<EGroumNode> nodes = groum.getNodes();
+			for (EGroumNode node : nodes) {
+				for (EGroumNode outNode : node.getOutNodes()) {
+					assertThat(nodes, hasItem(outNode));
+				}
+			}
+		}
+	}
+	
+	@Test
+	public void illegalOutNode2() throws IOException {
+		FileSystem FileSystem = FileSystems.getDefault();
+		Path targetSourcePath = FileSystem.getPath("T:\\repos\\itext\\5091\\original-src");
+		ArrayList<EGroumGraph> groums = new EGroumBuilder().build(targetSourcePath.toString());
+		
+		for (EGroumGraph groum : groums) {
+			HashSet<EGroumNode> nodes = groum.getNodes();
+			for (EGroumNode node : nodes) {
+				for (EGroumNode outNode : node.getOutNodes()) {
+					assertThat(nodes, hasItem(outNode));
+				}
+			}
+		}
+	}
+	
+	@Test
+	public void illegalOutNode3() throws IOException {
+		FileSystem FileSystem = FileSystems.getDefault();
+		Path targetSourcePath = FileSystem.getPath("T:\\repos\\lucene-solr");
 		ArrayList<EGroumGraph> groums = new EGroumBuilder().build(targetSourcePath.toString());
 		
 		for (EGroumGraph groum : groums) {
