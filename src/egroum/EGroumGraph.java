@@ -1826,7 +1826,7 @@ public class EGroumGraph implements Serializable {
 
 	private void addDefinitions() {
 		HashMap<EGroumNode, HashMap<String, EGroumNode>> defs = new HashMap<>();
-		defs.put(null, new HashMap<>());
+		defs.put(null, new HashMap<String, EGroumNode>());
 		for (EGroumNode node : new HashSet<EGroumNode>(this.dataSources))
 			if (this.dataSources.contains(node) && !((EGroumDataNode) node).isException())
 				addDefinitions((EGroumDataNode) node, defs);
