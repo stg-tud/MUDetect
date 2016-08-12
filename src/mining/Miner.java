@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
@@ -39,7 +40,7 @@ public class Miner {
 		mine(new ArrayList<>(gb.build(path)));
 	}
 
-	public void mine(ArrayList<EGroumGraph> groums) {
+	public Set<Pattern> mine(ArrayList<EGroumGraph> groums) {
 		for (EGroumGraph groum : groums) {
 			//groum.deleteUnaryOperationNodes();
 			groum.collapseLiterals();
@@ -93,6 +94,14 @@ public class Miner {
 		System.out.println("Done mining.");
 		Lattice.filter(lattices);
 		System.out.println("Done filtering.");
+		
+		if (output_path != null) {
+			report();
+		}
+		return getPatterns();
+	}
+
+	private void report() {
 		File dir = new File(output_path, FileIO.getSimpleFileName(this.path) + "-" + (System.currentTimeMillis() / 1000));
 		for (int step = Pattern.minSize; step <= lattices.size(); step++) {
 			Lattice lat = lattices.get(step - 1);
@@ -120,6 +129,15 @@ public class Miner {
 			}
 		}
 		System.out.println("Done reporting.");
+	}
+	
+	private Set<Pattern> getPatterns() {
+		Set<Pattern> patterns = new HashSet<>();
+		for (int step = Pattern.minSize - 1; lattices.size() > step; step++) {
+			Lattice lattice = lattices.get(step);
+			patterns.addAll(lattice.getPatterns());
+		}
+		return patterns;
 	}
 
 	private void extend(Pattern pattern) {
