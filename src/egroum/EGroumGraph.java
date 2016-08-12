@@ -176,6 +176,25 @@ public class EGroumGraph implements Serializable {
 			}
 		}
 	}
+	
+	public EGroumGraph(EGroumGraph g) {
+		this.name = g.getName();
+		this.filePath = g.getFilePath();
+		HashMap<EGroumNode, EGroumNode> map = new HashMap<>();
+		for (EGroumNode node : g.getNodes()) {
+			EGroumNode cn = EGroumNode.createNode(node);
+			cn.setGraph(this);
+			map.put(node, cn);
+			this.nodes.add(cn);
+		}
+		for (EGroumNode node : g.getNodes()) {
+			EGroumNode cn = map.get(node);
+			for (EGroumEdge e : node.getInEdges()) {
+				EGroumNode s = e.source;
+				EGroumEdge.createEdge(map.get(s), cn, e);
+			}
+		}
+	}
 
 	public String getFilePath() {
 		return filePath;
