@@ -422,7 +422,7 @@ public class Fragment {
 						if (found) {
 							found = false;
 							for (EGroumNode n : outs) {
-								if (nodes.contains(n)) {
+								if (nodes.contains(n) && n.isCoreAction()) {
 									found = true;
 									break;
 								}
@@ -430,48 +430,53 @@ public class Fragment {
 							if (found) {
 								add(node, lens);
 							} else {
-								for (EGroumNode next : outs) {
-									if (next.isCoreAction())
-										add(node, next, lens);
+								for (EGroumNode n : outs) {
+									if (n.isCoreAction())
+										add(node, n, lens);
 								}
 							}
 						} else {
-							for (EGroumNode next : ins) {
-								add(node, next, lens);
+							found = false;
+							for (EGroumNode n : outs) {
+								if (nodes.contains(n) && n.isCoreAction()) {
+									found = true;
+									break;
+								}
+							}
+							if (found) {
+								for (EGroumNode next : ins) {
+									add(node, next, lens);
+								}
 							}
 						}
 					}
 				}
 			} else if (node instanceof EGroumDataNode) {
-				if (node.isLiteral() || node.getAstNodeType() == ASTNode.FIELD_ACCESS) {
-					add(node, lens);
-				} else {
-					int count = 0;
-					HashSet<EGroumNode> outs = node.getOutNodes();
-					for (EGroumNode next : outs) {
-						if (nodes.contains(next)) {
-							count++;
-							if (count == 1)
-								break;
-						}
+				int count = 0;
+				HashSet<EGroumNode> outs = node.getOutNodes();
+				for (EGroumNode next : outs) {
+					if (nodes.contains(next)) {
+						count++;
+						if (count == 1)
+							break;
 					}
-					if (count == 1) {
-						add(node, lens);
-						for (EGroumEdge e : node.getInEdges()) {
-							if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW)
-								add(node, e.getSource(), lens);
-						}
-					} /*else {
-						for (EGroumNode next : outs) {
-							if (next instanceof EGroumActionNode && !nodes.contains(next))
-								add(node, next, lens);
-						}
-						for (EGroumEdge e : node.getInEdges()) {
-							if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW)
-								add(node, e.getSource(), lens);
-						}
-					}*/
 				}
+				if (count == 1) {
+					add(node, lens);
+					for (EGroumEdge e : node.getInEdges()) {
+						if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW)
+							add(node, e.getSource(), lens);
+					}
+				} /*else {
+					for (EGroumNode next : outs) {
+						if (next instanceof EGroumActionNode && !nodes.contains(next))
+							add(node, next, lens);
+					}
+					for (EGroumEdge e : node.getInEdges()) {
+						if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW)
+							add(node, e.getSource(), lens);
+					}
+				}*/
 			}
 		}
 		Random r = new Random();

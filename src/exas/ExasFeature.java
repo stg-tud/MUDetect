@@ -26,7 +26,8 @@ public class ExasFeature {
 	
 	public ExasFeature(ArrayList<EGroumNode> nodes) {
 		for (int i = 0; i < nodes.size(); i++)
-			nodeFeatures.put(nodes.get(i).getLabel(), i + 1);
+			if (!nodeFeatures.containsKey(nodes.get(i).getLabel()))
+				nodeFeatures.put(nodes.get(i).getLabel(), i + 1);
 	}
 
 	private int getNodeFeature(String label) {

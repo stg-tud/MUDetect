@@ -20,6 +20,7 @@ public abstract class EGroumNode {
 		invocationTypes.add(ASTNode.ARRAY_CREATION);
 		invocationTypes.add(ASTNode.ARRAY_INITIALIZER);
 		invocationTypes.add(ASTNode.ASSERT_STATEMENT);
+		invocationTypes.add(ASTNode.ASSIGNMENT);
 		invocationTypes.add(ASTNode.BREAK_STATEMENT);
 		invocationTypes.add(ASTNode.CAST_EXPRESSION);
 		invocationTypes.add(ASTNode.CLASS_INSTANCE_CREATION);
