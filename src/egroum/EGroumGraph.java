@@ -47,6 +47,7 @@ import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperFieldAccess;
@@ -1013,6 +1014,7 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			ConditionalExpression astNode) {
+		if (true) return new EGroumGraph(context);
 		EGroumDataNode dummy = new EGroumDataNode(null, ASTNode.SIMPLE_NAME,
 				EGroumNode.PREFIX_DUMMY + astNode.getStartPosition() + "_"
 						+ astNode.getLength(), "boolean", EGroumNode.PREFIX_DUMMY, false, true);
@@ -1147,20 +1149,32 @@ public class EGroumGraph implements Serializable {
 		return new EGroumGraph(context);
 	}
 
-	public EGroumGraph buildPDG(EGroumNode control, String branch, List<?> l) {
+	public EGroumGraph buildPDG(EGroumNode control, String branch, List<?> list) {
+		ArrayList<Statement> flattenList = flatten((List<Statement>) list);
 		EGroumGraph g = new EGroumGraph(context);
-		for (int i = 0; i < l.size(); i++) {
-			Object s = l.get(i);
+		for (int i = 0; i < flattenList.size(); i++) {
+			Object s = flattenList.get(i);
 			if (s instanceof EmptyStatement) continue;
 			EGroumGraph pdg = buildPDG(control, branch, (ASTNode) s);
 			if (!pdg.isEmpty())
 				g.mergeSequential(pdg);
-			if (l.get(i) instanceof ReturnStatement || l.get(i) instanceof ThrowStatement || l.get(i).toString().startsWith("System.exit(")) {
+			if (flattenList.get(i) instanceof ReturnStatement || flattenList.get(i) instanceof ThrowStatement || flattenList.get(i).toString().startsWith("System.exit(")) {
 				g.clearDefStore();
 				return g;
 			}
 		}
 		return g;
+	}
+
+	private ArrayList<Statement> flatten(List<Statement> list) {
+		ArrayList<Statement> flattenList = new ArrayList<>();
+		for (Statement s : list) {
+			if (s instanceof Block)
+				flattenList.addAll(flatten(((Block) s).statements()));
+			else
+				flattenList.add(s);
+		}
+		return flattenList;
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, Assignment astNode) {

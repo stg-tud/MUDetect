@@ -51,18 +51,30 @@ public class MinerTest {
 		int tempMaxSize = Pattern.maxSize;
 		Pattern.maxSize = Integer.MAX_VALUE;
 		ArrayList<EGroumGraph> groums = buildGroums(
-				FileIO.readStringFromFile("input/Test_adempiere.java"));
+				FileIO.readStringFromFile("input/Test_new.java"),
+				FileIO.readStringFromFile("input/Test_new.java"));
 		
 		for (EGroumGraph g : groums)
 			System.out.println(g);
 		
 		List<Pattern> patterns = mine(groums);
 		
+		for (EGroumGraph g : groums) {
+			System.out.println(g);
+			g.toGraphics("T:/temp");
+		}
+		print(patterns);
+		assertThat(patterns.size(), is(1));
+		
+		groums = buildGroums(FileIO.readStringFromFile("input/Test_old.java"));
+		groums.add(new EGroumGraph(patterns.get(0).getRepresentative()));
+		patterns = mine(groums);
+		
 		for (EGroumGraph g : groums)
 			System.out.println(g);
 		print(patterns);
 		assertThat(patterns.size(), is(1));
-//		print(patterns.get(0));
+		
 		Pattern.maxSize = tempMaxSize;
 	}
 
