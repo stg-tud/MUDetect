@@ -431,9 +431,7 @@ public class Fragment {
 								add(node, lens);
 							} else {
 								for (EGroumNode next : outs) {
-									if (next.isCoreAction()) {
-										add(node, next, lens);
-									}
+									add(node, next, lens);
 								}
 							}
 						} else {
@@ -456,18 +454,22 @@ public class Fragment {
 								break;
 						}
 					}
-					if (count == 1)
+					if (count == 1) {
 						add(node, lens);
-					else {
+						for (EGroumEdge e : node.getInEdges()) {
+							if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW)
+								add(node, e.getSource(), lens);
+						}
+					} /*else {
 						for (EGroumNode next : outs) {
 							if (next instanceof EGroumActionNode && !nodes.contains(next))
 								add(node, next, lens);
 						}
-					}
-					for (EGroumEdge e : node.getInEdges()) {
-						if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW)
-							add(node, e.getSource(), lens);
-					}
+						for (EGroumEdge e : node.getInEdges()) {
+							if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW)
+								add(node, e.getSource(), lens);
+						}
+					}*/
 				}
 			}
 		}
