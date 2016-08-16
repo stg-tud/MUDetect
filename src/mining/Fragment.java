@@ -431,7 +431,8 @@ public class Fragment {
 								add(node, lens);
 							} else {
 								for (EGroumNode next : outs) {
-									add(node, next, lens);
+									if (next.isCoreAction())
+										add(node, next, lens);
 								}
 							}
 						} else {
