@@ -3,6 +3,10 @@
  */
 package tests;
 
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
+
 import egroum.EGroumBuilder;
 import egroum.EGroumGraph;
 
@@ -17,8 +21,9 @@ public class Test {
 	 */
 	public static void main(String[] args) {
 		EGroumBuilder gb = new EGroumBuilder();
-		for (EGroumGraph groum : gb.build("input/" + "Test.java")) {
-			groum.toGraphics("output");
+		for (EGroumGraph groum : gb.build("input/" + "Test_adempiere.java")) {
+//		for (EGroumGraph groum : gb.build("T:\\repos\\lucene-solr")) {
+			groum.toGraphics("T:/output");
 		}
 	}
 }

@@ -13,6 +13,7 @@ import org.junit.rules.TestName;
 
 import egroum.EGroumBuilder;
 import egroum.EGroumGraph;
+import utils.FileIO;
 
 public class MinerTest {
 
@@ -43,6 +44,26 @@ public class MinerTest {
 		print(patterns);
 		assertThat(patterns.size(), is(1));
 		print(patterns.get(0));
+	}
+
+	@Test
+	public void mineDuplicatedCode() {
+		int tempMaxSize = Pattern.maxSize;
+		Pattern.maxSize = Integer.MAX_VALUE;
+		ArrayList<EGroumGraph> groums = buildGroums(
+				FileIO.readStringFromFile("input/Test_adempiere.java"));
+		
+		for (EGroumGraph g : groums)
+			System.out.println(g);
+		
+		List<Pattern> patterns = mine(groums);
+		
+		for (EGroumGraph g : groums)
+			System.out.println(g);
+		print(patterns);
+		assertThat(patterns.size(), is(1));
+//		print(patterns.get(0));
+		Pattern.maxSize = tempMaxSize;
 	}
 
 	@Test

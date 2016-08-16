@@ -393,8 +393,6 @@ public class Fragment {
 	public HashMap<String, HashSet<ArrayList<EGroumNode>>> extend() {
 		HashSet<EGroumNode> ens = new HashSet<>();
 		for (EGroumNode node : nodes) {
-			if (node instanceof EGroumDataNode)
-				continue;
 			for (EGroumNode n : node.getInNodes()) {
 				if (!nodes.contains(n))
 					ens.add(n);
@@ -424,7 +422,7 @@ public class Fragment {
 						if (found) {
 							found = false;
 							for (EGroumNode n : outs) {
-								if (n.isCoreAction() && nodes.contains(n)) {
+								if (nodes.contains(n)) {
 									found = true;
 									break;
 								}
@@ -439,17 +437,8 @@ public class Fragment {
 								}
 							}
 						} else {
-							found = false;
-							for (EGroumNode n : outs) {
-								if (n.isCoreAction() && nodes.contains(n)) {
-									found = true;
-									break;
-								}
-							}
-							if (found) {
-								for (EGroumNode next : ins) {
-									add(node, next, lens);
-								}
+							for (EGroumNode next : ins) {
+								add(node, next, lens);
 							}
 						}
 					}
@@ -461,23 +450,23 @@ public class Fragment {
 					int count = 0;
 					HashSet<EGroumNode> outs = node.getOutNodes();
 					for (EGroumNode next : outs) {
-						if (next instanceof EGroumActionNode && nodes.contains(next)) {
+						if (nodes.contains(next)) {
 							count++;
-							if (count == 2)
+							if (count == 1)
 								break;
 						}
 					}
-					if (count == 2)
+					if (count == 1)
 						add(node, lens);
-					else if (count == 1) {
+					else {
 						for (EGroumNode next : outs) {
 							if (next instanceof EGroumActionNode && !nodes.contains(next))
 								add(node, next, lens);
 						}
-						for (EGroumEdge e : node.getInEdges()) {
-							if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW)
-								add(node, e.getSource(), lens);
-						}
+					}
+					for (EGroumEdge e : node.getInEdges()) {
+						if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW)
+							add(node, e.getSource(), lens);
 					}
 				}
 			}

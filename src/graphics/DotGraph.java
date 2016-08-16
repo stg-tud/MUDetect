@@ -4,6 +4,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import egroum.EGroumActionNode;
@@ -37,7 +40,14 @@ public class DotGraph {
 		HashMap<EGroumNode, Integer> ids = new HashMap<EGroumNode, Integer>();
 		// add nodes
 		int id = 0;
-		for(EGroumNode node : groum.getNodes()) {
+		ArrayList<EGroumNode> nodes = new ArrayList<EGroumNode>(groum.getNodes());
+		Collections.sort(nodes, new Comparator<EGroumNode>() {
+			@Override
+			public int compare(EGroumNode n1, EGroumNode n2) {
+				return n1.getLabel().compareTo(n2.getLabel());
+			}
+		});
+		for(EGroumNode node : nodes) {
 			id++;
 			ids.put(node, id);
 			String label = node.getLabel();
@@ -61,7 +71,7 @@ public class DotGraph {
 		//String fileName = GROUMNode.fileNames.get(groum.getFileID());
 		//graph.append(addNode(++id, fileName.replace('\\', '#'), DotGraph.STYLE_ROUNDED, null, null, null));
 		// add edges
-		for (EGroumNode node : groum.getNodes()) {
+		for (EGroumNode node : nodes) {
 			if (!ids.containsKey(node)) continue;
 			int tId = ids.get(node);
 			HashMap<String, Integer> numOfEdges = new HashMap<>();

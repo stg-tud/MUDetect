@@ -1927,6 +1927,8 @@ public class EGroumGraph implements Serializable {
 	public void deleteAssignmentNodes() {
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
 			if (node.isAssignment()) {
+				if (node.control instanceof EGroumControlNode && node.control.outEdges.size() == 1)
+					continue;
 				for (EGroumEdge ie : node.getInEdges()) {
 					if (ie.isParameter()) {
 						EGroumNode n = ie.source;
