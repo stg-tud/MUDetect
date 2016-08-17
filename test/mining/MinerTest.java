@@ -6,7 +6,9 @@ import static org.junit.Assert.assertThat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -81,6 +83,47 @@ public class MinerTest {
 	}
 
 	@Test
+	public void mineClone() {
+		ArrayList<EGroumGraph> groums = buildGroums(
+				"class C { void m(Object o, Object p) {  o.hashCode();  p.equals(null); } }",
+				"class C { void m(Object o, Object p) {  o.hashCode();  p.equals(null); } }");
+		
+		List<Pattern> patterns = mine(groums);
+		
+		print(patterns);
+		assertThat(patterns.size(), is(1));
+		print(patterns.get(0));
+	}
+	
+	@Test
+	public void minePattern_aclang2() {
+		ArrayList<EGroumGraph> groums = buildGroums(
+				"class NullTextNull extends StrBuilder {\n" + 
+				"  String pattern(Object obj) {\n" + 
+				"    String str = (obj == null ? this.getNullText() : obj.toString());\n" + 
+				"    if (str == null) {\n" + 
+				"      str = \"\";\n" + 
+				"    }\n" + 
+				"    return str;\n" + 
+				"  }\n" + 
+				"}",
+				"class NullTextNull extends StrBuilder {\n" + 
+				"  String pattern(Object obj) {\n" + 
+				"    String str = (obj == null ? this.getNullText() : obj.toString());\n" + 
+				"    if (str == null) {\n" + 
+				"      str = \"\";\n" + 
+				"    }\n" + 
+				"    return str;\n" + 
+				"  }\n" + 
+				"}");
+		
+		System.out.println(groums);
+		List<Pattern> patterns = mine(groums);
+		
+		print(patterns);
+	}
+
+	@Test
 	public void OOM() {
 		String targetSource = "class C { public static String decrypt(PublicKey publicKey, String cipherText)\n" + 
 				"			throws Exception {\n" + 
@@ -122,7 +165,76 @@ public class MinerTest {
 		List<Pattern> patterns = mine(groums);
 		
 		print(patterns);
-		assertThat(patterns.size(), is(1));
+		assertThat(patterns.size(), is(2));
+	}
+	
+	@Test
+	public void jackrabbit1() {
+		String targetSource = "public class ItemManager {\n" + 
+				"    private boolean canRead(ItemData data, Path path) throws AccessDeniedException, RepositoryException {\n" + 
+				"        if (data.getState().getStatus() == ItemState.STATUS_NEW && !data.getDefinition().isProtected()) {\n" + 
+				"            return true;\n" + 
+				"        } else {\n" + 
+				"            return (path == null) ? canRead(data.getId()) : session.getAccessManager().canRead(path);\n" + 
+				"        }\n" + 
+				"    }\n" + 
+				"}";
+		String patternSource = "class CheckStateNotNull {\n" + 
+			"  boolean canRead(ItemData data, Path path, SessionImpl session) throws AccessDeniedException, RepositoryException {\n" + 
+			"    ItemState state = data.getState();\n" + 
+			"    if (state == null) {\n" + 
+			"        throw new InvalidItemStateException(data.getId() + \": the item does not exist anymore\");\n" + 
+			"    }\n" + 
+			"    if (state.getStatus() == ItemState.STATUS_NEW && !data.getDefinition().isProtected()) {\n" + 
+			"        return true;\n" + 
+			"    } else {\n" + 
+			"        return (path == null) ? canRead(data.getId()) : session.getAccessManager().canRead(path);\n" + 
+			"    }\n" + 
+			"  }\n" + 
+			"  \n" + 
+			"  private boolean canRead(ItemId id) { return true; }\n" + 
+			"}";
+		ArrayList<EGroumGraph> groums = buildGroums(targetSource, patternSource);
+		System.err.println(groums);
+		List<Pattern> patterns = mine(groums);
+		
+		print(patterns);
+		assertThat(patterns.size(), is(2));
+	}
+	
+	@Test
+	public void acmath_1() {
+		String targetSource = "class SubLine {\n" + 
+				"    public Vector3D intersection(final SubLine subLine, final boolean includeEndPoints) {\n" + 
+				"        // compute the intersection on infinite line\n" + 
+				"        Vector3D v1D = line.intersection(subLine.line);\n" + 
+				"        // check location of point with respect to first sub-line\n" + 
+				"        Location loc1 = remainingRegion.checkPoint(line.toSubSpace(v1D));\n" + 
+				"        // check location of point with respect to second sub-line\n" + 
+				"        Location loc2 = subLine.remainingRegion.checkPoint(subLine.line.toSubSpace(v1D));\n" + 
+				"        if (includeEndPoints) {\n" + 
+				"            return ((loc1 != Location.OUTSIDE) && (loc2 != Location.OUTSIDE)) ? v1D : null;\n" + 
+				"        } else {\n" + 
+				"            return ((loc1 == Location.INSIDE) && (loc2 == Location.INSIDE)) ? v1D : null;\n" + 
+				"        }\n" + 
+				"    }\n" + 
+				"}";
+		String patternSource = "class CheckStateNotNull {\n" + 
+			"  public Vector3D pattern(Line line, Line other) {\n" + 
+			"    Vector3D v1D = line.intersection(other);\n" + 
+			"    if (v1D == null) {\n" + 
+			"        return null;\n" + 
+			"    }\n" + 
+			"    line.toSubSpace(v1D);\n" + 
+			"    other.toSubSpace(v1D);\n" + 
+			"    return v1D;\n" + 
+			"  }\n" + 
+			"}";
+		ArrayList<EGroumGraph> groums = buildGroums(targetSource, patternSource);
+		List<Pattern> patterns = mine(groums);
+		
+		print(patterns);
+		assertThat(patterns.size(), is(2));
 	}
 
 	private ArrayList<EGroumGraph> buildGroums(String... sourceCodes) {
@@ -137,6 +249,7 @@ public class MinerTest {
 	private List<Pattern> mine(ArrayList<EGroumGraph> groums) {
 		Pattern.minFreq = 2;
 		Pattern.minSize = 1;
+		Pattern.maxSize = 30;
 		Miner miner = new Miner("", "test");
 		miner.maxSingleNodePrevalence = 100;
 		miner.mine(groums);
@@ -158,7 +271,7 @@ public class MinerTest {
 		for (Pattern pattern : patterns) {
 			EGroumGraph g = new EGroumGraph(pattern.getRepresentative());
 			System.err.println(" - " + g);
-			g.toGraphics("T:/temp");
+			//g.toGraphics("T:/temp");
 		}
 	}
 }

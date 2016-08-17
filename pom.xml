@@ -5,6 +5,18 @@
 	<artifactId>grouminer</artifactId>
 	<version>0.0.2-SNAPSHOT</version>
 	<name>GrouMiner</name>
+	<distributionManagement>
+		<repository>
+			<id>stg-eko</id>
+			<name>Eko Releases</name>
+			<url>http://vm16.rbg.informatik.tu-darmstadt.de/nexus/repository/maven-releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>stg-eko</id>
+			<name>Eko Snapshot</name>
+			<url>http://vm16.rbg.informatik.tu-darmstadt.de/nexus/repository/maven-snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 	<dependencies>
 		<!-- http://mvnrepository.com/artifact/org.eclipse.tycho/org.eclipse.jdt.core -->
 		<dependency>
