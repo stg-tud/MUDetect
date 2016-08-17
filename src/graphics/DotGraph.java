@@ -30,7 +30,17 @@ public class DotGraph {
 	public static final String COLOR_RED = "red";
 	public static final String STYLE_ROUNDED = "rounded";
 	public static final String STYLE_DOTTED = "dotted";
-	public static String EXEC_DOT = "/usr/local/bin/dot";	// Windows
+	public static final String WINDOWS_EXEC_DOT = "D:/Program Files (x86)/Graphviz2.36/bin/dot.exe";	// Windows
+	public static final String MAC_EXEC_DOT = "dot";	// Mac
+	public static final String LINUX_EXEC_DOT = "/usr/local/bin/dot";	// Linux
+	public static String EXEC_DOT = null;
+	
+	static {
+		if (System.getProperty("os.name").startsWith("Windows"))
+			EXEC_DOT = WINDOWS_EXEC_DOT;
+		else 
+			EXEC_DOT = LINUX_EXEC_DOT;
+	}
 
 	private StringBuilder graph = new StringBuilder();
 
