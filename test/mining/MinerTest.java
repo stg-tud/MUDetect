@@ -51,8 +51,8 @@ public class MinerTest {
 		int tempMaxSize = Pattern.maxSize;
 		Pattern.maxSize = Integer.MAX_VALUE;
 		ArrayList<EGroumGraph> groums = buildGroums(
-				FileIO.readStringFromFile("input/Test_new.java"),
-				FileIO.readStringFromFile("input/Test_new.java"));
+				FileIO.readStringFromFile("input/Test_adempiere_new.java"),
+				FileIO.readStringFromFile("input/Test_adempiere_new.java"));
 		
 		for (EGroumGraph g : groums)
 			System.out.println(g);
@@ -66,12 +66,14 @@ public class MinerTest {
 		print(patterns);
 		assertThat(patterns.size(), is(1));
 		
-		groums = buildGroums(FileIO.readStringFromFile("input/Test_old.java"));
+		groums = buildGroums(FileIO.readStringFromFile("input/Test_adempiere_old.java"));
 		groums.add(new EGroumGraph(patterns.get(0).getRepresentative()));
 		patterns = mine(groums);
 		
-		for (EGroumGraph g : groums)
+		for (EGroumGraph g : groums) {
 			System.out.println(g);
+			g.toGraphics("T:/temp");
+		}
 		print(patterns);
 		assertThat(patterns.size(), is(1));
 		
@@ -154,7 +156,9 @@ public class MinerTest {
 	private void print(List<Pattern> patterns) {
 		System.err.println("Test '" + testName.getMethodName() + "':");
 		for (Pattern pattern : patterns) {
-			System.err.println(" - " + new EGroumGraph(pattern.getRepresentative()));
+			EGroumGraph g = new EGroumGraph(pattern.getRepresentative());
+			System.err.println(" - " + g);
+			g.toGraphics("T:/temp");
 		}
 	}
 }

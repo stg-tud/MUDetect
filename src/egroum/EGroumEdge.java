@@ -1,5 +1,7 @@
 package egroum;
 
+import java.util.HashSet;
+
 import egroum.EGroumDataEdge.Type;
 
 public abstract class EGroumEdge {
@@ -43,5 +45,11 @@ public abstract class EGroumEdge {
 			new EGroumDataEdge(source, target, ((EGroumDataEdge) e).type);
 		if (e instanceof EGroumControlEdge)
 			new EGroumControlEdge(source, target, ((EGroumControlEdge) e).label);
+	}
+
+	public boolean isDirect() {
+		HashSet<EGroumNode> inter = this.source.getOutNodes();
+		inter.retainAll(this.target.getInNodes());
+		return inter.isEmpty();
 	}
 }
