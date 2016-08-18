@@ -88,4 +88,14 @@ public class EGroumControlNode extends EGroumNode {
 			if (node instanceof EGroumActionNode && !this.hasInNode(node))
 				new EGroumDataEdge(node, this, Type.CONDITION);
 	}
+
+	public boolean controlsAnotherNode(EGroumNode node) {
+		EGroumEdge e = this.outEdges.get(getOutEdgeIndex(node));
+		for (EGroumEdge oe : this.outEdges) {
+			if (oe.getLabel().equals(e.getLabel()) && oe.target.getAstNodeType() != node.getAstNodeType())
+				return true;
+		}
+		
+		return false;
+	}
 }

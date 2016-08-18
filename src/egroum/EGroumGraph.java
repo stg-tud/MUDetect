@@ -1014,10 +1014,9 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			ConditionalExpression astNode) {
-		if (true) return new EGroumGraph(context);
 		EGroumDataNode dummy = new EGroumDataNode(null, ASTNode.SIMPLE_NAME,
 				EGroumNode.PREFIX_DUMMY + astNode.getStartPosition() + "_"
-						+ astNode.getLength(), "boolean", EGroumNode.PREFIX_DUMMY, false, true);
+						+ astNode.getLength(), "UNKNOWN", EGroumNode.PREFIX_DUMMY, false, true);
 		EGroumGraph pdg = buildArgumentPDG(control, branch,
 				astNode.getExpression());
 		EGroumControlNode node = new EGroumControlNode(control, branch,
@@ -1805,7 +1804,8 @@ public class EGroumGraph implements Serializable {
 							for (EGroumEdge e : an.inEdges) {
 								if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.PARAMETER)
 									for (EGroumEdge oe : ref.outEdges)
-										new EGroumDataEdge(e.source, oe.target, ((EGroumDataEdge) oe).type);
+										if (!oe.target.hasInEdge(oe))
+											new EGroumDataEdge(e.source, oe.target, ((EGroumDataEdge) oe).type);
 							}
 							delete(an);
 							break;
@@ -1941,8 +1941,6 @@ public class EGroumGraph implements Serializable {
 	public void deleteAssignmentNodes() {
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
 			if (node.isAssignment()) {
-				if (node.control instanceof EGroumControlNode && node.control.outEdges.size() == 1)
-					continue;
 				for (EGroumEdge ie : node.getInEdges()) {
 					if (ie.isParameter()) {
 						EGroumNode n = ie.source;
@@ -1951,7 +1949,8 @@ public class EGroumGraph implements Serializable {
 								new EGroumDataEdge(n, oe.target, ((EGroumDataEdge) oe).type); // shortcut definition edges before deleting this assignment
 					}
 				}
-				delete(node);
+				if (!(node.control instanceof EGroumControlNode) || ((EGroumControlNode) node.control).controlsAnotherNode(node))
+					delete(node);
 			}
 	}
 
