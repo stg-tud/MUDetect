@@ -115,6 +115,7 @@ public class EGroumGraph implements Serializable {
 		adjustControlEdges();
 		context.removeScope();
 		addDefinitions();
+		deleteTemporaryDataNodes();
 		deleteEmptyStatementNodes();
 		if (isTooDense()) {
 			nodes.clear();
@@ -122,7 +123,6 @@ public class EGroumGraph implements Serializable {
 			return;
 		}
 		buildClosure();
-		deleteTemporaryDataNodes();
 		deleteReferences();
 		deleteAssignmentNodes();
 		deleteUnreachableNodes();
