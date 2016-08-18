@@ -227,10 +227,11 @@ public class Fragment {
 			return false;
 		if (graph != fragment.getGraph())
 			return false;
-		if (nodes.size() >= fragment.nodes.size() && nodes.containsAll((fragment.nodes)))
+		HashSet<EGroumNode> inter = new HashSet<>(nodes);
+		inter.retainAll(fragment.nodes);
+		if (inter.size() == fragment.nodes.size())
 			return true;
-		else
-			return false;
+		return false;
 	}
 	/**
 	 * 
@@ -250,10 +251,7 @@ public class Fragment {
 		HashSet<EGroumNode> tempNodes = new HashSet<EGroumNode>();
 		tempNodes.addAll(fragment.nodes);
 		tempNodes.retainAll(this.nodes);
-		for (EGroumNode node : tempNodes)
-			if (node.isCoreAction())
-				return true;
-		return false;
+		return !tempNodes.isEmpty();
 	}
 	
 	@Override
@@ -404,8 +402,6 @@ public class Fragment {
 		}
 		HashMap<String, HashSet<ArrayList<EGroumNode>>> lens = new HashMap<>();
 		for (EGroumNode node : ens) {
-			if (node.getLabel().equals(nodes.get(nodes.size() - 1).getLabel())) 
-				continue;
 			if (node instanceof EGroumActionNode){
 				if (node.isCoreAction()) {
 					add(node, lens);

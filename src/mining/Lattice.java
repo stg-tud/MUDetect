@@ -49,10 +49,10 @@ public class Lattice {
 			Lattice l1 = lattices.get(size);
 			for (Pattern p1 : new ArrayList<Pattern>(l1.getPatterns())) {
 				boolean found = false;
-				for (int i = size + 1; i < lattices.size(); i++) {
+				for (int i = size; i < lattices.size(); i++) {
 					Lattice l2 = lattices.get(i);
 					for (Pattern p2 : l2.getPatterns()) {
-						if (p2.contains(p1)) {
+						if (p1 != p2 && p2.contains(p1)) {
 							l1.remove(p1);
 							found = true;
 							break;
@@ -79,7 +79,7 @@ public class Lattice {
 			size = f.getNodes().size();
 			break;
 		}
-		for (int i =  lattices.size() - 1; i >= size - 1; i--) {
+		for (int i = lattices.size() - 1; i >= size - 1; i--) {
 			Lattice l = lattices.get(i);
 			if (l.contains(g))
 				return true;

@@ -115,7 +115,6 @@ public class EGroumGraph implements Serializable {
 		adjustControlEdges();
 		context.removeScope();
 		addDefinitions();
-		deleteTemporaryDataNodes();
 		deleteEmptyStatementNodes();
 		if (isTooDense()) {
 			nodes.clear();
@@ -123,6 +122,7 @@ public class EGroumGraph implements Serializable {
 			return;
 		}
 		buildClosure();
+		deleteTemporaryDataNodes();
 		deleteReferences();
 		deleteAssignmentNodes();
 		deleteUnreachableNodes();
@@ -1149,15 +1149,14 @@ public class EGroumGraph implements Serializable {
 	}
 
 	public EGroumGraph buildPDG(EGroumNode control, String branch, List<?> list) {
-		ArrayList<Statement> flattenList = flatten((List<Statement>) list);
 		EGroumGraph g = new EGroumGraph(context);
-		for (int i = 0; i < flattenList.size(); i++) {
-			Object s = flattenList.get(i);
+		for (int i = 0; i < list.size(); i++) {
+			Object s = list.get(i);
 			if (s instanceof EmptyStatement) continue;
 			EGroumGraph pdg = buildPDG(control, branch, (ASTNode) s);
 			if (!pdg.isEmpty())
 				g.mergeSequential(pdg);
-			if (flattenList.get(i) instanceof ReturnStatement || flattenList.get(i) instanceof ThrowStatement || flattenList.get(i).toString().startsWith("System.exit(")) {
+			if (list.get(i) instanceof ReturnStatement || list.get(i) instanceof ThrowStatement || list.get(i).toString().startsWith("System.exit(")) {
 				g.clearDefStore();
 				return g;
 			}
@@ -1797,21 +1796,36 @@ public class EGroumGraph implements Serializable {
 				EGroumDataNode dn = (EGroumDataNode) node;
 				ArrayList<EGroumNode> refs = dn.getReferences();
 				if (refs.size() == 1 && refs.get(0).getDefinitions().size() == 1) {
+					boolean del = false;
 					EGroumNode ref = refs.get(0);
 					for (EGroumEdge ie : dn.inEdges)
 						if (ie instanceof EGroumDataEdge && ((EGroumDataEdge) ie).type == Type.DEFINITION) {
 							EGroumNode an = ie.source;
-							for (EGroumEdge e : an.inEdges) {
-								if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.PARAMETER)
-									for (EGroumEdge oe : ref.outEdges)
-										if (!oe.target.hasInEdge(oe))
-											new EGroumDataEdge(e.source, oe.target, ((EGroumDataEdge) oe).type);
+							if (!(an.control instanceof EGroumControlNode) || ((EGroumControlNode) an.control).controlsAnotherNode(an)) {
+								for (EGroumEdge e : an.inEdges) {
+									if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.PARAMETER)
+										for (EGroumEdge oe : ref.outEdges)
+											if (!oe.target.hasInNode(e.source))
+												new EGroumDataEdge(e.source, oe.target, ((EGroumDataEdge) oe).type);
+								}
+								delete(an);
+								del = true;
+							} else  {
+								for (EGroumEdge in : an.getInEdges()) {
+									if (in.isParameter()) {
+										EGroumNode n = in.source;
+										for (EGroumEdge out : an.getOutEdges())
+											if ((out.isDef()) && !n.getOutNodes().contains(out.target))
+												new EGroumDataEdge(n, out.target, ((EGroumDataEdge) out).type); // shortcut definition edges before deleting this assignment
+									}
+								}
 							}
-							delete(an);
 							break;
 						}
-					delete(dn);
-					delete(ref);
+					if (del) {
+						delete(dn);
+						delete(ref);
+					}
 				}
 			}
 		}

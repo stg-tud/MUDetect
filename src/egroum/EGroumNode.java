@@ -16,9 +16,9 @@ public abstract class EGroumNode {
 	private static HashSet<Integer> invocationTypes = new HashSet<>(), controlTypes = new HashSet<>(), literalTypes = new HashSet<>();
 	private static HashMap<String, Character> infixExpressionLables = new HashMap<>();
 	static {
-		invocationTypes.add(ASTNode.ARRAY_ACCESS);
+		/*invocationTypes.add(ASTNode.ARRAY_ACCESS);
 		invocationTypes.add(ASTNode.ARRAY_CREATION);
-		invocationTypes.add(ASTNode.ARRAY_INITIALIZER);
+		invocationTypes.add(ASTNode.ARRAY_INITIALIZER);*/
 		invocationTypes.add(ASTNode.ASSERT_STATEMENT);
 		invocationTypes.add(ASTNode.ASSIGNMENT);
 		invocationTypes.add(ASTNode.BREAK_STATEMENT);
@@ -340,7 +340,7 @@ public abstract class EGroumNode {
 	}
 
 	public boolean isAssignment() {
-		return astNodeType == ASTNode.ASSIGNMENT;
+		return this.getLabel().equals("=");
 	}
 
 	public HashSet<EGroumNode> getInNodes() {

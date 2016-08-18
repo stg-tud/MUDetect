@@ -92,7 +92,7 @@ public class EGroumControlNode extends EGroumNode {
 	public boolean controlsAnotherNode(EGroumNode node) {
 		EGroumEdge e = this.outEdges.get(getOutEdgeIndex(node));
 		for (EGroumEdge oe : this.outEdges) {
-			if (oe.getLabel().equals(e.getLabel()) && oe.target.getAstNodeType() != node.getAstNodeType())
+			if (oe.getLabel().equals(e.getLabel()) && !oe.target.getLabel().equals(node.getLabel()))
 				return true;
 		}
 		
