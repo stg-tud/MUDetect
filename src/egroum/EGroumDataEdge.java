@@ -55,9 +55,4 @@ public class EGroumDataEdge extends EGroumEdge {
 		default: return "_data_";
 		}
 	}
-	
-	@Override
-	public String toString() {
-		return getLabel();
-	}
 }

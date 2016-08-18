@@ -8,6 +8,7 @@ import graphics.DotGraph;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -135,6 +136,20 @@ public class Fragment {
 	public ArrayList<EGroumNode> getNodes() {
 		return nodes;
 	}
+
+	public HashSet<EGroumEdge> getEdges() {
+		HashSet<EGroumEdge> edges = new HashSet<>();
+		for (EGroumNode node : nodes) {
+			for (EGroumEdge e : node.getInEdges())
+				if (nodes.contains(e.getSource()))
+					edges.add(e);
+			for (EGroumEdge e : node.getOutEdges())
+				if (nodes.contains(e.getTarget()))
+					edges.add(e);
+		}
+		return edges;
+	}
+	
 	public void setNodes(ArrayList<EGroumNode> nodes) {
 		this.nodes = nodes;
 	}

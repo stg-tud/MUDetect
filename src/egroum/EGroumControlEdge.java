@@ -19,9 +19,4 @@ public class EGroumControlEdge extends EGroumEdge {
 	public String getExasLabel() {
 		return "_control_";
 	}
-	
-	@Override
-	public String toString() {
-		return getLabel();
-	}
 }

@@ -52,4 +52,9 @@ public abstract class EGroumEdge {
 		inter.retainAll(this.target.getInNodes());
 		return inter.isEmpty();
 	}
+	
+	@Override
+	public String toString() {
+		return source + "-" + getLabel() +"->" + target;
+	}
 }

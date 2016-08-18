@@ -3,6 +3,7 @@ package egroum;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -197,6 +198,26 @@ public class EGroumGraph implements Serializable {
 		}
 	}
 
+	public EGroumGraph(HashSet<EGroumNode> nodes, HashMap<EGroumNode, ArrayList<EGroumEdge>> inEdges, HashMap<EGroumNode, ArrayList<EGroumEdge>> outEdges, EGroumGraph g) {
+		this.name = g.name;
+		this.filePath = g.filePath;
+		HashMap<EGroumNode, EGroumNode> map = new HashMap<>();
+		for (EGroumNode node : nodes) {
+			EGroumNode cn = EGroumNode.createNode(node);
+			cn.setGraph(this);
+			map.put(node, cn);
+			this.nodes.add(cn);
+		}
+		for (EGroumNode node : nodes) {
+			EGroumNode cn = map.get(node);
+			for (EGroumEdge e : inEdges.get(node)) {
+				EGroumNode s = e.source;
+				if (map.containsKey(s))
+					EGroumEdge.createEdge(map.get(s), cn, e);
+			}
+		}
+	}
+
 	public String getFilePath() {
 		return filePath;
 	}
@@ -215,6 +236,15 @@ public class EGroumGraph implements Serializable {
 
 	public HashSet<EGroumNode> getNodes() {
 		return nodes;
+	}
+
+	public HashSet<EGroumEdge> getEdges() {
+		HashSet<EGroumEdge> edges = new HashSet<>();
+		for (EGroumNode node : nodes) {
+			edges.addAll(node.getInEdges());
+			edges.addAll(node.getOutEdges());
+		}
+		return edges;
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, ASTNode node) {

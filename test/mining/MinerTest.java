@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -13,6 +14,8 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 
 import egroum.EGroumBuilder;
+import egroum.EGroumDataEdge;
+import egroum.EGroumEdge;
 import egroum.EGroumGraph;
 import egroum.EGroumNode;
 import utils.FileIO;
@@ -53,8 +56,8 @@ public class MinerTest {
 		int tempMaxSize = Pattern.maxSize;
 		Pattern.maxSize = Integer.MAX_VALUE;
 		ArrayList<EGroumGraph> groums = buildGroums(
-				FileIO.readStringFromFile("input/Test_new.java"),
-				FileIO.readStringFromFile("input/Test_new.java"));
+				FileIO.readStringFromFile("input/Test_aclang_new.java"),
+				FileIO.readStringFromFile("input/Test_aclang_new.java"));
 		
 		for (EGroumGraph g : groums){
 			System.out.println(g);
@@ -70,7 +73,7 @@ public class MinerTest {
 		print(patterns);
 		assertThat(patterns.size(), is(1));
 		
-		groums = buildGroums(FileIO.readStringFromFile("input/Test_old.java"));
+		groums = buildGroums(FileIO.readStringFromFile("input/Test_aclang_old.java"));
 		groums.add(new EGroumGraph(patterns.get(0).getRepresentative()));
 		
 		for (EGroumGraph g : groums) {
@@ -78,12 +81,48 @@ public class MinerTest {
 			g.toGraphics("T:/temp");
 		}
 		
+		HashSet<EGroumNode> patternNodes = new HashSet<>(groums.get(1).getNodes());
+		HashSet<EGroumEdge> patternEdges = new HashSet<>();
+		HashMap<EGroumNode, ArrayList<EGroumEdge>> patternInEdges = new HashMap<>(), patternOutEdges = new HashMap<>();
+		for (EGroumNode node : patternNodes) {
+			patternEdges.addAll(node.getInEdges());
+			patternEdges.addAll(node.getOutEdges());
+			patternInEdges.put(node, new ArrayList<>(node.getInEdges()));
+			patternOutEdges.put(node, new ArrayList<>(node.getOutEdges()));
+		}
+		
 		patterns = mine(groums);
 		
 		print(patterns);
 		assertThat(patterns.size(), is(1));
 		
+		printMissing(patterns.get(0), groums.get(1), patternNodes, patternEdges, patternInEdges, patternOutEdges);
+		
 		Pattern.maxSize = tempMaxSize;
+	}
+
+	private void printMissing(Pattern p, EGroumGraph g, HashSet<EGroumNode> patternNodes, HashSet<EGroumEdge> patternEdges, HashMap<EGroumNode, ArrayList<EGroumEdge>> patternInEdges, HashMap<EGroumNode, ArrayList<EGroumEdge>> patternOutEdges) {
+		Fragment f = null;
+		for (Fragment t : p.getFragments())
+			if (t.getGraph() == g) {
+				f = t;
+				break;
+			}
+		HashSet<EGroumNode> nodes = new HashSet<>(patternNodes);
+		nodes.removeAll(f.getNodes());
+		HashSet<EGroumEdge> edges = new HashSet<>(patternEdges);
+		edges.removeAll(f.getEdges());
+		EGroumGraph mg = new EGroumGraph(nodes, patternInEdges, patternOutEdges, g);
+		System.out.println(mg);
+		System.out.println("Missing edges:");
+		print(edges);
+		mg.toGraphics("T:/temp");
+	}
+
+	private void print(HashSet<EGroumEdge> edges) {
+		for (EGroumEdge e : edges) {
+			System.out.println(e);
+		}
 	}
 
 	@Test
