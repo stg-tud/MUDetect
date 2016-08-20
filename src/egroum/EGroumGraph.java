@@ -2021,7 +2021,8 @@ public class EGroumGraph implements Serializable {
 			for (String label : labelLiterals.keySet()) {
 				ArrayList<EGroumNode> lits = labelLiterals.get(label);
 				if (lits.size() > 1) {
-					((EGroumDataNode) lits.get(1)).dataName = label + "*";
+					EGroumDataNode lit = (EGroumDataNode) lits.get(1);
+					lit.dataName = lit.dataName + "*";
 					for (int i = 2; i < lits.size(); i++)
 						lits.get(i).delete();
 				}
