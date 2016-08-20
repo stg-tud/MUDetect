@@ -1500,18 +1500,50 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			FieldAccess astNode) {
-		EGroumGraph pdg = buildArgumentPDG(control, branch,
-				astNode.getExpression());
-		EGroumDataNode qual = pdg.getOnlyDataOut();
-		EGroumDataNode node = new EGroumDataNode(astNode, astNode.getNodeType(), qual.key == null ? astNode.toString() : qual.key + "." + astNode.getName().getIdentifier(),
-				qual.dataType + "." + astNode.getName().getIdentifier(),
-				astNode.getName().getIdentifier(), true, false);
-		pdg.mergeSequentialData(node, Type.QUALIFIER);
-		return pdg;
+		if (astNode.getExpression() instanceof ThisExpression) {
+			String name = astNode.getName().getIdentifier();
+			String type = context.getFieldType(name);
+			if (type != null) {
+				EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
+						null, ASTNode.THIS_EXPRESSION, "this",
+						"this", "this"));
+				pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS,
+						"this." + name, type, name, true,
+						false), Type.QUALIFIER);
+				return pdg;
+			}
+			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
+					null, ASTNode.THIS_EXPRESSION, "this",
+					"this", "this"));
+			pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS,
+					"this." + name, "UNKNOWN", name, true,
+					false), Type.QUALIFIER);
+			return pdg;
+		} else {
+			EGroumGraph pdg = buildArgumentPDG(control, branch,
+					astNode.getExpression());
+			EGroumDataNode qual = pdg.getOnlyDataOut();
+			EGroumDataNode node = new EGroumDataNode(astNode, astNode.getNodeType(), qual.key == null ? astNode.toString() : qual.key + "." + astNode.getName().getIdentifier(),
+					qual.dataType + "." + astNode.getName().getIdentifier(),
+					astNode.getName().getIdentifier(), true, false);
+			pdg.mergeSequentialData(node, Type.QUALIFIER);
+			return pdg;
+		}
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			SuperFieldAccess astNode) {
+		String name = astNode.getName().getIdentifier();
+		String type = context.getFieldType(name);
+		if (type != null) {
+			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
+					null, ASTNode.THIS_EXPRESSION, "this",
+					"this", "this"));
+			pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS,
+					"this." + name, type, name, true,
+					false), Type.QUALIFIER);
+			return pdg;
+		}
 		EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
 				null, ASTNode.THIS_EXPRESSION, "this", "super", "super"));
 		pdg.mergeSequentialData(
