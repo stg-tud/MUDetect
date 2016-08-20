@@ -463,31 +463,35 @@ public class Fragment {
 					}
 				}
 			} else if (node instanceof EGroumDataNode) {
-				int count = 0;
-				HashSet<EGroumNode> outs = node.getOutNodes();
-				for (EGroumNode next : outs) {
-					if (nodes.contains(next)) {
-						count++;
-						if (count == 1)
-							break;
+				boolean hasThrow = false;
+				for (EGroumEdge e : node.getInEdges()) {
+					if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW && nodes.contains(e.getSource())) {
+						add(node, lens);
+						hasThrow = true;
+						break;
 					}
 				}
-				if (count == 1) {
-					add(node, lens);
-					for (EGroumEdge e : node.getInEdges()) {
-						if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW)
-							add(node, e.getSource(), lens);
-					}
-				} /*else {
+				if (!hasThrow) {
+					int count = 0;
+					HashSet<EGroumNode> outs = node.getOutNodes();
 					for (EGroumNode next : outs) {
-						if (next instanceof EGroumActionNode && !nodes.contains(next))
-							add(node, next, lens);
+						if (nodes.contains(next)) {
+							count++;
+							if (count == 1)
+								break;
+						}
 					}
-					for (EGroumEdge e : node.getInEdges()) {
-						if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW)
-							add(node, e.getSource(), lens);
+					if (count == 1) {
+						for (EGroumEdge e : node.getInEdges()) {
+							if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW) {
+								add(node, e.getSource(), lens);
+								hasThrow = true;
+							}
+						}
+						if (!hasThrow)
+							add(node, lens);
 					}
-				}*/
+				}
 			}
 		}
 		Random r = new Random();

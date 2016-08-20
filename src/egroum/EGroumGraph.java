@@ -1210,7 +1210,7 @@ public class EGroumGraph implements Serializable {
 			ArrayAccess aa = (ArrayAccess) astNode.getLeftHandSide();
 			EGroumGraph ag = buildArgumentPDG(control, branch, aa.getArray());
 			String type = ag.getOnlyOut().dataType;
-			EGroumNode node = new EGroumActionNode(control, branch, aa, aa.getNodeType(), null, type + ".set()", "set()");
+			EGroumNode node = new EGroumActionNode(control, branch, aa, aa.getNodeType(), null, type + ".arrayset()", "arrayset()");
 			ag.mergeSequentialData(node, Type.RECEIVER);
 			EGroumGraph ig = buildArgumentPDG(control, branch, aa.getIndex());
 			ig.mergeSequentialData(node, Type.PARAMETER);
@@ -1489,7 +1489,7 @@ public class EGroumGraph implements Serializable {
 			ArrayAccess astNode) {
 		EGroumGraph ag = buildArgumentPDG(control, branch, astNode.getArray());
 		String type = ag.getOnlyOut().dataType;
-		EGroumNode node = new EGroumActionNode(control, branch, astNode, astNode.getNodeType(), null, type + ".get()", "get()");
+		EGroumNode node = new EGroumActionNode(control, branch, astNode, astNode.getNodeType(), null, type + ".arrayget()", "arrayget()");
 		ag.mergeSequentialData(node, Type.RECEIVER);
 		EGroumGraph ig = buildArgumentPDG(control, branch, astNode.getIndex());
 		ig.mergeSequentialData(node, Type.PARAMETER);

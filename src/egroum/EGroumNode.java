@@ -392,7 +392,7 @@ public abstract class EGroumNode {
 							if (!doneNodes.contains(e1.source))
 								e1.source.buildDataClosure(doneNodes);
 							for (EGroumEdge e2 : e1.source.inEdges)
-								if (e2 instanceof EGroumDataEdge && ((EGroumDataEdge) e2).getType() == Type.PARAMETER && !this.hasInEdge(e2))
+								if (!e2.source.isLiteral() && e2 instanceof EGroumDataEdge && ((EGroumDataEdge) e2).getType() == Type.PARAMETER && !this.hasInEdge(e2))
 									new EGroumDataEdge(e2.source, this, de.type);
 							break;
 						}
