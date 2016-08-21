@@ -471,6 +471,9 @@ public class EGroumGraph implements Serializable {
 			EGroumGraph fg = new EGroumGraph(context, fn);
 			fg.mergeSequential(buildPDG(fn, "", astNode.getFinally()));
 			pdg.mergeSequential(fg);
+			for (EGroumActionNode m : triedMethods)
+				if (m.exceptionTypes != null && !m.exceptionTypes.isEmpty())
+					new EGroumDataEdge(m, fn, Type.FINALLY);
 		}
 		return pdg;
 	}
