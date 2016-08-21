@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Stack;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.ArrayAccess;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
@@ -29,6 +30,7 @@ public class EGroumBuildingContext {
 	public static HashMap<String, HashSet<String>> exceptionHierarchy = new HashMap<>();
 	
 	private MethodDeclaration method;
+	private String type = "this", superType = "Object";
 	protected boolean interprocedural;
 	private Stack<ArrayList<EGroumActionNode>> stkTrys = new Stack<>();
 	private Stack<HashMap<String, String>> localVariables = new Stack<>(), localVariableTypes = new Stack<>();
@@ -46,13 +48,29 @@ public class EGroumBuildingContext {
 		this.method = method;
 		ASTNode p = this.method.getParent();
 		if (p != null) {
-			if (p instanceof TypeDeclaration)
+			if (p instanceof AbstractTypeDeclaration) {
+				AbstractTypeDeclaration atd = (AbstractTypeDeclaration) p;
+				this.type = atd.getName().getIdentifier();
+			}
+			if (p instanceof TypeDeclaration) {
 				buildFieldType((TypeDeclaration) p);
+				TypeDeclaration td = (TypeDeclaration) p;
+				if (td.getSuperclassType() != null)
+					this.superType = JavaASTUtil.getSimpleType(td.getSuperclassType());
+			}
 			else if (p instanceof EnumDeclaration)
 				buildFieldType((EnumDeclaration) p);
 		}
 	}
 	
+	public String getType() {
+		return type;
+	}
+
+	public String getSuperType() {
+		return superType;
+	}
+
 	private void buildFieldType(EnumDeclaration ed) {
 		for (int i = 0; i < ed.bodyDeclarations().size(); i++) {
 			if (ed.bodyDeclarations().get(i) instanceof FieldDeclaration) {
