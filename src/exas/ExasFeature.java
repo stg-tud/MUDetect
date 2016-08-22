@@ -19,6 +19,7 @@ public class ExasFeature {
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.RECEIVER), edgeFeatures.size());
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.REFERENCE), edgeFeatures.size());
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.THROW), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.FINALLY), edgeFeatures.size());
 		edgeFeatures.put("_control_", edgeFeatures.size());
 	}
 	
