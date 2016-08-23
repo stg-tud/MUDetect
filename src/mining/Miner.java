@@ -11,9 +11,13 @@ import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
+import egroum.EGroumActionNode;
 import egroum.EGroumBuilder;
+import egroum.EGroumDataEdge;
+import egroum.EGroumEdge;
 import egroum.EGroumGraph;
 import egroum.EGroumNode;
+import egroum.EGroumDataEdge.Type;
 import utils.FileIO;
 
 /**
@@ -71,8 +75,19 @@ public class Miner {
 		for (String label : new HashSet<String>(nodesOfLabel.keySet())) {
 			HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
 			if (nodes.size() < Pattern.minFreq/* || EGroumNode.isThisMethodCall(label)*/) {
-				for (EGroumNode node : nodes)
-					node.getGraph().delete(node);
+				// FIXME
+				for (EGroumNode node : nodes) {
+					boolean isDefAction = false;
+					if (node instanceof EGroumActionNode) {
+						for (EGroumEdge e : node.getOutEdges())
+							if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.DEFINITION) {
+								isDefAction = true;
+								break;
+							}
+					}
+					if (!isDefAction)
+						node.getGraph().delete(node);
+				}
 				nodesOfLabel.remove(label);
 			} else if (!coreLabels.contains(label))
 				nodesOfLabel.remove(label);
