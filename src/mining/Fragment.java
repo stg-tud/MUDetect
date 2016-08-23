@@ -488,8 +488,23 @@ public class Fragment {
 								hasThrow = true;
 							}
 						}
-						if (!hasThrow)
-							add(node, lens);
+						if (!hasThrow) {
+							HashSet<EGroumNode> defs = new HashSet<>();
+							for (EGroumEdge e : node.getInEdges()) {
+								if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.DEFINITION && e.getSource() instanceof EGroumActionNode) {
+									if (nodes.contains(e.getSource())) {
+										defs.clear();
+										break;
+									}
+									defs.add(e.getSource());
+								}
+							}
+							if (defs.isEmpty())
+								add(node, lens);
+							else 
+								for (EGroumNode next : defs)
+									add(node, next, lens);
+						}
 					}
 				}
 			}
