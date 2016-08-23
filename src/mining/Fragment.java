@@ -490,7 +490,9 @@ public class Fragment {
 						}
 						if (!hasThrow) {
 							HashSet<EGroumNode> defs = new HashSet<>();
-							if (node.getAstNodeType() != ASTNode.SIMPLE_NAME) 
+							if (node.getAstNodeType() == ASTNode.SIMPLE_NAME)
+								defs.addAll(null);
+							else
 								for (EGroumEdge e : node.getInEdges())
 									if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.DEFINITION) {
 										defs.add(e.getSource());
