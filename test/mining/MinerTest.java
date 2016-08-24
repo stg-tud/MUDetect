@@ -55,7 +55,7 @@ public class MinerTest {
 	public void mineDuplicatedCode() {
 		int tempMaxSize = Pattern.maxSize;
 		Pattern.maxSize = Integer.MAX_VALUE;
-		String system = "jakarta";
+		String system = "joda";
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		for (int i = 0; i < 2; i++)
 			groums.addAll(buildGroums(FileIO.readStringFromFile("input/Test_" + system + "_new.java")));
@@ -132,9 +132,9 @@ public class MinerTest {
 	@Test
 	public void mineClone() {
 		ArrayList<EGroumGraph> groums = buildGroums(
-				"class C { void m(Object o, Object p) {  o.hashCode();  p.equals(null); } }",
-				"class C { void m(Object o, Object p) {  o.hashCode();  p.equals(null); } }");
-		
+				"class C { void m(Object o, Object p) {  o = getObj(); o.hashCode(); o.hashCode();} }",
+				"class C { void m(Object o, Object p) {  o.hashCode();} }");
+		System.out.println(groums);
 		List<Pattern> patterns = mine(groums);
 		
 		print(patterns);
@@ -288,14 +288,14 @@ public class MinerTest {
 		EGroumBuilder builder = new EGroumBuilder();
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		for (String sourceCode : sourceCodes) {
-			groums.addAll(builder.buildGroums(sourceCode, ""));
+			groums.addAll(builder.buildGroums(sourceCode, "", ""));
 		}
 		return groums;
 	}
 
 	private List<Pattern> mine(ArrayList<EGroumGraph> groums) {
 		Pattern.minFreq = 2;
-		Pattern.minSize = 2;
+		Pattern.minSize = 1;
 		Pattern.maxSize = 30;
 		Miner miner = new Miner("", "test");
 		miner.maxSingleNodePrevalence = 100;

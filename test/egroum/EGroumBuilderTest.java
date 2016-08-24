@@ -157,7 +157,7 @@ public class EGroumBuilderTest {
 
 	private ArrayList<EGroumGraph> buildGroumsForClass(String classCode) {
 		EGroumBuilder builder = new EGroumBuilder();
-		return builder.buildGroums(classCode, "test");
+		return builder.buildGroums(classCode, "test", "test");
 	}
 
 	private void print(EGroumGraph groum) {

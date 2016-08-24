@@ -31,9 +31,31 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.Assignment.Operator;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.internal.core.dom.NaiveASTFlattener;
 
 public class JavaASTUtil {
+
+	public static ASTNode parseSource(String source, String path, String name) {
+		Map options = JavaCore.getOptions();
+		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_7);
+		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_7);
+		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_7);
+		String srcDir = getSrcDir(source, path, name);
+		ASTParser parser = ASTParser.newParser(AST.JLS4);
+    	parser.setCompilerOptions(options);
+		parser.setEnvironment(
+				new String[]{}, 
+				new String[]{srcDir}, 
+				new String[]{"UTF-8"}, 
+				true);
+		parser.setResolveBindings(true);
+		parser.setBindingsRecovery(true);
+		parser.setSource(source.toCharArray());
+    	parser.setUnitName(name);
+    	ASTNode ast = parser.createAST(null);
+		return ast;
+	}
 
 	public static ASTNode parseSource(String source) {
 		Map options = JavaCore.getOptions();
@@ -41,23 +63,34 @@ public class JavaASTUtil {
 		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_7);
 		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_7);
 		ASTParser parser = ASTParser.newParser(AST.JLS4);
-    	parser.setSource(source.toCharArray());
     	parser.setCompilerOptions(options);
+		parser.setSource(source.toCharArray());
     	ASTNode ast = parser.createAST(null);
 		return ast;
 	}
 	
-	public static ASTNode parseSource(String source, int kind) {
+	private static String getSrcDir(String source, String path, String name) {
 		Map options = JavaCore.getOptions();
 		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_7);
 		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_7);
 		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_7);
-		ASTParser parser = ASTParser.newParser(AST.JLS3);
-    	parser.setSource(source.toCharArray());
+		ASTParser parser = ASTParser.newParser(AST.JLS4);
     	parser.setCompilerOptions(options);
-    	parser.setKind(kind);
+		parser.setSource(source.toCharArray());
     	ASTNode ast = parser.createAST(null);
-		return ast;
+    	CompilationUnit cu =  (CompilationUnit) ast;
+    	String srcDir = path;
+    	if (cu.getPackage() != null) {
+    		String p = cu.getPackage().getName().getFullyQualifiedName();
+    		int end = path.length() - p.length() - 1 - name.length();
+    		if (end > 0)
+    			srcDir = path.substring(0, end);
+    	} else {
+	    	int end = path.length() - name.length();
+			if (end > 0)
+				srcDir = path.substring(0, end);
+    	}
+		return srcDir;
 	}
 	
 	public static String getSource(ASTNode node) {

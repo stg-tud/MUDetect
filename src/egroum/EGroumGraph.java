@@ -31,6 +31,8 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.ForStatement;
+import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.Initializer;
@@ -574,14 +576,17 @@ public class EGroumGraph implements Serializable {
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			SuperMethodInvocation astNode) {
 		EGroumGraph[] pgs = new EGroumGraph[astNode.arguments().size() + 1];
+		String type = context.getSuperType();
+		if (astNode.resolveMethodBinding() != null)
+			type = astNode.resolveMethodBinding().getDeclaringClass().getTypeDeclaration().getName();
 		pgs[0] = new EGroumGraph(context, new EGroumDataNode(
 				null, ASTNode.THIS_EXPRESSION, "this",
-				context.getSuperType(), "super"));
+				type, "super"));
 		for (int i = 0; i < astNode.arguments().size(); i++)
 			pgs[i+1] = buildArgumentPDG(control, branch,
 					(Expression) astNode.arguments().get(i));
 		EGroumActionNode node = new EGroumActionNode(control, branch,
-				astNode, astNode.getNodeType(), null, context.getSuperType() + "." + astNode.getName().getIdentifier() + "()", 
+				astNode, astNode.getNodeType(), null, type + "." + astNode.getName().getIdentifier() + "()", 
 				astNode.getName().getIdentifier());
 		EGroumGraph pdg = null;
 		pgs[0].mergeSequentialData(node, Type.RECEIVER);
@@ -603,8 +608,11 @@ public class EGroumGraph implements Serializable {
 			pgs[i] = buildArgumentPDG(control, branch,
 					(Expression) astNode.arguments().get(i));
 		}
+		String type = context.getSuperType();
+		if (astNode.resolveConstructorBinding() != null)
+			type = astNode.resolveConstructorBinding().getDeclaringClass().getTypeDeclaration().getName();
 		EGroumActionNode node = new EGroumActionNode(control, branch,
-				astNode, astNode.getNodeType(), null, context.getSuperType() + "()", "<init>");
+				astNode, astNode.getNodeType(), null, type + "()", "<init>");
 		EGroumGraph pdg = null;
 		if (pgs.length > 0) {
 			for (EGroumGraph pg : pgs)
@@ -640,14 +648,19 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, SimpleName astNode) {
 		String name = astNode.getIdentifier();
+		String type = null;
+		if (astNode.resolveTypeBinding() != null) {
+			type = astNode.resolveTypeBinding().getTypeDeclaration().getName();
+		}
 		String[] info = context.getLocalVariableInfo(name);
 		if (info != null) {
 			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
-					astNode, astNode.getNodeType(), info[0], info[1],
+					astNode, astNode.getNodeType(), info[0], type == null ? info[1] : type,
 					astNode.getIdentifier(), false, false));
 			return pdg;
 		}
-		String type = context.getFieldType(name);
+		if (type == null)
+			type = context.getFieldType(astNode);
 		if (type != null) {
 			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
 					null, ASTNode.THIS_EXPRESSION, "this",
@@ -697,7 +710,10 @@ public class EGroumGraph implements Serializable {
 			QualifiedName astNode) {
 		EGroumGraph pdg = buildArgumentPDG(control, branch, astNode.getQualifier());
 		EGroumDataNode node = pdg.getOnlyDataOut();
-		if (node.dataType.startsWith("UNKNOWN")) {
+		String type = node.dataType;
+		if (astNode.getQualifier().resolveTypeBinding() != null)
+			type = astNode.getQualifier().resolveTypeBinding().getTypeDeclaration().getName();
+		if (type.startsWith("UNKNOWN")) {
 			String name = astNode.getName().getIdentifier();
 			if (Character.isUpperCase(name.charAt(0))) {
 				return new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS, node.key + "." + name,
@@ -706,7 +722,7 @@ public class EGroumGraph implements Serializable {
 		} else
 			pdg.mergeSequentialData(
 					new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS, node.key + "." + astNode.getName().getIdentifier(),
-							node.dataType + "." + astNode.getName().getIdentifier(),
+							type + "." + astNode.getName().getIdentifier(),
 							astNode.getName().getIdentifier(), true, false), Type.QUALIFIER);
 		return pdg;
 	}
@@ -808,7 +824,16 @@ public class EGroumGraph implements Serializable {
 			pgs[i + 1] = buildArgumentPDG(control, branch,
 					(Expression) astNode.arguments().get(i));
 		String type = pgs[0].getOnlyOut().dataType;
-		HashSet<String> exceptions = EGroumBuildingContext.getExceptions(type, astNode.getName().getIdentifier() + "(" + astNode.arguments().size() + ")");
+		HashSet<String> exceptions = null;
+		if (astNode.resolveMethodBinding() != null) {
+			IMethodBinding b = astNode.resolveMethodBinding();
+			type = b.getDeclaringClass().getTypeDeclaration().getName();
+			exceptions = new HashSet<>();
+			for (ITypeBinding tb : b.getExceptionTypes())
+				exceptions.add(tb.getName());
+		}
+		if (exceptions == null)
+			exceptions = EGroumBuildingContext.getExceptions(type, astNode.getName().getIdentifier() + "(" + astNode.arguments().size() + ")");
 		EGroumActionNode node = new EGroumActionNode(control, branch,
 				astNode, astNode.getNodeType(), null, 
 				type + "." + astNode.getName().getIdentifier() + "()", 
@@ -1032,8 +1057,11 @@ public class EGroumGraph implements Serializable {
 					(Expression) astNode.arguments().get(i));
 			numOfParameters++;
 		}
+		String type = context.getType();
+		if (astNode.resolveConstructorBinding() != null)
+			type = astNode.resolveConstructorBinding().getDeclaringClass().getTypeDeclaration().getName();
 		EGroumActionNode node = new EGroumActionNode(control, branch,
-				astNode, astNode.getNodeType(), null, context.getType() + "()", "<init>");
+				astNode, astNode.getNodeType(), null, type + "()", "<init>");
 		EGroumGraph pdg = null;
 		if (pgs.length > 0) {
 			for (EGroumGraph pg : pgs)
@@ -1047,9 +1075,12 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			ConditionalExpression astNode) {
+		String type = "UNKNOWN";
+		if (astNode.resolveTypeBinding() != null)
+			type = astNode.resolveTypeBinding().getTypeDeclaration().getName();
 		EGroumDataNode dummy = new EGroumDataNode(null, ASTNode.SIMPLE_NAME,
 				EGroumNode.PREFIX_DUMMY + astNode.getStartPosition() + "_"
-						+ astNode.getLength(), "UNKNOWN", EGroumNode.PREFIX_DUMMY, false, true);
+						+ astNode.getLength(), type, EGroumNode.PREFIX_DUMMY, false, true);
 		EGroumGraph pdg = buildArgumentPDG(control, branch,
 				astNode.getExpression());
 		EGroumControlNode node = new EGroumControlNode(control, branch,
@@ -1077,7 +1108,15 @@ public class EGroumGraph implements Serializable {
 			numOfParameters++;
 		}
 		String type = JavaASTUtil.getSimpleType(astNode.getType());
-		HashSet<String> exceptions = EGroumBuildingContext.getExceptions(type, "<init>" + "(" + astNode.arguments().size() + ")");
+		HashSet<String> exceptions = null;
+		if (astNode.resolveConstructorBinding() != null) {
+			IMethodBinding b = astNode.resolveConstructorBinding();
+			exceptions = new HashSet<>();
+			for (ITypeBinding tb : b.getExceptionTypes())
+				exceptions.add(tb.getName());
+		}
+		if (exceptions == null)
+			exceptions = EGroumBuildingContext.getExceptions(type, "<init>" + "(" + astNode.arguments().size() + ")");
 		EGroumActionNode node = new EGroumActionNode(control, branch,
 				astNode, astNode.getNodeType(), null, type + ".<init>", "<init>", exceptions);
 		context.addMethodTry(node);
@@ -1213,6 +1252,8 @@ public class EGroumGraph implements Serializable {
 			ArrayAccess aa = (ArrayAccess) astNode.getLeftHandSide();
 			EGroumGraph ag = buildArgumentPDG(control, branch, aa.getArray());
 			String type = ag.getOnlyOut().dataType;
+			if (aa.getArray().resolveTypeBinding() != null)
+				type = aa.getArray().resolveTypeBinding().getTypeDeclaration().getName();
 			EGroumNode node = new EGroumActionNode(control, branch, aa, aa.getNodeType(), null, type + ".arrayset()", "arrayset()");
 			ag.mergeSequentialData(node, Type.RECEIVER);
 			EGroumGraph ig = buildArgumentPDG(control, branch, aa.getIndex());
@@ -1469,17 +1510,23 @@ public class EGroumGraph implements Serializable {
 		ArrayList<EGroumDataNode> defs = pdg.getDefinitions();
 		if (!defs.isEmpty()) {
 			EGroumDataNode def = defs.get(0);
+			String type = ((EGroumDataNode) def).dataType;
+			if (((Expression) exp).resolveTypeBinding() != null)
+				type = ((Expression) exp).resolveTypeBinding().getTypeDeclaration().getName();
 			pdg.mergeSequentialData(new EGroumDataNode(null, def.astNodeType, def.key,
-					((EGroumDataNode) def).dataType, ((EGroumDataNode) def).dataName,
+					type, ((EGroumDataNode) def).dataName,
 					def.isField, false), Type.REFERENCE);
 			return pdg;
 		}
 		EGroumNode node = pdg.getOnlyOut();
 		if (node instanceof EGroumDataNode)
 			return pdg;
+		String type = node.dataType;
+		if (((Expression) exp).resolveTypeBinding() != null)
+			type = ((Expression) exp).resolveTypeBinding().getTypeDeclaration().getName();
 		EGroumDataNode dummy = new EGroumDataNode(null, ASTNode.SIMPLE_NAME,
 				EGroumNode.PREFIX_DUMMY + exp.getStartPosition() + "_"
-						+ exp.getLength(), node.dataType, EGroumNode.PREFIX_DUMMY, false, true);
+						+ exp.getLength(), type, EGroumNode.PREFIX_DUMMY, false, true);
 		pdg.mergeSequentialData(new EGroumActionNode(control, branch,
 				null, ASTNode.ASSIGNMENT, null, null, "="), Type.PARAMETER);
 		pdg.mergeSequentialData(dummy, Type.DEFINITION);
@@ -1492,6 +1539,8 @@ public class EGroumGraph implements Serializable {
 			ArrayAccess astNode) {
 		EGroumGraph ag = buildArgumentPDG(control, branch, astNode.getArray());
 		String type = ag.getOnlyOut().dataType;
+		if (astNode.getArray().resolveTypeBinding() != null)
+			type = astNode.getArray().resolveTypeBinding().getTypeDeclaration().getName();
 		EGroumNode node = new EGroumActionNode(control, branch, astNode, astNode.getNodeType(), null, type + ".arrayget()", "arrayget()");
 		ag.mergeSequentialData(node, Type.RECEIVER);
 		EGroumGraph ig = buildArgumentPDG(control, branch, astNode.getIndex());
@@ -1505,7 +1554,11 @@ public class EGroumGraph implements Serializable {
 			FieldAccess astNode) {
 		if (astNode.getExpression() instanceof ThisExpression) {
 			String name = astNode.getName().getIdentifier();
-			String type = context.getFieldType(name);
+			String type = null;
+			if (astNode.resolveTypeBinding() != null)
+				type = astNode.resolveTypeBinding().getTypeDeclaration().getName();
+			if (type == null)
+				type = context.getFieldType(astNode.getName());
 			if (type != null) {
 				EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
 						null, ASTNode.THIS_EXPRESSION, "this",
@@ -1526,8 +1579,11 @@ public class EGroumGraph implements Serializable {
 			EGroumGraph pdg = buildArgumentPDG(control, branch,
 					astNode.getExpression());
 			EGroumDataNode qual = pdg.getOnlyDataOut();
+			String type = qual.dataType;
+			if (astNode.getExpression().resolveTypeBinding() != null)
+				type = astNode.getExpression().resolveTypeBinding().getTypeDeclaration().getName();
 			EGroumDataNode node = new EGroumDataNode(astNode, astNode.getNodeType(), qual.key == null ? astNode.toString() : qual.key + "." + astNode.getName().getIdentifier(),
-					qual.dataType + "." + astNode.getName().getIdentifier(),
+					type + "." + astNode.getName().getIdentifier(),
 					astNode.getName().getIdentifier(), true, false);
 			pdg.mergeSequentialData(node, Type.QUALIFIER);
 			return pdg;
@@ -1537,7 +1593,11 @@ public class EGroumGraph implements Serializable {
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			SuperFieldAccess astNode) {
 		String name = astNode.getName().getIdentifier();
-		String type = context.getFieldType(name);
+		String type = null;
+		if (astNode.resolveTypeBinding() != null)
+			type = astNode.resolveTypeBinding().getTypeDeclaration().getName();
+		if (type == null)
+			type = context.getFieldType(astNode.getName());
 		if (type != null) {
 			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
 					null, ASTNode.THIS_EXPRESSION, "this",
@@ -1558,8 +1618,11 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			ThisExpression astNode) {
+		String type = context.getType();
+		if (astNode.resolveTypeBinding() != null)
+			type = astNode.resolveTypeBinding().getTypeDeclaration().getName();
 		EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
-				astNode, astNode.getNodeType(), "this", context.getType(),
+				astNode, astNode.getNodeType(), "this", type,
 				"this"));
 		return pdg;
 	}

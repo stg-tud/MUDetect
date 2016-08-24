@@ -207,7 +207,11 @@ public class EGroumBuildingContext {
 		this.localVariableTypes.peek().put(identifier, type);
 	}
 
-	public String getFieldType(String name) {
+	public String getFieldType(SimpleName node) {
+		if (node.resolveTypeBinding() != null) {
+			return node.resolveTypeBinding().getTypeDeclaration().getName();
+		}
+		String name = node.getIdentifier();
 		String type = this.fieldTypes.get(name);
 		if (type == null) {
 			buildSuperFieldTypes();
@@ -224,7 +228,7 @@ public class EGroumBuildingContext {
 
 	private void buildSuperFieldTypes(TypeDeclaration td) {
 		if (td.getSuperclassType() != null) {
-			String stype = JavaASTUtil.getCompactType(td.getSuperclassType());
+			String stype = JavaASTUtil.getSimpleType(td.getSuperclassType());
 			buildSuperFieldTypes(stype);
 		}
 		ASTNode p = td.getParent();
