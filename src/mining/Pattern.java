@@ -127,16 +127,16 @@ public class Pattern {
 		if (this.size < other.getSize())
 			return false;
 		for (Fragment f : other.getFragments())
-			if (contains(f))
-				return true;
-		return false;
+			if (!contains(f))
+				return false;
+		return true;
 	}
 
 	public boolean contains(HashSet<Fragment> g) {
 		for (Fragment f : g)
-			if (contains(f))
-				return true;
-		return false;
+			if (!contains(f))
+				return false;
+		return true;
 	}
 
 	public void clear() {
