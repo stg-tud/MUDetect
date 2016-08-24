@@ -577,8 +577,12 @@ public class EGroumGraph implements Serializable {
 			SuperMethodInvocation astNode) {
 		EGroumGraph[] pgs = new EGroumGraph[astNode.arguments().size() + 1];
 		String type = context.getSuperType();
-		if (astNode.resolveMethodBinding() != null)
-			type = astNode.resolveMethodBinding().getDeclaringClass().getTypeDeclaration().getName();
+		if (astNode.resolveMethodBinding() != null) {
+			IMethodBinding mb = astNode.resolveMethodBinding().getMethodDeclaration();
+			String sig = JavaASTUtil.buildSignature(mb);
+			ITypeBinding tb = getBase(mb.getDeclaringClass().getTypeDeclaration(), mb, sig);
+			type = tb.getName();
+		}
 		pgs[0] = new EGroumGraph(context, new EGroumDataNode(
 				null, ASTNode.THIS_EXPRESSION, "this",
 				type, "super"));
@@ -826,11 +830,13 @@ public class EGroumGraph implements Serializable {
 		String type = pgs[0].getOnlyOut().dataType;
 		HashSet<String> exceptions = null;
 		if (astNode.resolveMethodBinding() != null) {
-			IMethodBinding b = astNode.resolveMethodBinding();
-			type = b.getDeclaringClass().getTypeDeclaration().getName();
+			IMethodBinding mb = astNode.resolveMethodBinding().getMethodDeclaration();
+			String sig = JavaASTUtil.buildSignature(mb);
+			ITypeBinding tb = getBase(mb.getDeclaringClass().getTypeDeclaration(), mb, sig);
+			type = tb.getName();
 			exceptions = new HashSet<>();
-			for (ITypeBinding tb : b.getExceptionTypes())
-				exceptions.add(tb.getName());
+			for (ITypeBinding etb : mb.getExceptionTypes())
+				exceptions.add(etb.getName());
 		}
 		if (exceptions == null)
 			exceptions = EGroumBuildingContext.getExceptions(type, astNode.getName().getIdentifier() + "(" + astNode.arguments().size() + ")");
@@ -849,6 +855,26 @@ public class EGroumGraph implements Serializable {
 		} else
 			pdg = new EGroumGraph(context, node);
 		return pdg;
+	}
+
+	private ITypeBinding getBase(ITypeBinding tb, IMethodBinding mb, String sig) {
+		if (tb.getSuperclass() != null) {
+			ITypeBinding stb = getBase(tb.getSuperclass().getTypeDeclaration(), mb, sig);
+			if (stb != null)
+				return stb;
+		}
+		for (ITypeBinding itb : tb.getInterfaces()) {
+			ITypeBinding stb = getBase(itb.getTypeDeclaration(), mb, sig);
+			if (stb != null)
+				return stb;
+		}
+		if (mb.getDeclaringClass().getTypeDeclaration() == tb)
+			return tb;
+		for (IMethodBinding smb : tb.getDeclaredMethods()) {
+			if (JavaASTUtil.buildSignature(smb).equals(sig))
+				return tb;
+		}
+		return null;
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,

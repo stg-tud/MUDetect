@@ -12,6 +12,8 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -143,6 +145,14 @@ public class JavaASTUtil {
 			SingleVariableDeclaration svd = (SingleVariableDeclaration) method.parameters().get(i);
 			sb.append(JavaASTUtil.getSimpleType(svd.getType()) + "#");
 		}
+		return sb.toString();
+	}
+	
+	public static String buildSignature(IMethodBinding mb) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(mb.getName() + "#");
+		for (ITypeBinding tb : mb.getParameterTypes())
+			sb.append(tb.getTypeDeclaration().getName() + "#");
 		return sb.toString();
 	}
 
