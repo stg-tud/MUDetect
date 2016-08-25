@@ -716,17 +716,21 @@ public class EGroumGraph implements Serializable {
 		String type = node.dataType;
 		if (astNode.getQualifier().resolveTypeBinding() != null)
 			type = astNode.getQualifier().resolveTypeBinding().getTypeDeclaration().getName();
+		String name = astNode.getName().getIdentifier();
 		if (type.startsWith("UNKNOWN")) {
-			String name = astNode.getName().getIdentifier();
 			if (Character.isUpperCase(name.charAt(0))) {
 				return new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS, node.key + "." + name,
-						astNode.getFullyQualifiedName(), astNode.getName().getIdentifier(), true, false));
+						astNode.getFullyQualifiedName(), astNode.getFullyQualifiedName(), true, false));
 			}
 		} else
-			pdg.mergeSequentialData(
-					new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS, node.key + "." + astNode.getName().getIdentifier(),
-							type + "." + astNode.getName().getIdentifier(),
-							astNode.getName().getIdentifier(), true, false), Type.QUALIFIER);
+			if (Character.isUpperCase(name.charAt(0))) {
+				return new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS, node.key + "." + name,
+						type + "." + name, astNode.getFullyQualifiedName(), true, false));
+			}
+		pdg.mergeSequentialData(
+				new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, node.key + "." + name,
+						type + "." + name, astNode.getFullyQualifiedName(), true, false),
+				Type.QUALIFIER);
 		return pdg;
 	}
 
@@ -1588,7 +1592,7 @@ public class EGroumGraph implements Serializable {
 				EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
 						null, ASTNode.THIS_EXPRESSION, "this",
 						context.getType(), "this"));
-				pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS,
+				pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME,
 						"this." + name, type, name, true,
 						false), Type.QUALIFIER);
 				return pdg;
@@ -1596,7 +1600,7 @@ public class EGroumGraph implements Serializable {
 			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
 					null, ASTNode.THIS_EXPRESSION, "this",
 					context.getType(), "this"));
-			pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS,
+			pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME,
 					"this." + name, "UNKNOWN", name, true,
 					false), Type.QUALIFIER);
 			return pdg;
@@ -1607,7 +1611,7 @@ public class EGroumGraph implements Serializable {
 			String type = qual.dataType;
 			if (astNode.getExpression().resolveTypeBinding() != null)
 				type = astNode.getExpression().resolveTypeBinding().getTypeDeclaration().getName();
-			EGroumDataNode node = new EGroumDataNode(astNode, astNode.getNodeType(), qual.key == null ? astNode.toString() : qual.key + "." + astNode.getName().getIdentifier(),
+			EGroumDataNode node = new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, qual.key == null ? astNode.toString() : qual.key + "." + astNode.getName().getIdentifier(),
 					type + "." + astNode.getName().getIdentifier(),
 					astNode.getName().getIdentifier(), true, false);
 			pdg.mergeSequentialData(node, Type.QUALIFIER);
@@ -1627,7 +1631,7 @@ public class EGroumGraph implements Serializable {
 			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
 					null, ASTNode.THIS_EXPRESSION, "this",
 					context.getSuperType(), "super"));
-			pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS,
+			pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME,
 					"this." + name, type, name, true,
 					false), Type.QUALIFIER);
 			return pdg;
@@ -1635,7 +1639,7 @@ public class EGroumGraph implements Serializable {
 		EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
 				null, ASTNode.THIS_EXPRESSION, "this", context.getSuperType(), "super"));
 		pdg.mergeSequentialData(
-				new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS, astNode.toString(),
+				new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, astNode.toString(),
 						context.getSuperType() + "." + astNode.getName().getIdentifier(),
 						astNode.getName().getIdentifier(), true, false), Type.QUALIFIER);
 		return pdg;
