@@ -218,18 +218,18 @@ public class JavaASTUtil {
 			return getSimpleType(t.getType());
 		} else if (type.isPrimitiveType()) {
 			String pt = type.toString();
-			if (pt.equals("byte") || pt.equals("short") || pt.equals("int") || pt.equals("long") 
+			/*if (pt.equals("byte") || pt.equals("short") || pt.equals("int") || pt.equals("long") 
 					|| pt.equals("float") || pt.equals("double"))
-				return "number";
+				return "number";*/
 			return pt;
 		} else if (type.isQualifiedType()) {
 			QualifiedType t = (QualifiedType) type;
 			return t.getName().getIdentifier();
 		} else if (type.isSimpleType()) {
 			String pt = type.toString();
-			if (pt.equals("Byte") || pt.equals("Short") || pt.equals("Integer") || pt.equals("Long") 
+			/*if (pt.equals("Byte") || pt.equals("Short") || pt.equals("Integer") || pt.equals("Long") 
 					|| pt.equals("Float") || pt.equals("Double"))
-				return "number";
+				return "number";*/
 			return pt;
 		} else if (type.isUnionType()) {
 			UnionType ut = (UnionType) type;

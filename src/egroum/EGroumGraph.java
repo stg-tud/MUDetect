@@ -3,7 +3,6 @@ package egroum;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -498,7 +497,7 @@ public class EGroumGraph implements Serializable {
 		EGroumGraph pdg = buildPDG(control, branch, astNode.getExpression());
 		EGroumControlNode node = new EGroumControlNode(control, branch,
 				astNode, astNode.getNodeType());
-		pdg.mergeSequentialData(node, Type.PARAMETER);
+		pdg.mergeSequentialData(node, Type.CONDITION);
 		if (!astNode.getBody().statements().isEmpty()) {
 			pdg.mergeSequentialControl(new EGroumActionNode(node, "",
 					null, ASTNode.EMPTY_STATEMENT, null, null, "empty"), "");
@@ -740,7 +739,7 @@ public class EGroumGraph implements Serializable {
 		if (astNode.getOperator() == PrefixExpression.Operator.INCREMENT
 				|| astNode.getOperator() == PrefixExpression.Operator.DECREMENT) {
 			EGroumGraph rg = new EGroumGraph(context, new EGroumDataNode(
-					null, ASTNode.NUMBER_LITERAL, "1", node.dataType, "1"));
+					null, ASTNode.NUMBER_LITERAL, "1", "number", "1"));
 			EGroumActionNode op = new EGroumActionNode(control, branch,
 					astNode, astNode.getNodeType(), null, null, 
 					astNode.getOperator().toString().substring(0, 1));
@@ -767,7 +766,7 @@ public class EGroumGraph implements Serializable {
 		EGroumGraph lg = buildArgumentPDG(control, branch, astNode.getOperand());
 		EGroumDataNode node = lg.getOnlyDataOut();
 		EGroumGraph rg = new EGroumGraph(context, new EGroumDataNode(
-				null, ASTNode.NUMBER_LITERAL, "1", node.dataType, "1"));
+				null, ASTNode.NUMBER_LITERAL, "1", "number", "1"));
 		EGroumActionNode op = new EGroumActionNode(control, branch,
 				astNode, astNode.getNodeType(), null, null, astNode.getOperator().toString()
 						.substring(0, 1));

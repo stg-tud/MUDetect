@@ -379,9 +379,19 @@ public abstract class EGroumNode {
 			for (EGroumEdge e : new HashSet<EGroumEdge>(this.inEdges)) {
 				if (!(e instanceof EGroumDataEdge))
 					continue;
+				EGroumDataEdge de = (EGroumDataEdge) e;
+				if (e.source instanceof EGroumActionNode) {
+					if (!doneNodes.contains(e.source))
+						e.source.buildDataClosure(doneNodes);
+					for (EGroumEdge e1 : e.source.inEdges) {
+						if (e1 instanceof EGroumDataEdge && e1.source.isCoreAction() && ((EGroumDataEdge) e1).type == Type.PARAMETER)
+							if (!this.hasInEdge(e1))
+								new EGroumDataEdge(e1.source, this, de.type);
+					}
+					continue;
+				}
 				if (!(e.source instanceof EGroumDataNode))
 					continue;
-				EGroumDataEdge de = (EGroumDataEdge) e;
 				if (this instanceof EGroumActionNode && de.type != Type.RECEIVER && de.type != Type.PARAMETER)
 					continue;
 				if (this instanceof EGroumDataNode && de.type != Type.QUALIFIER)
