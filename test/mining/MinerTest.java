@@ -105,12 +105,14 @@ public class MinerTest {
 
 	private void printMissing(Pattern p, EGroumGraph g, HashSet<EGroumNode> patternNodes, HashSet<EGroumEdge> patternEdges, HashMap<EGroumNode, ArrayList<EGroumEdge>> patternInEdges, HashMap<EGroumNode, ArrayList<EGroumEdge>> patternOutEdges) {
 		Fragment f = null;
-		for (Fragment t : p.getFragments())
+		boolean hasOther = false;
+		for (Fragment t : p.getFragments()) {
 			if (t.getGraph() == g) {
 				f = t;
-				break;
-			}
-		if (f == null)
+			} else 
+				hasOther = true;
+		}
+		if (f == null || !hasOther)
 			return;
 		HashSet<EGroumNode> nodes = new HashSet<>(patternNodes);
 		nodes.removeAll(f.getNodes());
