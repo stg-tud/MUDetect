@@ -1848,6 +1848,21 @@ public class EGroumGraph implements Serializable {
 	private boolean isEmpty() {
 		return nodes.isEmpty();
 	}
+	
+	public EGroumGraph collapse() {
+		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
+			for (EGroumEdge e : node.outEdges) {
+				if (e.target.getLabel().equals(node.getLabel()) && e.isDirect()) {
+					for (EGroumEdge e1 : node.inEdges)
+						if (!e.target.hasInEdge(e1) && e1 instanceof EGroumDataEdge)
+							new EGroumDataEdge(e1.source, e.target, ((EGroumDataEdge) e1).type);
+					delete(node);
+					break;
+				}
+			}
+		}
+		return this;
+	}
 
 	public void buildClosure() {
 		HashSet<EGroumNode> doneNodes = new HashSet<EGroumNode>();
@@ -2143,10 +2158,10 @@ public class EGroumGraph implements Serializable {
 			}
 			for (String label : labelLiterals.keySet()) {
 				ArrayList<EGroumNode> lits = labelLiterals.get(label);
-				if (lits.size() > 1) {
-					EGroumDataNode lit = (EGroumDataNode) lits.get(1);
-					lit.dataName = lit.dataName + "*";
-					for (int i = 2; i < lits.size(); i++)
+				if (lits.size() > 0) {
+//					EGroumDataNode lit = (EGroumDataNode) lits.get(1);
+//					lit.dataName = lit.dataName + "*";
+					for (int i = 1; i < lits.size(); i++)
 						lits.get(i).delete();
 				}
 			}
