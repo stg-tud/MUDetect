@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 
 import egroum.EGroumBuilder;
-import egroum.EGroumDataEdge;
 import egroum.EGroumEdge;
 import egroum.EGroumGraph;
 import egroum.EGroumNode;
@@ -55,10 +54,10 @@ public class MinerTest {
 	public void mineDuplicatedCode() {
 		int tempMaxSize = Pattern.maxSize;
 		Pattern.maxSize = Integer.MAX_VALUE;
-		String system = "joda";
+		String system = "add";
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		for (int i = 0; i < 2; i++)
-			groums.addAll(buildGroums(FileIO.readStringFromFile("input/Test_" + system + "_new.java")));
+			groums.addAll(buildGroums(FileIO.readStringFromFile("input/Test_" + system + "_pattern.java")));
 		
 		if (groums.size() <= 2)
 			for (EGroumGraph g : groums){
@@ -75,8 +74,8 @@ public class MinerTest {
 		print(patterns);
 		assertThat(patterns.size(), is(1));
 		
-		groums = buildGroums(FileIO.readStringFromFile("input/Test_" + system + "_old.java"));
-		groums.add(new EGroumGraph(patterns.get(0).getRepresentative()));
+		groums = buildGroums(FileIO.readStringFromFile("input/Test_" + system + "_target.java"));
+		groums.add(new EGroumGraph(patterns.get(0).getRepresentative()).collapse());
 		
 		for (EGroumGraph g : groums) {
 			System.out.println(g);
@@ -111,6 +110,8 @@ public class MinerTest {
 				f = t;
 				break;
 			}
+		if (f == null)
+			return;
 		HashSet<EGroumNode> nodes = new HashSet<>(patternNodes);
 		nodes.removeAll(f.getNodes());
 		HashSet<EGroumEdge> edges = new HashSet<>(patternEdges);
