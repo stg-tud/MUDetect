@@ -1143,7 +1143,7 @@ public class EGroumGraph implements Serializable {
 		if (exceptions == null)
 			exceptions = EGroumBuildingContext.getExceptions(type, "<init>" + "(" + astNode.arguments().size() + ")");
 		EGroumActionNode node = new EGroumActionNode(control, branch,
-				astNode, astNode.getNodeType(), null, type + ".<init>", "<init>", exceptions);
+				astNode, astNode.getNodeType(), null, /*type + ".<init>"*/"<init>", "<init>", exceptions);
 		context.addMethodTry(node);
 		EGroumGraph pdg = null;
 		if (pgs.length > 0) {
