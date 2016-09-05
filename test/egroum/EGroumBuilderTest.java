@@ -1,7 +1,6 @@
 package egroum;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static egroum.EGroumTestUtils.buildGroumForMethod;
 
 import java.io.File;
 import java.io.IOException;
@@ -146,18 +145,6 @@ public class EGroumBuilderTest {
 				"    }");
 		
 		GroumValidationUtils.validate(groum);
-	}
-	
-	private EGroumGraph buildGroumForMethod(String code) {
-		String classCode = "class C { " + code + "}";
-		ArrayList<EGroumGraph> groums = buildGroumsForClass(classCode);
-		assertThat(groums.size(), is(1));
-		return groums.iterator().next();
-	}
-
-	private ArrayList<EGroumGraph> buildGroumsForClass(String classCode) {
-		EGroumBuilder builder = new EGroumBuilder();
-		return builder.buildGroums(classCode, "test", "test");
 	}
 
 	private void print(EGroumGraph groum) {
