@@ -3,7 +3,6 @@ package de.tu_darmstadt.stg.eko.mudetect;
 import egroum.EGroumGraph;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static egroum.EGroumTestUtils.buildGroumForMethod;
@@ -21,12 +20,9 @@ public class FindNoInstancesTest {
                 "  o.hashCode();" +
                 "}");
 
-        List<Instance> instances = findInstances(target, pattern);
+        List<Instance> instances = InstanceFinder.findInstances(target, pattern);
 
         assertThat(instances, is(empty()));
     }
 
-    private List<Instance> findInstances(EGroumGraph target, EGroumGraph pattern) {
-        return new ArrayList<>();
-    }
 }
