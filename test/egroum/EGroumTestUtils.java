@@ -13,7 +13,7 @@ public class EGroumTestUtils {
 		return groums.iterator().next();
 	}
 
-	public static ArrayList<EGroumGraph> buildGroumsForClass(String classCode) {
+	private static ArrayList<EGroumGraph> buildGroumsForClass(String classCode) {
 		EGroumBuilder builder = new EGroumBuilder();
 		return builder.buildGroums(classCode, "test", "test");
 	}
