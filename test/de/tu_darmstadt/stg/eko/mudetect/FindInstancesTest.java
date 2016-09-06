@@ -25,4 +25,20 @@ public class FindInstancesTest {
         assertThat(instances, hasInstance(pattern));
     }
 
+    @Test
+    public void findsCallReceiver() throws Exception {
+        EGroumDataNode pattern_C = new EGroumDataNode("C");
+        EGroumActionNode pattern_m = new EGroumActionNode("C.m()");
+        AUG pattern = createAUG(pattern_C, pattern_m).addEdge(pattern_C, pattern_m).build();
+
+
+        EGroumDataNode target_C = new EGroumDataNode("C");
+        EGroumActionNode target_m = new EGroumActionNode("C.m()");
+        AUG target = createAUG(target_C, target_m).addEdge(target_C, target_m).build();
+
+        List<Instance> instances = InstanceFinder.findInstances(target, pattern);
+
+        assertThat(instances, hasSize(1));
+        assertThat(instances, hasInstance(pattern));
+    }
 }
