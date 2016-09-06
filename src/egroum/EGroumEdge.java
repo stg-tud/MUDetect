@@ -33,6 +33,10 @@ public abstract class EGroumEdge {
 		return this instanceof EGroumDataEdge && ((EGroumDataEdge) this).type == Type.DEFINITION;
 	}
 
+	public boolean isRecv() {
+		return this instanceof EGroumDataEdge && ((EGroumDataEdge) this).type == Type.RECEIVER;
+	}
+
 	public void delete() {
 		this.source.outEdges.remove(this);
 		this.target.inEdges.remove(this);

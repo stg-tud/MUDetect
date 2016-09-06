@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.eko.mudetect;
 
 import de.tu_darmstadt.stg.eko.mudetect.model.AUG;
 import egroum.EGroumActionNode;
+import egroum.EGroumDataEdge;
 import egroum.EGroumDataNode;
 import org.junit.Test;
 
@@ -15,9 +16,9 @@ import static org.junit.Assert.assertThat;
 public class FindInstancesTest {
     @Test
     public void findsSingleNodeInstance() throws Exception {
-        AUG pattern = createAUG(new EGroumActionNode("C.m()")).build();
+        AUG pattern = createAUG(new EGroumActionNode("C.m()"));
 
-        AUG target = createAUG(new EGroumActionNode("C.m()")).build();
+        AUG target = createAUG(new EGroumActionNode("C.m()"));
 
         List<Instance> instances = InstanceFinder.findInstances(target, pattern);
 
@@ -29,12 +30,14 @@ public class FindInstancesTest {
     public void findsCallReceiver() throws Exception {
         EGroumDataNode pattern_C = new EGroumDataNode("C");
         EGroumActionNode pattern_m = new EGroumActionNode("C.m()");
-        AUG pattern = createAUG(pattern_C, pattern_m).addEdge(pattern_C, pattern_m).build();
+        AUG pattern = createAUG(pattern_C, pattern_m);
+        pattern.addEdge(pattern_C, pattern_m, new EGroumDataEdge(pattern_C, pattern_m, EGroumDataEdge.Type.RECEIVER));
 
 
         EGroumDataNode target_C = new EGroumDataNode("C");
         EGroumActionNode target_m = new EGroumActionNode("C.m()");
-        AUG target = createAUG(target_C, target_m).addEdge(target_C, target_m).build();
+        AUG target = createAUG(target_C, target_m);
+        target.addEdge(target_C, target_m, new EGroumDataEdge(target_C, target_m, EGroumDataEdge.Type.RECEIVER));
 
         List<Instance> instances = InstanceFinder.findInstances(target, pattern);
 

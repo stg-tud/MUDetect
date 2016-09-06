@@ -1,18 +1,19 @@
 package de.tu_darmstadt.stg.eko.mudetect.model;
 
 import egroum.EGroumDataNode;
+import egroum.EGroumEdge;
 import egroum.EGroumNode;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 
-public class AUG extends DirectedAcyclicGraph<EGroumNode, String> {
+public class AUG extends DirectedAcyclicGraph<EGroumNode, EGroumEdge> {
 
     public AUG() {
-        super(String.class);
+        super(EGroumEdge.class);
     }
 
     public EGroumDataNode getReceiver(EGroumNode actionNode) {
-        for (String edge : edgesOf(actionNode)) {
-            if (getEdgeTarget(edge) == actionNode) {
+        for (EGroumEdge edge : edgesOf(actionNode)) {
+            if (getEdgeTarget(edge) == actionNode && edge.isRecv()) {
                 return (EGroumDataNode) getEdgeSource(edge);
             }
         }
