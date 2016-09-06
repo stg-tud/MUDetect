@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.eko.mudetect.model.AUGTestUtils.createAUG;
+import static de.tu_darmstadt.stg.eko.mudetect.model.AUGBuilder.newAUG;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
@@ -15,8 +15,8 @@ import static org.junit.Assert.assertThat;
 public class FindNoInstancesTest {
     @Test
     public void ignoresNonOverlappingTarget() throws Exception {
-        AUG pattern = createAUG(new EGroumActionNode("F.foo()"));
-        AUG target = createAUG(new EGroumActionNode("B.bar()"));
+        AUG pattern = newAUG(new EGroumActionNode("F.foo()")).build();
+        AUG target = newAUG(new EGroumActionNode("B.bar()")).build();
 
         List<Instance> instances = InstanceFinder.findInstances(target, pattern);
 
@@ -25,8 +25,8 @@ public class FindNoInstancesTest {
 
     @Test
     public void ignoresTrivialOverlap() throws Exception {
-        AUG pattern = createAUG(new EGroumDataNode("Object"));
-        AUG target = createAUG(new EGroumDataNode("Object"));
+        AUG pattern = newAUG(new EGroumDataNode("Object")).build();
+        AUG target = newAUG(new EGroumDataNode("Object")).build();
 
         List<Instance> instances = InstanceFinder.findInstances(target, pattern);
 
