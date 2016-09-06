@@ -38,6 +38,11 @@ public class EGroumActionNode extends EGroumNode {
 		this.exceptionTypes = node.exceptionTypes;
 	}
 
+	public EGroumActionNode(String name) {
+		super(null, 0, null);
+		this.name = name;
+	}
+
 	@Override
 	public String getLabel() {
 		return dataType == null ? name : dataType;
