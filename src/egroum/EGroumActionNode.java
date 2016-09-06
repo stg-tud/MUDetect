@@ -39,7 +39,7 @@ public class EGroumActionNode extends EGroumNode {
 	}
 
 	public EGroumActionNode(String name) {
-		super(null, 0, null);
+		super(null, ASTNode.METHOD_INVOCATION, null);
 		this.name = name;
 	}
 

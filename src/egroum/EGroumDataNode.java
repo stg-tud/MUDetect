@@ -25,6 +25,11 @@ public class EGroumDataNode extends EGroumNode {
 		this(node.astNode, node.astNodeType, node.key, node.dataType, node.dataName, node.isField, node.isDeclaration);
 	}
 
+	public EGroumDataNode(String dataType) {
+		super(null, ASTNode.SIMPLE_TYPE, null);
+		this.dataType = dataType;
+	}
+
 	@Override
 	public String getDataName() {
 		return dataName;

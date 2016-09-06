@@ -4,11 +4,10 @@ import de.tu_darmstadt.stg.eko.mudetect.model.AUG;
 import egroum.EGroumNode;
 
 import java.util.*;
-import java.util.function.Function;
 
 public class InstanceFinder {
     public static List<Instance> findInstances(AUG target, AUG pattern) {
-        Map<String, Set<EGroumNode>> patternNodesByLabel = getNodelByLabel(pattern);
+        Map<String, Set<EGroumNode>> patternNodesByLabel = getMeaningfulActionNodesByLabel(pattern);
 
         Set<EGroumNode> occurringPatternNodes = new HashSet<>();
         for (EGroumNode node : target.vertexSet()) {
@@ -25,15 +24,18 @@ public class InstanceFinder {
         }
     }
 
-    private static Map<String, Set<EGroumNode>> getNodelByLabel(AUG aug) {
+    private static Map<String, Set<EGroumNode>> getMeaningfulActionNodesByLabel(AUG aug) {
         Map<String, Set<EGroumNode>> nodesByLabel = new HashMap<>();
         for (EGroumNode node : aug.vertexSet()) {
-            String label = node.getLabel();
-            if (!nodesByLabel.containsKey(label)) {
-                nodesByLabel.put(label, new HashSet<>());
+            if (node.isMeaningfulAction()) {
+                String label = node.getLabel();
+                if (!nodesByLabel.containsKey(label)) {
+                    nodesByLabel.put(label, new HashSet<>());
+                }
+                nodesByLabel.get(label).add(node);
             }
-            nodesByLabel.get(label).add(node);
         }
         return nodesByLabel;
     }
+
 }

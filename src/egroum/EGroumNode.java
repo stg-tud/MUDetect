@@ -365,6 +365,17 @@ public abstract class EGroumNode {
 		return invocationTypes.contains(astNodeType);
 	}
 
+	public boolean isMeaningfulAction() {
+		return isCoreAction()
+				&& getAstNodeType() != ASTNode.ASSERT_STATEMENT
+				&& getAstNodeType() != ASTNode.BREAK_STATEMENT
+				&& getAstNodeType() != ASTNode.CAST_EXPRESSION
+				&& getAstNodeType() != ASTNode.CONTINUE_STATEMENT
+				&& getAstNodeType() != ASTNode.INSTANCEOF_EXPRESSION
+				&& getAstNodeType() != ASTNode.RETURN_STATEMENT
+				&& getAstNodeType() != ASTNode.THROW_STATEMENT;
+	}
+
 	public void buildControlClosure(HashSet<EGroumNode> doneNodes) {
 		if (this instanceof EGroumControlNode) {
 			((EGroumControlNode) this).buildControlClosure(doneNodes);

@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.eko.mudetect;
 
 import de.tu_darmstadt.stg.eko.mudetect.model.AUG;
 import egroum.EGroumActionNode;
+import egroum.EGroumDataNode;
 import org.junit.Test;
 
 import java.util.List;
@@ -22,4 +23,13 @@ public class FindNoInstancesTest {
         assertThat(instances, is(empty()));
     }
 
+    @Test
+    public void ignoresTrivialOverlap() throws Exception {
+        AUG pattern = createAUG(new EGroumDataNode("Object")).build();
+        AUG target = createAUG(new EGroumDataNode("Object")).build();
+
+        List<Instance> instances = InstanceFinder.findInstances(target, pattern);
+
+        assertThat(instances, is(empty()));
+    }
 }
