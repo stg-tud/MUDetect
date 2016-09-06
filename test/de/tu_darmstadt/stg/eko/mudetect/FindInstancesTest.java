@@ -2,7 +2,7 @@ package de.tu_darmstadt.stg.eko.mudetect;
 
 import de.tu_darmstadt.stg.eko.mudetect.model.AUG;
 import egroum.EGroumActionNode;
-import egroum.EGroumNode;
+import egroum.EGroumDataNode;
 import org.junit.Test;
 
 import java.util.List;
@@ -15,8 +15,7 @@ import static org.junit.Assert.assertThat;
 public class FindInstancesTest {
     @Test
     public void findsSingleNodeInstance() throws Exception {
-        EGroumNode pattern_m = new EGroumActionNode("C.m()");
-        AUG pattern = createAUG(pattern_m).build();
+        AUG pattern = createAUG(new EGroumActionNode("C.m()")).build();
 
         AUG target = createAUG(new EGroumActionNode("C.m()")).build();
 
