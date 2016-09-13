@@ -31,6 +31,14 @@ public class FindInstancesTest {
                 .withDataEdge("C", RECEIVER, "C.n()"));
     }
 
+    @Test
+    public void findsConditionEdge() throws Exception {
+        assertFindsInstance(buildAUG().withDataNode("Iterator").withActionNodes("Iterator.hasNext()", "Iterator.next()")
+                .withDataEdge("Iterator", RECEIVER, "Iterator.hasNext()")
+                .withDataEdge("Iterator", RECEIVER, "Iterator.next()")
+                .withDataEdge("Iterator.hasNext()", CONDITION, "Iterator.next()"));
+    }
+
     private void assertFindsInstance(AUGBuilder builder) {
         AUG pattern = builder.build();
         AUG target = builder.build();

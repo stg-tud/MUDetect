@@ -15,22 +15,32 @@ public class AUG extends DirectedAcyclicGraph<EGroumNode, EGroumEdge> {
         super(EGroumEdge.class);
     }
 
-    public EGroumDataNode getReceiver(EGroumNode actionNode) {
-        for (EGroumEdge edge : edgesOf(actionNode)) {
-            if (getEdgeTarget(edge) == actionNode && edge.isRecv()) {
+    public EGroumDataNode getReceiver(EGroumNode node) {
+        for (EGroumEdge edge : edgesOf(node)) {
+            if (getEdgeTarget(edge) == node && edge.isRecv()) {
                 return (EGroumDataNode) getEdgeSource(edge);
             }
         }
         return null;
     }
 
-    public Set<EGroumActionNode> getInvocations(EGroumDataNode dataNode) {
+    public Set<EGroumActionNode> getInvocations(EGroumDataNode node) {
         Set<EGroumActionNode> invocations = new HashSet<>();
-        for (EGroumEdge edge : edgesOf(dataNode)) {
-            if (getEdgeSource(edge) == dataNode && edge.isRecv()) {
+        for (EGroumEdge edge : edgesOf(node)) {
+            if (getEdgeSource(edge) == node && edge.isRecv()) {
                 invocations.add((EGroumActionNode) getEdgeTarget(edge));
             }
         }
         return invocations;
+    }
+
+    public Set<EGroumActionNode> getConditions(EGroumActionNode node) {
+        Set<EGroumActionNode> conditions = new HashSet<>();
+        for (EGroumEdge edge : edgesOf(node)) {
+            if (getEdgeTarget(edge) == node && edge.isCond()) {
+                conditions.add((EGroumActionNode) getEdgeSource(edge));
+            }
+        }
+        return conditions;
     }
 }

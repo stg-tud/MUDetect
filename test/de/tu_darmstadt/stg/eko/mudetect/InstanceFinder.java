@@ -62,6 +62,24 @@ public class InstanceFinder {
                 extendInstance(instance, target, targetReceiver, pattern, patternReceiver, initialNodes);
             }
         }
+
+        Set<EGroumActionNode> patternConditions = pattern.getConditions(patternNode);
+        Set<EGroumActionNode> targetConditions = target.getConditions(targetNode);
+        for (EGroumActionNode patternCondition : patternConditions) {
+            for (EGroumActionNode targetCondition : targetConditions) {
+                if (patternCondition.getLabel().equals(targetCondition.getLabel())) {
+                    instance.addVertex(patternCondition);
+                    instance.addEdge(patternCondition, patternNode, pattern.getEdge(patternCondition, patternNode));
+                    extendInstance(instance, target, targetCondition, pattern, patternCondition, initialNodes);
+                    for (Iterator<CommonNode<EGroumActionNode>> it = initialNodes.iterator(); it.hasNext();) {
+                        CommonNode<EGroumActionNode> node = it.next();
+                        if (node.patternNode == patternCondition) {
+                            it.remove();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private static void extendInstance(Instance instance, AUG target, EGroumDataNode targetNode, AUG pattern, EGroumDataNode patternNode, Set<CommonNode<EGroumActionNode>> initialNodes) {
@@ -73,6 +91,8 @@ public class InstanceFinder {
                     if (targetInvocation.getLabel().equals(patternInvocation.getLabel())) {
                         instance.addVertex(patternInvocation);
                         instance.addEdge(patternNode, patternInvocation, pattern.getEdge(patternNode, patternInvocation));
+                        extendInstance(instance, target, targetInvocation, pattern, patternInvocation, initialNodes);
+
                         for (Iterator<CommonNode<EGroumActionNode>> it = initialNodes.iterator(); it.hasNext();) {
                             CommonNode<EGroumActionNode> node = it.next();
                             if (node.patternNode == patternInvocation) {

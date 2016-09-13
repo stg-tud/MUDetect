@@ -37,6 +37,10 @@ public abstract class EGroumEdge {
 		return this instanceof EGroumDataEdge && ((EGroumDataEdge) this).type == Type.RECEIVER;
 	}
 
+	public boolean isCond() {
+		return this instanceof EGroumDataEdge && ((EGroumDataEdge) this).type == Type.CONDITION;
+	}
+
 	public void delete() {
 		this.source.outEdges.remove(this);
 		this.target.inEdges.remove(this);
