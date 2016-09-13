@@ -133,10 +133,8 @@ public class Instance extends Subgraph<EGroumNode, EGroumEdge, AUG> {
                         extend(targetInvocation, patternInvocation);
                     }
                 }
-
             }
         }
-
     }
 
     private static Map<String, Set<EGroumActionNode>> getMeaningfulActionNodesByLabel(AUG aug) {
