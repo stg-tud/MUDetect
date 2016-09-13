@@ -473,7 +473,7 @@ public class EGroumGraph implements Serializable {
 			fg.mergeSequential(buildPDG(fn, "", astNode.getFinally()));
 			pdg.mergeSequential(fg);
 			for (EGroumActionNode m : triedMethods)
-				if (m.exceptionTypes != null && !m.exceptionTypes.isEmpty())
+				if (triedMethods.size() == 1 || (m.exceptionTypes != null && !m.exceptionTypes.isEmpty()))
 					new EGroumDataEdge(m, fn, Type.FINALLY);
 		}
 		return pdg;
@@ -576,12 +576,18 @@ public class EGroumGraph implements Serializable {
 			SuperMethodInvocation astNode) {
 		EGroumGraph[] pgs = new EGroumGraph[astNode.arguments().size() + 1];
 		String type = context.getSuperType();
+		HashSet<String> exceptions = null;
 		if (astNode.resolveMethodBinding() != null) {
 			IMethodBinding mb = astNode.resolveMethodBinding().getMethodDeclaration();
 			String sig = JavaASTUtil.buildSignature(mb);
 			ITypeBinding tb = getBase(mb.getDeclaringClass().getTypeDeclaration(), mb, sig);
 			type = tb.getName();
+			exceptions = new HashSet<>();
+			for (ITypeBinding etb : mb.getExceptionTypes())
+				exceptions.add(etb.getName());
 		}
+		if (exceptions == null)
+			exceptions = EGroumBuildingContext.getExceptions(type, astNode.getName().getIdentifier() + "(" + astNode.arguments().size() + ")");
 		pgs[0] = new EGroumGraph(context, new EGroumDataNode(
 				null, ASTNode.THIS_EXPRESSION, "this",
 				type, "super"));
@@ -590,7 +596,8 @@ public class EGroumGraph implements Serializable {
 					(Expression) astNode.arguments().get(i));
 		EGroumActionNode node = new EGroumActionNode(control, branch,
 				astNode, astNode.getNodeType(), null, type + "." + astNode.getName().getIdentifier() + "()", 
-				astNode.getName().getIdentifier());
+				astNode.getName().getIdentifier(), exceptions);
+		context.addMethodTry(node);
 		EGroumGraph pdg = null;
 		pgs[0].mergeSequentialData(node, Type.RECEIVER);
 		if (pgs.length > 0) {
@@ -612,10 +619,20 @@ public class EGroumGraph implements Serializable {
 					(Expression) astNode.arguments().get(i));
 		}
 		String type = context.getSuperType();
-		if (astNode.resolveConstructorBinding() != null)
-			type = astNode.resolveConstructorBinding().getDeclaringClass().getTypeDeclaration().getName();
+		HashSet<String> exceptions = null;
+		if (astNode.resolveConstructorBinding() != null) {
+			IMethodBinding mb = astNode.resolveConstructorBinding();
+			String sig = JavaASTUtil.buildSignature(mb);
+			ITypeBinding tb = getBase(mb.getDeclaringClass().getTypeDeclaration(), mb, sig);
+			type = tb.getName();
+			exceptions = new HashSet<>();
+			for (ITypeBinding etb : mb.getExceptionTypes())
+				exceptions.add(etb.getName());
+		}
+		if (exceptions == null)
+			exceptions = EGroumBuildingContext.getExceptions(type, "<init>" + "(" + astNode.arguments().size() + ")");
 		EGroumActionNode node = new EGroumActionNode(control, branch,
-				astNode, astNode.getNodeType(), null, type + "()", "<init>");
+				astNode, astNode.getNodeType(), null, type + "()", "<init>", exceptions);
 		EGroumGraph pdg = null;
 		if (pgs.length > 0) {
 			for (EGroumGraph pg : pgs)
@@ -1087,10 +1104,20 @@ public class EGroumGraph implements Serializable {
 			numOfParameters++;
 		}
 		String type = context.getType();
-		if (astNode.resolveConstructorBinding() != null)
-			type = astNode.resolveConstructorBinding().getDeclaringClass().getTypeDeclaration().getName();
+		HashSet<String> exceptions = null;
+		if (astNode.resolveConstructorBinding() != null) {
+			IMethodBinding mb = astNode.resolveConstructorBinding();
+			String sig = JavaASTUtil.buildSignature(mb);
+			ITypeBinding tb = getBase(mb.getDeclaringClass().getTypeDeclaration(), mb, sig);
+			type = tb.getName();
+			exceptions = new HashSet<>();
+			for (ITypeBinding etb : mb.getExceptionTypes())
+				exceptions.add(etb.getName());
+		}
+		if (exceptions == null)
+			exceptions = EGroumBuildingContext.getExceptions(type, "<init>" + "(" + astNode.arguments().size() + ")");
 		EGroumActionNode node = new EGroumActionNode(control, branch,
-				astNode, astNode.getNodeType(), null, type + "()", "<init>");
+				astNode, astNode.getNodeType(), null, type + "()", "<init>", exceptions);
 		EGroumGraph pdg = null;
 		if (pgs.length > 0) {
 			for (EGroumGraph pg : pgs)
