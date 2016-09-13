@@ -3,14 +3,17 @@ package de.tu_darmstadt.stg.eko.mudetect.model;
 import egroum.*;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class AUGBuilder {
     private int autoId = 0;
-    private Map<String, EGroumNode> nodeMap = new HashMap<>();
-    private AUG aug = new AUG();
 
-    public static AUGBuilder newAUG() {
+    private Map<String, EGroumNode> nodeMap = new HashMap<>();
+    private Set<EGroumEdge> edges = new HashSet<>();
+
+    public static AUGBuilder buildAUG() {
         return new AUGBuilder();
     }
 
@@ -48,7 +51,6 @@ public class AUGBuilder {
             throw new IllegalArgumentException("A node with id '" + id + "' already exists.");
         }
         nodeMap.put(id, node);
-        aug.addVertex(node);
         return this;
     }
 
@@ -63,13 +65,9 @@ public class AUGBuilder {
         return Integer.toString(autoId++);
     }
 
-    public AUGBuilder withEdge(EGroumEdge edge) {
-        aug.addEdge(edge.getSource(), edge.getTarget(), edge);
-        return this;
-    }
-
     public AUGBuilder withDataEdge(String sourceId, EGroumDataEdge.Type type, String targetId) {
-        return withEdge(new EGroumDataEdge(getNode(sourceId), getNode(targetId), type));
+        edges.add(new EGroumDataEdge(getNode(sourceId), getNode(targetId), type));
+        return this;
     }
 
     private EGroumNode getNode(String id) {
@@ -80,6 +78,13 @@ public class AUGBuilder {
     }
 
     public AUG build() {
+        AUG aug = new AUG();
+        for (EGroumNode node : nodeMap.values()) {
+            aug.addVertex(node);
+        }
+        for (EGroumEdge edge : edges) {
+            aug.addEdge(edge.getSource(), edge.getTarget(), edge);
+        }
         return aug;
     }
 }
