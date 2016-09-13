@@ -125,9 +125,9 @@ public class GROUMBuilder {
 				groums.add(aGraph);
 				if(maxGroumSize < aGraph.getNodes().size())
 					maxGroumSize = aGraph.getNodes().size();
-				totalGroumSize += aGraph.getNodes().size();
+				totalGroumSize = totalGroumSize + aGraph.getNodes().size();
 			}
-			numMethod++;
+			numMethod = numMethod + 1;
 		}
 		else {
 			ArrayList<ASTNode> children = mapTree.get(root);	

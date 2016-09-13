@@ -226,18 +226,20 @@ public class Miner {
 				rep = f;
 				break;
 			}
-			for (int j = rep.getNodes().size(); j < xrep.getNodes().size(); j++)
-				labels.add(xrep.getNodes().get(j).getLabel());
-			System.out.println("{Extending pattern of size " + rep.getNodes().size()
-					+ " " + rep.getNodes()
-					+ " occurences: " + pattern.getFragments().size()
-					+ " frequency: " + pattern.getFreq()
-					+ " with label " + labels
-					+ " occurences: " + group.size()
-					+ " frequency: " + xfreq
-					+ " patterns: " + Pattern.nextID 
-					+ " fragments: " + Fragment.numofFragments 
-					+ " next fragment: " + Fragment.nextFragmentId);
+			if (rep != null && xrep != null) {
+				for (int j = rep.getNodes().size(); j < xrep.getNodes().size(); j++)
+					labels.add(xrep.getNodes().get(j).getLabel());
+				System.out.println("{Extending pattern of size " + rep.getNodes().size()
+						+ " " + rep.getNodes()
+						+ " occurences: " + pattern.getFragments().size()
+						+ " frequency: " + pattern.getFreq()
+						+ " with label " + labels
+						+ " occurences: " + group.size()
+						+ " frequency: " + xfreq
+						+ " patterns: " + Pattern.nextID 
+						+ " fragments: " + Fragment.numofFragments 
+						+ " next fragment: " + Fragment.nextFragmentId);
+			}
 			pattern.clear();
 			extend(xp);
 			System.out.println("}");

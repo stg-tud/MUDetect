@@ -49,7 +49,6 @@ import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperFieldAccess;
@@ -934,7 +933,7 @@ public class EGroumGraph implements Serializable {
 		EGroumGraph rg = buildArgumentPDG(control, branch,
 				astNode.getRightOperand());
 		EGroumActionNode node = new EGroumActionNode(control, branch,
-				astNode, astNode.getNodeType(), null, null, astNode.getOperator().toString());
+				astNode, astNode.getNodeType(), null, null, JavaASTUtil.buildLabel(astNode.getOperator()));
 		lg.mergeSequentialData(node, Type.PARAMETER);
 		rg.mergeSequentialData(node, Type.PARAMETER);
 		pdg.mergeParallel(lg, rg);
@@ -1290,17 +1289,6 @@ public class EGroumGraph implements Serializable {
 			}
 		}
 		return g;
-	}
-
-	private ArrayList<Statement> flatten(List<Statement> list) {
-		ArrayList<Statement> flattenList = new ArrayList<>();
-		for (Statement s : list) {
-			if (s instanceof Block)
-				flattenList.addAll(flatten(((Block) s).statements()));
-			else
-				flattenList.add(s);
-		}
-		return flattenList;
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, Assignment astNode) {

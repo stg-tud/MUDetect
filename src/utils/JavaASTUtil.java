@@ -1,6 +1,7 @@
 package utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Stack;
@@ -14,6 +15,7 @@ import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -37,7 +39,35 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.internal.core.dom.NaiveASTFlattener;
 
 public class JavaASTUtil {
+	private static HashMap<String, String> infixExpressionLables = new HashMap<>();
+	
+	static {
+		// Arithmetic Operators
+		infixExpressionLables.put(InfixExpression.Operator.DIVIDE.toString(), "<a>");
+		infixExpressionLables.put(InfixExpression.Operator.MINUS.toString(), "<a>");
+		infixExpressionLables.put(InfixExpression.Operator.PLUS.toString(), "<a>");
+		infixExpressionLables.put(InfixExpression.Operator.REMAINDER.toString(), "<a>");
+		infixExpressionLables.put(InfixExpression.Operator.TIMES.toString(), "<a>");
+		// Equality and Relational Operators
+		infixExpressionLables.put(InfixExpression.Operator.EQUALS.toString(), "<r>");
+		infixExpressionLables.put(InfixExpression.Operator.GREATER.toString(), "<r>");
+		infixExpressionLables.put(InfixExpression.Operator.GREATER_EQUALS.toString(), "<r>");
+		infixExpressionLables.put(InfixExpression.Operator.LESS.toString(), "<r>");
+		infixExpressionLables.put(InfixExpression.Operator.LESS_EQUALS.toString(), "<r>");
+		infixExpressionLables.put(InfixExpression.Operator.NOT_EQUALS.toString(), "<r>");
+		// Conditional Operators
+		infixExpressionLables.put(InfixExpression.Operator.CONDITIONAL_AND.toString(), "<c>");
+		infixExpressionLables.put(InfixExpression.Operator.CONDITIONAL_OR.toString(), "<c>");
+		// Bitwise and Bit Shift Operators
+		infixExpressionLables.put(InfixExpression.Operator.AND.toString(), "<b>");
+		infixExpressionLables.put(InfixExpression.Operator.OR.toString(), "<b>");
+		infixExpressionLables.put(InfixExpression.Operator.XOR.toString(), "<b>");
+		infixExpressionLables.put(InfixExpression.Operator.LEFT_SHIFT.toString(), "<b>");
+		infixExpressionLables.put(InfixExpression.Operator.RIGHT_SHIFT_SIGNED.toString(), "<b>");
+		infixExpressionLables.put(InfixExpression.Operator.RIGHT_SHIFT_UNSIGNED.toString(), "<b>");
+	}
 
+	@SuppressWarnings("rawtypes")
 	public static ASTNode parseSource(String source, String path, String name) {
 		Map options = JavaCore.getOptions();
 		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_7);
@@ -59,6 +89,7 @@ public class JavaASTUtil {
 		return ast;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static ASTNode parseSource(String source) {
 		Map options = JavaCore.getOptions();
 		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_7);
@@ -71,6 +102,7 @@ public class JavaASTUtil {
 		return ast;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private static String getSrcDir(String source, String path, String name) {
 		Map options = JavaCore.getOptions();
 		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_7);
@@ -381,5 +413,9 @@ public class JavaASTUtil {
 				return false;
 			};
 		}.names;
+	}
+
+	public static String buildLabel(InfixExpression.Operator operator) {
+		return infixExpressionLables.get(operator.toString());
 	}
 }
