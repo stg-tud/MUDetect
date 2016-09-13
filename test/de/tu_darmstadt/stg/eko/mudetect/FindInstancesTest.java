@@ -32,6 +32,12 @@ public class FindInstancesTest {
     }
 
     @Test
+    public void findCallArguments() throws Exception {
+        assertFindsInstance(buildAUG().withDataNode("Object").withActionNode("Object.equals()")
+                .withDataEdge("Object", PARAMETER, "Object.equals()"));
+    }
+
+    @Test
     public void findsConditionEdge() throws Exception {
         assertFindsInstance(buildAUG().withDataNode("Iterator").withActionNodes("Iterator.hasNext()", "Iterator.next()")
                 .withDataEdge("Iterator", RECEIVER, "Iterator.hasNext()")

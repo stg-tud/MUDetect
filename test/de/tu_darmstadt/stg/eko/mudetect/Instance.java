@@ -136,6 +136,22 @@ public class Instance extends Subgraph<EGroumNode, EGroumEdge, AUG> {
                 }
             }
         }
+
+        Set<EGroumNode> patternArguments = pattern.getArguments(patternNode);
+        Set<EGroumNode> targetArguments = target.getArguments(targetNode);
+        for (EGroumNode patternArgument : patternArguments) {
+            for (EGroumNode targetArgument : targetArguments) {
+                if (targetArgument.getLabel().equals(patternArgument.getLabel())) {
+                    addVertex(patternArgument);
+                    addEdge(patternArgument, patternNode, pattern.getEdge(patternArgument, patternNode));
+                    if (patternArgument instanceof EGroumDataNode) {
+                        extend((EGroumDataNode) targetArgument, (EGroumDataNode) patternArgument);
+                    } else {
+                        extend((EGroumActionNode) targetArgument, (EGroumActionNode) patternArgument);
+                    }
+                }
+            }
+        }
     }
 
     private void extend(EGroumDataNode targetNode, EGroumDataNode patternNode) {

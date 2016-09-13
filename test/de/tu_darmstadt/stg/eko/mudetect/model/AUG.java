@@ -43,4 +43,14 @@ public class AUG extends DirectedAcyclicGraph<EGroumNode, EGroumEdge> {
         }
         return conditions;
     }
+
+    public Set<EGroumNode> getArguments(EGroumActionNode node) {
+        Set<EGroumNode> arguments = new HashSet<>();
+        for (EGroumEdge edge : edgesOf(node)) {
+            if (getEdgeTarget(edge) == node && edge.isParameter()) {
+                arguments.add(edge.getSource());
+            }
+        }
+        return arguments;
+    }
 }
