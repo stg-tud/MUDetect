@@ -1,6 +1,8 @@
 package de.tu_darmstadt.stg.eko.mudetect.model;
 
 import egroum.*;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.InfixExpression;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,7 +34,13 @@ public class AUGBuilder {
     }
 
     public AUGBuilder withActionNode(String id, String nodeName) {
-        return withNode(id, new EGroumActionNode(nodeName));
+        int nodeType;
+        if (InfixExpression.Operator.toOperator(nodeName) != null) {
+            nodeType = ASTNode.INFIX_EXPRESSION;
+        } else {
+            nodeType = ASTNode.METHOD_INVOCATION;
+        }
+        return withNode(id, new EGroumActionNode(nodeName, nodeType));
     }
 
     public AUGBuilder withDataNode(String nodeName) {

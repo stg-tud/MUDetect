@@ -38,8 +38,8 @@ public class EGroumActionNode extends EGroumNode {
 		this.exceptionTypes = node.exceptionTypes;
 	}
 
-	public EGroumActionNode(String name) {
-		super(null, ASTNode.METHOD_INVOCATION, null);
+	public EGroumActionNode(String name, int operationType) {
+		super(null, operationType, null);
 		this.name = name;
 	}
 
