@@ -64,6 +64,7 @@ public class Instance extends Subgraph<EGroumNode, EGroumEdge, AUG> {
             instances.add(instance);
             nodesToCover.removeAll(instance.vertexSet());
         }
+        removeSubInstances(instances);
         return instances;
     }
 
@@ -93,6 +94,23 @@ public class Instance extends Subgraph<EGroumNode, EGroumEdge, AUG> {
             }
         }
         return nodesByLabel;
+    }
+
+    private static void removeSubInstances(List<Instance> instances) {
+        for (int i = 0; i < instances.size(); i++) {
+            Instance instance1 = instances.get(i);
+            for (int j = i + 1; j < instances.size(); j++) {
+                Instance instance2 = instances.get(j);
+                if (instance1.vertexSet().containsAll(instance2.vertexSet())) {
+                    instances.remove(j);
+                    j--;
+                } else if (instance2.vertexSet().containsAll(instance1.vertexSet())) {
+                    instances.remove(i);
+                    i--;
+                    j--;
+                }
+            }
+        }
     }
 
     private final AUG pattern;
