@@ -54,6 +54,19 @@ public class Instance extends Subgraph<EGroumNode, EGroumEdge, AUG> {
     }
 
     public static List<Instance> findInstances(AUG target, AUG pattern) {
+        WorkQueue nodesToCover = getCommonNodesToCover(target, pattern);
+        List<Instance> instances = new ArrayList<>();
+        while (nodesToCover.hasNext()) {
+            WorkItem item = nodesToCover.poll();
+            Instance instance = new Instance(pattern, target);
+            instance.extend(item.targetNode, item.patternNode);
+            instances.add(instance);
+            nodesToCover.removeAll(instance.vertexSet());
+        }
+        return instances;
+    }
+
+    private static WorkQueue getCommonNodesToCover(AUG target, AUG pattern) {
         Map<String, Set<EGroumActionNode>> patternNodesByLabel = getMeaningfulActionNodesByLabel(pattern);
         WorkQueue queue = new WorkQueue();
         for (EGroumNode targetNode : target.vertexSet()) {
@@ -64,17 +77,21 @@ public class Instance extends Subgraph<EGroumNode, EGroumEdge, AUG> {
                 }
             }
         }
+        return queue;
+    }
 
-        List<Instance> instances = new ArrayList<>();
-        while (queue.hasNext()) {
-            WorkItem item = queue.poll();
-            Instance instance = new Instance(pattern, target);
-            instance.extend(item.targetNode, item.patternNode);
-            instances.add(instance);
-            queue.removeAll(instance.vertexSet());
+    private static Map<String, Set<EGroumActionNode>> getMeaningfulActionNodesByLabel(AUG aug) {
+        Map<String, Set<EGroumActionNode>> nodesByLabel = new HashMap<>();
+        for (EGroumNode node : aug.vertexSet()) {
+            if (node.isMeaningfulAction()) {
+                String label = node.getLabel();
+                if (!nodesByLabel.containsKey(label)) {
+                    nodesByLabel.put(label, new HashSet<>());
+                }
+                nodesByLabel.get(label).add((EGroumActionNode) node);
+            }
         }
-
-        return instances;
+        return nodesByLabel;
     }
 
     private final AUG pattern;
@@ -135,20 +152,6 @@ public class Instance extends Subgraph<EGroumNode, EGroumEdge, AUG> {
                 }
             }
         }
-    }
-
-    private static Map<String, Set<EGroumActionNode>> getMeaningfulActionNodesByLabel(AUG aug) {
-        Map<String, Set<EGroumActionNode>> nodesByLabel = new HashMap<>();
-        for (EGroumNode node : aug.vertexSet()) {
-            if (node.isMeaningfulAction()) {
-                String label = node.getLabel();
-                if (!nodesByLabel.containsKey(label)) {
-                    nodesByLabel.put(label, new HashSet<>());
-                }
-                nodesByLabel.get(label).add((EGroumActionNode) node);
-            }
-        }
-        return nodesByLabel;
     }
 
 }
