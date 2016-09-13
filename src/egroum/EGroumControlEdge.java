@@ -1,7 +1,6 @@
 package egroum;
 
 public class EGroumControlEdge extends EGroumEdge {
-	protected String label;
 
 	public EGroumControlEdge(EGroumNode point, EGroumNode next, String label) {
 		super(point, next);
@@ -13,10 +12,5 @@ public class EGroumControlEdge extends EGroumEdge {
 	@Override
 	public String getLabel() {
 		return label;
-	}
-	
-	@Override
-	public String getExasLabel() {
-		return "_control_";
 	}
 }

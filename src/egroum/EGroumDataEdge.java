@@ -12,13 +12,18 @@ public class EGroumDataEdge extends EGroumEdge {
 		this.target.addInEdge(this);
 	}
 
+	public EGroumDataEdge(EGroumNode source, EGroumNode target, Type type, String label) {
+		this(source, target, type);
+		this.label = label;
+	}
+
 	public Type getType() {
 		return type;
 	}
 
 	@Override
 	public String getLabel() {
-		return getLabel(type);
+		return getLabel(type, label);
 	}
 
 	public static String getLabel(Type type) {
@@ -37,24 +42,19 @@ public class EGroumDataEdge extends EGroumEdge {
 		}
 	}
 
-	@Override
-	public String getExasLabel() {
-		return getExasLabel(type);
-	}
-	
-	public static String getExasLabel(Type type) {
+	public static String getLabel(Type type, String label) {
 		switch (type) {
-		case RECEIVER: return "_recv_";
-		case PARAMETER: return "_para_";
-		case DEFINITION: return "_def_";
-		case REFERENCE: return "_ref_";
-		case CONDITION: return "_cond_";
-		case DEPENDENCE: return "_dep_";
-		case QUALIFIER: return "_qual_";
-		case THROW: return "_throw_";
-		case FINALLY: return "_final_";
-		case ORDER: return "_order_";
-		default: return "_data_";
+		case RECEIVER: return "recv";
+		case PARAMETER: return "para";
+		case DEFINITION: return "def";
+		case REFERENCE: return "ref";
+		case CONDITION: return label == null ? "cond" : label;
+		case DEPENDENCE: return "dep";
+		case QUALIFIER: return "qual";
+		case THROW: return "throw";
+		case FINALLY: return "final";
+		case ORDER: return "order";
+		default: return "";
 		}
 	}
 }

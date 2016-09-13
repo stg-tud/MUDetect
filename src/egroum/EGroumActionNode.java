@@ -166,7 +166,7 @@ public class EGroumActionNode extends EGroumNode {
 								new EGroumDataEdge(e1.source, this, ((EGroumDataEdge) e1).type);*/
 							EGroumDataEdge de = (EGroumDataEdge) e1;
 							if (de.type == Type.FINALLY || e1.isDirect() || !e1.source.isCoreAction())
-								new EGroumDataEdge(e1.source, this, de.type);
+								new EGroumDataEdge(e1.source, this, de.type, de.label);
 						}
 					}
 				}

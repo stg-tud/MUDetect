@@ -7,6 +7,7 @@ import egroum.EGroumDataEdge.Type;
 public abstract class EGroumEdge {
 	protected EGroumNode source;
 	protected EGroumNode target;
+	protected String label;
 	
 	public EGroumEdge(EGroumNode source, EGroumNode target) {
 		this.source = source;
@@ -22,8 +23,6 @@ public abstract class EGroumEdge {
 	public EGroumNode getTarget() {
 		return target;
 	}
-
-	public abstract String getExasLabel();
 
 	public boolean isParameter() {
 		return this instanceof EGroumDataEdge && ((EGroumDataEdge) this).type == Type.PARAMETER;
@@ -50,7 +49,7 @@ public abstract class EGroumEdge {
 
 	public static void createEdge(EGroumNode source, EGroumNode target, EGroumEdge e) {
 		if (e instanceof EGroumDataEdge)
-			new EGroumDataEdge(source, target, ((EGroumDataEdge) e).type);
+			new EGroumDataEdge(source, target, ((EGroumDataEdge) e).type, ((EGroumDataEdge) e).label);
 		if (e instanceof EGroumControlEdge)
 			new EGroumControlEdge(source, target, ((EGroumControlEdge) e).label);
 	}

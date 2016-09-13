@@ -357,6 +357,16 @@ public abstract class EGroumNode {
 		return nodes;
 	}
 
+	public String getConditionLabel() {
+		if (astNodeType == ASTNode.CONDITIONAL_EXPRESSION || astNodeType == ASTNode.IF_STATEMENT)
+			return "sel";
+		if (astNodeType == ASTNode.DO_STATEMENT || astNodeType == ASTNode.ENHANCED_FOR_STATEMENT || astNodeType == ASTNode.FOR_STATEMENT || astNodeType == ASTNode.WHILE_STATEMENT)
+			return "rep";
+		if (astNodeType == ASTNode.SYNCHRONIZED_STATEMENT)
+			return "syn";
+		return null;
+	}
+
 	public boolean isCoreAction() {
 		return isCoreAction(astNodeType);
 	}
@@ -397,7 +407,7 @@ public abstract class EGroumNode {
 					for (EGroumEdge e1 : e.source.inEdges) {
 						if (e1 instanceof EGroumDataEdge && e1.source.isCoreAction() && ((EGroumDataEdge) e1).type == Type.PARAMETER)
 							if (!this.hasInEdge(e1))
-								new EGroumDataEdge(e1.source, this, de.type);
+								new EGroumDataEdge(e1.source, this, de.type, de.label);
 					}
 					continue;
 				}
@@ -414,7 +424,7 @@ public abstract class EGroumNode {
 								e1.source.buildDataClosure(doneNodes);
 							for (EGroumEdge e2 : e1.source.inEdges)
 								if (!e2.source.isLiteral() && e2 instanceof EGroumDataEdge && ((EGroumDataEdge) e2).getType() == Type.PARAMETER && !this.hasInEdge(e2))
-									new EGroumDataEdge(e2.source, this, de.type);
+									new EGroumDataEdge(e2.source, this, de.type, de.label);
 							break;
 						}
 					}

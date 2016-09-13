@@ -58,7 +58,7 @@ public class EGroumControlNode extends EGroumNode {
 						if (e1 instanceof EGroumControlEdge)
 							new EGroumControlEdge(e1.source, this, ((EGroumControlEdge) e1).label);
 						else
-							new EGroumDataEdge(e1.source, this, ((EGroumDataEdge) e1).type);
+							new EGroumDataEdge(e1.source, this, ((EGroumDataEdge) e1).type, ((EGroumDataEdge) e1).label);
 					}
 				}
 			} else
@@ -86,7 +86,7 @@ public class EGroumControlNode extends EGroumNode {
 		}
 		for (EGroumNode node : conditionNodes)
 			if (node instanceof EGroumActionNode && !this.hasInNode(node))
-				new EGroumDataEdge(node, this, Type.CONDITION);
+				new EGroumDataEdge(node, this, Type.CONDITION, getConditionLabel());
 	}
 
 	public boolean controlsAnotherNode(EGroumNode node) {
