@@ -1,6 +1,7 @@
 package de.tu_darmstadt.stg.eko.mudetect;
 
 import de.tu_darmstadt.stg.eko.mudetect.model.AUG;
+import de.tu_darmstadt.stg.eko.mudetect.model.Condition;
 import egroum.EGroumActionNode;
 import egroum.EGroumDataNode;
 import egroum.EGroumEdge;
@@ -125,14 +126,15 @@ public class Instance extends Subgraph<EGroumNode, EGroumEdge, AUG> {
             }
         }
 
-        Set<EGroumActionNode> patternConditions = pattern.getConditions(patternNode);
-        Set<EGroumActionNode> targetConditions = target.getConditions(targetNode);
-        for (EGroumActionNode patternCondition : patternConditions) {
-            for (EGroumActionNode targetCondition : targetConditions) {
-                if (patternCondition.getLabel().equals(targetCondition.getLabel())) {
-                    addVertex(patternCondition);
-                    addEdge(patternCondition, patternNode, pattern.getEdge(patternCondition, patternNode));
-                    extend(targetCondition, patternCondition);
+        Set<Condition> patternConditions = pattern.getConditions(patternNode);
+        Set<Condition> targetConditions = target.getConditions(targetNode);
+        for (Condition patternCondition : patternConditions) {
+            for (Condition targetCondition : targetConditions) {
+                if (targetCondition.isInstanceOf(patternCondition)) {
+                    EGroumActionNode patternConditionNode = patternCondition.getNode();
+                    addVertex(patternConditionNode);
+                    addEdge(patternConditionNode, patternNode, pattern.getEdge(patternConditionNode, patternNode));
+                    extend(targetCondition.getNode(), patternConditionNode);
                 }
             }
         }

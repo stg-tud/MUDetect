@@ -4,9 +4,11 @@ import egroum.EGroumActionNode;
 import egroum.EGroumDataNode;
 import egroum.EGroumEdge;
 import egroum.EGroumNode;
+import org.eclipse.jdt.core.dom.InfixExpression;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class AUG extends DirectedAcyclicGraph<EGroumNode, EGroumEdge> {
@@ -34,11 +36,19 @@ public class AUG extends DirectedAcyclicGraph<EGroumNode, EGroumEdge> {
         return invocations;
     }
 
-    public Set<EGroumActionNode> getConditions(EGroumActionNode node) {
-        Set<EGroumActionNode> conditions = new HashSet<>();
+    public Set<Condition> getConditions(EGroumActionNode node) {
+        Set<Condition> conditions = new HashSet<>();
         for (EGroumEdge edge : edgesOf(node)) {
             if (getEdgeTarget(edge) == node && edge.isCond()) {
-                conditions.add((EGroumActionNode) getEdgeSource(edge));
+                EGroumActionNode edgeSource = (EGroumActionNode) getEdgeSource(edge);
+                if (InfixExpression.Operator.toOperator(edgeSource.getLabel()) != null) {
+                    // TODO clean the retrieval of operand arguments
+                    Set<EGroumNode> operands = getArguments(edgeSource);
+                    Iterator<EGroumNode> iterator = operands.iterator();
+                    conditions.add(new Condition(iterator.next(), edgeSource, iterator.next()));
+                } else {
+                    conditions.add(new Condition(edgeSource));
+                }
             }
         }
         return conditions;
