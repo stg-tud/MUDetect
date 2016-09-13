@@ -3,22 +3,18 @@ package de.tu_darmstadt.stg.eko.mudetect;
 import de.tu_darmstadt.stg.eko.mudetect.model.AUG;
 import egroum.EGroumActionNode;
 import egroum.EGroumDataNode;
-import egroum.EGroumGraph;
 import egroum.EGroumNode;
 
 import java.util.*;
 
 public class InstanceFinder {
-    private static class WorkItem {
-        AUG pattern;
-        EGroumNode patternNode;
-        AUG target;
-        EGroumNode targetNode;
 
-        WorkItem(AUG pattern, EGroumNode patternNode, AUG target, EGroumNode targetNode) {
-            this.pattern = pattern;
+    private static class WorkItem {
+        EGroumActionNode patternNode;
+        EGroumActionNode targetNode;
+
+        WorkItem(EGroumActionNode patternNode, EGroumActionNode targetNode) {
             this.patternNode = patternNode;
-            this.target = target;
             this.targetNode = targetNode;
         }
     }
@@ -38,10 +34,10 @@ public class InstanceFinder {
         }
 
         WorkItem poll() {
-            Iterator<Map.Entry<EGroumNode, WorkItem>> iterator = workItemsByPatternNode.entrySet().iterator();
-            Map.Entry<EGroumNode, WorkItem> next = iterator.next();
-            workItemsByPatternNode.remove(next.getKey());
-            return next.getValue();
+            EGroumNode nextKey = workItemsByPatternNode.keySet().iterator().next();
+            WorkItem nextItem = workItemsByPatternNode.get(nextKey);
+            workItemsByPatternNode.remove(nextKey);
+            return nextItem;
         }
 
         void remove(EGroumNode patternNode) {
@@ -57,23 +53,38 @@ public class InstanceFinder {
             String label = targetNode.getLabel();
             if (patternNodesByLabel.containsKey(label)) {
                 for (EGroumActionNode patternNode : patternNodesByLabel.get(label)) {
-                    queue.add(new WorkItem(pattern, patternNode, target, targetNode));
+                    queue.add(new WorkItem(patternNode, (EGroumActionNode) targetNode));
                 }
             }
         }
 
+        InstanceFinder finder = new InstanceFinder(pattern, target, queue);
+
         List<Instance> instances = new ArrayList<>();
         while (queue.hasNext()) {
-            WorkItem item = queue.poll();
-            Instance instance = new Instance(pattern, new HashSet<>());
-            extendInstance(instance, item.target, (EGroumActionNode) item.targetNode, item.pattern, (EGroumActionNode) item.patternNode, queue);
-            instances.add(instance);
+            instances.add(finder.findInstance(queue.poll()));
         }
 
         return instances;
     }
 
-    private static void extendInstance(Instance instance, AUG target, EGroumActionNode targetNode, AUG pattern, EGroumActionNode patternNode, WorkQueue queue) {
+    private final AUG pattern;
+    private final AUG target;
+    private final WorkQueue workQueue;
+
+    private InstanceFinder(AUG pattern, AUG target, WorkQueue workQueue) {
+        this.pattern = pattern;
+        this.target = target;
+        this.workQueue = workQueue;
+    }
+
+    private Instance findInstance(WorkItem item) {
+        Instance instance = new Instance(pattern, new HashSet<>());
+        extendInstance(instance, item.targetNode, item.patternNode);
+        return instance;
+    }
+
+    private void extendInstance(Instance instance, EGroumActionNode targetNode, EGroumActionNode patternNode) {
         instance.addVertex(patternNode);
 
         EGroumDataNode patternReceiver = pattern.getReceiver(patternNode);
@@ -82,7 +93,7 @@ public class InstanceFinder {
             if (targetReceiver.getLabel().equals(patternReceiver.getLabel())) {
                 instance.addVertex(patternReceiver);
                 instance.addEdge(patternReceiver, patternNode, pattern.getEdge(patternReceiver, patternNode));
-                extendInstance(instance, target, targetReceiver, pattern, patternReceiver, queue);
+                extendInstance(instance, patternReceiver, targetReceiver);
             }
         }
 
@@ -93,14 +104,14 @@ public class InstanceFinder {
                 if (patternCondition.getLabel().equals(targetCondition.getLabel())) {
                     instance.addVertex(patternCondition);
                     instance.addEdge(patternCondition, patternNode, pattern.getEdge(patternCondition, patternNode));
-                    extendInstance(instance, target, targetCondition, pattern, patternCondition, queue);
-                    queue.remove(patternCondition);
+                    extendInstance(instance, targetCondition, patternCondition);
+                    workQueue.remove(patternCondition);
                 }
             }
         }
     }
 
-    private static void extendInstance(Instance instance, AUG target, EGroumDataNode targetNode, AUG pattern, EGroumDataNode patternNode, WorkQueue queue) {
+    private void extendInstance(Instance instance, EGroumDataNode targetNode, EGroumDataNode patternNode) {
         Set<EGroumActionNode> patternInvocations = pattern.getInvocations(patternNode);
         Set<EGroumActionNode> targetInvocations = target.getInvocations(targetNode);
         for (EGroumActionNode patternInvocation : patternInvocations) {
@@ -109,8 +120,8 @@ public class InstanceFinder {
                     if (targetInvocation.getLabel().equals(patternInvocation.getLabel())) {
                         instance.addVertex(patternInvocation);
                         instance.addEdge(patternNode, patternInvocation, pattern.getEdge(patternNode, patternInvocation));
-                        extendInstance(instance, target, targetInvocation, pattern, patternInvocation, queue);
-                        queue.remove(patternInvocation);
+                        extendInstance(instance, targetInvocation, patternInvocation);
+                        workQueue.remove(patternInvocation);
                     }
                 }
 
