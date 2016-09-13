@@ -50,7 +50,6 @@ public class FindInstancesTest {
                 .withDataEdge("List.size()", PARAMETER, ">")
                 .withDataEdge("int", PARAMETER, ">")
                 .withDataEdge(">", CONDITION, "List.get()"));
-
     }
 
     private void assertFindsInstance(AUGBuilder builder) {
