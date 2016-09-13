@@ -16,36 +16,24 @@ import static org.junit.Assert.assertThat;
 public class FindInstancesTest {
     @Test
     public void findsSingleNodeInstance() throws Exception {
-        AUGBuilder builder = buildAUG().withActionNode("C.m()");
-        AUG pattern = builder.build();
-        AUG target = builder.build();
-
-        List<Instance> instances = InstanceFinder.findInstances(target, pattern);
-
-        assertThat(instances, hasSize(1));
-        assertThat(instances, hasInstance(pattern));
+        assertFindsInstance(buildAUG().withActionNode("C.m()"));
     }
 
     @Test
     public void findsCallReceiver() throws Exception {
-        AUGBuilder builder = buildAUG().withDataNode("C").withActionNode("C.m()").withDataEdge("C", RECEIVER, "C.m()");
-        AUG pattern = builder.build();
-        AUG target = builder.build();
-
-        List<Instance> instances = InstanceFinder.findInstances(target, pattern);
-
-        assertThat(instances, hasSize(1));
-        assertThat(instances, hasInstance(pattern));
+        assertFindsInstance(buildAUG().withDataNode("C").withActionNode("C.m()").withDataEdge("C", RECEIVER, "C.m()"));
     }
 
     @Test
     public void findsMultipleCalls() throws Exception {
-        AUGBuilder builder = buildAUG().withDataNode("C").withActionNodes("C.m()", "C.n()")
+        assertFindsInstance(buildAUG().withDataNode("C").withActionNodes("C.m()", "C.n()")
                 .withDataEdge("C", RECEIVER, "C.m()")
-                .withDataEdge("C", RECEIVER, "C.n()");
+                .withDataEdge("C", RECEIVER, "C.n()"));
+    }
+
+    private void assertFindsInstance(AUGBuilder builder) {
         AUG pattern = builder.build();
         AUG target = builder.build();
-
 
         List<Instance> instances = InstanceFinder.findInstances(target, pattern);
 
