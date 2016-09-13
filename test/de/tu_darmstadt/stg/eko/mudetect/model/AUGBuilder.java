@@ -78,7 +78,7 @@ public class AUGBuilder {
         return this;
     }
 
-    private EGroumNode getNode(String id) {
+    public EGroumNode getNode(String id) {
         if (!nodeMap.containsKey(id)) {
             throw new IllegalArgumentException("A node with id '" + id + "' does not exist.");
         }
