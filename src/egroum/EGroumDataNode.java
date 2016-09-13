@@ -37,8 +37,8 @@ public class EGroumDataNode extends EGroumNode {
 
 	@Override
 	public String getLabel() {
-		if (isLiteral())
-			return dataType + "(" + dataName + ")";
+		/*if (isLiteral())
+			return dataType + "(" + dataName + ")";*/
 		return dataType;
 	}
 
