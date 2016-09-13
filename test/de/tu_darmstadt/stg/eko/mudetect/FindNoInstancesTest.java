@@ -15,8 +15,8 @@ import static org.junit.Assert.assertThat;
 public class FindNoInstancesTest {
     @Test
     public void ignoresNonOverlappingTarget() throws Exception {
-        AUG pattern = newAUG(new EGroumActionNode("F.foo()")).build();
-        AUG target = newAUG(new EGroumActionNode("B.bar()")).build();
+        AUG pattern = newAUG().withActionNode("F.foo()").build();
+        AUG target = newAUG().withActionNode("B.bar()").build();
 
         List<Instance> instances = InstanceFinder.findInstances(target, pattern);
 
@@ -25,8 +25,8 @@ public class FindNoInstancesTest {
 
     @Test
     public void ignoresTrivialOverlap() throws Exception {
-        AUG pattern = newAUG(new EGroumDataNode("Object")).build();
-        AUG target = newAUG(new EGroumDataNode("Object")).build();
+        AUG pattern = newAUG().withDataNode("Object").build();
+        AUG target = newAUG().withDataNode("Object").build();
 
         List<Instance> instances = InstanceFinder.findInstances(target, pattern);
 
