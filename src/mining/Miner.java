@@ -182,7 +182,7 @@ public class Miner {
 			if (fens.size() < Pattern.minFreq)
 				labelFragmentExtendableNodes.remove(label);
 		}
-		HashSet<Fragment> group = new HashSet<>();
+		HashSet<Fragment> group = new HashSet<>(), frequentFragments = new HashSet<>();
 		int xfreq = Pattern.minFreq - 1;
 		for (String label : labelFragmentExtendableNodes.keySet()) {
 			HashMap<Fragment, HashSet<ArrayList<EGroumNode>>> fens = labelFragmentExtendableNodes.get(label);
@@ -196,7 +196,7 @@ public class Miner {
 			boolean isGiant = isGiant(xfs, pattern, label);
 			System.out.println("\tTrying with label " + label + ": " + xfs.size());
 			HashSet<Fragment> g = new HashSet<>();
-			int freq = mine(g, xfs, pattern, isGiant);
+			int freq = mine(g, xfs, pattern, isGiant, frequentFragments);
 			if (freq > xfreq && !Lattice.contains(lattices, g)) {
 				group = g;
 				xfreq = freq;
@@ -204,6 +204,17 @@ public class Miner {
 		}
 		System.out.println("Done trying all labels");
 		if (xfreq >= Pattern.minFreq) {
+			HashSet<Fragment> inextensibles = new HashSet<>(pattern.getFragments());
+			for (Fragment xf : frequentFragments) {
+				inextensibles.remove(xf.getGenFragmen());
+			}
+			if (inextensibles.size() >= Pattern.minFreq) {
+				int freq = computeFrequency(inextensibles, false);
+				if (freq >= Pattern.minFreq) {
+					Pattern ip = new Pattern(inextensibles, freq);
+					ip.add2Lattice(lattices);
+				}
+			}
 			Pattern xp = new Pattern(group, xfreq);
 			ArrayList<String> labels = new ArrayList<>();
 			Fragment rep = null, xrep = null;
@@ -243,7 +254,7 @@ public class Miner {
 				&& (xfs.size() > Pattern.maxFreq || xfs.size() > pattern.getFragments().size() * pattern.getSize() * pattern.getSize());
 	}
 
-	private int mine(HashSet<Fragment> result, HashSet<Fragment> fragments, Pattern pattern, boolean isGiant) {
+	private int mine(HashSet<Fragment> result, HashSet<Fragment> fragments, Pattern pattern, boolean isGiant, HashSet<Fragment> frequentFragments) {
 		HashMap<Integer, HashSet<Fragment>> buckets = new HashMap<>();
 		for (Fragment f : fragments) {
 			int h = f.getVectorHashCode();
@@ -263,6 +274,8 @@ public class Miner {
 		int xfreq = Pattern.minFreq - 1;
 		for (HashSet<Fragment> g : groups) {
 			int freq = computeFrequency(g, isGiant && isGiant(g, pattern));
+			if (freq >= Pattern.minFreq)
+				frequentFragments.addAll(g);
 			if (freq > xfreq) {
 				group = g;
 				xfreq = freq;

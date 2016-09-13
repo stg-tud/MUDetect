@@ -24,12 +24,16 @@ public class Pattern {
 	public Pattern(HashSet<Fragment> group, int freq) {
 		fragments = group;
 		for (Fragment f : fragments) {
-			size = f.getNodes().size();
-			representative = f;
-			break;
+			f.setGenFragmen(null);
+			f.getVector().clear();
+			f.setVector(null);
+			if (representative == null) {
+				size = f.getNodes().size();
+				representative = f;
+			}
 		}
-		//computeFrequency();
 		this.freq = freq;
+		//computeFrequency();
 	}
 	
 	@SuppressWarnings("null")
