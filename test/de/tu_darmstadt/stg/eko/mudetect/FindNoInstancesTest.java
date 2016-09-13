@@ -16,7 +16,7 @@ public class FindNoInstancesTest {
         AUG pattern = buildAUG().withActionNode("F.foo()").build();
         AUG target = buildAUG().withActionNode("B.bar()").build();
 
-        List<Instance> instances = InstanceFinder.findInstances(target, pattern);
+        List<Instance> instances = Instance.findInstances(target, pattern);
 
         assertThat(instances, is(empty()));
     }
@@ -26,7 +26,7 @@ public class FindNoInstancesTest {
         AUG pattern = buildAUG().withDataNode("Object").build();
         AUG target = buildAUG().withDataNode("Object").build();
 
-        List<Instance> instances = InstanceFinder.findInstances(target, pattern);
+        List<Instance> instances = Instance.findInstances(target, pattern);
 
         assertThat(instances, is(empty()));
     }

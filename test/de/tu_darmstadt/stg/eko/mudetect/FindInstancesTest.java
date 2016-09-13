@@ -43,7 +43,7 @@ public class FindInstancesTest {
         AUG pattern = builder.build();
         AUG target = builder.build();
 
-        List<Instance> instances = InstanceFinder.findInstances(target, pattern);
+        List<Instance> instances = Instance.findInstances(target, pattern);
 
         assertThat(instances, hasSize(1));
         assertThat(instances, hasInstance(pattern));
