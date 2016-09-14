@@ -454,28 +454,73 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			TryStatement astNode) {
-		if (astNode.getBody().statements().isEmpty())
-			return new EGroumGraph(context);
 		context.pushTry();
+		context.addScope();
+		List resources = astNode.resources();
+		HashSet<String> resourceNames = new HashSet<>();
+		EGroumGraph pdg = null;
+		if (resources != null && !resources.isEmpty()) {
+			pdg = buildPDG(control, branch, resources);
+			for (int i = 0; i < resources.size(); i++) {
+				VariableDeclarationExpression res = (VariableDeclarationExpression) resources.get(i);
+				List fragments = res.fragments();
+				for (int j = 0; j < fragments.size(); j++) {
+					VariableDeclarationFragment f = (VariableDeclarationFragment) fragments.get(j);
+					SimpleName name = f.getName();
+					resourceNames.add(name.getIdentifier());
+				}
+			}
+		} else {
+			if (astNode.getBody().statements().isEmpty())
+				return new EGroumGraph(context);
+			pdg = new EGroumGraph(context);
+		}
 		EGroumGraph[] gs = new EGroumGraph[astNode.catchClauses().size() + 1];
 		gs[0] = buildPDG(control, branch, astNode.getBody());
 		ArrayList<EGroumActionNode> triedMethods = context.popTry();
+		if (!resourceNames.isEmpty()) {
+			EGroumActionNode close = new EGroumActionNode(control, branch, null, ASTNode.METHOD_INVOCATION, null, "AutoCloseable.close()", "close");
+			gs[0].mergeSequential(new EGroumGraph(context, close));
+			for (EGroumActionNode m : triedMethods) {
+				ASTNode mn = m.getAstNode();
+				Type edgeType = hasResourceName(mn, resourceNames);
+				if (edgeType != null) {
+					if (triedMethods.size() == 1 || (m.exceptionTypes != null && !m.exceptionTypes.isEmpty()))
+						new EGroumDataEdge(m, close, Type.FINALLY);
+					new EGroumDataEdge(m, close, edgeType);
+				}
+			}
+		}
 		for (int i = 0; i < astNode.catchClauses().size(); i++) {
 			CatchClause cc = (CatchClause) astNode.catchClauses().get(i);
 			gs[i+1] = buildPDG(control, branch, cc, triedMethods);
 		}
-		EGroumGraph pdg = new EGroumGraph(context);
 		pdg.mergeBranches(gs);
 		if (astNode.getFinally() != null) {
 			EGroumControlNode fn = new EGroumControlNode(control, branch, astNode.getFinally(), astNode.getFinally().getNodeType());
 			EGroumGraph fg = new EGroumGraph(context, fn);
 			fg.mergeSequential(buildPDG(fn, "", astNode.getFinally()));
 			pdg.mergeSequential(fg);
-			for (EGroumActionNode m : triedMethods)
+			for (EGroumActionNode m : triedMethods) {
 				if (triedMethods.size() == 1 || (m.exceptionTypes != null && !m.exceptionTypes.isEmpty()))
 					new EGroumDataEdge(m, fn, Type.FINALLY);
+			}
 		}
+		context.removeScope();
 		return pdg;
+	}
+
+	public EGroumDataEdge.Type hasResourceName(ASTNode mn, HashSet<String> resourceNames) {
+		if (mn instanceof MethodInvocation) {
+			MethodInvocation mi = (MethodInvocation) mn;
+			if (mi.getExpression() != null && mi.getExpression() instanceof SimpleName && resourceNames.contains(mi.getExpression().toString()))
+				return Type.ORDER;
+		}
+		if (mn.getParent() instanceof VariableDeclarationFragment) {
+			VariableDeclarationFragment p = (VariableDeclarationFragment) mn.getParent();
+			return resourceNames.contains(p.getName().getIdentifier()) ? Type.RECEIVER : null;
+		}
+		return null;
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
