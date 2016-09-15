@@ -853,8 +853,11 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			NumberLiteral astNode) {
+		String type = "number";
+		if (astNode.resolveTypeBinding() != null)
+			type = astNode.resolveTypeBinding().getName();
 		EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
-				astNode, astNode.getNodeType(), astNode.getToken(), "number",
+				astNode, astNode.getNodeType(), astNode.getToken(), type,
 				astNode.getToken()));
 		return pdg;
 	}
@@ -1214,11 +1217,14 @@ public class EGroumGraph implements Serializable {
 			exceptions = new HashSet<>();
 			for (ITypeBinding tb : b.getExceptionTypes())
 				exceptions.add(tb.getName());
+			String sig = JavaASTUtil.buildSignature(b);
+			ITypeBinding tb = getBase(b.getDeclaringClass().getTypeDeclaration(), b, sig);
+			type = tb.getName();
 		}
 		if (exceptions == null)
 			exceptions = EGroumBuildingContext.getExceptions(type, "<init>" + "(" + astNode.arguments().size() + ")");
 		EGroumActionNode node = new EGroumActionNode(control, branch,
-				astNode, astNode.getNodeType(), null, /*type + ".<init>"*/"<init>", "<init>", exceptions);
+				astNode, astNode.getNodeType(), null, type + ".<init>"/*"<init>"*/, "<init>", exceptions);
 		context.addMethodTry(node);
 		EGroumGraph pdg = null;
 		if (pgs.length > 0) {
@@ -2245,5 +2251,15 @@ public class EGroumGraph implements Serializable {
 	@Override
 	public String toString() {
 		return toDotGraph().getGraph();
+	}
+
+	public void toGraphics(String s, String path) {
+		DotGraph graph = toDotGraph(s);
+		graph.toDotFile(new File(path + "/" + name + ".dot"));
+		graph.toGraphics(path + "/" + name, "png");
+	}
+
+	private DotGraph toDotGraph(String s) {
+		return new DotGraph(this, s);
 	}
 }

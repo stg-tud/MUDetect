@@ -309,13 +309,13 @@ public class EGroumBuilder {
 	private ArrayList<EGroumGraph> buildGroums(TypeDeclaration type, String path, String prefix) {
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		for (MethodDeclaration method : type.getMethods())
-			groums.add(buildGroums(method, path, prefix + type.getName().getIdentifier() + "."));
+			groums.add(buildGroum(method, path, prefix + type.getName().getIdentifier() + "."));
 		for (TypeDeclaration inner : type.getTypes())
 			groums.addAll(buildGroums(inner, path, prefix + type.getName().getIdentifier() + "."));
 		return groums;
 	}
 
-	private EGroumGraph buildGroums(MethodDeclaration method, String filepath, String name) {
+	public EGroumGraph buildGroum(MethodDeclaration method, String filepath, String name) {
 		String sig = JavaASTUtil.buildSignature(method);
 		System.out.println(filepath + " " + name + sig);
 		EGroumGraph g = new EGroumGraph(method, new EGroumBuildingContext(false));
