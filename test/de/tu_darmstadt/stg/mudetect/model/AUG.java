@@ -1,4 +1,4 @@
-package de.tu_darmstadt.stg.eko.mudetect.model;
+package de.tu_darmstadt.stg.mudetect.model;
 
 import egroum.EGroumActionNode;
 import egroum.EGroumDataNode;

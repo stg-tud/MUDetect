@@ -1,11 +1,11 @@
-package de.tu_darmstadt.stg.eko.mudetect;
+package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.eko.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.model.AUG;
 import org.junit.Test;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.eko.mudetect.model.AUGBuilder.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.buildAUG;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;

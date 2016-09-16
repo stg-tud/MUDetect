@@ -1,7 +1,7 @@
-package de.tu_darmstadt.stg.eko.mudetect;
+package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.eko.mudetect.model.AUG;
-import de.tu_darmstadt.stg.eko.mudetect.model.Condition;
+import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.model.Condition;
 import egroum.EGroumActionNode;
 import egroum.EGroumDataNode;
 import egroum.EGroumEdge;

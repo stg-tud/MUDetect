@@ -1,6 +1,6 @@
-package de.tu_darmstadt.stg.eko.mudetect.model;
+package de.tu_darmstadt.stg.mudetect.model;
 
-import de.tu_darmstadt.stg.eko.mudetect.Instance;
+import de.tu_darmstadt.stg.mudetect.Instance;
 import egroum.EGroumNode;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
