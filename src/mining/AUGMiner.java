@@ -98,7 +98,8 @@ public class AUGMiner {
         }
         for (EGroumNode node : f.getNodes()) {
             for (EGroumEdge e : node.getInEdges()) {
-                aug.addEdge(e.getSource(), e.getTarget(), e);
+                if (f.getNodes().contains(e.getSource()))
+                    aug.addEdge(e.getSource(), e.getTarget(), e);
             }
         }
 
