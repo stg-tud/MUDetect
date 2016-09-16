@@ -56,7 +56,7 @@ public class AUGMiner {
         return mine(groumList);
     }
 
-    public Set<AUG> mine(List<EGroumGraph> groums) {
+    public Set<AUG> mine(Collection<EGroumGraph> groums) {
         return mine(new ArrayList<>(groums));
     }
 
