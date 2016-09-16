@@ -56,7 +56,7 @@ public class FindInstancesTest {
         AUG pattern = builder.build();
         AUG target = builder.build();
 
-        List<Instance> instances = Instance.findInstances(target, pattern);
+        List<Instance> instances = new GreedyInstanceFinder().findInstances(target, pattern);
 
         assertThat(instances, hasSize(1));
         assertThat(instances, InstanceTestUtils.hasInstance(pattern));

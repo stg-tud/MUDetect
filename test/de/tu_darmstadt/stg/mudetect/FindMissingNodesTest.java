@@ -23,7 +23,7 @@ public class FindMissingNodesTest {
         AUG pattern = builder.withActionNode("C.n()")
                 .withDataEdge("C.m()", ORDER, "C.n()").build();
 
-        List<Instance> violations = Instance.findInstances(target, pattern);
+        List<Instance> violations = new GreedyInstanceFinder().findInstances(target, pattern);
 
         assertThat(violations, hasSize(1));
         assertThat(violations.get(0), not(InstanceTestUtils.contains(builder.getNode("C.n()"))));
@@ -43,7 +43,7 @@ public class FindMissingNodesTest {
                 .withDataEdge("int", PARAMETER, ">")
                 .withDataEdge(">", CONDITION, "List.get()").build();
 
-        List<Instance> instances = Instance.findInstances(target, pattern);
+        List<Instance> instances = new GreedyInstanceFinder().findInstances(target, pattern);
 
         System.out.println("instances = " + instances);
         assertThat(instances, hasSize(1));
