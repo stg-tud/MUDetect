@@ -28,7 +28,7 @@ public class EGroumTestUtils {
 
 	public static void buildAndPrintGroumsForFile(String inputPath, String name, String outputPath) {
 		EGroumBuilder gb = new EGroumBuilder();
-		inputPath += name;
+		inputPath = inputPath + "/" + name;
 		String content = FileIO.readStringFromFile(inputPath);
 		ASTNode ast = JavaASTUtil.parseSource(content, inputPath, name);
 		CompilationUnit cu = (CompilationUnit) ast;
@@ -40,7 +40,7 @@ public class EGroumTestUtils {
 			s = s.replace("\t", "    ");
 			s += "\\l";
 			s = "0 [label=\"" + s + "\"" + " shape=box style=dotted]";
-			System.out.println(s);
+//			System.out.println(s);
 			g.toGraphics(s, outputPath);
 		}
 	}

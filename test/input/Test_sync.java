@@ -1,6 +1,6 @@
 import java.util.HashMap;
 
-class Test_finally {
+class Test_sync {
 	private HashMap<String, String> map;
 
 	public void onEvent(String sender, String event) {
