@@ -479,15 +479,29 @@ public class EGroumGraph implements Serializable {
 		gs[0] = buildPDG(control, branch, astNode.getBody());
 		ArrayList<EGroumActionNode> triedMethods = context.popTry();
 		if (!resourceNames.isEmpty()) {
-			EGroumActionNode close = new EGroumActionNode(control, branch, null, ASTNode.METHOD_INVOCATION, null, "AutoCloseable.close()", "close");
-			gs[0].mergeSequential(new EGroumGraph(context, close));
+			HashMap<String, EGroumActionNode> closeNodes = new HashMap<>();
+			EGroumGraph[] cgs = new EGroumGraph[resourceNames.size()];
+			int i = 0;
+			for (String rn : resourceNames) {
+				EGroumGraph g = buildPDG(control, branch, astNode.getAST().newSimpleName(rn));
+				EGroumActionNode close = new EGroumActionNode(control, branch, null, ASTNode.METHOD_INVOCATION, null, "AutoCloseable.close()", "close");
+				g.mergeSequentialData(close, Type.RECEIVER);
+				closeNodes.put(rn, close);
+				cgs[i++] = g;
+			}
+			EGroumGraph cg = new EGroumGraph(context);
+			cg.mergeParallel(cgs);
+			gs[0].mergeSequential(cg);
 			for (EGroumActionNode m : triedMethods) {
 				ASTNode mn = m.getAstNode();
-				Type edgeType = hasResourceName(mn, resourceNames);
-				if (edgeType != null) {
+				String[] rns = getResourceName(mn, resourceNames);
+				if (rns != null) {
+					String rn = rns[0];
+					EGroumActionNode close = closeNodes.get(rn);
 					if (triedMethods.size() == 1 || (m.exceptionTypes != null && !m.exceptionTypes.isEmpty()))
 						new EGroumDataEdge(m, close, Type.FINALLY);
-					new EGroumDataEdge(m, close, edgeType);
+					if (rns.length == 2 && !close.hasInDataNode(m, Type.ORDER))
+						new EGroumDataEdge(m, close, Type.ORDER);
 				}
 			}
 		}
@@ -510,15 +524,15 @@ public class EGroumGraph implements Serializable {
 		return pdg;
 	}
 
-	public EGroumDataEdge.Type hasResourceName(ASTNode mn, HashSet<String> resourceNames) {
+	public String[] getResourceName(ASTNode mn, HashSet<String> resourceNames) {
 		if (mn instanceof MethodInvocation) {
 			MethodInvocation mi = (MethodInvocation) mn;
 			if (mi.getExpression() != null && mi.getExpression() instanceof SimpleName && resourceNames.contains(mi.getExpression().toString()))
-				return Type.ORDER;
+				return new String[]{mi.getExpression().toString(), EGroumDataEdge.getLabel(Type.ORDER)};
 		}
 		if (mn.getParent() instanceof VariableDeclarationFragment) {
 			VariableDeclarationFragment p = (VariableDeclarationFragment) mn.getParent();
-			return resourceNames.contains(p.getName().getIdentifier()) ? Type.RECEIVER : null;
+			return resourceNames.contains(p.getName().getIdentifier()) ? new String[]{p.getName().getIdentifier()} : null;
 		}
 		return null;
 	}

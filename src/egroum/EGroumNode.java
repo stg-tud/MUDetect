@@ -332,6 +332,13 @@ public abstract class EGroumNode {
 		return false;
 	}
 
+	public boolean hasInDataNode(EGroumNode node, Type type) {
+		for (EGroumEdge e : inEdges)
+			if (e instanceof EGroumDataEdge && e.source == node && ((EGroumDataEdge) e).type == type)
+				return true;
+		return false;
+	}
+
 	public boolean hasOutNode(EGroumNode target) {
 		for (EGroumEdge e : outEdges)
 			if (e.target == target)
