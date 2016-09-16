@@ -7,16 +7,23 @@
 	<name>GrouMiner</name>
 	<distributionManagement>
 		<repository>
-			<id>stg-eko</id>
-			<name>Eko Releases</name>
-			<url>http://vm16.rbg.informatik.tu-darmstadt.de/nexus/repository/maven-releases</url>
+			<id>stg-mubench</id>
+			<name>MuBench</name>
+			<url>ftp://www.st.informatik.tu-darmstadt.de/mubench/mvn</url>
 		</repository>
 		<snapshotRepository>
-			<id>stg-eko</id>
-			<name>Eko Snapshot</name>
-			<url>http://vm16.rbg.informatik.tu-darmstadt.de/nexus/repository/maven-snapshots</url>
+			<id>stg-mubench</id>
+			<name>MuBench</name>
+			<url>ftp://www.st.informatik.tu-darmstadt.de/mubench/mvn</url>
 		</snapshotRepository>
 	</distributionManagement>
+	<repositories>
+		<repository>
+			<id>stg-mubench</id>
+			<name>MuBench</name>
+			<url>http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/mvn/</url>
+		</repository>
+	</repositories>
 	<dependencies>
 		<!-- http://mvnrepository.com/artifact/org.eclipse.tycho/org.eclipse.jdt.core -->
 		<dependency>
