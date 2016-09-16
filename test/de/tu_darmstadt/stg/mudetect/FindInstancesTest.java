@@ -1,13 +1,13 @@
-package de.tu_darmstadt.stg.eko.mudetect;
+package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.eko.mudetect.model.AUG;
-import de.tu_darmstadt.stg.eko.mudetect.model.AUGBuilder;
+import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.model.AUGBuilder;
+import de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils;
 import org.junit.Test;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.eko.mudetect.model.AUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.eko.mudetect.model.InstanceTestUtils.hasInstance;
+import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.buildAUG;
 import static egroum.EGroumDataEdge.Type.CONDITION;
 import static egroum.EGroumDataEdge.Type.PARAMETER;
 import static egroum.EGroumDataEdge.Type.RECEIVER;
@@ -56,9 +56,9 @@ public class FindInstancesTest {
         AUG pattern = builder.build();
         AUG target = builder.build();
 
-        List<Instance> instances = Instance.findInstances(target, pattern);
+        List<Instance> instances = new GreedyInstanceFinder().findInstances(target, pattern);
 
         assertThat(instances, hasSize(1));
-        assertThat(instances, hasInstance(pattern));
+        assertThat(instances, InstanceTestUtils.hasInstance(pattern));
     }
 }

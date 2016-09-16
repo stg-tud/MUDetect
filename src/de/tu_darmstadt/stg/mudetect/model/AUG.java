@@ -1,4 +1,4 @@
-package de.tu_darmstadt.stg.eko.mudetect.model;
+package de.tu_darmstadt.stg.mudetect.model;
 
 import egroum.EGroumActionNode;
 import egroum.EGroumDataNode;
@@ -13,8 +13,21 @@ import java.util.Set;
 
 public class AUG extends DirectedAcyclicGraph<EGroumNode, EGroumEdge> {
 
-    public AUG() {
+    private final String name;
+    private final String filePath;
+
+    public AUG(String name, String filePath) {
         super(EGroumEdge.class);
+        this.name = name;
+        this.filePath = filePath;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getFilePath() {
+        return filePath;
     }
 
     public EGroumDataNode getReceiver(EGroumNode node) {

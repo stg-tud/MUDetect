@@ -1,9 +1,7 @@
-package de.tu_darmstadt.stg.eko.mudetect.model;
+package de.tu_darmstadt.stg.mudetect.model;
 
 import egroum.EGroumActionNode;
 import egroum.EGroumNode;
-
-import java.util.Objects;
 
 public class Condition {
     private final EGroumNode operand1;
