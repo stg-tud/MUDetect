@@ -34,7 +34,7 @@ public class EGroumTestUtils {
 		CompilationUnit cu = (CompilationUnit) ast;
 		TypeDeclaration type = (TypeDeclaration) cu.types().get(0);
 		for (MethodDeclaration m : type.getMethods()) {
-			EGroumGraph g = gb.buildGroum(m, inputPath, type.getName().getIdentifier());
+			EGroumGraph g = gb.buildGroum(m, inputPath, type.getName().getIdentifier() + ".");
 			String s = m.toString();
 			s = s.replace("\n", "\\l");
 			s = s.replace("\t", "    ");
