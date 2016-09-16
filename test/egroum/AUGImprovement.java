@@ -76,7 +76,8 @@ public class AUGImprovement {
     @Test
     public void tryWithResources() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/synthetic/fisexists/synthetic.fisexists/no_findings.php
-        print("class FISExists {" +
+        print("import java.io.FileInputStream;" +
+                "class FISExists {" +
                 "  public void misuse(File file) throws IOException {" +
                 "    try (FileInputStream fis = new FileInputStream(file)) {" +
                 "      // do something with fis...\n" +
