@@ -1,7 +1,6 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Model;
 import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import org.jmock.Expectations;
@@ -12,9 +11,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.someAUG;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class MuDetectTest {
@@ -23,8 +21,8 @@ public class MuDetectTest {
     @Test
     public void findsViolations() throws Exception {
         final Model model = context.mock(Model.class);
-        final Pattern pattern = new Pattern(new AUG());
-        final AUG target = new AUG();
+        final Pattern pattern = new Pattern(someAUG());
+        final AUG target = someAUG();
         final Collection<AUG> targets = Collections.singletonList(target);
         final Instance instance = new Instance(pattern.getAUG(), target);
         final InstanceFinder instanceFinder = context.mock(InstanceFinder.class);
@@ -51,8 +49,8 @@ public class MuDetectTest {
     @Test
     public void ignoresNonViolations() throws Exception {
         final Model model = context.mock(Model.class);
-        final Pattern pattern = new Pattern(new AUG());
-        final AUG target = new AUG();
+        final Pattern pattern = new Pattern(someAUG());
+        final AUG target = someAUG();
         final Collection<AUG> targets = Collections.singletonList(target);
         final Instance instance = new Instance(pattern.getAUG(), target);
         final InstanceFinder instanceFinder = context.mock(InstanceFinder.class);

@@ -15,6 +15,10 @@ public class AUGBuilder {
     private Map<String, EGroumNode> nodeMap = new HashMap<>();
     private Set<EGroumEdge> edges = new HashSet<>();
 
+    public static AUG someAUG() {
+        return buildAUG().withActionNode(":dummy:").build();
+    }
+
     public static AUGBuilder buildAUG() {
         return new AUGBuilder();
     }
@@ -86,7 +90,7 @@ public class AUGBuilder {
     }
 
     public AUG build() {
-        AUG aug = new AUG();
+        AUG aug = new AUG(":aug-name:", ":aug-file-path:");
         for (EGroumNode node : nodeMap.values()) {
             aug.addVertex(node);
         }
