@@ -54,7 +54,7 @@ public class MinerTest {
 	public void mineDuplicatedCode() {
 		int tempMaxSize = Pattern.maxSize;
 		Pattern.maxSize = Integer.MAX_VALUE;
-		String system = "add";
+		String system = "list";
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		for (int i = 0; i < 2; i++)
 			groums.addAll(buildGroums(FileIO.readStringFromFile("input/Test_" + system + "_pattern.java")));
