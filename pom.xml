@@ -71,6 +71,12 @@
             <artifactId>mubench.cli</artifactId>
             <version>0.0.8-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.jmock</groupId>
+            <artifactId>jmock-junit4</artifactId>
+            <version>2.6.0</version>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
