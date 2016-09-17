@@ -1,3 +1,5 @@
+package input;
+
 class Test_order {
 	public void misuse(JFrame f, Dimension d) {
 		f.pack();

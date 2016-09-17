@@ -1,3 +1,5 @@
+package input;
+
 class Test_control {
 	public void misuse(Object obj) throws InterruptedException {
 		synchronized (obj) {

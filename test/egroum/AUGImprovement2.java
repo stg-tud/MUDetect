@@ -11,25 +11,25 @@ public class AUGImprovement2 {
     @Test
     public void finallyEdge() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test/input", "Test_finally.java", "aug-improvement");
+    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_finally.java", "aug-improvement");
     }
 
     @Test
     public void repeatEdges() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/synthetic/wait-loop/synthetic.wait-loop/review.php
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test/input", "Test_control.java", "aug-improvement");
+    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_control.java", "aug-improvement");
     }
 
     @Test
     public void syncEdges() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/synthetic/deadlock/synthetic.deadlock/no_findings.php
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test/input", "Test_sync.java", "aug-improvement");
+    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_sync.java", "aug-improvement");
     }
 
     @Test
     public void tryWithResources() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/synthetic/fisexists/synthetic.fisexists/no_findings.php
-        EGroumTestUtils.buildAndPrintGroumsForFile("test/input", "Test_try_resources.java", "aug-improvement");
+        EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_try_resources.java", "aug-improvement");
     }
 
     @Test

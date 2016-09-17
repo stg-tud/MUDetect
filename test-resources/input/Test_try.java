@@ -1,3 +1,5 @@
+package input;
+
 import java.io.PrintWriter;
 import java.io.Writer;
 

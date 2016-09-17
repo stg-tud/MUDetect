@@ -1,3 +1,5 @@
+package input;
+
 import java.util.HashMap;
 
 class Test_sync {
