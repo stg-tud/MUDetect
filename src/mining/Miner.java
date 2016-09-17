@@ -182,6 +182,7 @@ public class Miner {
 		}
 		HashSet<Fragment> group = new HashSet<>(), frequentFragments = new HashSet<>();
 		int xfreq = Pattern.minFreq - 1;
+		boolean extensible = false;
 		for (String label : labelFragmentExtendableNodes.keySet()) {
 			HashMap<Fragment, HashSet<ArrayList<EGroumNode>>> fens = labelFragmentExtendableNodes.get(label);
 			HashSet<Fragment> xfs = new HashSet<>();
@@ -195,53 +196,58 @@ public class Miner {
 			System.out.println("\tTrying with label " + label + ": " + xfs.size());
 			HashSet<Fragment> g = new HashSet<>();
 			int freq = mine(g, xfs, pattern, isGiant, frequentFragments);
-			if (freq > xfreq && !Lattice.contains(lattices, g)) {
-				group = g;
-				xfreq = freq;
+			if (freq > xfreq) {
+				extensible = true;
+				if (!Lattice.contains(lattices, g)) {
+					group = g;
+					xfreq = freq;
+				}
 			}
 		}
 		System.out.println("Done trying all labels");
-		if (xfreq >= Pattern.minFreq) {
+		if (extensible) {
 			HashSet<Fragment> inextensibles = new HashSet<>(pattern.getFragments());
 			for (Fragment xf : frequentFragments) {
 				inextensibles.remove(xf.getGenFragmen());
 			}
 			if (inextensibles.size() >= Pattern.minFreq) {
 				int freq = computeFrequency(inextensibles, false);
-				if (freq >= Pattern.minFreq) {
+				if (freq >= Pattern.minFreq && !Lattice.contains(lattices, inextensibles)) {
 					Pattern ip = new Pattern(inextensibles, freq);
 					ip.add2Lattice(lattices);
 					pattern.getFragments().removeAll(inextensibles);
 				}
 			}
-			Pattern xp = new Pattern(group, xfreq);
-			ArrayList<String> labels = new ArrayList<>();
-			Fragment rep = null, xrep = null;
-			for (Fragment f : group) {
-				xrep = f;
-				break;
+			if (xfreq >= Pattern.minFreq) {
+				Pattern xp = new Pattern(group, xfreq);
+				ArrayList<String> labels = new ArrayList<>();
+				Fragment rep = null, xrep = null;
+				for (Fragment f : group) {
+					xrep = f;
+					break;
+				}
+				for (Fragment f : pattern.getFragments()) {
+					rep = f;
+					break;
+				}
+				if (rep != null && xrep != null) {
+					for (int j = rep.getNodes().size(); j < xrep.getNodes().size(); j++)
+						labels.add(xrep.getNodes().get(j).getLabel());
+					System.out.println("{Extending pattern of size " + rep.getNodes().size()
+							+ " " + rep.getNodes()
+							+ " occurences: " + pattern.getFragments().size()
+							+ " frequency: " + pattern.getFreq()
+							+ " with label " + labels
+							+ " occurences: " + group.size()
+							+ " frequency: " + xfreq
+							+ " patterns: " + Pattern.nextID 
+							+ " fragments: " + Fragment.numofFragments 
+							+ " next fragment: " + Fragment.nextFragmentId);
+				}
+				pattern.clear();
+				extend(xp);
+				System.out.println("}");
 			}
-			for (Fragment f : pattern.getFragments()) {
-				rep = f;
-				break;
-			}
-			if (rep != null && xrep != null) {
-				for (int j = rep.getNodes().size(); j < xrep.getNodes().size(); j++)
-					labels.add(xrep.getNodes().get(j).getLabel());
-				System.out.println("{Extending pattern of size " + rep.getNodes().size()
-						+ " " + rep.getNodes()
-						+ " occurences: " + pattern.getFragments().size()
-						+ " frequency: " + pattern.getFreq()
-						+ " with label " + labels
-						+ " occurences: " + group.size()
-						+ " frequency: " + xfreq
-						+ " patterns: " + Pattern.nextID 
-						+ " fragments: " + Fragment.numofFragments 
-						+ " next fragment: " + Fragment.nextFragmentId);
-			}
-			pattern.clear();
-			extend(xp);
-			System.out.println("}");
 		} else
 			pattern.add2Lattice(lattices);
 	}
