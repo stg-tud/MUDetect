@@ -244,10 +244,10 @@ public class Miner {
 							+ " fragments: " + Fragment.numofFragments 
 							+ " next fragment: " + Fragment.nextFragmentId);
 				}
-				pattern.clear();
 				extend(xp);
 				System.out.println("}");
 			}
+			pattern.clear();
 		} else
 			pattern.add2Lattice(lattices);
 	}

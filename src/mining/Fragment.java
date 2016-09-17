@@ -369,7 +369,9 @@ public class Fragment {
 		this.genFragmen = null;
 		this.graph = null;
 		this.nodes.clear();
+		this.nodes = null;
 		this.vector.clear();
+		this.vector = null;
 		numofFragments--;
 	}
 	
