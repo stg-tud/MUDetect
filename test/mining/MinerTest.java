@@ -23,8 +23,18 @@ public class MinerTest {
 
 	
 	@Rule
-	public TestName testName = new TestName(); 
+	public TestName testName = new TestName();
 	
+	@Test
+	public void mineFrequentSubPatterns() {
+		ArrayList<EGroumGraph> groums = buildGroumsFromFile("test/input/Test_mine.java");
+		
+		List<Pattern> patterns = mine(groums);
+		
+		assertThat(patterns.size(), is(2));
+		print(patterns.get(0));
+	}
+
 	@Test
 	public void mineMinimalCode() {
 		ArrayList<EGroumGraph> groums = buildGroums(
@@ -285,6 +295,10 @@ public class MinerTest {
 		
 		print(patterns);
 		assertThat(patterns.size(), is(2));
+	}
+	
+	private ArrayList<EGroumGraph> buildGroumsFromFile(String path) {
+		return new EGroumBuilder().build(path);
 	}
 
 	private ArrayList<EGroumGraph> buildGroums(String... sourceCodes) {

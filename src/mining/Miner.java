@@ -91,8 +91,8 @@ public class Miner {
 				nodesOfLabel.remove(label);
 			} else if (!coreLabels.contains(label))
 				nodesOfLabel.remove(label);
-			else if (nodes.size() > groums.size() * maxSingleNodePrevalence)
-				nodesOfLabel.remove(label);
+			/*else if (nodes.size() > groums.size() * maxSingleNodePrevalence)
+				nodesOfLabel.remove(label);*/
 		}
 		for (String label : nodesOfLabel.keySet()) {
 			HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
@@ -103,8 +103,6 @@ public class Miner {
 			}
 			Pattern p = new Pattern(fragments, fragments.size());
 			extend(p);
-			if (Pattern.minSize > 1)
-				p.clear();
 		}
 		System.out.println("Done mining.");
 		Lattice.filter(lattices);
@@ -213,6 +211,7 @@ public class Miner {
 				if (freq >= Pattern.minFreq) {
 					Pattern ip = new Pattern(inextensibles, freq);
 					ip.add2Lattice(lattices);
+					pattern.getFragments().removeAll(inextensibles);
 				}
 			}
 			Pattern xp = new Pattern(group, xfreq);
@@ -337,13 +336,11 @@ public class Miner {
 		group.add(f);
 		fs.add(f.getGenFragmen());
 		bucket.remove(f);
-		f.setGenFragmen(null);
 		for (Fragment g : new HashSet<Fragment>(bucket)) {
 			if (f.getVector().equals(g.getVector())) {
 				group.add(g);
 				fs.add(g.getGenFragmen());
 				bucket.remove(g);
-				g.setGenFragmen(null);
 			}
 		}
 		if (fs.size() >= Pattern.minFreq && group.size() >= Pattern.minFreq) {
