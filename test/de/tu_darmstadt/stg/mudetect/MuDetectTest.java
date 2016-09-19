@@ -20,13 +20,16 @@ public class MuDetectTest {
 
     @Test
     public void findsViolations() throws Exception {
-        final Model model = context.mock(Model.class);
         final Pattern pattern = new Pattern(someAUG());
         final AUG target = someAUG();
         final Collection<AUG> targets = Collections.singletonList(target);
         final Instance instance = new Instance(pattern.getAUG(), target);
+        final Violation violation = new Violation(instance);
+
+        final Model model = context.mock(Model.class);
         final InstanceFinder instanceFinder = context.mock(InstanceFinder.class);
-        final ViolationStrategy violationStrategy = context.mock(ViolationStrategy.class);
+        final ViolationFactory violationFactory = context.mock(ViolationFactory.class);
+
         context.checking(new Expectations() {{
             allowing(model).getPatterns();
             will(returnValue(Collections.singleton(pattern)));
@@ -34,27 +37,30 @@ public class MuDetectTest {
             allowing(instanceFinder).findInstances(pattern.getAUG(), target);
             will(returnValue(Collections.singletonList(instance)));
 
-            allowing(violationStrategy).isViolation(instance);
+            allowing(violationFactory).isViolation(instance);
             will(returnValue(true));
+            allowing(violationFactory).createViolation(instance);
+            will(returnValue(violation));
         }});
 
-        MuDetect muDetect = new MuDetect(model, instanceFinder, violationStrategy);
+        MuDetect muDetect = new MuDetect(model, instanceFinder, violationFactory);
         List<Violation> violations = muDetect.findViolations(targets);
 
         assertThat(violations, hasSize(1));
-        Violation violation = violations.get(0);
-        assertThat(violation.getInstance(), is(instance));
+        assertThat(violations, hasItem(violation));
     }
 
     @Test
     public void ignoresNonViolations() throws Exception {
-        final Model model = context.mock(Model.class);
         final Pattern pattern = new Pattern(someAUG());
         final AUG target = someAUG();
         final Collection<AUG> targets = Collections.singletonList(target);
         final Instance instance = new Instance(pattern.getAUG(), target);
+
+        final Model model = context.mock(Model.class);
         final InstanceFinder instanceFinder = context.mock(InstanceFinder.class);
-        final ViolationStrategy violationStrategy = context.mock(ViolationStrategy.class);
+        final ViolationFactory violationFactory = context.mock(ViolationFactory.class);
+
         context.checking(new Expectations() {{
             allowing(model).getPatterns();
             will(returnValue(Collections.singleton(pattern)));
@@ -62,11 +68,11 @@ public class MuDetectTest {
             allowing(instanceFinder).findInstances(pattern.getAUG(), target);
             will(returnValue(Collections.singletonList(instance)));
 
-            allowing(violationStrategy).isViolation(instance);
+            allowing(violationFactory).isViolation(instance);
             will(returnValue(false));
         }});
 
-        MuDetect muDetect = new MuDetect(model, instanceFinder, violationStrategy);
+        MuDetect muDetect = new MuDetect(model, instanceFinder, violationFactory);
         List<Violation> violations = muDetect.findViolations(targets);
 
         assertThat(violations, is(empty()));

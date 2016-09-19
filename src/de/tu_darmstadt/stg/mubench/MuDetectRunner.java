@@ -10,7 +10,6 @@ import egroum.*;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class MuDetectRunner extends MuBenchRunner {
 
@@ -23,7 +22,7 @@ public class MuDetectRunner extends MuBenchRunner {
         report(new MuDetect(
                 new ProvidedPatternsModel(buildGroums(patternPath)),
                 new GreedyInstanceFinder(),
-                new MissingElementViolationStrategy()
+                new MissingElementViolationFactory()
         ).findViolations(buildAUGs(targetPath)), output);
     }
 
@@ -32,7 +31,7 @@ public class MuDetectRunner extends MuBenchRunner {
         report(new MuDetect(
                 new MinedPatternsModel(10, 3, buildGroums(trainingAndTargetPath)),
                 new GreedyInstanceFinder(),
-                new MissingElementViolationStrategy()
+                new MissingElementViolationFactory()
         ).findViolations(buildAUGs(trainingAndTargetPath)), output);
     }
 

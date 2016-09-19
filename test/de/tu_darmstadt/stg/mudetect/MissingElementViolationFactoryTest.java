@@ -10,13 +10,13 @@ import static egroum.EGroumDataEdge.Type.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class MissingElementViolationStrategyTest {
+public class MissingElementViolationFactoryTest {
     @Test
     public void fullInstance() throws Exception {
         AUG patternAUG = buildAUG().withActionNode(":action:").build();
         Instance instance = new Instance(patternAUG, patternAUG.vertexSet(), patternAUG.edgeSet());
 
-        ViolationStrategy strategy = new MissingElementViolationStrategy();
+        ViolationFactory strategy = new MissingElementViolationFactory();
         assertFalse(strategy.isViolation(instance));
     }
 
@@ -25,7 +25,7 @@ public class MissingElementViolationStrategyTest {
         AUG patternAUG = buildAUG().withActionNode(":action:").build();
         Instance instance = new Instance(patternAUG, new HashSet<>(), new HashSet<>());
 
-        MissingElementViolationStrategy strategy = new MissingElementViolationStrategy();
+        MissingElementViolationFactory strategy = new MissingElementViolationFactory();
         assertTrue(strategy.isViolation(instance));
     }
 
@@ -34,7 +34,7 @@ public class MissingElementViolationStrategyTest {
         AUG patternAUG = buildAUG().withActionNodes(":a1:", ":a2:").withDataEdge(":a1:", ORDER, ":a2:").build();
         Instance instance = new Instance(patternAUG, patternAUG.vertexSet(), new HashSet<>());
 
-        MissingElementViolationStrategy strategy = new MissingElementViolationStrategy();
+        MissingElementViolationFactory strategy = new MissingElementViolationFactory();
         assertTrue(strategy.isViolation(instance));
     }
 }

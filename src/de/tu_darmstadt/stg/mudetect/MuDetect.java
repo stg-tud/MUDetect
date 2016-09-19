@@ -8,12 +8,12 @@ public class MuDetect {
 
     private final Model model;
     private final InstanceFinder instanceFinder;
-    private final ViolationStrategy violationStrategy;
+    private final ViolationFactory violationFactory;
 
-    public MuDetect(Model model, InstanceFinder instanceFinder, ViolationStrategy violationStrategy) {
+    public MuDetect(Model model, InstanceFinder instanceFinder, ViolationFactory violationFactory) {
         this.model = model;
         this.instanceFinder = instanceFinder;
-        this.violationStrategy = violationStrategy;
+        this.violationFactory = violationFactory;
     }
 
     public List<Violation> findViolations(Collection<AUG> targets) {
@@ -22,8 +22,8 @@ public class MuDetect {
             for (Pattern pattern : model.getPatterns()) {
                 Collection<Instance> overlaps = instanceFinder.findInstances(pattern.getAUG(), target);
                 for (Instance overlap : overlaps) {
-                    if (violationStrategy.isViolation(overlap)) {
-                        violations.add(new Violation(overlap));
+                    if (violationFactory.isViolation(overlap)) {
+                        violations.add(violationFactory.createViolation(overlap));
                     }
                 }
             }
