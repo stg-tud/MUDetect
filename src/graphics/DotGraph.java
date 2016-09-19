@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import egroum.EGroumActionNode;
 import egroum.EGroumControlEdge;
@@ -113,6 +114,81 @@ public class DotGraph {
 						graph.append(addEdge(sId, tId, null, null, label));
 				} else
 					graph.append(addEdge(sId, tId, null, null, label));
+			}
+		}
+
+		graph.append(addEnd());
+	}
+
+	public DotGraph(EGroumGraph groum, HashSet<EGroumNode> missingNodes, HashSet<EGroumEdge> missingEdges) {
+		graph.append(addStart(groum.getName()));
+
+		HashMap<EGroumNode, Integer> ids = new HashMap<EGroumNode, Integer>();
+		// add nodes
+		int id = 0;
+		ArrayList<EGroumNode> nodes = new ArrayList<EGroumNode>(groum.getNodes());
+		Collections.sort(nodes, new Comparator<EGroumNode>() {
+			@Override
+			public int compare(EGroumNode n1, EGroumNode n2) {
+				return n1.getLabel().compareTo(n2.getLabel());
+			}
+		});
+		for(EGroumNode node : nodes) {
+			id++;
+			ids.put(node, id);
+			String label = node.getLabel();
+			/*if(node.getType() == GROUMNode.TYPE_ENTRY)
+				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getMethodID()), SHAPE_DIAMOND, null, null, null));
+				graph.append(addNode(id, node.getLabel(), SHAPE_ELLIPSE, null, null, null));
+			else */if (node instanceof EGroumControlNode)
+				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getMethodID()), SHAPE_DIAMOND, null, null, null));
+				graph.append(addNode(id, label, SHAPE_DIAMOND, null, missingNodes.contains(node) ? COLOR_RED : null, missingNodes.contains(node) ? COLOR_RED : null));
+			/*else if(node.getType() == GROUMNode.TYPE_DATA)
+				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getClassNameId()) + "." + node.getMethod(), SHAPE_BOX, STYLE_ROUNDED, null, null));
+				graph.append(addNode(id, node.getLabel(), SHAPE_BOX, null, null, null));*/
+			else if(node instanceof EGroumActionNode)
+				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getClassNameId()) + "." + node.getMethod(), SHAPE_BOX, STYLE_ROUNDED, null, null));
+				graph.append(addNode(id, label, SHAPE_BOX, null, missingNodes.contains(node) ? COLOR_RED : null, missingNodes.contains(node) ? COLOR_RED : null));
+			else
+				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getMethodID()), SHAPE_DIAMOND, null, null, null));
+				graph.append(addNode(id, label, SHAPE_ELLIPSE, null, missingNodes.contains(node) ? COLOR_RED : null, missingNodes.contains(node) ? COLOR_RED : null));
+		}
+		// add file name
+		//String fileName = GROUMNode.fileNames.get(groum.getFileID());
+		//graph.append(addNode(++id, fileName.replace('\\', '#'), DotGraph.STYLE_ROUNDED, null, null, null));
+		// add edges
+		for (EGroumNode node : nodes) {
+			if (!ids.containsKey(node)) continue;
+			int tId = ids.get(node);
+			HashMap<String, Integer> numOfEdges = new HashMap<>();
+			for (EGroumEdge e : node.getInEdges()) {
+				if (!ids.containsKey(e.getSource())) continue;
+				int sId = ids.get(e.getSource());
+				String label = e.getLabel();
+				if (e instanceof EGroumDataEdge) {
+					/*if (e.getTarget() instanceof EGroumEntryNode || ((EGroumDataEdge) e).getType() != Type.DEPENDENCE)*/ {
+						int n = 1;
+						if (numOfEdges.containsKey(label))
+							n += numOfEdges.get(label);
+						numOfEdges.put(label, n);
+						graph.append(addEdge(sId, tId, STYLE_DOTTED, missingEdges.contains(e) ? COLOR_RED : null,
+								label + (((EGroumDataEdge) e).getType() == Type.PARAMETER ? n : "")));
+					}
+				} else if (e instanceof EGroumControlEdge) {
+					EGroumNode s = e.getSource();
+					if (s instanceof EGroumEntryNode || s instanceof EGroumControlNode) {
+						int n = 0;
+						for (EGroumEdge out : s.getOutEdges()) {
+							if (out.getLabel().equals(label))
+								n++;
+							if (out == e)
+								break;
+						}
+						graph.append(addEdge(sId, tId, null, missingEdges.contains(e) ? COLOR_RED : null, label + n));
+					} else
+						graph.append(addEdge(sId, tId, null, missingEdges.contains(e) ? COLOR_RED : null, label));
+				} else
+					graph.append(addEdge(sId, tId, null, missingEdges.contains(e) ? COLOR_RED : null, label));
 			}
 		}
 
@@ -280,7 +356,7 @@ public class DotGraph {
 		if(style != null && !style.isEmpty())
 			buf.append(" style=" + style);
 		if(color != null && !color.isEmpty())
-			buf.append(" color=" + color);
+			buf.append(" color=" + color + " fontcolor=" + color);
 		buf.append("];\n");
 
 		return buf.toString();
