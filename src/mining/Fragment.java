@@ -228,7 +228,7 @@ public class Fragment {
 			return false;
 		if (this.idSum != other.getIdSum())
 			return false;
-		return nodes.equals(other.nodes);
+		return new HashSet<EGroumNode>(nodes).equals(new HashSet<EGroumNode>(other.nodes));
 	}
 	/**
 	 * Set of nodes contains all the nodes of the other fragment
