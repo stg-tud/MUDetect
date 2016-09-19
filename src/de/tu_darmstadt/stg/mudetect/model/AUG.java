@@ -13,21 +13,15 @@ import java.util.Set;
 
 public class AUG extends DirectedAcyclicGraph<EGroumNode, EGroumEdge> {
 
-    private final String name;
-    private final String filePath;
+    private final Location location;
 
     public AUG(String name, String filePath) {
         super(EGroumEdge.class);
-        this.name = name;
-        this.filePath = filePath;
+        this.location = new Location(filePath, name);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getFilePath() {
-        return filePath;
+    public Location getLocation() {
+        return location;
     }
 
     public EGroumDataNode getReceiver(EGroumNode node) {

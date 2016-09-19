@@ -1,10 +1,12 @@
 package de.tu_darmstadt.stg.mubench;
 
 import de.tu_darmstadt.stg.mubench.cli.CodePath;
+import de.tu_darmstadt.stg.mubench.cli.DetectorFinding;
 import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
 import de.tu_darmstadt.stg.mubench.cli.MuBenchRunner;
 import de.tu_darmstadt.stg.mudetect.*;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.model.Location;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import egroum.*;
 
@@ -44,6 +46,13 @@ public class MuDetectRunner extends MuBenchRunner {
     }
 
     private void report(List<Violation> violations, DetectorOutput output) {
-
+        for (int rank = 0; rank < violations.size(); rank++) {
+            Violation violation =  violations.get(rank);
+            Location location = violation.getLocation();
+            DetectorFinding finding = output.add(location.getFilePath(), location.getMethodName());
+            finding.put("rank", Integer.toString(rank));
+            finding.put("pattern_violation", violation.toDotGraph());
+            finding.put("confidence", Float.toString(violation.getConfidence()));
+        }
     }
 }

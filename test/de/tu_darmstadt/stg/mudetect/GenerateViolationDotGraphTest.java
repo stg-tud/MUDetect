@@ -58,11 +58,9 @@ public class GenerateViolationDotGraphTest {
                 "}\n");
     }
 
-    private void assertDotGraph(Violation violation, String dotGraph) {
-        StringWriter writer = new StringWriter();
+    private void assertDotGraph(Violation violation, String expectedDotGraph) {
+        String dotGraph = violation.toDotGraph();
 
-        violation.toDotGraph(writer);
-
-        assertThat(writer.toString(), is(dotGraph));
+        assertThat(dotGraph, is(expectedDotGraph));
     }
 }

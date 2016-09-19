@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Condition;
+import de.tu_darmstadt.stg.mudetect.model.Location;
 import egroum.EGroumActionNode;
 import egroum.EGroumDataNode;
 import egroum.EGroumEdge;
@@ -93,4 +94,7 @@ public class Instance extends DirectedSubgraph<EGroumNode, EGroumEdge> {
         }
     }
 
+    public Location getLocation() {
+        return getTarget().getLocation();
+    }
 }

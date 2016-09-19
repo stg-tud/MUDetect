@@ -7,6 +7,7 @@ import org.jgrapht.ext.DOTExporter;
 import org.jgrapht.ext.IntegerNameProvider;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,8 +23,10 @@ public class Violation {
         this.instance = overlap;
     }
 
-    public Instance getInstance() {
-        return instance;
+    public String toDotGraph() {
+        StringWriter writer = new StringWriter();
+        toDotGraph(writer);
+        return writer.toString();
     }
 
     public void toDotGraph(Writer writer) {
@@ -32,7 +35,7 @@ public class Violation {
             @Override
             public void write(String s, int off, int len) {
                 if (s.equals("digraph G {")) {
-                    s = "digraph \"" + instance.getTarget().getName() + "\" {";
+                    s = "digraph \"" + instance.getLocation().getMethodName() + "\" {";
                 }
                 super.write(s, 0, s.length());
             }
@@ -55,5 +58,13 @@ public class Violation {
             attributes.put("color", "red");
         }
         return attributes;
+    }
+
+    public Location getLocation() {
+        return instance.getLocation();
+    }
+
+    public float getConfidence() {
+        return -1;
     }
 }
