@@ -5,13 +5,19 @@ import de.tu_darmstadt.stg.mudetect.model.Condition;
 import de.tu_darmstadt.stg.mudetect.model.Location;
 import egroum.*;
 import org.jgrapht.graph.DirectedSubgraph;
-import org.jgrapht.graph.Subgraph;
 
 import java.util.*;
 
 import static egroum.EGroumDataEdge.Type.*;
 
 public class Instance extends DirectedSubgraph<EGroumNode, EGroumEdge> {
+
+    private interface NodeMatcher {
+        boolean match(EGroumNode targetNode, EGroumNode patternNode);
+    }
+
+    private static final NodeMatcher EQUAL_NODES =
+            (targetNode, patternNode) -> targetNode.getLabel().equals(patternNode.getLabel());
 
     private final AUG target;
 
@@ -34,6 +40,10 @@ public class Instance extends DirectedSubgraph<EGroumNode, EGroumEdge> {
 
     public AUG getTarget() { return target; }
 
+    public Location getLocation() {
+        return getTarget().getLocation();
+    }
+
     void extend(EGroumNode targetNode, EGroumNode patternNode) {
         addVertex(patternNode);
 
@@ -45,32 +55,14 @@ public class Instance extends DirectedSubgraph<EGroumNode, EGroumEdge> {
                 Set<EGroumEdge> targetInEdges = targetNodeInEdgesByType.get(edgeType);
                 switch (edgeType) {
                     case "cond":
-                        for (EGroumEdge patternInEdge : patternInEdges) {
-                            for (EGroumEdge targetInEdge : targetInEdges) {
-                                if (!containsVertex(patternInEdge.getSource())) {
-                                    Condition patternCondition = getCondition(patternInEdge.getSource(), getPattern());
-                                    Condition targetCondition = getCondition(targetInEdge.getSource(), getTarget());
-                                    if (targetCondition.isInstanceOf(patternCondition)) {
-                                        addVertex(patternInEdge.getSource());
-                                        addEdge(patternInEdge.getSource(), patternInEdge.getTarget(), patternInEdge);
-                                        extend(targetInEdge.getSource(), patternInEdge.getSource());
-                                    }
-                                }
-                            }
-                        }
+                        extendUpwards(patternInEdges, targetInEdges, (targetInNode, patternInNode) -> {
+                            Condition patternCondition = getCondition(patternInNode, getPattern());
+                            Condition targetCondition = getCondition(targetInNode, getTarget());
+                            return targetCondition.isInstanceOf(patternCondition);
+                        });
                         break;
                     default:
-                        for (EGroumEdge patternInEdge : patternInEdges) {
-                            for (EGroumEdge targetInEdge : targetInEdges) {
-                                if (!containsVertex(patternInEdge.getSource())) {
-                                    if (patternInEdge.getSource().getLabel().equals(targetInEdge.getSource().getLabel())) {
-                                        addVertex(patternInEdge.getSource());
-                                        addEdge(patternInEdge.getSource(), patternInEdge.getTarget(), patternInEdge);
-                                        extend(targetInEdge.getSource(), patternInEdge.getSource());
-                                    }
-                                }
-                            }
-                        }
+                        extendUpwards(patternInEdges, targetInEdges, EQUAL_NODES);
                 }
             }
         }
@@ -83,23 +75,45 @@ public class Instance extends DirectedSubgraph<EGroumNode, EGroumEdge> {
                 Set<EGroumEdge> targetOutEdges = targetNodeOutEdgesByType.get(edgeType);
                 switch (edgeType) {
                     default:
-                        for (EGroumEdge patternOutEdge : patternOutEdges) {
-                            for (EGroumEdge targetOutEdge : targetOutEdges) {
-                                if (!containsVertex(patternOutEdge.getTarget())) {
-                                    if (patternOutEdge.getTarget().getLabel().equals(targetOutEdge.getTarget().getLabel())) {
-                                        addVertex(patternOutEdge.getTarget());
-                                        addEdge(patternOutEdge.getSource(), patternOutEdge.getTarget(), patternOutEdge);
-                                        extend(targetOutEdge.getTarget(), patternOutEdge.getTarget());
-                                    }
-                                }
-                            }
-                        }
+                        extendDownwards(patternOutEdges, targetOutEdges, EQUAL_NODES);
                 }
             }
         }
     }
 
-    public Condition getCondition(EGroumNode conditionSource, AUG aug) {
+    private void extendUpwards(Set<EGroumEdge> patternInEdges, Set<EGroumEdge> targetInEdges, NodeMatcher matcher) {
+        for (EGroumEdge patternInEdge : patternInEdges) {
+            for (EGroumEdge targetInEdge : targetInEdges) {
+                if (!containsVertex(patternInEdge.getSource())) {
+                    if (matcher.match(targetInEdge.getSource(), patternInEdge.getSource())) {
+                        addVertex(patternInEdge.getSource());
+                        addEdge(patternInEdge);
+                        extend(targetInEdge.getSource(), patternInEdge.getSource());
+                    }
+                }
+            }
+        }
+    }
+
+    private void extendDownwards(Set<EGroumEdge> patternOutEdges, Set<EGroumEdge> targetOutEdges, NodeMatcher matcher) {
+        for (EGroumEdge patternOutEdge : patternOutEdges) {
+            for (EGroumEdge targetOutEdge : targetOutEdges) {
+                if (!containsVertex(patternOutEdge.getTarget())) {
+                    if (matcher.match(targetOutEdge.getTarget(), patternOutEdge.getTarget())) {
+                        addVertex(patternOutEdge.getTarget());
+                        addEdge(patternOutEdge);
+                        extend(targetOutEdge.getTarget(), patternOutEdge.getTarget());
+                    }
+                }
+            }
+        }
+    }
+
+    private void addEdge(EGroumEdge edge) {
+        addEdge(edge.getSource(), edge.getTarget(), edge);
+    }
+
+    private Condition getCondition(EGroumNode conditionSource, AUG aug) {
         String conditionLabel = conditionSource.getLabel();
         if (conditionLabel.length() == 1 && EGroumNode.infixExpressionLables.values().contains(conditionLabel.charAt(0))) {
             // TODO clean the retrieval of operand arguments
@@ -109,9 +123,5 @@ public class Instance extends DirectedSubgraph<EGroumNode, EGroumEdge> {
         } else {
             return new Condition(conditionSource);
         }
-    }
-
-    public Location getLocation() {
-        return getTarget().getLocation();
     }
 }
