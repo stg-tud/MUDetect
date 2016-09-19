@@ -1,15 +1,15 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
-import egroum.EGroumActionNode;
-import egroum.EGroumDataNode;
-import egroum.EGroumEdge;
-import egroum.EGroumNode;
+import egroum.*;
+import egroum.EGroumDataEdge.Type;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static egroum.EGroumDataEdge.Type.*;
 
 public class AUG extends DirectedAcyclicGraph<EGroumNode, EGroumEdge> {
 
@@ -24,51 +24,25 @@ public class AUG extends DirectedAcyclicGraph<EGroumNode, EGroumEdge> {
         return location;
     }
 
-    public EGroumDataNode getReceiver(EGroumNode node) {
-        for (EGroumEdge edge : edgesOf(node)) {
-            if (getEdgeTarget(edge) == node && edge.isRecv()) {
-                return (EGroumDataNode) getEdgeSource(edge);
-            }
-        }
-        return null;
+    public Map<String, Set<EGroumEdge>> getInEdgesByType(EGroumNode node) {
+        return getEdgesByType(node, edge -> getEdgeTarget(edge) == node);
     }
 
-    public Set<EGroumActionNode> getInvocations(EGroumDataNode node) {
-        Set<EGroumActionNode> invocations = new HashSet<>();
-        for (EGroumEdge edge : edgesOf(node)) {
-            if (getEdgeSource(edge) == node && edge.isRecv()) {
-                invocations.add((EGroumActionNode) getEdgeTarget(edge));
-            }
-        }
-        return invocations;
+    public Map<String, Set<EGroumEdge>> getOutEdgesByType(EGroumNode node) {
+        return getEdgesByType(node, edge -> getEdgeSource(edge) == node);
     }
 
-    public Set<Condition> getConditions(EGroumActionNode node) {
-        Set<Condition> conditions = new HashSet<>();
+    private Map<String, Set<EGroumEdge>> getEdgesByType(EGroumNode node, Predicate<EGroumEdge> condition) {
+        Map<String, Set<EGroumEdge>> inEdgesByType = new HashMap<>();
         for (EGroumEdge edge : edgesOf(node)) {
-            if (getEdgeTarget(edge) == node && edge.isCond()) {
-                EGroumActionNode edgeSource = (EGroumActionNode) getEdgeSource(edge);
-                String sourceLabel = edgeSource.getLabel();
-                if (sourceLabel.length() == 1 && EGroumNode.infixExpressionLables.values().contains(sourceLabel.charAt(0))) {
-                    // TODO clean the retrieval of operand arguments
-                    Set<EGroumNode> operands = getArguments(edgeSource);
-                    Iterator<EGroumNode> iterator = operands.iterator();
-                    conditions.add(new Condition(iterator.next(), edgeSource, iterator.next()));
-                } else {
-                    conditions.add(new Condition(edgeSource));
+            if (condition.test(edge)) {
+                String edgeType = edge.getLabel();
+                if (!inEdgesByType.containsKey(edgeType)) {
+                    inEdgesByType.put(edgeType, new HashSet<>());
                 }
+                inEdgesByType.get(edgeType).add(edge);
             }
         }
-        return conditions;
-    }
-
-    public Set<EGroumNode> getArguments(EGroumActionNode node) {
-        Set<EGroumNode> arguments = new HashSet<>();
-        for (EGroumEdge edge : edgesOf(node)) {
-            if (getEdgeTarget(edge) == node && edge.isParameter()) {
-                arguments.add(edge.getSource());
-            }
-        }
-        return arguments;
+        return inEdgesByType;
     }
 }

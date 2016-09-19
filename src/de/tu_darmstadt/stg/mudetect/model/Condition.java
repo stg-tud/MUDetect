@@ -5,10 +5,10 @@ import egroum.EGroumNode;
 
 public class Condition {
     private final EGroumNode operand1;
-    private final EGroumActionNode operator;
+    private final EGroumNode operator;
     private final EGroumNode operand2;
 
-    public Condition(EGroumNode operand1, EGroumActionNode operator, EGroumNode operand2) {
+    public Condition(EGroumNode operand1, EGroumNode operator, EGroumNode operand2) {
         if (operand1 == null) {
             throw new IllegalArgumentException("operand1 must not be null");
         }
@@ -20,13 +20,8 @@ public class Condition {
         this.operand2 = operand2;
     }
 
-    public Condition(EGroumActionNode operand1) {
+    public Condition(EGroumNode operand1) {
         this(operand1, null, null);
-    }
-
-    @Deprecated
-    public EGroumActionNode getNode() {
-        return operator != null ? operator : (EGroumActionNode) operand1;
     }
 
     public boolean isInstanceOf(Condition patternCondition) {
