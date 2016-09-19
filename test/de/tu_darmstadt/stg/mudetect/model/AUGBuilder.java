@@ -12,15 +12,24 @@ import java.util.Set;
 public class AUGBuilder {
     private int autoId = 0;
 
-    private Map<String, EGroumNode> nodeMap = new HashMap<>();
-    private Set<EGroumEdge> edges = new HashSet<>();
+    private final Map<String, EGroumNode> nodeMap = new HashMap<>();
+    private final Set<EGroumEdge> edges = new HashSet<>();
+    private final String name;
+
+    private AUGBuilder(String name) {
+        this.name = name;
+    }
 
     public static AUG someAUG() {
         return buildAUG().withActionNode(":dummy:").build();
     }
 
     public static AUGBuilder buildAUG() {
-        return new AUGBuilder();
+        return new AUGBuilder(":AUG:");
+    }
+
+    public static AUGBuilder buildAUG(String name) {
+        return new AUGBuilder(name);
     }
 
     public AUGBuilder withActionNodes(String... nodeNames) {
@@ -90,7 +99,7 @@ public class AUGBuilder {
     }
 
     public AUG build() {
-        AUG aug = new AUG(":aug-name:", ":aug-file-path:");
+        AUG aug = new AUG(name, ":aug-file-path:");
         for (EGroumNode node : nodeMap.values()) {
             aug.addVertex(node);
         }

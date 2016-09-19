@@ -32,6 +32,8 @@ public class Instance extends DirectedSubgraph<EGroumNode, EGroumEdge> {
         return (AUG) getBase();
     }
 
+    public AUG getTarget() { return target; }
+
     void extend(EGroumActionNode targetNode, EGroumActionNode patternNode) {
         addVertex(patternNode);
 

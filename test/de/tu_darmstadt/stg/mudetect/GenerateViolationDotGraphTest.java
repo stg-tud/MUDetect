@@ -16,20 +16,20 @@ public class GenerateViolationDotGraphTest {
 
     @Test
     public void includesNodeLabel() throws Exception {
-        AUG aug = buildAUG().withActionNode(":action:").build();
+        AUG aug = buildAUG(":G:").withActionNode(":action:").build();
         Violation violation = new Violation(new Instance(aug, aug.vertexSet(), aug.edgeSet()));
 
-        assertDotGraph(violation, "digraph G {\n" +
+        assertDotGraph(violation, "digraph \":G:\" {\n" +
                 "  1 [ label=\":action:\" ];\n" +
                 "}\n");
     }
 
     @Test
     public void includesEdgeLabel() throws Exception {
-        AUG aug = buildAUG().withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
+        AUG aug = buildAUG(":G:").withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
         Violation violation = new Violation(new Instance(aug, aug.vertexSet(), aug.edgeSet()));
 
-        assertDotGraph(violation, "digraph G {\n" +
+        assertDotGraph(violation, "digraph \":G:\" {\n" +
                 "  1 [ label=\":b:\" ];\n" +
                 "  2 [ label=\":a:\" ];\n" +
                 "  2 -> 1 [ label=\"order\" ];\n" +
@@ -38,20 +38,20 @@ public class GenerateViolationDotGraphTest {
 
     @Test
     public void includesMissingNode() throws Exception {
-        AUG aug = buildAUG().withActionNode(":action:").build();
+        AUG aug = buildAUG(":G:").withActionNode(":action:").build();
         Violation violation = new Violation(new Instance(aug, new HashSet<>(), new HashSet<>()));
 
-        assertDotGraph(violation, "digraph G {\n" +
+        assertDotGraph(violation, "digraph \":G:\" {\n" +
                 "  1 [ label=\":action:\" color=\"red\" missing=\"true\" ];\n" +
                 "}\n");
     }
 
     @Test
     public void includesMiddingEdge() throws Exception {
-        AUG aug = buildAUG().withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
+        AUG aug = buildAUG(":G:").withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
         Violation violation = new Violation(new Instance(aug, aug.vertexSet(), new HashSet<>()));
 
-        assertDotGraph(violation, "digraph G {\n" +
+        assertDotGraph(violation, "digraph \":G:\" {\n" +
                 "  1 [ label=\":b:\" ];\n" +
                 "  2 [ label=\":a:\" ];\n" +
                 "  2 -> 1 [ label=\"order\" color=\"red\" missing=\"true\" ];\n" +

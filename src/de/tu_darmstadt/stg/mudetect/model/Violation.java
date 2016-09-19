@@ -6,7 +6,8 @@ import egroum.EGroumNode;
 import org.jgrapht.ext.DOTExporter;
 import org.jgrapht.ext.IntegerNameProvider;
 
-import java.io.StringWriter;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,9 +26,17 @@ public class Violation {
         return instance;
     }
 
-    public void toDotGraph(StringWriter writer) {
+    public void toDotGraph(Writer writer) {
         nodeIdProvider.clear();
-        dotExporter.export(writer, this.instance.getBase());
+        dotExporter.export(new PrintWriter(writer) {
+            @Override
+            public void write(String s, int off, int len) {
+                if (s.equals("digraph G {")) {
+                    s = "digraph \"" + instance.getTarget().getName() + "\" {";
+                }
+                super.write(s, 0, s.length());
+            }
+        }, this.instance.getBase());
     }
 
     private Map<String, String> getAttributes(EGroumNode node) {
