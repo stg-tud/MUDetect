@@ -31,6 +31,12 @@
 			<artifactId>org.eclipse.jdt.core</artifactId>
 			<version>3.11.1.v20150902-1521</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.eclipse.jdt/org.eclipse.jdt.annotation -->
+		<dependency>
+		    <groupId>org.eclipse.jdt</groupId>
+		    <artifactId>org.eclipse.jdt.annotation</artifactId>
+		    <version>1.1.0</version>
+		</dependency>
 		<!-- http://mvnrepository.com/artifact/org.eclipse.core/runtime -->
 		<dependency>
 			<groupId>org.eclipse.core</groupId>
