@@ -6,11 +6,12 @@ import egroum.EGroumActionNode;
 import egroum.EGroumDataNode;
 import egroum.EGroumEdge;
 import egroum.EGroumNode;
+import org.jgrapht.graph.DirectedSubgraph;
 import org.jgrapht.graph.Subgraph;
 
 import java.util.*;
 
-public class Instance extends Subgraph<EGroumNode, EGroumEdge, AUG> {
+public class Instance extends DirectedSubgraph<EGroumNode, EGroumEdge> {
 
     private final AUG target;
 
@@ -23,12 +24,12 @@ public class Instance extends Subgraph<EGroumNode, EGroumEdge, AUG> {
     }
 
     Instance(AUG pattern, AUG target) {
-        super(pattern, new HashSet<>());
+        super(pattern, new HashSet<>(), new HashSet<>());
         this.target = target;
     }
 
     public AUG getPattern() {
-        return getBase();
+        return (AUG) getBase();
     }
 
     void extend(EGroumActionNode targetNode, EGroumActionNode patternNode) {
