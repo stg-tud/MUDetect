@@ -12,7 +12,7 @@ import java.util.HashSet;
  */
 public class Pattern {
 	public static int minSize = 1, maxSize = Integer.MAX_VALUE;
-	public static int minFreq = 2, maxFreq = 1000;
+	public static int minFreq = 10, maxFreq = 1000;
 	
 	public static int nextID = 1;
 	private int id;
