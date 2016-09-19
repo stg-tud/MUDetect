@@ -7,8 +7,13 @@ import org.jgrapht.ext.DOTExporter;
 import org.jgrapht.ext.IntegerNameProvider;
 
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Violation {
+    private final IntegerNameProvider<EGroumNode> nodeIdProvider = new IntegerNameProvider<>();
+    private DOTExporter<EGroumNode, EGroumEdge> dotExporter =
+            new DOTExporter<>(nodeIdProvider, EGroumNode::getLabel, EGroumEdge::getLabel, this::getAttributes, null);
 
     private Instance instance;
 
@@ -21,6 +26,16 @@ public class Violation {
     }
 
     public void toDotGraph(StringWriter writer) {
-        new DOTExporter<>(new IntegerNameProvider<>(), EGroumNode::getLabel, EGroumEdge::getLabel).export(writer, this.instance);
+        nodeIdProvider.clear();
+        dotExporter.export(writer, this.instance.getBase());
+    }
+
+    private Map<String, String> getAttributes(EGroumNode node) {
+        Map<String, String> attributes = new HashMap<>();
+        if (!this.instance.containsVertex(node)) {
+            attributes.put("missing", "true");
+            attributes.put("color", "red");
+        }
+        return attributes;
     }
 }

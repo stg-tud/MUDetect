@@ -5,6 +5,7 @@ import de.tu_darmstadt.stg.mudetect.model.Violation;
 import org.junit.Test;
 
 import java.io.StringWriter;
+import java.util.HashSet;
 
 import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.buildAUG;
 import static egroum.EGroumDataEdge.Type.ORDER;
@@ -32,6 +33,16 @@ public class GenerateViolationDotGraphTest {
                 "  1 [ label=\":b:\" ];\n" +
                 "  2 [ label=\":a:\" ];\n" +
                 "  2 -> 1 [ label=\"order\" ];\n" +
+                "}\n");
+    }
+
+    @Test
+    public void includesMissingNode() throws Exception {
+        AUG aug = buildAUG().withActionNode(":action:").build();
+        Violation violation = new Violation(new Instance(aug, new HashSet<>(), new HashSet<>()));
+
+        assertDotGraph(violation, "digraph G {\n" +
+                "  1 [ label=\":action:\" color=\"red\" missing=\"true\" ];\n" +
                 "}\n");
     }
 
