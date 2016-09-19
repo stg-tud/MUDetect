@@ -14,7 +14,7 @@ public abstract class EGroumNode {
 	protected static final String PREFIX_DUMMY = "dummy_";
 	public static int numOfNodes = 0;
 	private static HashSet<Integer> invocationTypes = new HashSet<>(), controlTypes = new HashSet<>(), literalTypes = new HashSet<>();
-	private static HashMap<String, Character> infixExpressionLables = new HashMap<>();
+	public static HashMap<String, Character> infixExpressionLables = new HashMap<>();
 	static {
 		/*invocationTypes.add(ASTNode.ARRAY_ACCESS);
 		invocationTypes.add(ASTNode.ARRAY_CREATION);

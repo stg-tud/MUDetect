@@ -48,7 +48,8 @@ public class AUG extends DirectedAcyclicGraph<EGroumNode, EGroumEdge> {
         for (EGroumEdge edge : edgesOf(node)) {
             if (getEdgeTarget(edge) == node && edge.isCond()) {
                 EGroumActionNode edgeSource = (EGroumActionNode) getEdgeSource(edge);
-                if (InfixExpression.Operator.toOperator(edgeSource.getLabel()) != null) {
+                String sourceLabel = edgeSource.getLabel();
+                if (sourceLabel.length() == 1 && EGroumNode.infixExpressionLables.values().contains(sourceLabel.charAt(0))) {
                     // TODO clean the retrieval of operand arguments
                     Set<EGroumNode> operands = getArguments(edgeSource);
                     Iterator<EGroumNode> iterator = operands.iterator();

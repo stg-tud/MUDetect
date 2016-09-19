@@ -48,7 +48,8 @@ public class AUGBuilder {
 
     public AUGBuilder withActionNode(String id, String nodeName) {
         int nodeType;
-        if (InfixExpression.Operator.toOperator(nodeName) != null) {
+        if (EGroumNode.infixExpressionLables.containsKey(nodeName)) {
+            nodeName = Character.toString(EGroumNode.infixExpressionLables.get(nodeName));
             nodeType = ASTNode.INFIX_EXPRESSION;
         } else {
             nodeType = ASTNode.METHOD_INVOCATION;

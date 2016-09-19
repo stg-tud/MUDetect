@@ -34,19 +34,6 @@ public class FindNoInstancesTest {
         assertNoInstance(pattern, target);
     }
 
-    @Test
-    public void findsMissingConditionEquation() throws Exception {
-        AUG pattern = AUGBuilder.buildAUG().withDataNode("int").withActionNodes("List.size()", ">")
-                .withDataEdge("List.size()", PARAMETER, ">")
-                .withDataEdge("int", PARAMETER, ">").build();
-
-        AUG target = AUGBuilder.buildAUG().withDataNode("int").withActionNodes("A.foo()", ">")
-                .withDataEdge("A.foo()", PARAMETER, ">")
-                .withDataEdge("int", PARAMETER, ">").build();
-
-        assertNoInstance(pattern, target);
-    }
-
     private void assertNoInstance(AUG pattern, AUG target) {
         List<Instance> instances = new GreedyInstanceFinder().findInstances(target, pattern);
 
