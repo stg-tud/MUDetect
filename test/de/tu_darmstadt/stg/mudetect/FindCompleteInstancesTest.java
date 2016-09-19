@@ -8,13 +8,14 @@ import org.junit.Test;
 import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils.*;
 import static egroum.EGroumDataEdge.Type.CONDITION;
 import static egroum.EGroumDataEdge.Type.PARAMETER;
 import static egroum.EGroumDataEdge.Type.RECEIVER;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
-public class FindInstancesTest {
+public class FindCompleteInstancesTest {
     @Test
     public void findsSingleNodeInstance() throws Exception {
         assertFindsInstance(buildAUG().withActionNode("C.m()"));
@@ -59,6 +60,6 @@ public class FindInstancesTest {
         List<Instance> instances = new GreedyInstanceFinder().findInstances(target, pattern);
 
         assertThat(instances, hasSize(1));
-        assertThat(instances, InstanceTestUtils.hasInstance(pattern));
+        assertThat(instances, hasInstance(pattern));
     }
 }

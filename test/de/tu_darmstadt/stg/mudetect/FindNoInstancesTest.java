@@ -1,13 +1,20 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.model.AUGBuilder;
+import de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils;
+import egroum.EGroumNode;
 import org.junit.Test;
 
 import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.buildAUG;
+import static egroum.EGroumDataEdge.Type.CONDITION;
+import static egroum.EGroumDataEdge.Type.PARAMETER;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 public class FindNoInstancesTest {
@@ -23,6 +30,19 @@ public class FindNoInstancesTest {
     public void ignoresTrivialOverlap() throws Exception {
         AUG pattern = buildAUG().withDataNode("Object").build();
         AUG target = buildAUG().withDataNode("Object").build();
+
+        assertNoInstance(pattern, target);
+    }
+
+    @Test
+    public void findsMissingConditionEquation() throws Exception {
+        AUG pattern = AUGBuilder.buildAUG().withDataNode("int").withActionNodes("List.size()", ">")
+                .withDataEdge("List.size()", PARAMETER, ">")
+                .withDataEdge("int", PARAMETER, ">").build();
+
+        AUG target = AUGBuilder.buildAUG().withDataNode("int").withActionNodes("A.foo()", ">")
+                .withDataEdge("A.foo()", PARAMETER, ">")
+                .withDataEdge("int", PARAMETER, ">").build();
 
         assertNoInstance(pattern, target);
     }
