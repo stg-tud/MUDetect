@@ -34,7 +34,7 @@ public class ExasFeature {
 				nodeFeatures.put(nodes.get(i).getLabel(), i + 1);
 	}
 
-	private int getNodeFeature(String label) {
+	public int getNodeFeature(String label) {
 		return nodeFeatures.get(label);
 	}
 	
