@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.io.StringWriter;
 
 import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.buildAUG;
+import static egroum.EGroumDataEdge.Type.ORDER;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -19,6 +20,18 @@ public class GenerateViolationDotGraphTest {
 
         assertDotGraph(violation, "digraph G {\n" +
                 "  1 [ label=\":action:\" ];\n" +
+                "}\n");
+    }
+
+    @Test
+    public void includesEdgeLabel() throws Exception {
+        AUG aug = buildAUG().withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
+        Violation violation = new Violation(new Instance(aug, aug.vertexSet(), aug.edgeSet()));
+
+        assertDotGraph(violation, "digraph G {\n" +
+                "  1 [ label=\":b:\" ];\n" +
+                "  2 [ label=\":a:\" ];\n" +
+                "  2 -> 1 [ label=\"order\" ];\n" +
                 "}\n");
     }
 

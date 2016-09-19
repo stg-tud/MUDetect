@@ -9,8 +9,6 @@ import org.jgrapht.ext.IntegerNameProvider;
 import java.io.StringWriter;
 
 public class Violation {
-    private static final DOTExporter<EGroumNode, EGroumEdge> dotGraphExporter =
-            new DOTExporter<>(new IntegerNameProvider<>(), EGroumNode::getLabel, null);
 
     private Instance instance;
 
@@ -23,6 +21,6 @@ public class Violation {
     }
 
     public void toDotGraph(StringWriter writer) {
-        dotGraphExporter.export(writer, this.instance);
+        new DOTExporter<>(new IntegerNameProvider<>(), EGroumNode::getLabel, EGroumEdge::getLabel).export(writer, this.instance);
     }
 }
