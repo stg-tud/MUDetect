@@ -2,7 +2,7 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 
-class MissingElementViolationStrategy implements ViolationStrategy {
+public class MissingElementViolationStrategy implements ViolationStrategy {
     @Override
     public boolean isViolation(Instance instance) {
         AUG pattern = instance.getPattern();

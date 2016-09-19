@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class ProvidedPatternsModel implements Model {
+public class ProvidedPatternsModel implements Model {
     private Set<Pattern> patterns = new HashSet<>();
 
     public ProvidedPatternsModel(Collection<EGroumGraph> groums) {
