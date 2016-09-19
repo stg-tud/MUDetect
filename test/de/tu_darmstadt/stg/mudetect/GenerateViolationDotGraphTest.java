@@ -46,6 +46,18 @@ public class GenerateViolationDotGraphTest {
                 "}\n");
     }
 
+    @Test
+    public void includesMiddingEdge() throws Exception {
+        AUG aug = buildAUG().withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
+        Violation violation = new Violation(new Instance(aug, aug.vertexSet(), new HashSet<>()));
+
+        assertDotGraph(violation, "digraph G {\n" +
+                "  1 [ label=\":b:\" ];\n" +
+                "  2 [ label=\":a:\" ];\n" +
+                "  2 -> 1 [ label=\"order\" color=\"red\" missing=\"true\" ];\n" +
+                "}\n");
+    }
+
     private void assertDotGraph(Violation violation, String dotGraph) {
         StringWriter writer = new StringWriter();
 

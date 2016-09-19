@@ -13,7 +13,7 @@ import java.util.Map;
 public class Violation {
     private final IntegerNameProvider<EGroumNode> nodeIdProvider = new IntegerNameProvider<>();
     private DOTExporter<EGroumNode, EGroumEdge> dotExporter =
-            new DOTExporter<>(nodeIdProvider, EGroumNode::getLabel, EGroumEdge::getLabel, this::getAttributes, null);
+            new DOTExporter<>(nodeIdProvider, EGroumNode::getLabel, EGroumEdge::getLabel, this::getAttributes, this::getAttributes);
 
     private Instance instance;
 
@@ -33,6 +33,15 @@ public class Violation {
     private Map<String, String> getAttributes(EGroumNode node) {
         Map<String, String> attributes = new HashMap<>();
         if (!this.instance.containsVertex(node)) {
+            attributes.put("missing", "true");
+            attributes.put("color", "red");
+        }
+        return attributes;
+    }
+
+    private Map<String, String> getAttributes(EGroumEdge edge) {
+        Map<String, String> attributes = new HashMap<>();
+        if (!this.instance.containsEdge(edge)) {
             attributes.put("missing", "true");
             attributes.put("color", "red");
         }
