@@ -5,6 +5,7 @@ import java.util.HashSet;
 import egroum.EGroumDataEdge.Type;
 
 public abstract class EGroumEdge {
+	protected int id;
 	protected EGroumNode source;
 	protected EGroumNode target;
 	protected String label;
@@ -12,6 +13,10 @@ public abstract class EGroumEdge {
 	public EGroumEdge(EGroumNode source, EGroumNode target) {
 		this.source = source;
 		this.target = target;
+	}
+
+	public int getId() {
+		return id;
 	}
 
 	public abstract String getLabel();
