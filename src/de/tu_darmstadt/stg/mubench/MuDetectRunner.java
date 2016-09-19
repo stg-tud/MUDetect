@@ -6,10 +6,7 @@ import de.tu_darmstadt.stg.mubench.cli.MuBenchRunner;
 import de.tu_darmstadt.stg.mudetect.*;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
-import egroum.EGroumBuilder;
-import egroum.EGroumEdge;
-import egroum.EGroumGraph;
-import egroum.EGroumNode;
+import egroum.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -43,21 +40,8 @@ public class MuDetectRunner extends MuBenchRunner {
         return new EGroumBuilder().build(path.srcPath);
     }
 
-    private Collection<AUG> buildAUGs(CodePath path) {
-        return buildGroums(path).stream().map(this::toAUG).collect(Collectors.toSet());
-    }
-
-    private AUG toAUG(EGroumGraph groum) {
-        AUG aug = new AUG(groum.getName(), groum.getFilePath());
-        for (EGroumNode node : groum.getNodes()) {
-            aug.addVertex(node);
-        }
-        for (EGroumNode node : groum.getNodes()) {
-            for (EGroumEdge edge : node.getInEdges()) {
-                aug.addEdge(edge.getSource(), edge.getTarget(), edge);
-            }
-        }
-        return aug;
+    private Collection<AUG> buildAUGs(CodePath trainingAndTargetPath) {
+        return new AUGBuilder().build(trainingAndTargetPath.srcPath);
     }
 
     private void report(List<Violation> violations, DetectorOutput output) {
