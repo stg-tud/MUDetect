@@ -38,6 +38,7 @@ public class EGroumTestUtils {
 			String s = m.toString();
 			s = s.replace("\n", "\\l");
 			s = s.replace("\t", "    ");
+			s = s.replace("\"", "\\\"");
 			s += "\\l";
 			s = "0 [label=\"" + s + "\"" + " shape=box style=dotted]";
 //			System.out.println(s);
