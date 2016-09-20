@@ -23,6 +23,14 @@ public class AUG extends DirectedMultigraph<EGroumNode, EGroumEdge> {
         return location;
     }
 
+    public int getNodeSize() {
+        return vertexSet().size();
+    }
+
+    public int getEdgeSize() {
+        return edgeSet().size();
+    }
+
     public Map<String, Set<EGroumEdge>> getInEdgesByType(EGroumNode node) {
         return getEdgesByType(node, edge -> getEdgeTarget(edge) == node);
     }

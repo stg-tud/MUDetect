@@ -7,8 +7,8 @@ public class MissingElementViolationFactory implements ViolationFactory {
     @Override
     public boolean isViolation(Instance instance) {
         AUG pattern = instance.getPattern();
-        return instance.vertexSet().size() < pattern.vertexSet().size() ||
-                instance.edgeSet().size() < pattern.edgeSet().size();
+        return instance.getNodeSize() < pattern.getNodeSize() ||
+                instance.getEdgeSize() < pattern.getEdgeSize();
     }
 
     @Override

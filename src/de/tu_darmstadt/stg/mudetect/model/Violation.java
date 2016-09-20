@@ -39,12 +39,12 @@ public class Violation {
                 }
                 super.write(s, 0, s.length());
             }
-        }, this.instance.getBase());
+        }, this.instance.getPattern());
     }
 
     private Map<String, String> getAttributes(EGroumNode node) {
         Map<String, String> attributes = new HashMap<>();
-        if (!this.instance.containsVertex(node)) {
+        if (!this.instance.mapsPatternNode(node)) {
             attributes.put("missing", "true");
             attributes.put("color", "red");
         }
@@ -53,7 +53,7 @@ public class Violation {
 
     private Map<String, String> getAttributes(EGroumEdge edge) {
         Map<String, String> attributes = new HashMap<>();
-        if (!this.instance.containsEdge(edge)) {
+        if (!this.instance.mapsPatternEdge(edge)) {
             attributes.put("missing", "true");
             attributes.put("color", "red");
         }

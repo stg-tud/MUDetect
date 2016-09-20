@@ -1,6 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
 import de.tu_darmstadt.stg.mudetect.Instance;
+import egroum.EGroumEdge;
 import egroum.EGroumNode;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -13,13 +14,28 @@ public class InstanceTestUtils {
         return new BaseMatcher<Instance>() {
             @Override
             public boolean matches(Object item) {
-                return item instanceof Instance && ((Instance) item).containsVertex(node);
+                return item instanceof Instance && ((Instance) item).mapsPatternNode(node);
             }
 
             @Override
             public void describeTo(Description description) {
                 description.appendText("instance containing ");
                 description.appendValue(node);
+            }
+        };
+    }
+
+    public static Matcher<Instance> contains(EGroumEdge edge) {
+        return new BaseMatcher<Instance>() {
+            @Override
+            public boolean matches(Object item) {
+                return item instanceof Instance && ((Instance) item).mapsPatternEdge(edge);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("expected AUG with edge ");
+                description.appendValue(edge);
             }
         };
     }

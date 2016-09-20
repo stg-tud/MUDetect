@@ -1,7 +1,6 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import egroum.EGroumActionNode;
 import egroum.EGroumNode;
 
 import java.util.*;
@@ -9,44 +8,46 @@ import java.util.*;
 public class GreedyInstanceFinder implements InstanceFinder {
 
     private static class WorkItem {
-        EGroumActionNode patternNode;
-        EGroumActionNode targetNode;
+        EGroumNode patternNode;
+        EGroumNode targetNode;
 
-        WorkItem(EGroumActionNode patternNode, EGroumActionNode targetNode) {
+        WorkItem(EGroumNode targetNode, EGroumNode patternNode) {
             this.patternNode = patternNode;
             this.targetNode = targetNode;
         }
     }
 
     private static class WorkQueue {
-        private Map<EGroumNode, WorkItem> workItemsByPatternNode = new HashMap<>();
+        private Map<EGroumNode, Set<WorkItem>> workItemsByTargetNode = new HashMap<>();
 
         void add(WorkItem item) {
-            if (workItemsByPatternNode.containsKey(item.patternNode)) {
-                throw new IllegalStateException("adding a second item for the same pattern node");
+            if (!workItemsByTargetNode.containsKey(item.targetNode)) {
+                workItemsByTargetNode.put(item.targetNode, new HashSet<>());
             }
-            workItemsByPatternNode.put(item.patternNode, item);
+            workItemsByTargetNode.get(item.targetNode).add(item);
         }
 
         boolean hasNext() {
-            return !workItemsByPatternNode.isEmpty();
+            return !workItemsByTargetNode.isEmpty();
         }
 
         WorkItem poll() {
-            EGroumNode nextKey = workItemsByPatternNode.keySet().iterator().next();
-            WorkItem nextItem = workItemsByPatternNode.get(nextKey);
-            workItemsByPatternNode.remove(nextKey);
+            EGroumNode nextKey = workItemsByTargetNode.keySet().iterator().next();
+            Set<WorkItem> nextItems = workItemsByTargetNode.get(nextKey);
+            WorkItem nextItem = nextItems.iterator().next();
+            nextItems.remove(nextItem);
+            if (nextItems.isEmpty()) {
+                workItemsByTargetNode.remove(nextKey);
+            }
             return nextItem;
         }
 
-        void remove(EGroumNode patternNode) {
-            workItemsByPatternNode.remove(patternNode);
+        void remove(EGroumNode targetNode) {
+            workItemsByTargetNode.remove(targetNode);
         }
 
-        void removeAll(Collection<EGroumNode> nodes) {
-            for (EGroumNode node : nodes) {
-                remove(node);
-            }
+        void removeAll(Collection<EGroumNode> targetNodes) {
+            targetNodes.forEach(this::remove);
         }
     }
 
@@ -59,35 +60,35 @@ public class GreedyInstanceFinder implements InstanceFinder {
             Instance instance = new Instance(pattern, target);
             instance.extend(item.targetNode, item.patternNode);
             instances.add(instance);
-            nodesToCover.removeAll(instance.vertexSet());
+            nodesToCover.removeAll(instance.getTarget().vertexSet());
         }
         removeSubInstances(instances);
         return instances;
     }
 
     private WorkQueue getCommonNodesToCover(AUG target, AUG pattern) {
-        Map<String, Set<EGroumActionNode>> patternNodesByLabel = getMeaningfulActionNodesByLabel(pattern);
+        Map<String, Set<EGroumNode>> patternNodesByLabel = getMeaningfulActionNodesByLabel(pattern);
         WorkQueue queue = new WorkQueue();
         for (EGroumNode targetNode : target.vertexSet()) {
             String label = targetNode.getLabel();
             if (patternNodesByLabel.containsKey(label)) {
-                for (EGroumActionNode patternNode : patternNodesByLabel.get(label)) {
-                    queue.add(new WorkItem(patternNode, (EGroumActionNode) targetNode));
+                for (EGroumNode patternNode : patternNodesByLabel.get(label)) {
+                    queue.add(new WorkItem(targetNode, patternNode));
                 }
             }
         }
         return queue;
     }
 
-    private Map<String, Set<EGroumActionNode>> getMeaningfulActionNodesByLabel(AUG aug) {
-        Map<String, Set<EGroumActionNode>> nodesByLabel = new HashMap<>();
+    private Map<String, Set<EGroumNode>> getMeaningfulActionNodesByLabel(AUG aug) {
+        Map<String, Set<EGroumNode>> nodesByLabel = new HashMap<>();
         for (EGroumNode node : aug.vertexSet()) {
             if (node.isMeaningfulAction()) {
                 String label = node.getLabel();
                 if (!nodesByLabel.containsKey(label)) {
                     nodesByLabel.put(label, new HashSet<>());
                 }
-                nodesByLabel.get(label).add((EGroumActionNode) node);
+                nodesByLabel.get(label).add(node);
             }
         }
         return nodesByLabel;
@@ -98,10 +99,10 @@ public class GreedyInstanceFinder implements InstanceFinder {
             Instance instance1 = instances.get(i);
             for (int j = i + 1; j < instances.size(); j++) {
                 Instance instance2 = instances.get(j);
-                if (instance1.vertexSet().containsAll(instance2.vertexSet())) {
+                if (instance2.isSubInstanceOf(instance1)) {
                     instances.remove(j);
                     j--;
-                } else if (instance2.vertexSet().containsAll(instance1.vertexSet())) {
+                } else if (instance1.isSubInstanceOf(instance1)) {
                     instances.remove(i);
                     i--;
                     j--;

@@ -85,9 +85,12 @@ public class FindCompleteInstancesTest {
     }
 
     private void assertFindsInstance(AUGBuilder builder) {
-        AUG pattern = builder.build();
-        System.out.println(pattern);
-        AUG target = builder.build();
+        assertFindsInstance(builder, builder);
+    }
+
+    private void assertFindsInstance(AUGBuilder targetBuilder, AUGBuilder patternBuilder) {
+        AUG pattern = patternBuilder.build();
+        AUG target = targetBuilder.build();
 
         List<Instance> instances = new GreedyInstanceFinder().findInstances(target, pattern);
 
