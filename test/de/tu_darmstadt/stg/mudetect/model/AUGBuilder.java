@@ -12,12 +12,20 @@ import java.util.Set;
 public class AUGBuilder {
     private int autoId = 0;
 
-    private final Map<String, EGroumNode> nodeMap = new HashMap<>();
-    private final Set<EGroumEdge> edges = new HashSet<>();
+    private final Map<String, EGroumNode> nodeMap;
+    private final Set<EGroumEdge> edges;
     private final String name;
 
     private AUGBuilder(String name) {
         this.name = name;
+        nodeMap = new HashMap<>();
+        edges = new HashSet<>();
+    }
+
+    private AUGBuilder(AUGBuilder baseBuilder) {
+        name = baseBuilder.name;
+        nodeMap = new HashMap<>(baseBuilder.nodeMap);
+        edges = new HashSet<>(baseBuilder.edges);
     }
 
     public static AUG someAUG() {
@@ -31,6 +39,8 @@ public class AUGBuilder {
     public static AUGBuilder buildAUG(String name) {
         return new AUGBuilder(name);
     }
+
+    public static AUGBuilder extend(AUGBuilder baseBuilder) {return new AUGBuilder(baseBuilder); }
 
     public AUGBuilder withActionNodes(String... nodeNames) {
         for (String nodeName : nodeNames) {
@@ -99,17 +109,6 @@ public class AUGBuilder {
         return nodeMap.get(id);
     }
 
-    public AUG build() {
-        AUG aug = new AUG(name, ":aug-file-path:");
-        for (EGroumNode node : nodeMap.values()) {
-            aug.addVertex(node);
-        }
-        for (EGroumEdge edge : edges) {
-            aug.addEdge(edge.getSource(), edge.getTarget(), edge);
-        }
-        return aug;
-    }
-
     public EGroumEdge getEdge(String sourceNodeId, EGroumDataEdge.Type type, String targetNodeId) {
         for (EGroumEdge edge : edges) {
             if (edge.getSource() == getNode(sourceNodeId) &&
@@ -119,5 +118,16 @@ public class AUGBuilder {
             }
         }
         throw new IllegalArgumentException("no such edge");
+    }
+
+    public AUG build() {
+        AUG aug = new AUG(name, ":aug-file-path:");
+        for (EGroumNode node : nodeMap.values()) {
+            aug.addVertex(node);
+        }
+        for (EGroumEdge edge : edges) {
+            aug.addEdge(edge.getSource(), edge.getTarget(), edge);
+        }
+        return aug;
     }
 }
