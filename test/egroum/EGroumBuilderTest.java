@@ -157,7 +157,18 @@ public class EGroumBuilderTest {
 				"}"));
 	}
 
-	private void print(EGroumGraph groum) {
+    @Test
+    public void encodesFinally() throws Exception {
+        print(buildGroumForMethod("void m() throws Exception {\n" +
+                "  try {\n" +
+                "    throw new Exception();\n" +
+                "  } finally {\n" +
+                "    m();\n" +
+                "  }\n" +
+                "}"));
+    }
+
+    private void print(EGroumGraph groum) {
 		DotGraph dotGraph = new DotGraph(groum);
 		System.out.println(dotGraph.getGraph());
 		dotGraph.toPNG(new File("output"), name.getMethodName());
