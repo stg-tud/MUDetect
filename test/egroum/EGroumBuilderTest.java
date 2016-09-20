@@ -1,6 +1,11 @@
 package egroum;
 
-import static egroum.EGroumTestUtils.buildGroumForMethod;
+import graphics.DotGraph;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
+import tests.GroumValidationUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,13 +14,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
-
-import graphics.DotGraph;
-import tests.GroumValidationUtils;
+import static egroum.EGroumTestUtils.buildGroumForMethod;
 
 public class EGroumBuilderTest {
 	@Rule public TestName name = new TestName();
@@ -145,6 +144,17 @@ public class EGroumBuilderTest {
 				"    }");
 		
 		GroumValidationUtils.validate(groum);
+	}
+
+	@Test
+	public void encodesExceptionHandling() throws Exception {
+		print(buildGroumForMethod("void m() {" +
+				"  try {\n" +
+				"      throw new FileNotFoundException();\n" +
+				"    } catch(FileNotFoundException fnfe) {\n" +
+				"      fnfe.printStackTrace();\n" +
+				"    }" +
+				"}"));
 	}
 
 	private void print(EGroumGraph groum) {
