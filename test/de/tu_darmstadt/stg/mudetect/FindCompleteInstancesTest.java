@@ -76,7 +76,12 @@ public class FindCompleteInstancesTest {
     public void findsThrow() throws Exception {
         assertFindsInstance(buildAUG().withActionNodes("throw", "SomeException.<init>")
                 .withDataEdge("SomeException.<init>", PARAMETER, "throw"));
+    }
 
+    @Test
+    public void findsFinally() throws Exception {
+        assertFindsInstance(buildAUG().withActionNodes("C.throws()", "A.cleanup()")
+                .withDataEdge("C.throws()", FINALLY, "A.cleanup()"));
     }
 
     private void assertFindsInstance(AUGBuilder builder) {
