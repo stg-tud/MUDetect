@@ -2,16 +2,13 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.AUGBuilder;
-import de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils;
 import org.junit.Test;
 
 import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils.*;
-import static egroum.EGroumDataEdge.Type.CONDITION;
-import static egroum.EGroumDataEdge.Type.PARAMETER;
-import static egroum.EGroumDataEdge.Type.RECEIVER;
+import static de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils.hasInstance;
+import static egroum.EGroumDataEdge.Type.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
@@ -53,8 +50,31 @@ public class FindCompleteInstancesTest {
                 .withDataEdge(">", CONDITION, "List.get()"));
     }
 
+    @Test
+    public void findsResultAsArgument() throws Exception {
+        assertFindsInstance(buildAUG().withActionNodes("A.getX()", "B.takeX()")
+                .withDataEdge("A.getX()", PARAMETER, "B.takeX()"));
+    }
+
+    @Test
+    public void findsExceptionHandling() throws Exception {
+        assertFindsInstance(buildAUG().withActionNodes("C.throws()", "E.handler()")
+                .withDataNode("SomeException")
+                .withDataEdge("C.throws()", THROW, "SomeException")
+                .withDataEdge("SomeException", CONDITION, "E.handler()")
+                .withDataEdge("SomeException", PARAMETER, "E.handler()"));
+    }
+
+    @Test
+    public void findsThrow() throws Exception {
+        assertFindsInstance(buildAUG().withActionNodes("throw", "SomeException.<init>")
+                .withDataEdge("SomeException.<init>", PARAMETER, "throw"));
+
+    }
+
     private void assertFindsInstance(AUGBuilder builder) {
         AUG pattern = builder.build();
+        System.out.println(pattern);
         AUG target = builder.build();
 
         List<Instance> instances = new GreedyInstanceFinder().findInstances(target, pattern);
