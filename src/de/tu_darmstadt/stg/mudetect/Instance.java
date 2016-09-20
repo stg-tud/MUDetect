@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Condition;
+import de.tu_darmstadt.stg.mudetect.model.Equation;
 import de.tu_darmstadt.stg.mudetect.model.Location;
 import egroum.*;
 import org.jgrapht.graph.DirectedSubgraph;
@@ -45,6 +45,18 @@ public class Instance extends DirectedSubgraph<EGroumNode, EGroumEdge> {
     }
 
     void extend(EGroumNode targetNode, EGroumNode patternNode) {
+        tryExtend(targetNode, patternNode);
+    }
+
+    private boolean tryExtend(EGroumNode targetNode, EGroumNode patternNode) {
+        if (isEquationOperator(patternNode)) {
+            Equation targetEquation = getEquation(targetNode, getTarget());
+            Equation patternEquation = getEquation(patternNode, getPattern());
+            if (!targetEquation.isInstanceOf(patternEquation)) {
+                return false;
+            }
+        }
+
         addVertex(patternNode);
 
         Map<String, Set<EGroumEdge>> patternNodeInEdgesByType = getPattern().getInEdgesByType(patternNode);
@@ -54,13 +66,6 @@ public class Instance extends DirectedSubgraph<EGroumNode, EGroumEdge> {
                 Set<EGroumEdge> patternInEdges = patternNodeInEdgesByType.get(edgeType);
                 Set<EGroumEdge> targetInEdges = targetNodeInEdgesByType.get(edgeType);
                 switch (edgeType) {
-                    case "cond":
-                        extendUpwards(patternInEdges, targetInEdges, (targetInNode, patternInNode) -> {
-                            Condition patternCondition = getCondition(patternInNode, getPattern());
-                            Condition targetCondition = getCondition(targetInNode, getTarget());
-                            return targetCondition.isInstanceOf(patternCondition);
-                        });
-                        break;
                     default:
                         extendUpwards(patternInEdges, targetInEdges, EQUAL_NODES);
                 }
@@ -79,6 +84,21 @@ public class Instance extends DirectedSubgraph<EGroumNode, EGroumEdge> {
                 }
             }
         }
+
+        return true;
+    }
+
+    private boolean isEquationOperator(EGroumNode node) {
+        String conditionLabel = node.getLabel();
+        return conditionLabel.length() == 1 &&
+                EGroumNode.infixExpressionLables.values().contains(conditionLabel.charAt(0));
+    }
+
+    private Equation getEquation(EGroumNode operatorNode, AUG aug) {
+        // TODO clean the retrieval of operand arguments
+        Set<EGroumEdge> operands = aug.getInEdgesByType(operatorNode).get(EGroumDataEdge.getLabel(PARAMETER));
+        Iterator<EGroumEdge> iterator = operands.iterator();
+        return new Equation(iterator.next().getSource(), operatorNode, iterator.next().getSource());
     }
 
     private void extendUpwards(Set<EGroumEdge> patternInEdges, Set<EGroumEdge> targetInEdges, NodeMatcher matcher) {
@@ -86,9 +106,12 @@ public class Instance extends DirectedSubgraph<EGroumNode, EGroumEdge> {
             for (EGroumEdge targetInEdge : targetInEdges) {
                 if (matcher.match(targetInEdge.getSource(), patternInEdge.getSource())) {
                     if (!containsVertex(patternInEdge.getSource())) {
-                        extend(targetInEdge.getSource(), patternInEdge.getSource());
+                        if (tryExtend(targetInEdge.getSource(), patternInEdge.getSource())) {
+                            addEdge(patternInEdge);
+                        }
+                    } else {
+                        addEdge(patternInEdge);
                     }
-                    addEdge(patternInEdge);
                 }
             }
         }
@@ -99,9 +122,12 @@ public class Instance extends DirectedSubgraph<EGroumNode, EGroumEdge> {
             for (EGroumEdge targetOutEdge : targetOutEdges) {
                 if (matcher.match(targetOutEdge.getTarget(), patternOutEdge.getTarget())) {
                     if (!containsVertex(patternOutEdge.getTarget())) {
-                        extend(targetOutEdge.getTarget(), patternOutEdge.getTarget());
+                        if (tryExtend(targetOutEdge.getTarget(), patternOutEdge.getTarget())) {
+                            addEdge(patternOutEdge);
+                        }
+                    } else {
+                        addEdge(patternOutEdge);
                     }
-                    addEdge(patternOutEdge);
                 }
             }
         }
@@ -109,17 +135,5 @@ public class Instance extends DirectedSubgraph<EGroumNode, EGroumEdge> {
 
     private void addEdge(EGroumEdge edge) {
         addEdge(edge.getSource(), edge.getTarget(), edge);
-    }
-
-    private Condition getCondition(EGroumNode conditionSource, AUG aug) {
-        String conditionLabel = conditionSource.getLabel();
-        if (conditionLabel.length() == 1 && EGroumNode.infixExpressionLables.values().contains(conditionLabel.charAt(0))) {
-            // TODO clean the retrieval of operand arguments
-            Set<EGroumEdge> operands = aug.getInEdgesByType(conditionSource).get(EGroumDataEdge.getLabel(PARAMETER));
-            Iterator<EGroumEdge> iterator = operands.iterator();
-            return new Condition(iterator.next().getSource(), conditionSource, iterator.next().getSource());
-        } else {
-            return new Condition(conditionSource);
-        }
     }
 }

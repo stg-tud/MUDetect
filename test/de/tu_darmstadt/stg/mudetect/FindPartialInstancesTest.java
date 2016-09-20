@@ -42,6 +42,23 @@ public class FindPartialInstancesTest {
         assertFindsInstance(pattern, target, expectedInstance);
     }
 
+    @Test
+    public void excludesConditionWithPrimitiveOverlap() throws Exception {
+        AUGBuilder builder = buildAUG().withActionNode("A.size()").withDataNode("int")
+                .withDataEdge("A.size()", DEFINITION, "int");
+        AUG expectedInstance = builder.build();
+
+        AUG pattern = extend(builder).withActionNodes("B.size()", ">")
+                .withDataEdge("int", PARAMETER, ">")
+                .withDataEdge("B.size()", PARAMETER, ">").build();
+
+        AUG target = extend(builder).withActionNodes("C.foo()", ">")
+                .withDataEdge("int", PARAMETER, ">")
+                .withDataEdge("C.foo()", PARAMETER, ">").build();
+
+        assertFindsInstance(pattern, target, expectedInstance);
+    }
+
     private void assertFindsInstance(AUG pattern, AUG target, AUG expectedInstance) {
         List<Instance> instances = new GreedyInstanceFinder().findInstances(target, pattern);
 
