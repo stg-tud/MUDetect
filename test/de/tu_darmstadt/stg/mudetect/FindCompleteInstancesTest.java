@@ -37,6 +37,13 @@ public class FindCompleteInstancesTest {
     }
 
     @Test
+    public void findsMultipleEdgesBetweenTwoNodes() throws Exception {
+        assertFindsInstance(buildAUG().withActionNodes("A.m()", "A.n()")
+                .withDataEdge("A.m()", ORDER, "A.n()")
+                .withDataEdge("A.m()", PARAMETER, "A.n()"));
+    }
+
+    @Test
     public void findsConditionPredicate() throws Exception {
         assertFindsInstance(buildAUG().withActionNodes("A.predicate()", "B.m()")
                 .withDataEdge("A.predicate()", CONDITION, "B.m()"));

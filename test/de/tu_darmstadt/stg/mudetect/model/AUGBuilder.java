@@ -109,4 +109,15 @@ public class AUGBuilder {
         }
         return aug;
     }
+
+    public EGroumEdge getEdge(String sourceNodeId, EGroumDataEdge.Type type, String targetNodeId) {
+        for (EGroumEdge edge : edges) {
+            if (edge.getSource() == getNode(sourceNodeId) &&
+                    edge.getTarget() == getNode(targetNodeId) &&
+                    edge.getLabel().equals(EGroumDataEdge.getLabel(type))) {
+                return edge;
+            }
+        }
+        throw new IllegalArgumentException("no such edge");
+    }
 }

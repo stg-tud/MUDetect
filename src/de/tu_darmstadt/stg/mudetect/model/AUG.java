@@ -1,17 +1,16 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
-import egroum.*;
-import egroum.EGroumDataEdge.Type;
-import org.eclipse.jdt.core.dom.InfixExpression;
-import org.jgrapht.experimental.dag.DirectedAcyclicGraph;
+import egroum.EGroumEdge;
+import egroum.EGroumNode;
+import org.jgrapht.graph.DirectedMultigraph;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
-import static egroum.EGroumDataEdge.Type.*;
-
-public class AUG extends DirectedAcyclicGraph<EGroumNode, EGroumEdge> {
+public class AUG extends DirectedMultigraph<EGroumNode, EGroumEdge> {
 
     private final Location location;
 

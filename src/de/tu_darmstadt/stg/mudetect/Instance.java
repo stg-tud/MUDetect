@@ -84,12 +84,11 @@ public class Instance extends DirectedSubgraph<EGroumNode, EGroumEdge> {
     private void extendUpwards(Set<EGroumEdge> patternInEdges, Set<EGroumEdge> targetInEdges, NodeMatcher matcher) {
         for (EGroumEdge patternInEdge : patternInEdges) {
             for (EGroumEdge targetInEdge : targetInEdges) {
-                if (!containsVertex(patternInEdge.getSource())) {
-                    if (matcher.match(targetInEdge.getSource(), patternInEdge.getSource())) {
-                        addVertex(patternInEdge.getSource());
-                        addEdge(patternInEdge);
+                if (matcher.match(targetInEdge.getSource(), patternInEdge.getSource())) {
+                    if (!containsVertex(patternInEdge.getSource())) {
                         extend(targetInEdge.getSource(), patternInEdge.getSource());
                     }
+                    addEdge(patternInEdge);
                 }
             }
         }
@@ -98,12 +97,11 @@ public class Instance extends DirectedSubgraph<EGroumNode, EGroumEdge> {
     private void extendDownwards(Set<EGroumEdge> patternOutEdges, Set<EGroumEdge> targetOutEdges, NodeMatcher matcher) {
         for (EGroumEdge patternOutEdge : patternOutEdges) {
             for (EGroumEdge targetOutEdge : targetOutEdges) {
-                if (!containsVertex(patternOutEdge.getTarget())) {
-                    if (matcher.match(targetOutEdge.getTarget(), patternOutEdge.getTarget())) {
-                        addVertex(patternOutEdge.getTarget());
-                        addEdge(patternOutEdge);
+                if (matcher.match(targetOutEdge.getTarget(), patternOutEdge.getTarget())) {
+                    if (!containsVertex(patternOutEdge.getTarget())) {
                         extend(targetOutEdge.getTarget(), patternOutEdge.getTarget());
                     }
+                    addEdge(patternOutEdge);
                 }
             }
         }
