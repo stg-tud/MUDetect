@@ -1,7 +1,7 @@
 package egroum;
 
 public class EGroumDataEdge extends EGroumEdge {
-	public enum Type {RECEIVER, PARAMETER, DEFINITION, REFERENCE, CONDITION, DEPENDENCE, QUALIFIER, THROW, FINALLY, ORDER}
+	public enum Type {RECEIVER, PARAMETER, DEFINITION, REFERENCE, CONDITION, DEPENDENCE, QUALIFIER, THROW, FINALLY, ORDER, CONTAINS}
 	
 	protected Type type;
 
@@ -38,6 +38,7 @@ public class EGroumDataEdge extends EGroumEdge {
 		case THROW: return "throw";
 		case FINALLY: return "final";
 		case ORDER: return "order";
+		case CONTAINS: return "contains";
 		default: return "";
 		}
 	}
@@ -54,6 +55,7 @@ public class EGroumDataEdge extends EGroumEdge {
 		case THROW: return "throw";
 		case FINALLY: return "final";
 		case ORDER: return "order";
+		case CONTAINS: return "contains";
 		default: return "";
 		}
 	}

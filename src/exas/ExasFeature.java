@@ -23,6 +23,7 @@ public class ExasFeature {
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONDITION, "sel"), edgeFeatures.size());
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONDITION, "rep"), edgeFeatures.size());
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONDITION, "syn"), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONTAINS), edgeFeatures.size());
 		edgeFeatures.put("_control_", edgeFeatures.size());
 	}
 	

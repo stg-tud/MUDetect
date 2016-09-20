@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.ArrayAccess;
 import org.eclipse.jdt.core.dom.ArrayCreation;
 import org.eclipse.jdt.core.dom.ArrayInitializer;
@@ -740,6 +741,10 @@ public class EGroumGraph implements Serializable {
 		if (type == null)
 			type = context.getFieldType(astNode);
 		if (type != null) {
+			if (type.equals(name))
+				return new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS,
+					"this." + name, type, name, true,
+					false));
 			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
 					null, ASTNode.THIS_EXPRESSION, "this",
 					context.getType(), "this"));
@@ -1234,6 +1239,8 @@ public class EGroumGraph implements Serializable {
 			String sig = JavaASTUtil.buildSignature(b);
 			ITypeBinding tb = getBase(b.getDeclaringClass().getTypeDeclaration(), b, sig);
 			type = tb.getName();
+			if (type.isEmpty())
+				type = JavaASTUtil.getSimpleType(astNode.getType());
 		}
 		if (exceptions == null)
 			exceptions = EGroumBuildingContext.getExceptions(type, "<init>" + "(" + astNode.arguments().size() + ")");
@@ -1249,7 +1256,40 @@ public class EGroumGraph implements Serializable {
 		} else
 			pdg = new EGroumGraph(context, node);
 		// skip astNode.getExpression()
-		// skip astNode.getAnonymousClassDeclaration()
+		AnonymousClassDeclaration acd = astNode.getAnonymousClassDeclaration();
+		if (acd != null) {
+			EGroumGraph acg = new EGroumGraph(context);
+			EGroumDataNode acn = new EGroumDataNode(acd, ASTNode.TYPE_LITERAL, "" + acd.getStartPosition(), type, type, false, true);
+			new EGroumDataEdge(acn, node, Type.RECEIVER);
+			for (int i = 0; i < acd.bodyDeclarations().size(); i++) {
+				if (acd.bodyDeclarations().get(i) instanceof MethodDeclaration) {
+					MethodDeclaration md = (MethodDeclaration) acd.bodyDeclarations().get(i);
+					if (md.getBody() != null && !md.getBody().statements().isEmpty()) {
+						EGroumDataNode mdn = new EGroumDataNode(md, md.getNodeType(), "" + md.getStartPosition(), type + "." + md.getName().getIdentifier() + "()", type + "." + md.getName().getIdentifier() + "()", false, true);
+						new EGroumDataEdge(acn, mdn, Type.CONTAINS);
+						EGroumControlNode dummy = new EGroumControlNode(control, branch, null, 0);
+						EGroumGraph mg = buildPDG(dummy, "", md.getBody());
+						for (EGroumNode mgn : mg.nodes) {
+							if (mgn instanceof EGroumActionNode)
+								new EGroumDataEdge(mdn, mgn, Type.CONTAINS);
+							if (mgn.control == dummy)
+								mgn.control = null;
+						}
+						dummy.delete();
+						mg.nodes.add(mdn);
+						acg.mergeParallel(mg);
+					}
+				}
+			}
+			acg.nodes.add(acn);
+			acg.breaks.clear();
+			acg.clearDefStore();
+			acg.returns.clear();
+			acg.sinks.clear();
+			acg.statementSinks.clear();
+			acg.statementSources.clear();
+			pdg.mergeParallel(acg);
+		}
 		return pdg;
 	}
 
@@ -2258,8 +2298,18 @@ public class EGroumGraph implements Serializable {
 		graph.toGraphics(path + "/" + name, "png");
 	}
 
+	public void toGraphics(String path, HashSet<EGroumNode> missingNodes, HashSet<EGroumEdge> missingEdges) {
+		DotGraph graph = toDotGraph(missingNodes, missingEdges);
+		graph.toDotFile(new File(path + "/" + name + ".dot"));
+		graph.toGraphics(path + "/" + name, "png");
+	}
+
 	public DotGraph toDotGraph() {
 		return new DotGraph(this);
+	}
+
+	private DotGraph toDotGraph(HashSet<EGroumNode> missingNodes, HashSet<EGroumEdge> missingEdges) {
+		return new DotGraph(this, missingNodes, missingEdges);
 	}
 	
 	@Override

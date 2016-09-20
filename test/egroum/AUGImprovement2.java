@@ -9,6 +9,12 @@ public class AUGImprovement2 {
     public TestName name = new TestName();
 
     @Test
+    public void anonymousClass() throws Exception {
+        // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
+    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_anonymous_class.java", "aug-improvement");
+    }
+
+    @Test
     public void finallyEdge() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
     	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_finally.java", "aug-improvement");
