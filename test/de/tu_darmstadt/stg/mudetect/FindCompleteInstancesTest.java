@@ -84,6 +84,18 @@ public class FindCompleteInstancesTest {
                 .withDataEdge("C.throws()", FINALLY, "A.cleanup()"));
     }
 
+    @Test
+    public void findsLargestAlternative() throws Exception {
+        // Both pattern and target are equal. However, to find this the algorithm needs to map the edges correctly,
+        // because both branches start with the same call, but one has an additional call afterwards.
+        assertFindsInstance(buildAUG().withActionNodes("A.check()", "C.foo()")
+                .withActionNode("B1", "B.op()")
+                .withActionNode("B2", "B.op()")
+                .withDataEdge("B1", ORDER, "C.foo()")
+                .withDataEdge("A.check()", CONDITION, "B1")
+                .withDataEdge("A.check()", CONDITION, "B2"));
+    }
+
     private void assertFindsInstance(AUGBuilder builder) {
         AUG pattern = builder.build();
         AUG target = builder.build();
