@@ -2,7 +2,6 @@ package de.tu_darmstadt.stg.mudetect.model;
 
 import egroum.*;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.InfixExpression;
 
 import java.util.HashMap;
 import java.util.HashSet;

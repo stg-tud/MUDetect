@@ -4,13 +4,12 @@ import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.AUGBuilder;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.InstanceBuilder.createInstance;
 import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.extend;
 import static egroum.EGroumDataEdge.Type.ORDER;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
