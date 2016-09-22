@@ -102,7 +102,7 @@ public class GreedyInstanceFinder implements InstanceFinder {
                 if (instance2.isSubInstanceOf(instance1)) {
                     instances.remove(j);
                     j--;
-                } else if (instance1.isSubInstanceOf(instance1)) {
+                } else if (instance1.isSubInstanceOf(instance2)) {
                     instances.remove(i);
                     i--;
                     j--;
