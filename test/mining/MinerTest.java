@@ -3,12 +3,9 @@ package mining;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -27,7 +24,7 @@ public class MinerTest {
 	
 	@Test
 	public void mineFrequentSubPatterns() {
-		ArrayList<EGroumGraph> groums = buildGroumsFromFile("test/input/Test_mine.java");
+		ArrayList<EGroumGraph> groums = buildGroumsFromFile("test-resources/input/Test_mine.java");
 		
 		List<Pattern> patterns = mine(groums);
 		
@@ -58,88 +55,6 @@ public class MinerTest {
 		print(patterns);
 		assertThat(patterns.size(), is(1));
 		print(patterns.get(0));
-	}
-
-	@Test
-	public void mineDuplicatedCode() {
-		int tempMaxSize = Pattern.maxSize;
-		Pattern.maxSize = Integer.MAX_VALUE;
-		String system = "list";
-		ArrayList<EGroumGraph> groums = new ArrayList<>();
-		for (int i = 0; i < 2; i++)
-			groums.addAll(buildGroums(FileIO.readStringFromFile("input/Test_" + system + "_pattern.java")));
-		
-		if (groums.size() <= 2)
-			for (EGroumGraph g : groums){
-				System.out.println(g);
-				g.toGraphics("T:/temp");
-			}
-		
-		List<Pattern> patterns = mine(groums);
-		
-		for (EGroumGraph g : groums) {
-			System.out.println(g);
-			g.toGraphics("T:/temp");
-		}
-		print(patterns);
-		assertThat(patterns.size(), is(1));
-		
-		groums = buildGroums(FileIO.readStringFromFile("input/Test_" + system + "_target.java"));
-		groums.add(new EGroumGraph(patterns.get(0).getRepresentative()).collapse());
-		
-		for (EGroumGraph g : groums) {
-			System.out.println(g);
-			g.toGraphics("T:/temp");
-		}
-		
-		HashSet<EGroumNode> patternNodes = new HashSet<>(groums.get(1).getNodes());
-		HashSet<EGroumEdge> patternEdges = new HashSet<>();
-		HashMap<EGroumNode, ArrayList<EGroumEdge>> patternInEdges = new HashMap<>(), patternOutEdges = new HashMap<>();
-		for (EGroumNode node : patternNodes) {
-			patternEdges.addAll(node.getInEdges());
-			patternEdges.addAll(node.getOutEdges());
-			patternInEdges.put(node, new ArrayList<>(node.getInEdges()));
-			patternOutEdges.put(node, new ArrayList<>(node.getOutEdges()));
-		}
-		
-		patterns = mine(groums);
-		
-		print(patterns);
-//		assertThat(patterns.size(), is(1));
-		
-		for (Pattern p: patterns)
-			printMissing(p, groums.get(1), patternNodes, patternEdges, patternInEdges, patternOutEdges);
-		
-		Pattern.maxSize = tempMaxSize;
-	}
-
-	private void printMissing(Pattern p, EGroumGraph g, HashSet<EGroumNode> patternNodes, HashSet<EGroumEdge> patternEdges, HashMap<EGroumNode, ArrayList<EGroumEdge>> patternInEdges, HashMap<EGroumNode, ArrayList<EGroumEdge>> patternOutEdges) {
-		Fragment f = null;
-		boolean hasOther = false;
-		for (Fragment t : p.getFragments()) {
-			if (t.getGraph() == g) {
-				f = t;
-			} else 
-				hasOther = true;
-		}
-		if (f == null || !hasOther)
-			return;
-		HashSet<EGroumNode> nodes = new HashSet<>(patternNodes);
-		nodes.removeAll(f.getNodes());
-		HashSet<EGroumEdge> edges = new HashSet<>(patternEdges);
-		edges.removeAll(f.getEdges());
-		EGroumGraph mg = new EGroumGraph(nodes, patternInEdges, patternOutEdges, g);
-		mg.setName(p.getId() + "#" + mg.getName());
-		System.out.println(mg);
-		System.out.println("Missing edges:");
-		print(edges);
-		mg.toGraphics("T:/temp");
-	}
-
-	private void print(HashSet<EGroumEdge> edges) {
-		for (EGroumEdge e : edges) {
-			System.out.println(e);
-		}
 	}
 
 	@Test
@@ -182,51 +97,6 @@ public class MinerTest {
 		
 		print(patterns);
 	}
-
-	@Test
-	public void OOM() {
-		String targetSource = "class C { public static String decrypt(PublicKey publicKey, String cipherText)\n" + 
-				"			throws Exception {\n" + 
-				"		Cipher cipher = Cipher.getInstance(\"RSA\");\n" + 
-				"		try {\n" + 
-				"			cipher.init(Cipher.DECRYPT_MODE, publicKey);\n" + 
-				"		} catch (InvalidKeyException e) {\n" + 
-				"			// for ibm jdk\n" + 
-				"			RSAPublicKey rsaPublicKey = (RSAPublicKey) publicKey;\n" + 
-				"			RSAPrivateKeySpec spec = new RSAPrivateKeySpec(rsaPublicKey.getModulus(), rsaPublicKey.getPublicExponent());\n" + 
-				"			Key fakePublicKey = KeyFactory.getInstance(\"RSA\").generatePrivate(spec);\n" + 
-				"			cipher.init(Cipher.DECRYPT_MODE, fakePublicKey);\n" + 
-				"		}\n" + 
-				"		\n" + 
-				"		if (cipherText == null || cipherText.length() == 0) {\n" + 
-				"			return cipherText;\n" + 
-				"		}\n" + 
-				"\n" + 
-				"		byte[] cipherBytes = Base64.base64ToByteArray(cipherText);\n" + 
-				"		byte[] plainBytes = cipher.doFinal(cipherBytes);\n" + 
-				"\n" + 
-				"		return new String(plainBytes);\n" + 
-				"	}}";
-		String patternSource = "class C { Cipher patter(PublicKey publicKey, String text) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, InvalidKeySpecException {\n" + 
-				"    Cipher cipher = Cipher.getInstance(\"RSA\");\n" + 
-				"		try {\n" + 
-				"			cipher.init(Cipher.DECRYPT_MODE, publicKey);\n" + 
-				"		} catch (InvalidKeyException e) {\n" + 
-				"      RSAPublicKey rsaPublicKey = (RSAPublicKey) publicKey;\n" + 
-				"      RSAPrivateKeySpec spec = new RSAPrivateKeySpec(rsaPublicKey.getModulus(), rsaPublicKey.getPublicExponent());\n" + 
-				"      Key fakePrivateKey = KeyFactory.getInstance(\"RSA\").generatePrivate(spec);\n" + 
-				"      cipher = Cipher.getInstance(\"RSA\");\n" + 
-				"      cipher.init(Cipher.DECRYPT_MODE, fakePrivateKey);\n" + 
-				"		}\n" + 
-				"    return cipher;\n" + 
-				"  }}";
-		ArrayList<EGroumGraph> groums = buildGroums(targetSource, patternSource);
-		System.err.println(groums);
-		List<Pattern> patterns = mine(groums);
-		
-		print(patterns);
-		assertThat(patterns.size(), is(2));
-	}
 	
 	@Test
 	public void jackrabbit1() {
@@ -255,9 +125,9 @@ public class MinerTest {
 			"  private boolean canRead(ItemId id) { return true; }\n" + 
 			"}";
 		ArrayList<EGroumGraph> groums = buildGroums(targetSource, patternSource);
-		System.err.println(groums);
+
 		List<Pattern> patterns = mine(groums);
-		
+
 		print(patterns);
 		assertThat(patterns.size(), is(2));
 	}
@@ -327,7 +197,7 @@ public class MinerTest {
 	}
 	
 	private void print(Pattern pattern) {
-		print(Arrays.asList(pattern));
+		print(Collections.singletonList(pattern));
 	}
 	
 	private void print(List<Pattern> patterns) {
