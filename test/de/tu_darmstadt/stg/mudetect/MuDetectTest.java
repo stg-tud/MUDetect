@@ -34,7 +34,7 @@ public class MuDetectTest {
             allowing(model).getPatterns();
             will(returnValue(Collections.singleton(pattern)));
 
-            allowing(instanceFinder).findInstances(pattern.getAUG(), target);
+            allowing(instanceFinder).findInstances(target, pattern.getAUG());
             will(returnValue(Collections.singletonList(instance)));
 
             allowing(violationFactory).isViolation(instance);
@@ -65,7 +65,7 @@ public class MuDetectTest {
             allowing(model).getPatterns();
             will(returnValue(Collections.singleton(pattern)));
 
-            allowing(instanceFinder).findInstances(pattern.getAUG(), target);
+            allowing(instanceFinder).findInstances(target, pattern.getAUG());
             will(returnValue(Collections.singletonList(instance)));
 
             allowing(violationFactory).isViolation(instance);

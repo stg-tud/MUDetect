@@ -20,7 +20,7 @@ public class MuDetect {
         Set<Violation> violations = new HashSet<>();
         for (AUG target : targets) {
             for (Pattern pattern : model.getPatterns()) {
-                Collection<Instance> overlaps = instanceFinder.findInstances(pattern.getAUG(), target);
+                Collection<Instance> overlaps = instanceFinder.findInstances(target, pattern.getAUG());
                 for (Instance overlap : overlaps) {
                     if (violationFactory.isViolation(overlap)) {
                         violations.add(violationFactory.createViolation(overlap));
