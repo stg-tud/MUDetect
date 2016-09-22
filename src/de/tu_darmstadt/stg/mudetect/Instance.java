@@ -7,6 +7,7 @@ import egroum.*;
 import org.jgrapht.graph.DirectedSubgraph;
 
 import java.util.*;
+import java.util.function.Function;
 
 import static egroum.EGroumDataEdge.Type.*;
 
@@ -140,31 +141,26 @@ public class Instance {
     }
 
     private void extendUpwards(Set<EGroumEdge> patternInEdges, Set<EGroumEdge> targetInEdges, NodeMatcher matcher) {
-        for (EGroumEdge patternInEdge : patternInEdges) {
-            for (EGroumEdge targetInEdge : targetInEdges) {
-                if (matcher.match(targetInEdge.getSource(), patternInEdge.getSource())) {
-                    if (!containsPatternNode(patternInEdge.getSource())) {
-                        if (tryExtend(targetInEdge.getSource(), patternInEdge.getSource())) {
-                            map(targetInEdge, patternInEdge);
-                        }
-                    } else {
-                        map(targetInEdge, patternInEdge);
-                    }
-                }
-            }
-        }
+        extend(patternInEdges, targetInEdges, matcher, EGroumEdge::getSource);
     }
 
     private void extendDownwards(Set<EGroumEdge> patternOutEdges, Set<EGroumEdge> targetOutEdges, NodeMatcher matcher) {
-        for (EGroumEdge patternOutEdge : patternOutEdges) {
-            for (EGroumEdge targetOutEdge : targetOutEdges) {
-                if (matcher.match(targetOutEdge.getTarget(), patternOutEdge.getTarget())) {
-                    if (isCompatibleMappingExtension(targetOutEdge.getTarget(), patternOutEdge.getTarget())) {
-                        if (tryExtend(targetOutEdge.getTarget(), patternOutEdge.getTarget())) {
-                            map(targetOutEdge, patternOutEdge);
+        extend(patternOutEdges, targetOutEdges, matcher, EGroumEdge::getTarget);
+    }
+
+    private void extend(Set<EGroumEdge> patternEdges, Set<EGroumEdge> targetEdges, NodeMatcher matcher,
+                        Function<EGroumEdge, EGroumNode> extensionNodeSelector) {
+        for (EGroumEdge patternEdge : patternEdges) {
+            for (EGroumEdge targetEdge : targetEdges) {
+                EGroumNode targetEdgeExtensionNode = extensionNodeSelector.apply(targetEdge);
+                EGroumNode patternEdgeExtensionNode = extensionNodeSelector.apply(patternEdge);
+                if (matcher.match(targetEdgeExtensionNode, patternEdgeExtensionNode)) {
+                    if (isCompatibleMappingExtension(targetEdgeExtensionNode, patternEdgeExtensionNode)) {
+                        if (tryExtend(targetEdgeExtensionNode, patternEdgeExtensionNode)) {
+                            map(targetEdge, patternEdge);
                         }
-                    } else if (isMapped(targetOutEdge.getTarget(), patternOutEdge.getTarget())) {
-                        map(targetOutEdge, patternOutEdge);
+                    } else if (isMapped(targetEdgeExtensionNode, patternEdgeExtensionNode)) {
+                        map(targetEdge, patternEdge);
                     }
                 }
             }
