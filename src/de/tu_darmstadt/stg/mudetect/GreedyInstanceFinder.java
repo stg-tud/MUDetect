@@ -60,7 +60,7 @@ public class GreedyInstanceFinder implements InstanceFinder {
             Instance instance = new Instance(pattern, target);
             instance.extend(item.targetNode, item.patternNode);
             instances.add(instance);
-            nodesToCover.removeAll(instance.getTarget().vertexSet());
+            nodesToCover.removeAll(instance.getMappedTargetNodes());
         }
         removeSubInstances(instances);
         return instances;

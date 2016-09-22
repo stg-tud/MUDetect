@@ -53,8 +53,12 @@ public class Instance {
         return getTarget().getLocation();
     }
 
+    Set<EGroumNode> getMappedTargetNodes() {
+        return targetOverlap.vertexSet();
+    }
+
     public boolean isSubInstanceOf(Instance other) {
-        return other.targetOverlap.vertexSet().containsAll(targetOverlap.vertexSet());
+        return other.getMappedTargetNodes().containsAll(this.getMappedTargetNodes());
     }
 
     public int getNodeSize() {
