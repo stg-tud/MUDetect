@@ -21,6 +21,7 @@ public class Instance {
 
     private final DirectedSubgraph<EGroumNode, EGroumEdge> patternOverlap;
     private final DirectedSubgraph<EGroumNode, EGroumEdge> targetOverlap;
+    private final Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
 
     /**
      * Use for testing only.
@@ -28,6 +29,18 @@ public class Instance {
     public Instance(AUG pattern, Set<EGroumNode> vertexSubset, Set<EGroumEdge> edgeSubset) {
         patternOverlap = new DirectedSubgraph<>(pattern, vertexSubset, edgeSubset);
         targetOverlap = patternOverlap;
+        for (EGroumNode node : vertexSubset) {
+            targetNodeByPatternNode.put(node, node);
+        }
+    }
+
+    /**
+     * Use for testing only.
+     */
+    public Instance(AUG target, AUG pattern, Map<EGroumNode, EGroumNode> targetNodeByPatternNode, Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge) {
+        targetOverlap = new DirectedSubgraph<>(target, new HashSet<>(targetNodeByPatternNode.values()), new HashSet<>(targetEdgeByPatternEdge.values()));
+        patternOverlap = new DirectedSubgraph<>(pattern, targetNodeByPatternNode.keySet(), targetEdgeByPatternEdge.keySet());
+        this.targetNodeByPatternNode.putAll(targetNodeByPatternNode);
     }
 
     Instance(AUG pattern, AUG target) {
@@ -146,16 +159,24 @@ public class Instance {
         for (EGroumEdge patternOutEdge : patternOutEdges) {
             for (EGroumEdge targetOutEdge : targetOutEdges) {
                 if (matcher.match(targetOutEdge.getTarget(), patternOutEdge.getTarget())) {
-                    if (!containsPatternNode(patternOutEdge.getTarget())) {
+                    if (isCompatibleMappingExtension(targetOutEdge.getTarget(), patternOutEdge.getTarget())) {
                         if (tryExtend(targetOutEdge.getTarget(), patternOutEdge.getTarget())) {
                             map(targetOutEdge, patternOutEdge);
                         }
-                    } else {
+                    } else if (isMapped(targetOutEdge.getTarget(), patternOutEdge.getTarget())) {
                         map(targetOutEdge, patternOutEdge);
                     }
                 }
             }
         }
+    }
+
+    private boolean isMapped(EGroumNode targetNode, EGroumNode patternNode) {
+        return targetNodeByPatternNode.get(patternNode) == targetNode;
+    }
+
+    private boolean isCompatibleMappingExtension(EGroumNode targetNode, EGroumNode patterNode) {
+        return !targetOverlap.vertexSet().contains(targetNode) && !patternOverlap.vertexSet().contains(patterNode);
     }
 
     private boolean containsPatternNode(EGroumNode node) {
@@ -165,6 +186,7 @@ public class Instance {
     private void map(EGroumNode targetNode, EGroumNode patternNode) {
         targetOverlap.addVertex(targetNode);
         patternOverlap.addVertex(patternNode);
+        targetNodeByPatternNode.put(patternNode, targetNode);
     }
 
     private void map(EGroumEdge targetEdge, EGroumEdge patternEdge) {
