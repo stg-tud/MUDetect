@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mudetect.model;
 
 import egroum.*;
 import org.eclipse.jdt.core.dom.ASTNode;
+import utils.JavaASTUtil;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -57,8 +58,8 @@ public class AUGBuilder {
 
     public AUGBuilder withActionNode(String id, String nodeName) {
         int nodeType;
-        if (EGroumNode.infixExpressionLables.containsKey(nodeName)) {
-            nodeName = Character.toString(EGroumNode.infixExpressionLables.get(nodeName));
+        if (JavaASTUtil.infixExpressionLables.containsKey(nodeName)) {
+            nodeName = JavaASTUtil.infixExpressionLables.get(nodeName);
             nodeType = ASTNode.INFIX_EXPRESSION;
         } else {
             nodeType = ASTNode.METHOD_INVOCATION;

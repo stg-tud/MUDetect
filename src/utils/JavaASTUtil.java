@@ -39,7 +39,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.internal.core.dom.NaiveASTFlattener;
 
 public class JavaASTUtil {
-	private static HashMap<String, String> infixExpressionLables = new HashMap<>();
+	public static final HashMap<String, String> infixExpressionLables = new HashMap<>();
 	
 	static {
 		// Arithmetic Operators

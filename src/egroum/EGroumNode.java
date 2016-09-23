@@ -14,7 +14,7 @@ public abstract class EGroumNode {
 	protected static final String PREFIX_DUMMY = "dummy_";
 	public static int numOfNodes = 0;
 	private static HashSet<Integer> invocationTypes = new HashSet<>(), controlTypes = new HashSet<>(), literalTypes = new HashSet<>();
-	public static HashMap<String, Character> infixExpressionLables = new HashMap<>();
+
 	static {
 		/*invocationTypes.add(ASTNode.ARRAY_ACCESS);
 		invocationTypes.add(ASTNode.ARRAY_CREATION);
@@ -49,30 +49,6 @@ public abstract class EGroumNode {
 		literalTypes.add(ASTNode.NUMBER_LITERAL);
 		literalTypes.add(ASTNode.STRING_LITERAL);
 		literalTypes.add(ASTNode.TYPE_LITERAL);
-		
-		// Arithmetic Operators
-		infixExpressionLables.put(InfixExpression.Operator.DIVIDE.toString(), 'a');
-		infixExpressionLables.put(InfixExpression.Operator.MINUS.toString(), 'a');
-		infixExpressionLables.put(InfixExpression.Operator.PLUS.toString(), 'a');
-		infixExpressionLables.put(InfixExpression.Operator.REMAINDER.toString(), 'a');
-		infixExpressionLables.put(InfixExpression.Operator.TIMES.toString(), 'a');
-		// Equality and Relational Operators
-		infixExpressionLables.put(InfixExpression.Operator.EQUALS.toString(), 'r');
-		infixExpressionLables.put(InfixExpression.Operator.GREATER.toString(), 'r');
-		infixExpressionLables.put(InfixExpression.Operator.GREATER_EQUALS.toString(), 'r');
-		infixExpressionLables.put(InfixExpression.Operator.LESS.toString(), 'r');
-		infixExpressionLables.put(InfixExpression.Operator.LESS_EQUALS.toString(), 'r');
-		infixExpressionLables.put(InfixExpression.Operator.NOT_EQUALS.toString(), 'r');
-		// Conditional Operators
-		infixExpressionLables.put(InfixExpression.Operator.CONDITIONAL_AND.toString(), 'c');
-		infixExpressionLables.put(InfixExpression.Operator.CONDITIONAL_OR.toString(), 'c');
-		// Bitwise and Bit Shift Operators
-		infixExpressionLables.put(InfixExpression.Operator.AND.toString(), 'b');
-		infixExpressionLables.put(InfixExpression.Operator.OR.toString(), 'b');
-		infixExpressionLables.put(InfixExpression.Operator.XOR.toString(), 'b');
-		infixExpressionLables.put(InfixExpression.Operator.LEFT_SHIFT.toString(), 's');
-		infixExpressionLables.put(InfixExpression.Operator.RIGHT_SHIFT_SIGNED.toString(), 's');
-		infixExpressionLables.put(InfixExpression.Operator.RIGHT_SHIFT_UNSIGNED.toString(), 's');
 	}
 	
 	protected int id;
@@ -173,6 +149,10 @@ public abstract class EGroumNode {
 
 	public boolean isStatement() {
 		return control != null;
+	}
+
+	public boolean isInfixOperator() {
+		return getAstNodeType() == ASTNode.INFIX_EXPRESSION;
 	}
 
 	public ArrayList<EGroumNode> getIncomingEmptyNodes() {

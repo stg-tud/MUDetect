@@ -1,30 +1,52 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
+import egroum.EGroumDataEdge;
+import egroum.EGroumEdge;
 import egroum.EGroumNode;
 
-public class Equation {
-    private final EGroumNode operand1;
-    private final EGroumNode operator;
-    private final EGroumNode operand2;
+import java.util.*;
+import java.util.stream.Collectors;
 
-    public Equation(EGroumNode operand1, EGroumNode operator, EGroumNode operand2) {
-        if (operand1 == null) {
-            throw new IllegalArgumentException("operand1 must not be null");
-        }
-        if (operator == null) {
-            throw new IllegalArgumentException("operator must not be null");
-        }
-        if (operand2 == null) {
-            throw new IllegalArgumentException("operand2 must not be null");
-        }
-        this.operand1 = operand1;
-        this.operator = operator;
-        this.operand2 = operand2;
+import static egroum.EGroumDataEdge.Type.PARAMETER;
+
+public class Equation {
+    private final String operator;
+    private final Set<String> operands;
+
+    public Equation(EGroumNode operator, EGroumNode... operands) {
+        this.operator = operator.getLabel();
+        this.operands = getOperandLabels(Arrays.asList(operands));
+    }
+
+    Equation(EGroumNode operator, Set<EGroumNode> operands) {
+        this.operator = operator.getLabel();
+        this.operands = getOperandLabels(operands);
+    }
+
+    private Set<String> getOperandLabels(Collection<EGroumNode> operands) {
+        return operands.stream().map(EGroumNode::getLabel).collect(Collectors.toSet());
     }
 
     public boolean isInstanceOf(Equation patternEquation) {
-        return (operand1.getLabel().equals(patternEquation.operand1.getLabel()))
-                && (operator.getLabel().equals(patternEquation.operator.getLabel()))
-                && (operand2.getLabel().equals(patternEquation.operand2.getLabel()));
+        return !operands.isEmpty() && equals(patternEquation);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Equation equation = (Equation) o;
+        return Objects.equals(operator, equation.operator) &&
+                Objects.equals(operands, equation.operands);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(operator, operands);
+    }
+
+    public static Equation from(EGroumNode operatorNode, AUG aug) {
+        Set<EGroumEdge> operands = aug.getInEdgesByType(operatorNode).get(EGroumDataEdge.getLabel(PARAMETER));
+        return new Equation(operatorNode, operands.stream().map(EGroumEdge::getSource).collect(Collectors.toSet()));
     }
 }

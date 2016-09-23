@@ -88,9 +88,9 @@ public class Instance {
     }
 
     private boolean tryExtend(EGroumNode targetNode, EGroumNode patternNode) {
-        if (isEquationOperator(patternNode)) {
-            Equation targetEquation = getEquation(targetNode, getTarget());
-            Equation patternEquation = getEquation(patternNode, getPattern());
+        if (patternNode.isInfixOperator()) {
+            Equation targetEquation = Equation.from(targetNode, getTarget());
+            Equation patternEquation = Equation.from(patternNode, getPattern());
             if (!targetEquation.isInstanceOf(patternEquation)) {
                 return false;
             }
@@ -125,19 +125,6 @@ public class Instance {
         }
 
         return true;
-    }
-
-    private boolean isEquationOperator(EGroumNode node) {
-        String conditionLabel = node.getLabel();
-        return conditionLabel.length() == 1 &&
-                EGroumNode.infixExpressionLables.values().contains(conditionLabel.charAt(0));
-    }
-
-    private Equation getEquation(EGroumNode operatorNode, AUG aug) {
-        // TODO clean the retrieval of operand arguments
-        Set<EGroumEdge> operands = aug.getInEdgesByType(operatorNode).get(EGroumDataEdge.getLabel(PARAMETER));
-        Iterator<EGroumEdge> iterator = operands.iterator();
-        return new Equation(iterator.next().getSource(), operatorNode, iterator.next().getSource());
     }
 
     private void extendUpwards(Set<EGroumEdge> patternInEdges, Set<EGroumEdge> targetInEdges, NodeMatcher matcher) {
