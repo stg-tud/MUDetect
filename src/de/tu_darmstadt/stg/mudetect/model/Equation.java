@@ -10,10 +10,12 @@ import java.util.stream.Collectors;
 import static egroum.EGroumDataEdge.Type.PARAMETER;
 
 public class Equation {
+    private static final String parameterEdgeLabel = EGroumDataEdge.getLabel(PARAMETER);
+
     private final String operator;
     private final Set<String> operands;
 
-    public Equation(EGroumNode operator, EGroumNode... operands) {
+    Equation(EGroumNode operator, EGroumNode... operands) {
         this.operator = operator.getLabel();
         this.operands = getOperandLabels(Arrays.asList(operands));
     }
@@ -46,7 +48,12 @@ public class Equation {
     }
 
     public static Equation from(EGroumNode operatorNode, AUG aug) {
-        Set<EGroumEdge> operands = aug.getInEdgesByType(operatorNode).get(EGroumDataEdge.getLabel(PARAMETER));
-        return new Equation(operatorNode, operands.stream().map(EGroumEdge::getSource).collect(Collectors.toSet()));
+        Map<String, Set<EGroumEdge>> inEdgesByType = aug.getInEdgesByType(operatorNode);
+        if (!inEdgesByType.containsKey(parameterEdgeLabel)) {
+            return new Equation(operatorNode);
+        } else {
+            Set<EGroumEdge> operands = inEdgesByType.get(parameterEdgeLabel);
+            return new Equation(operatorNode, operands.stream().map(EGroumEdge::getSource).collect(Collectors.toSet()));
+        }
     }
 }

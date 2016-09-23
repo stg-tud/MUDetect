@@ -9,6 +9,16 @@ import static org.junit.Assert.*;
 
 public class EquationTest {
     @Test
+    public void findsEquationWithoutArgument() throws Exception {
+        AUGBuilder builder = buildAUG().withActionNodes(">");
+        AUG aug = builder.build();
+
+        Equation equation = Equation.from(builder.getNode(">"), aug);
+
+        assertThat(equation, is(new Equation(builder.getNode(">"))));
+    }
+
+    @Test
     public void findsEquationWithOneArgument() throws Exception {
         AUGBuilder builder = buildAUG().withActionNodes("A", ">").withDataEdge("A", PARAMETER, ">");
         AUG aug = builder.build();
