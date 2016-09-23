@@ -1267,15 +1267,13 @@ public class EGroumGraph implements Serializable {
 					if (md.getBody() != null && !md.getBody().statements().isEmpty()) {
 						EGroumDataNode mdn = new EGroumDataNode(md, md.getNodeType(), "" + md.getStartPosition(), type + "." + md.getName().getIdentifier() + "()", type + "." + md.getName().getIdentifier() + "()", false, true);
 						new EGroumDataEdge(acn, mdn, Type.CONTAINS);
-						EGroumControlNode dummy = new EGroumControlNode(control, branch, null, 0);
+						EGroumEntryNode dummy = new EGroumEntryNode(null, ASTNode.METHOD_DECLARATION, mdn.dataType);
 						EGroumGraph mg = buildPDG(dummy, "", md.getBody());
+						mg.nodes.add(dummy);
 						for (EGroumNode mgn : mg.nodes) {
 							if (mgn instanceof EGroumActionNode)
 								new EGroumDataEdge(mdn, mgn, Type.CONTAINS);
-							if (mgn.control == dummy)
-								mgn.control = null;
 						}
-						dummy.delete();
 						mg.nodes.add(mdn);
 						acg.mergeParallel(mg);
 					}
