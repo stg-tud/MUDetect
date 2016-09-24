@@ -6,7 +6,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static egroum.EGroumDataEdge.Type.ORDER;
 import static egroum.EGroumDataEdge.Type.PARAMETER;
 import static org.junit.Assert.assertThat;
@@ -14,7 +14,7 @@ import static org.junit.Assert.assertThat;
 public class AUGTest {
     @Test
     public void encodesMultipleEdgesBetweenTwoNodes() throws Exception {
-        AUGBuilder builder = buildAUG().withActionNodes("A", "B")
+        TestAUGBuilder builder = buildAUG().withActionNodes("A", "B")
                 .withDataEdge("A", PARAMETER, "B")
                 .withDataEdge("A", ORDER, "B");
         AUG aug = builder.build();

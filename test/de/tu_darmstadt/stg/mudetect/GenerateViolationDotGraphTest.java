@@ -4,10 +4,9 @@ import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import org.junit.Test;
 
-import java.io.StringWriter;
 import java.util.HashSet;
 
-import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static egroum.EGroumDataEdge.Type.ORDER;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.someAUG;
+import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 

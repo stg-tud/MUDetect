@@ -1,12 +1,12 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.AUGBuilder;
+import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils.hasInstance;
 import static egroum.EGroumDataEdge.Type.*;
 import static org.hamcrest.Matchers.hasSize;
@@ -96,7 +96,7 @@ public class FindCompleteInstancesTest {
                 .withDataEdge("A.check()", CONDITION, "B2"));
     }
 
-    private void assertFindsInstance(AUGBuilder builder) {
+    private void assertFindsInstance(TestAUGBuilder builder) {
         AUG pattern = builder.build();
         AUG target = builder.build();
 

@@ -1,14 +1,14 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.AUGBuilder;
+import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
 
 import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.InstanceBuilder.createInstance;
-import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.extend;
+import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.extend;
 import static egroum.EGroumDataEdge.Type.ORDER;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
@@ -17,8 +17,8 @@ import static org.junit.Assert.assertThat;
 public class FindMultipleInstancesTest {
     @Test
     public void mapsAnEdgeOnlyOnce() throws Exception {
-        AUGBuilder builder = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
-        AUGBuilder targetBuilder = extend(builder).withActionNode("B2", "B").withDataEdge("A", ORDER, "B2");
+        TestAUGBuilder builder = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
+        TestAUGBuilder targetBuilder = extend(builder).withActionNode("B2", "B").withDataEdge("A", ORDER, "B2");
 
         Instance instance1 = createInstance(targetBuilder, builder)
                 .withNode("A", "A")

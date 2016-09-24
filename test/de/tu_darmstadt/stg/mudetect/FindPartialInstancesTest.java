@@ -1,12 +1,12 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.AUGBuilder;
+import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.*;
+import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.*;
 import static de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils.*;
 import static egroum.EGroumDataEdge.Type.*;
 import static org.hamcrest.Matchers.hasSize;
@@ -16,7 +16,7 @@ import static org.junit.Assert.assertThat;
 public class FindPartialInstancesTest {
     @Test
     public void findsMissingMethod() throws Exception {
-        AUGBuilder builder = buildAUG().withActionNode("C.m()");
+        TestAUGBuilder builder = buildAUG().withActionNode("C.m()");
         AUG target = builder.build();
         AUG pattern = builder.withActionNode("C.n()")
                 .withDataEdge("C.m()", ORDER, "C.n()").build();
@@ -26,7 +26,7 @@ public class FindPartialInstancesTest {
 
     @Test
     public void findsMissingConditionEquation() throws Exception {
-        AUGBuilder builder = buildAUG().withActionNode("List.get()");
+        TestAUGBuilder builder = buildAUG().withActionNode("List.get()");
         AUG expectedInstance = builder.build();
 
         AUG pattern = extend(builder).withDataNode("int").withActionNodes("List.size()", ">")
@@ -44,7 +44,7 @@ public class FindPartialInstancesTest {
 
     @Test
     public void excludesConditionWithPrimitiveOverlap() throws Exception {
-        AUGBuilder builder = buildAUG().withActionNode("A.size()").withDataNode("int")
+        TestAUGBuilder builder = buildAUG().withActionNode("A.size()").withDataNode("int")
                 .withDataEdge("A.size()", DEFINITION, "int");
         AUG expectedInstance = builder.build();
 

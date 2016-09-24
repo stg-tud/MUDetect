@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import java.util.HashSet;
 
-import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static egroum.EGroumDataEdge.Type.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

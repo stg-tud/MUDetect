@@ -1,6 +1,6 @@
 package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.mudetect.model.AUGBuilder;
+import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import egroum.EGroumDataEdge;
 import egroum.EGroumEdge;
 import egroum.EGroumNode;
@@ -9,17 +9,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 class InstanceBuilder {
-    private AUGBuilder targetAUGBuilder;
-    private AUGBuilder patternAUGBuilder;
+    private TestAUGBuilder targetAUGBuilder;
+    private TestAUGBuilder patternAUGBuilder;
 
-    public static InstanceBuilder createInstance(AUGBuilder targetAUGBuilder, AUGBuilder patternAUGBuilder) {
+    public static InstanceBuilder createInstance(TestAUGBuilder targetAUGBuilder, TestAUGBuilder patternAUGBuilder) {
         return new InstanceBuilder(targetAUGBuilder, patternAUGBuilder);
     }
 
     private final Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
     private final Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge = new HashMap<>();
 
-    private InstanceBuilder(AUGBuilder targetAUGBuilder, AUGBuilder patternAUGBuilder) {
+    private InstanceBuilder(TestAUGBuilder targetAUGBuilder, TestAUGBuilder patternAUGBuilder) {
         this.targetAUGBuilder = targetAUGBuilder;
         this.patternAUGBuilder = patternAUGBuilder;
     }

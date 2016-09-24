@@ -9,20 +9,20 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class AUGBuilder {
+public class TestAUGBuilder {
     private int autoId = 0;
 
     private final Map<String, EGroumNode> nodeMap;
     private final Set<EGroumEdge> edges;
     private final String name;
 
-    private AUGBuilder(String name) {
+    private TestAUGBuilder(String name) {
         this.name = name;
         nodeMap = new HashMap<>();
         edges = new HashSet<>();
     }
 
-    private AUGBuilder(AUGBuilder baseBuilder) {
+    private TestAUGBuilder(TestAUGBuilder baseBuilder) {
         name = baseBuilder.name;
         nodeMap = new HashMap<>(baseBuilder.nodeMap);
         edges = new HashSet<>(baseBuilder.edges);
@@ -32,31 +32,31 @@ public class AUGBuilder {
         return buildAUG().withActionNode(":dummy:").build();
     }
 
-    public static AUGBuilder buildAUG() {
-        return new AUGBuilder(":AUG:");
+    public static TestAUGBuilder buildAUG() {
+        return new TestAUGBuilder(":AUG:");
     }
 
-    public static AUGBuilder buildAUG(String name) {
-        return new AUGBuilder(name);
+    public static TestAUGBuilder buildAUG(String name) {
+        return new TestAUGBuilder(name);
     }
 
-    public static AUGBuilder extend(AUGBuilder baseBuilder) {return new AUGBuilder(baseBuilder); }
+    public static TestAUGBuilder extend(TestAUGBuilder baseBuilder) {return new TestAUGBuilder(baseBuilder); }
 
-    public AUGBuilder withActionNodes(String... nodeNames) {
+    public TestAUGBuilder withActionNodes(String... nodeNames) {
         for (String nodeName : nodeNames) {
             withActionNode(nodeName);
         }
         return this;
     }
 
-    public AUGBuilder withActionNode(String nodeName) {
+    public TestAUGBuilder withActionNode(String nodeName) {
         if (nodeMap.containsKey(nodeName)) {
             throw new IllegalArgumentException("A node with id '" + nodeName + "' already exists, please specify an explicit node id.");
         }
         return withActionNode(nodeName, nodeName);
     }
 
-    public AUGBuilder withActionNode(String id, String nodeName) {
+    public TestAUGBuilder withActionNode(String id, String nodeName) {
         int nodeType;
         if (JavaASTUtil.infixExpressionLables.containsKey(nodeName)) {
             nodeName = JavaASTUtil.infixExpressionLables.get(nodeName);
@@ -67,18 +67,18 @@ public class AUGBuilder {
         return withNode(id, new EGroumActionNode(nodeName, nodeType));
     }
 
-    public AUGBuilder withDataNode(String nodeName) {
+    public TestAUGBuilder withDataNode(String nodeName) {
         if (nodeMap.containsKey(nodeName)) {
             throw new IllegalArgumentException("A node with id '" + nodeName + "' already exists, please specify an explicit node id.");
         }
         return withDataNode(nodeName, nodeName);
     }
 
-    public AUGBuilder withDataNode(String id, String nodeName) {
+    public TestAUGBuilder withDataNode(String id, String nodeName) {
         return withNode(id, new EGroumDataNode(nodeName));
     }
 
-    public AUGBuilder withNode(String id, EGroumNode node) {
+    public TestAUGBuilder withNode(String id, EGroumNode node) {
         if (nodeMap.containsKey(id)) {
             throw new IllegalArgumentException("A node with id '" + id + "' already exists.");
         }
@@ -86,7 +86,7 @@ public class AUGBuilder {
         return this;
     }
 
-    private AUGBuilder withNodes(EGroumNode... nodes) {
+    private TestAUGBuilder withNodes(EGroumNode... nodes) {
         for (EGroumNode node : nodes) {
             withNode(getNextAutoId(), node);
         }
@@ -97,7 +97,7 @@ public class AUGBuilder {
         return Integer.toString(autoId++);
     }
 
-    public AUGBuilder withDataEdge(String sourceId, EGroumDataEdge.Type type, String targetId) {
+    public TestAUGBuilder withDataEdge(String sourceId, EGroumDataEdge.Type type, String targetId) {
         edges.add(new EGroumDataEdge(getNode(sourceId), getNode(targetId), type));
         return this;
     }

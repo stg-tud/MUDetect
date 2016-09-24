@@ -1,16 +1,11 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.AUGBuilder;
-import de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils;
-import egroum.EGroumNode;
 import org.junit.Test;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.model.AUGBuilder.buildAUG;
-import static egroum.EGroumDataEdge.Type.CONDITION;
-import static egroum.EGroumDataEdge.Type.PARAMETER;
+import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
