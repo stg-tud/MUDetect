@@ -5,6 +5,7 @@ import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -16,6 +17,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class MuDetectTest {
+    @Rule
     private final JUnitRuleMockery context = new JUnitRuleMockery();
 
     @Test
