@@ -1,10 +1,7 @@
 package mining;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import egroum.EGroumBuilder;
-import egroum.EGroumEdge;
-import egroum.EGroumGraph;
-import egroum.EGroumNode;
+import egroum.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -92,7 +89,7 @@ public class AUGMiner {
         Fragment f = pattern.getRepresentative();
         EGroumGraph graph = f.getGraph();
 
-        AUG aug = new AUG(getMethodName(graph), graph.getFilePath());
+        AUG aug = new AUG(AUGBuilder.getMethodName(graph), graph.getFilePath());
         for (EGroumNode node : f.getNodes()) {
             aug.addVertex(node);
         }
@@ -104,18 +101,5 @@ public class AUGMiner {
         }
 
         return aug;
-    }
-
-    private static String getMethodName(EGroumGraph graph) {
-        // name comes like "DeclaringType.methodName#Parameter1#Parameter2#
-        String name = graph.getName();
-        // Cut off "DeclaringType"
-        name = name.substring(name.indexOf('.') + 1);
-        // replace first "#" by "(" and last by ")"
-        name = name.replaceFirst("#", "(").substring(0, name.length() - 1) + ")";
-        // replace remaining "#" by ", "
-        name = name.replace("#", ", ");
-        // result is "methodName(Parameter1, Parameter2)
-        return name;
     }
 }
