@@ -18,7 +18,7 @@ import static org.junit.Assert.assertThat;
 
 public class MuDetectTest {
     @Rule
-    private final JUnitRuleMockery context = new JUnitRuleMockery();
+    public final JUnitRuleMockery context = new JUnitRuleMockery();
 
     @Test
     public void findsViolations() throws Exception {
