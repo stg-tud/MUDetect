@@ -7,12 +7,14 @@ import java.util.Set;
 public interface Model {
     Set<Pattern> getPatterns();
 
-    default int getMaxPatternSupport() {
+    default int getMaxPatternSupport(int nodeCount) {
         int maxSupport = 0;
         for (Pattern pattern : getPatterns()) {
-            int support = pattern.getSupport();
-            if (support > maxSupport) {
-                maxSupport = support;
+            if (pattern.getNodeCount() == nodeCount) {
+                int support = pattern.getSupport();
+                if (support > maxSupport) {
+                    maxSupport = support;
+                }
             }
         }
         return maxSupport;
