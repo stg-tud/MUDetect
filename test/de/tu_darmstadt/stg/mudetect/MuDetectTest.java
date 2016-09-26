@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
+import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -22,7 +23,7 @@ public class MuDetectTest {
 
     @Test
     public void findsViolations() throws Exception {
-        final Pattern pattern = new Pattern(someAUG(), 42);
+        final Pattern pattern = somePattern();
         final AUG target = someAUG();
         final Collection<AUG> targets = Collections.singletonList(target);
         final Instance instance = new Instance(pattern.getAUG(), target);
@@ -54,7 +55,7 @@ public class MuDetectTest {
 
     @Test
     public void ignoresNonViolations() throws Exception {
-        final Pattern pattern = new Pattern(someAUG(), 42);
+        final Pattern pattern = somePattern();
         final AUG target = someAUG();
         final Collection<AUG> targets = Collections.singletonList(target);
         final Instance instance = new Instance(pattern.getAUG(), target);
