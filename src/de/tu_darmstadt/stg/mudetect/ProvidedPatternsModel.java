@@ -18,7 +18,6 @@ public class ProvidedPatternsModel implements Model {
     public ProvidedPatternsModel(Collection<EGroumGraph> groums) {
         patterns = groums.stream()
                 .flatMap(this::getMiningResultEquivalent)
-                .map(Pattern::new)
                 .collect(Collectors.toSet());
     }
 
@@ -26,7 +25,7 @@ public class ProvidedPatternsModel implements Model {
      * Returns an {@link AUG} that represents how the given graph would look like. if it were returned by a call to
      * mine, instead of directly from the {@link EGroumBuilder}.
      */
-    private Stream<AUG> getMiningResultEquivalent(EGroumGraph graph) {
+    private Stream<Pattern> getMiningResultEquivalent(EGroumGraph graph) {
         return new AUGMiner(1, 1).mine(graph).stream();
     }
 

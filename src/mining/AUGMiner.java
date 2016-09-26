@@ -47,17 +47,17 @@ public class AUGMiner {
         });
     }
 
-    public Set<AUG> mine(EGroumGraph... groums) {
+    public Set<de.tu_darmstadt.stg.mudetect.model.Pattern> mine(EGroumGraph... groums) {
         ArrayList<EGroumGraph> groumList = new ArrayList<>();
         Collections.addAll(groumList, groums);
         return mine(groumList);
     }
 
-    public Set<AUG> mine(Collection<EGroumGraph> groums) {
+    public Set<de.tu_darmstadt.stg.mudetect.model.Pattern> mine(Collection<EGroumGraph> groums) {
         return mine(new ArrayList<>(groums));
     }
 
-    public Set<AUG> mine(ArrayList<EGroumGraph> groums) {
+    public Set<de.tu_darmstadt.stg.mudetect.model.Pattern> mine(ArrayList<EGroumGraph> groums) {
         Pattern.minFreq = this.minPatternSupport;
         Pattern.maxFreq = this.maxPatternSupport;
         Pattern.minSize = this.minPatternSize;
@@ -75,17 +75,17 @@ public class AUGMiner {
             mining.Miner miner = new mining.Miner(":irrelevant:", "-subgraph-finder-");
             miner.output_path = this.outputPath;
             miner.maxSingleNodePrevalence = 100;
-            return toAUGs(miner.mine(groums));
+            return toAUGPatterns(miner.mine(groums));
         } finally {
             System.setOut(originalOut);
         }
     }
 
-    private static Set<AUG> toAUGs(Set<Pattern> patterns) {
-        return patterns.stream().map(AUGMiner::toAUG).collect(Collectors.toSet());
+    private static Set<de.tu_darmstadt.stg.mudetect.model.Pattern> toAUGPatterns(Set<Pattern> patterns) {
+        return patterns.stream().map(AUGMiner::toAUGPattern).collect(Collectors.toSet());
     }
 
-    private static AUG toAUG(Pattern pattern) {
+    private static de.tu_darmstadt.stg.mudetect.model.Pattern toAUGPattern(Pattern pattern) {
         Fragment f = pattern.getRepresentative();
         EGroumGraph graph = f.getGraph();
 
@@ -100,6 +100,6 @@ public class AUGMiner {
             }
         }
 
-        return aug;
+        return new de.tu_darmstadt.stg.mudetect.model.Pattern(aug, pattern.getFreq());
     }
 }

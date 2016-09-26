@@ -12,8 +12,7 @@ public class MinedPatternsModel implements Model {
     private Set<Pattern> patterns;
 
     public MinedPatternsModel(int minPatternSupport, int minPatternSize, Collection<EGroumGraph> groums) {
-        patterns = new AUGMiner(minPatternSupport, minPatternSize).mine(groums).stream()
-                .map(Pattern::new).collect(Collectors.toSet());
+        patterns = new AUGMiner(minPatternSupport, minPatternSize).mine(groums).stream().collect(Collectors.toSet());
     }
 
     @Override

@@ -22,7 +22,7 @@ public class MuDetectTest {
 
     @Test
     public void findsViolations() throws Exception {
-        final Pattern pattern = new Pattern(someAUG());
+        final Pattern pattern = new Pattern(someAUG(), 42);
         final AUG target = someAUG();
         final Collection<AUG> targets = Collections.singletonList(target);
         final Instance instance = new Instance(pattern.getAUG(), target);
@@ -54,7 +54,7 @@ public class MuDetectTest {
 
     @Test
     public void ignoresNonViolations() throws Exception {
-        final Pattern pattern = new Pattern(someAUG());
+        final Pattern pattern = new Pattern(someAUG(), 42);
         final AUG target = someAUG();
         final Collection<AUG> targets = Collections.singletonList(target);
         final Instance instance = new Instance(pattern.getAUG(), target);
