@@ -4,6 +4,7 @@ import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import org.jmock.Expectations;
+import org.jmock.auto.Mock;
 import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,6 +22,13 @@ public class MuDetectTest {
     @Rule
     public final JUnitRuleMockery context = new JUnitRuleMockery();
 
+    @Mock
+    private Model model;
+    @Mock
+    private InstanceFinder instanceFinder;
+    @Mock
+    private ViolationFactory violationFactory;
+
     @Test
     public void findsViolations() throws Exception {
         final Pattern pattern = somePattern();
@@ -28,10 +36,6 @@ public class MuDetectTest {
         final Collection<AUG> targets = Collections.singletonList(target);
         final Instance instance = new Instance(pattern.getAUG(), target);
         final Violation violation = new Violation(instance);
-
-        final Model model = context.mock(Model.class);
-        final InstanceFinder instanceFinder = context.mock(InstanceFinder.class);
-        final ViolationFactory violationFactory = context.mock(ViolationFactory.class);
 
         context.checking(new Expectations() {{
             allowing(model).getPatterns();
@@ -59,10 +63,6 @@ public class MuDetectTest {
         final AUG target = someAUG();
         final Collection<AUG> targets = Collections.singletonList(target);
         final Instance instance = new Instance(pattern.getAUG(), target);
-
-        final Model model = context.mock(Model.class);
-        final InstanceFinder instanceFinder = context.mock(InstanceFinder.class);
-        final ViolationFactory violationFactory = context.mock(ViolationFactory.class);
 
         context.checking(new Expectations() {{
             allowing(model).getPatterns();
