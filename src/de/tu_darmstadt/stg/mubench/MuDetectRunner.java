@@ -22,24 +22,11 @@ public class MuDetectRunner extends MuBenchRunner {
 
     @Override
     protected void detectOnly(CodePath patternPath, CodePath targetPath, DetectorOutput output) throws Exception {
-        Collection<EGroumGraph> patterns = buildGroums(patternPath);
-        Collection<AUG> targets = buildAUGs(targetPath);
-
-        List<Violation> violations = new MuDetect(
-                new ProvidedPatternsModel(patterns),
-                new GreedyInstanceFinder(),
+        report(new MuDetect(
+                new ProvidedPatternsModel(buildGroums(patternPath)),
+                new NoOverlapInstanceFinder(new GreedyInstanceFinder()),
                 new MissingElementViolationFactory()
-        ).findViolations(targets);
-
-        if (violations.isEmpty()) {
-            patterns.stream().map(AUGBuilder::toAUG).forEach(pattern -> {
-                for (AUG target : targets) {
-                    violations.add(new Violation(new Instance(pattern, target, new HashMap<>(), new HashMap<>()), -1));
-                }
-            });
-        }
-
-        report(violations, output);
+        ).findViolations(buildAUGs(targetPath)), output);
     }
 
     @Override
@@ -55,8 +42,8 @@ public class MuDetectRunner extends MuBenchRunner {
         return new EGroumBuilder().build(path.srcPath);
     }
 
-    private Collection<AUG> buildAUGs(CodePath trainingAndTargetPath) {
-        return new AUGBuilder().build(trainingAndTargetPath.srcPath);
+    private Collection<AUG> buildAUGs(CodePath path) {
+        return new AUGBuilder().build(path.srcPath);
     }
 
     private void report(List<Violation> violations, DetectorOutput output) {
