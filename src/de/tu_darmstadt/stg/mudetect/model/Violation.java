@@ -12,15 +12,17 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Violation {
+public class Violation implements Comparable<Violation> {
     private final IntegerNameProvider<EGroumNode> nodeIdProvider = new IntegerNameProvider<>();
     private DOTExporter<EGroumNode, EGroumEdge> dotExporter =
             new DOTExporter<>(nodeIdProvider, EGroumNode::getLabel, EGroumEdge::getLabel, this::getAttributes, this::getAttributes);
 
     private Instance instance;
+    private float confidence;
 
-    public Violation(Instance overlap) {
+    public Violation(Instance overlap, float confidence) {
         this.instance = overlap;
+        this.confidence = confidence;
     }
 
     public String toDotGraph() {
@@ -65,6 +67,16 @@ public class Violation {
     }
 
     public float getConfidence() {
-        return -1;
+        return confidence;
+    }
+
+    @Override
+    public int compareTo(Violation o) {
+        return Float.compare(getConfidence(), o.getConfidence());
+    }
+
+    @Override
+    public String toString() {
+        return toDotGraph();
     }
 }

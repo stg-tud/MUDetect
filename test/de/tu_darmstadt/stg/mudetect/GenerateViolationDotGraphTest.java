@@ -16,7 +16,7 @@ public class GenerateViolationDotGraphTest {
     @Test
     public void includesNodeLabel() throws Exception {
         AUG aug = buildAUG(":G:").withActionNode(":action:").build();
-        Violation violation = new Violation(new Instance(aug, aug.vertexSet(), aug.edgeSet()));
+        Violation violation = new Violation(new Instance(aug, aug.vertexSet(), aug.edgeSet()), 1);
 
         assertDotGraph(violation, "digraph \":G:\" {\n" +
                 "  1 [ label=\":action:\" ];\n" +
@@ -26,7 +26,7 @@ public class GenerateViolationDotGraphTest {
     @Test
     public void includesEdgeLabel() throws Exception {
         AUG aug = buildAUG(":G:").withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
-        Violation violation = new Violation(new Instance(aug, aug.vertexSet(), aug.edgeSet()));
+        Violation violation = new Violation(new Instance(aug, aug.vertexSet(), aug.edgeSet()), 1);
 
         assertDotGraph(violation, "digraph \":G:\" {\n" +
                 "  1 [ label=\":b:\" ];\n" +
@@ -38,7 +38,7 @@ public class GenerateViolationDotGraphTest {
     @Test
     public void includesMissingNode() throws Exception {
         AUG aug = buildAUG(":G:").withActionNode(":action:").build();
-        Violation violation = new Violation(new Instance(aug, new HashSet<>(), new HashSet<>()));
+        Violation violation = new Violation(new Instance(aug, new HashSet<>(), new HashSet<>()), 1);
 
         assertDotGraph(violation, "digraph \":G:\" {\n" +
                 "  1 [ label=\":action:\" color=\"red\" missing=\"true\" ];\n" +
@@ -48,7 +48,7 @@ public class GenerateViolationDotGraphTest {
     @Test
     public void includesMiddingEdge() throws Exception {
         AUG aug = buildAUG(":G:").withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
-        Violation violation = new Violation(new Instance(aug, aug.vertexSet(), new HashSet<>()));
+        Violation violation = new Violation(new Instance(aug, aug.vertexSet(), new HashSet<>()), 1);
 
         assertDotGraph(violation, "digraph \":G:\" {\n" +
                 "  1 [ label=\":b:\" ];\n" +

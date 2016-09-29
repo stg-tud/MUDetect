@@ -13,6 +13,6 @@ public class MissingElementViolationFactory implements ViolationFactory {
 
     @Override
     public Violation createViolation(Instance instance) {
-        return new Violation(instance);
+        return new Violation(instance, -1);
     }
 }

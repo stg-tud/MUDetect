@@ -9,6 +9,7 @@ import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +36,7 @@ public class MuDetectTest {
         final AUG target = someAUG();
         final Collection<AUG> targets = Collections.singletonList(target);
         final Instance instance = new Instance(pattern.getAUG(), target);
-        final Violation violation = new Violation(instance);
+        final Violation violation = new Violation(instance, 1);
 
         context.checking(new Expectations() {{
             allowing(model).getPatterns();
