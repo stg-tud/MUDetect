@@ -17,7 +17,7 @@ public class MuDetect {
     }
 
     public List<Violation> findViolations(Collection<AUG> targets) {
-        TreeSet<Violation> violations = new TreeSet<>();
+        PriorityQueue<Violation> violations = new PriorityQueue<>(Comparator.reverseOrder());
         for (AUG target : targets) {
             for (Pattern pattern : model.getPatterns()) {
                 Collection<Instance> overlaps = instanceFinder.findInstances(target, pattern.getAUG());
@@ -29,6 +29,14 @@ public class MuDetect {
                 }
             }
         }
-        return new ArrayList<>(violations.descendingSet());
+        return toList(violations);
+    }
+
+    private List<Violation> toList(PriorityQueue<Violation> violations) {
+        List<Violation> result = new ArrayList<>();
+        while (!violations.isEmpty()) {
+            result.add(violations.poll());
+        }
+        return result;
     }
 }
