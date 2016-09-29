@@ -9,6 +9,8 @@ import org.jgrapht.ext.IntegerNameProvider;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -33,51 +35,33 @@ public class Violation implements Comparable<Violation> {
 
     private final IntegerNameProvider<EGroumNode> nodeIdProvider = new IntegerNameProvider<>();
 
+    private final Map<String, String> noAttributes = Collections.emptyMap();
+
+    private final Map<String, String> missingElementAttributes = new LinkedHashMap<String, String>() {{
+        put("missing", "true");
+        put("color", "red");
+        put("fontcolor", "red");
+    }};
+
     private final DOTExporter<EGroumNode, EGroumEdge> violationDotExporter =
             new DOTExporter<>(nodeIdProvider,
                     EGroumNode::getLabel,
                     EGroumEdge::getLabel,
-                    node -> {
-                        Map<String, String> attributes = new LinkedHashMap<>();
-                        if (!this.instance.mapsPatternNode(node)) {
-                            attributes.put("missing", "true");
-                            attributes.put("color", "red");
-                            attributes.put("fontcolor", "red");
-                        }
-                        return attributes;
-                    },
-                    edge -> {
-                        Map<String, String> attributes = new LinkedHashMap<>();
-                        if (!this.instance.mapsPatternEdge(edge)) {
-                            attributes.put("missing", "true");
-                            attributes.put("color", "red");
-                            attributes.put("fontcolor", "red");
-                        }
-                        return attributes;
-                    });
+                    node -> !this.instance.mapsPatternNode(node) ? this.missingElementAttributes : this.noAttributes,
+                    edge -> !this.instance.mapsPatternEdge(edge) ? this.missingElementAttributes : this.noAttributes);
+
+    private final Map<String, String> mappedElementAttributes = new LinkedHashMap<String, String>() {{
+        put("mapped", "true");
+        put("color", "blue");
+        put("fontcolor", "blue");
+    }};
 
     private final DOTExporter<EGroumNode, EGroumEdge> targetDotExporter =
             new DOTExporter<>(nodeIdProvider,
                     EGroumNode::getLabel,
                     EGroumEdge::getLabel,
-                    node -> {
-                        Map<String, String> attributes = new LinkedHashMap<>();
-                        if (this.instance.mapsPatternNode(node)) {
-                            attributes.put("mapped", "true");
-                            attributes.put("color", "blue");
-                            attributes.put("fontcolor", "blue");
-                        }
-                        return attributes;
-                    },
-                    edge -> {
-                        Map<String, String> attributes = new LinkedHashMap<>();
-                        if (this.instance.mapsPatternEdge(edge)) {
-                            attributes.put("mapped", "true");
-                            attributes.put("color", "blue");
-                            attributes.put("fontcolor", "blue");
-                        }
-                        return attributes;
-                    });
+                    node -> this.instance.mapsPatternNode(node) ? this.mappedElementAttributes : this.noAttributes,
+                    edge -> this.instance.mapsPatternEdge(edge) ? this.mappedElementAttributes : this.noAttributes);
 
     private Instance instance;
     private float confidence;
