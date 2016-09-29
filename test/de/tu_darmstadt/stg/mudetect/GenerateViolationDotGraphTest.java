@@ -46,7 +46,7 @@ public class GenerateViolationDotGraphTest {
     }
 
     @Test
-    public void includesMiddingEdge() throws Exception {
+    public void includesMissingEdge() throws Exception {
         AUG aug = buildAUG(":G:").withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
         Violation violation = new Violation(new Instance(aug, aug.vertexSet(), new HashSet<>()), 1);
 
