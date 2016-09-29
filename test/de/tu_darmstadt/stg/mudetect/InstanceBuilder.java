@@ -45,6 +45,6 @@ class InstanceBuilder {
     }
 
     public Instance build() {
-        return new Instance(targetAUGBuilder.build(), patternAUGBuilder.build(), targetNodeByPatternNode, targetEdgeByPatternEdge);
+        return new Instance(patternAUGBuilder.build(), targetAUGBuilder.build(), targetNodeByPatternNode, targetEdgeByPatternEdge);
     }
 }

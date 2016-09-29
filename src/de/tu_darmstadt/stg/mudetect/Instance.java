@@ -9,8 +9,6 @@ import org.jgrapht.graph.DirectedSubgraph;
 import java.util.*;
 import java.util.function.Function;
 
-import static egroum.EGroumDataEdge.Type.*;
-
 public class Instance {
 
     private interface NodeMatcher {
@@ -38,7 +36,7 @@ public class Instance {
     /**
      * Use for testing only.
      */
-    public Instance(AUG target, AUG pattern, Map<EGroumNode, EGroumNode> targetNodeByPatternNode, Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge) {
+    public Instance(AUG pattern, AUG target, Map<EGroumNode, EGroumNode> targetNodeByPatternNode, Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge) {
         targetOverlap = new DirectedSubgraph<>(target, new HashSet<>(targetNodeByPatternNode.values()), new HashSet<>(targetEdgeByPatternEdge.values()));
         patternOverlap = new DirectedSubgraph<>(pattern, targetNodeByPatternNode.keySet(), targetEdgeByPatternEdge.keySet());
         this.targetNodeByPatternNode.putAll(targetNodeByPatternNode);

@@ -34,7 +34,7 @@ public class MuDetectRunner extends MuBenchRunner {
         if (violations.isEmpty()) {
             patterns.stream().map(AUGBuilder::toAUG).forEach(pattern -> {
                 for (AUG target : targets) {
-                    violations.add(new Violation(new Instance(target, pattern, new HashMap<>(), new HashMap<>()), -1));
+                    violations.add(new Violation(new Instance(pattern, target, new HashMap<>(), new HashMap<>()), -1));
                 }
             });
         }
