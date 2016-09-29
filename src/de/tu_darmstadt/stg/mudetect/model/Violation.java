@@ -56,6 +56,19 @@ public class Violation implements Comparable<Violation> {
                         return attributes;
                     });
 
+    private final DOTExporter<EGroumNode, EGroumEdge> targetDotExporter =
+            new DOTExporter<>(nodeIdProvider,
+                    EGroumNode::getLabel,
+                    EGroumEdge::getLabel,
+                    node -> {
+                        Map<String, String> attributes = new LinkedHashMap<>();
+                        return attributes;
+                    },
+                    edge -> {
+                        Map<String, String> attributes = new LinkedHashMap<>();
+                        return attributes;
+                    });
+
     private Instance instance;
     private float confidence;
 
@@ -73,6 +86,17 @@ public class Violation implements Comparable<Violation> {
     private void toDotGraph(Writer writer) {
         nodeIdProvider.clear();
         violationDotExporter.export(new GraphNameCorrectingPrintWriter(writer, instance), instance.getPattern());
+    }
+
+    public String toTargetDotGraph() {
+        StringWriter writer = new StringWriter();
+        toTargetDotGraph(writer);
+        return writer.toString();
+    }
+
+    private void toTargetDotGraph(Writer writer) {
+        nodeIdProvider.clear();
+        targetDotExporter.export(new GraphNameCorrectingPrintWriter(writer, instance), instance.getTarget());
     }
 
     public Location getLocation() {
