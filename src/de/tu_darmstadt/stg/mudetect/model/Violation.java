@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Violation implements Comparable<Violation> {
@@ -45,19 +46,21 @@ public class Violation implements Comparable<Violation> {
     }
 
     private Map<String, String> getAttributes(EGroumNode node) {
-        Map<String, String> attributes = new HashMap<>();
+        Map<String, String> attributes = new LinkedHashMap<>();
         if (!this.instance.mapsPatternNode(node)) {
             attributes.put("missing", "true");
             attributes.put("color", "red");
+            attributes.put("fontcolor", "red");
         }
         return attributes;
     }
 
     private Map<String, String> getAttributes(EGroumEdge edge) {
-        Map<String, String> attributes = new HashMap<>();
+        Map<String, String> attributes = new LinkedHashMap<>();
         if (!this.instance.mapsPatternEdge(edge)) {
             attributes.put("missing", "true");
             attributes.put("color", "red");
+            attributes.put("fontcolor", "red");
         }
         return attributes;
     }

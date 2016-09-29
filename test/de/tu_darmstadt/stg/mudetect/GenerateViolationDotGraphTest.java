@@ -41,7 +41,7 @@ public class GenerateViolationDotGraphTest {
         Violation violation = new Violation(new Instance(aug, new HashSet<>(), new HashSet<>()), 1);
 
         assertDotGraph(violation, "digraph \":G:\" {\n" +
-                "  1 [ label=\":action:\" color=\"red\" missing=\"true\" ];\n" +
+                "  1 [ label=\":action:\" missing=\"true\" color=\"red\" fontcolor=\"red\" ];\n" +
                 "}\n");
     }
 
@@ -53,7 +53,7 @@ public class GenerateViolationDotGraphTest {
         assertDotGraph(violation, "digraph \":G:\" {\n" +
                 "  1 [ label=\":b:\" ];\n" +
                 "  2 [ label=\":a:\" ];\n" +
-                "  2 -> 1 [ label=\"order\" color=\"red\" missing=\"true\" ];\n" +
+                "  2 -> 1 [ label=\"order\" missing=\"true\" color=\"red\" fontcolor=\"red\" ];\n" +
                 "}\n");
     }
 
