@@ -62,10 +62,20 @@ public class Violation implements Comparable<Violation> {
                     EGroumEdge::getLabel,
                     node -> {
                         Map<String, String> attributes = new LinkedHashMap<>();
+                        if (this.instance.mapsPatternNode(node)) {
+                            attributes.put("mapped", "true");
+                            attributes.put("color", "blue");
+                            attributes.put("fontcolor", "blue");
+                        }
                         return attributes;
                     },
                     edge -> {
                         Map<String, String> attributes = new LinkedHashMap<>();
+                        if (this.instance.mapsPatternEdge(edge)) {
+                            attributes.put("mapped", "true");
+                            attributes.put("color", "blue");
+                            attributes.put("fontcolor", "blue");
+                        }
                         return attributes;
                     });
 
