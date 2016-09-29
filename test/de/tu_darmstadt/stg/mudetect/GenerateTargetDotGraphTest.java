@@ -40,7 +40,7 @@ public class GenerateTargetDotGraphTest {
         Violation violation = new Violation(new Instance(aug, aug.vertexSet(), aug.edgeSet()), 1);
 
         assertTargetDotGraph(violation, "digraph \":G:\" {\n" +
-                "  1 [ label=\":action:\" mapped=\"true\" color=\"blue\" fontcolor=\"blue\" ];\n" +
+                "  1 [ label=\":action:\" color=\"blue\" fontcolor=\"blue\" ];\n" +
                 "}\n");
     }
 
@@ -50,9 +50,9 @@ public class GenerateTargetDotGraphTest {
         Violation violation = new Violation(new Instance(aug, aug.vertexSet(), aug.edgeSet()), 1);
 
         assertTargetDotGraph(violation, "digraph \":G:\" {\n" +
-                "  1 [ label=\":b:\" mapped=\"true\" color=\"blue\" fontcolor=\"blue\" ];\n" +
-                "  2 [ label=\":a:\" mapped=\"true\" color=\"blue\" fontcolor=\"blue\" ];\n" +
-                "  2 -> 1 [ label=\"order\" mapped=\"true\" color=\"blue\" fontcolor=\"blue\" ];\n" +
+                "  1 [ label=\":b:\" color=\"blue\" fontcolor=\"blue\" ];\n" +
+                "  2 [ label=\":a:\" color=\"blue\" fontcolor=\"blue\" ];\n" +
+                "  2 -> 1 [ label=\"order\" color=\"blue\" fontcolor=\"blue\" ];\n" +
                 "}\n");
     }
 

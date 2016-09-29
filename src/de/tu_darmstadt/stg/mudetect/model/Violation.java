@@ -38,7 +38,6 @@ public class Violation implements Comparable<Violation> {
     private final Map<String, String> noAttributes = Collections.emptyMap();
 
     private final Map<String, String> missingElementAttributes = new LinkedHashMap<String, String>() {{
-        put("missing", "true");
         put("color", "red");
         put("fontcolor", "red");
     }};
@@ -51,7 +50,6 @@ public class Violation implements Comparable<Violation> {
                     edge -> !this.instance.mapsPatternEdge(edge) ? this.missingElementAttributes : this.noAttributes);
 
     private final Map<String, String> mappedElementAttributes = new LinkedHashMap<String, String>() {{
-        put("mapped", "true");
         put("color", "blue");
         put("fontcolor", "blue");
     }};
