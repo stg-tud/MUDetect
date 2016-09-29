@@ -11,7 +11,7 @@ public class AUGBuilder {
     }
 
     public static AUG toAUG(EGroumGraph groum) {
-        AUG aug = new AUG(getMethodName(groum), groum.getFilePath());
+        AUG aug = new AUG(getMethodSignature(groum), groum.getFilePath());
         for (EGroumNode node : groum.getNodes()) {
             aug.addVertex(node);
         }
@@ -23,20 +23,29 @@ public class AUGBuilder {
         return aug;
     }
 
-    public static String getMethodName(EGroumGraph graph) {
-        // name comes like "DeclaringType.methodName#Parameter1#Parameter2# or "DeclaringType.noParamMethod#"
-        String name = graph.getName();
-        // remove "DeclaringType" and trailing "#"
-        name = name.substring(name.indexOf('.') + 1, name.length() - 1);
-        if (!name.contains("#")) {
-            name += "(";
-        } else {
-            // replace first "#" by "("
-            name = name.replaceFirst("#", "(");
+    public static String getMethodSignature(EGroumGraph graph) {
+        // Examples of graph names are:
+        // - C.noParamMethod#
+        // - C.method#ParamType1#ParamType2#
+        // - C.method#A.B#
+        // - C.I.method#
+        String[] parts = graph.getName().split("#", 2);
+        return toMethodName(parts[0]) + toParameterList(parts[1]);
+    }
+
+    private static String toMethodName(String qualifiedMethodName) {
+        return qualifiedMethodName.substring(qualifiedMethodName.lastIndexOf(".") + 1);
+    }
+
+    private static String toParameterList(String parameterList) {
+        String[] parameters = parameterList.split("#");
+        for (int i = 0; i < parameters.length; i++) {
+            parameters[i] = toSimpleTypeName(parameters[i]);
         }
-        // replace remaining "#" by ", " and close parameter list
-        name = name.replace("#", ", ") + ")";
-        // result is "methodName(Parameter1, Parameter2)
-        return name;
+        return "(" + String.join(", ", (CharSequence[]) parameters) + ")";
+    }
+
+    private static String toSimpleTypeName(String typeName) {
+        return typeName.substring(typeName.lastIndexOf(".") + 1);
     }
 }

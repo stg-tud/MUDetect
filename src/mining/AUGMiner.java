@@ -89,7 +89,7 @@ public class AUGMiner {
         Fragment f = pattern.getRepresentative();
         EGroumGraph graph = f.getGraph();
 
-        AUG aug = new AUG(AUGBuilder.getMethodName(graph), graph.getFilePath());
+        AUG aug = new AUG(AUGBuilder.getMethodSignature(graph), graph.getFilePath());
         for (EGroumNode node : f.getNodes()) {
             aug.addVertex(node);
         }
