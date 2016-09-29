@@ -11,6 +11,7 @@ import de.tu_darmstadt.stg.mudetect.model.Violation;
 import egroum.*;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class MuDetectRunner extends MuBenchRunner {
@@ -21,11 +22,24 @@ public class MuDetectRunner extends MuBenchRunner {
 
     @Override
     protected void detectOnly(CodePath patternPath, CodePath targetPath, DetectorOutput output) throws Exception {
-        report(new MuDetect(
-                new ProvidedPatternsModel(buildGroums(patternPath)),
+        Collection<EGroumGraph> patterns = buildGroums(patternPath);
+        Collection<AUG> targets = buildAUGs(targetPath);
+
+        List<Violation> violations = new MuDetect(
+                new ProvidedPatternsModel(patterns),
                 new GreedyInstanceFinder(),
                 new MissingElementViolationFactory()
-        ).findViolations(buildAUGs(targetPath)), output);
+        ).findViolations(targets);
+
+        if (violations.isEmpty()) {
+            patterns.stream().map(AUGBuilder::toAUG).forEach(pattern -> {
+                for (AUG target : targets) {
+                    violations.add(new Violation(new Instance(target, pattern, new HashMap<>(), new HashMap<>()), -1));
+                }
+            });
+        }
+
+        report(violations, output);
     }
 
     @Override

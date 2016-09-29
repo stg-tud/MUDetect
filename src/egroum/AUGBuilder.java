@@ -10,7 +10,7 @@ public class AUGBuilder {
         return new EGroumBuilder().build(path).stream().map(AUGBuilder::toAUG).collect(Collectors.toSet());
     }
 
-    private static AUG toAUG(EGroumGraph groum) {
+    public static AUG toAUG(EGroumGraph groum) {
         AUG aug = new AUG(getMethodName(groum), groum.getFilePath());
         for (EGroumNode node : groum.getNodes()) {
             aug.addVertex(node);
