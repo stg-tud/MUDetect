@@ -23,20 +23,24 @@ public class MuDetectRunner extends MuBenchRunner {
 
     @Override
     protected void detectOnly(CodePath patternPath, CodePath targetPath, DetectorOutput output) throws Exception {
-        report(new MuDetect(
+        run(new MuDetect(
                 new ProvidedPatternsModel(buildGroums(patternPath)),
                 new NoOverlapInstanceFinder(new GreedyInstanceFinder()),
                 new MissingElementViolationFactory()
-        ).findViolations(buildAUGs(targetPath)), output);
+        ), targetPath, output);
     }
 
     @Override
     protected void mineAndDetect(CodePath trainingAndTargetPath, DetectorOutput output) throws Exception {
-        report(new MuDetect(
+        run(new MuDetect(
                 new MinedPatternsModel(10, 3, buildGroums(trainingAndTargetPath)),
                 new GreedyInstanceFinder(),
                 new MissingElementViolationFactory()
-        ).findViolations(buildAUGs(trainingAndTargetPath)), output);
+        ), trainingAndTargetPath, output);
+    }
+
+    private void run(MuDetect detector, CodePath targetPath, DetectorOutput output) {
+        report(detector.findViolations(buildAUGs(targetPath)), output);
     }
 
     private Collection<EGroumGraph> buildGroums(CodePath path) {
