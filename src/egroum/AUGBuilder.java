@@ -24,14 +24,18 @@ public class AUGBuilder {
     }
 
     public static String getMethodName(EGroumGraph graph) {
-        // name comes like "DeclaringType.methodName#Parameter1#Parameter2#
+        // name comes like "DeclaringType.methodName#Parameter1#Parameter2# or "DeclaringType.noParamMethod#"
         String name = graph.getName();
-        // Cut off "DeclaringType"
-        name = name.substring(name.indexOf('.') + 1);
-        // replace first "#" by "(" and last by ")"
-        name = name.replaceFirst("#", "(").substring(0, name.length() - 1) + ")";
-        // replace remaining "#" by ", "
-        name = name.replace("#", ", ");
+        // remove "DeclaringType" and trailing "#"
+        name = name.substring(name.indexOf('.') + 1, name.length() - 1);
+        if (!name.contains("#")) {
+            name += "(";
+        } else {
+            // replace first "#" by "("
+            name = name.replaceFirst("#", "(");
+        }
+        // replace remaining "#" by ", " and close parameter list
+        name = name.replace("#", ", ") + ")";
         // result is "methodName(Parameter1, Parameter2)
         return name;
     }
