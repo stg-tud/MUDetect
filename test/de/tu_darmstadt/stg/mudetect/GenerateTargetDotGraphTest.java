@@ -35,17 +35,7 @@ public class GenerateTargetDotGraphTest {
     }
 
     @Test
-    public void highlightsMappedNode() throws Exception {
-        AUG aug = buildAUG(":G:").withActionNode(":action:").build();
-        Violation violation = new Violation(new Instance(aug, aug.vertexSet(), aug.edgeSet()), 1);
-
-        assertTargetDotGraph(violation, "digraph \":G:\" {\n" +
-                "  1 [ label=\":action:\" color=\"blue\" fontcolor=\"blue\" ];\n" +
-                "}\n");
-    }
-
-    @Test
-    public void highlightsMappedEdge() throws Exception {
+    public void highlightsMappedElements() throws Exception {
         AUG aug = buildAUG(":G:").withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
         Violation violation = new Violation(new Instance(aug, aug.vertexSet(), aug.edgeSet()), 1);
 
