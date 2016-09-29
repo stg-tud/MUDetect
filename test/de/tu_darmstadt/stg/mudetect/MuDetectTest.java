@@ -82,4 +82,34 @@ public class MuDetectTest {
         assertThat(violations, is(empty()));
     }
 
+    @Test
+    public void ranksViolations() throws Exception {
+        final Pattern pattern = somePattern();
+        final AUG target = someAUG();
+        final Collection<AUG> targets = Collections.singletonList(target);
+        final Instance instance1 = new Instance(pattern.getAUG(), target);
+        final Violation violation1 = new Violation(instance1, 0.9f);
+        final Instance instance2 = new Instance(pattern.getAUG(), target);
+        final Violation violation2 = new Violation(instance2, 0.7f);
+
+        context.checking(new Expectations() {{
+            oneOf(model).getPatterns();
+            will(returnValue(Collections.singleton(pattern)));
+
+            oneOf(instanceFinder).findInstances(target, pattern.getAUG());
+            will(returnValue(Arrays.asList(instance2, instance1)));
+
+            allowing(violationFactory).isViolation(with(any(Instance.class)));
+            will(returnValue(true));
+            oneOf(violationFactory).createViolation(with(instance1));
+            will(returnValue(violation1));
+            oneOf(violationFactory).createViolation(with(instance2));
+            will(returnValue(violation2));
+        }});
+
+        MuDetect muDetect = new MuDetect(model, instanceFinder, violationFactory);
+        List<Violation> violations = muDetect.findViolations(targets);
+
+        assertThat(violations, contains(violation1, violation2));
+    }
 }

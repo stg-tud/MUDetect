@@ -17,17 +17,18 @@ public class MuDetect {
     }
 
     public List<Violation> findViolations(Collection<AUG> targets) {
-        Set<Violation> violations = new HashSet<>();
+        TreeSet<Violation> violations = new TreeSet<>();
         for (AUG target : targets) {
             for (Pattern pattern : model.getPatterns()) {
                 Collection<Instance> overlaps = instanceFinder.findInstances(target, pattern.getAUG());
                 for (Instance overlap : overlaps) {
                     if (violationFactory.isViolation(overlap)) {
-                        violations.add(violationFactory.createViolation(overlap));
+                        Violation violation = violationFactory.createViolation(overlap);
+                        violations.add(violation);
                     }
                 }
             }
         }
-        return new ArrayList<>(violations);
+        return new ArrayList<>(violations.descendingSet());
     }
 }
