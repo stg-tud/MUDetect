@@ -8,10 +8,11 @@ import de.tu_darmstadt.stg.mudetect.*;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Location;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
-import egroum.*;
+import egroum.AUGBuilder;
+import egroum.EGroumBuilder;
+import egroum.EGroumGraph;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 public class MuDetectRunner extends MuBenchRunner {
