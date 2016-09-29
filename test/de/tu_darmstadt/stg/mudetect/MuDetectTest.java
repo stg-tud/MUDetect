@@ -39,16 +39,10 @@ public class MuDetectTest {
         final Violation violation = new Violation(instance, 1);
 
         context.checking(new Expectations() {{
-            allowing(model).getPatterns();
-            will(returnValue(Collections.singleton(pattern)));
-
-            allowing(instanceFinder).findInstances(target, pattern.getAUG());
-            will(returnValue(Collections.singletonList(instance)));
-
-            allowing(violationFactory).isViolation(instance);
-            will(returnValue(true));
-            allowing(violationFactory).createViolation(instance);
-            will(returnValue(violation));
+            oneOf(model).getPatterns(); will(returnValue(Collections.singleton(pattern)));
+            oneOf(instanceFinder).findInstances(target, pattern.getAUG()); will(returnValue(Collections.singletonList(instance)));
+            oneOf(violationFactory).isViolation(instance); will(returnValue(true));
+            oneOf(violationFactory).createViolation(instance); will(returnValue(violation));
         }});
 
         MuDetect muDetect = new MuDetect(model, instanceFinder, violationFactory);
@@ -66,14 +60,9 @@ public class MuDetectTest {
         final Instance instance = new Instance(pattern.getAUG(), target);
 
         context.checking(new Expectations() {{
-            allowing(model).getPatterns();
-            will(returnValue(Collections.singleton(pattern)));
-
-            allowing(instanceFinder).findInstances(target, pattern.getAUG());
-            will(returnValue(Collections.singletonList(instance)));
-
-            allowing(violationFactory).isViolation(instance);
-            will(returnValue(false));
+            oneOf(model).getPatterns(); will(returnValue(Collections.singleton(pattern)));
+            oneOf(instanceFinder).findInstances(target, pattern.getAUG()); will(returnValue(Collections.singletonList(instance)));
+            allowing(violationFactory).isViolation(with(any(Instance.class))); will(returnValue(false));
         }});
 
         MuDetect muDetect = new MuDetect(model, instanceFinder, violationFactory);
@@ -93,18 +82,12 @@ public class MuDetectTest {
         final Violation violation2 = new Violation(instance2, 0.7f);
 
         context.checking(new Expectations() {{
-            oneOf(model).getPatterns();
-            will(returnValue(Collections.singleton(pattern)));
-
-            oneOf(instanceFinder).findInstances(target, pattern.getAUG());
-            will(returnValue(Arrays.asList(instance2, instance1)));
-
-            allowing(violationFactory).isViolation(with(any(Instance.class)));
-            will(returnValue(true));
-            oneOf(violationFactory).createViolation(with(instance1));
-            will(returnValue(violation1));
-            oneOf(violationFactory).createViolation(with(instance2));
-            will(returnValue(violation2));
+            oneOf(model).getPatterns(); will(returnValue(Collections.singleton(pattern)));
+            oneOf(instanceFinder).findInstances(target, pattern.getAUG()); will(returnValue(Arrays.asList(instance2, instance1)));
+            allowing(violationFactory).isViolation(instance1); will(returnValue(true));
+            oneOf(violationFactory).createViolation(with(instance1)); will(returnValue(violation1));
+            allowing(violationFactory).isViolation(instance2); will(returnValue(true));
+            oneOf(violationFactory).createViolation(with(instance2)); will(returnValue(violation2));
         }});
 
         MuDetect muDetect = new MuDetect(model, instanceFinder, violationFactory);
@@ -126,8 +109,9 @@ public class MuDetectTest {
         context.checking(new Expectations() {{
             oneOf(model).getPatterns(); will(returnValue(Collections.singleton(pattern)));
             oneOf(instanceFinder).findInstances(target, pattern.getAUG()); will(returnValue(Arrays.asList(instance2, instance1)));
-            allowing(violationFactory).isViolation(with(any(Instance.class))); will(returnValue(true));
+            allowing(violationFactory).isViolation(instance1); will(returnValue(true));
             oneOf(violationFactory).createViolation(with(instance1)); will(returnValue(violation1));
+            allowing(violationFactory).isViolation(instance2); will(returnValue(true));
             oneOf(violationFactory).createViolation(with(instance2)); will(returnValue(violation2));
         }});
 
