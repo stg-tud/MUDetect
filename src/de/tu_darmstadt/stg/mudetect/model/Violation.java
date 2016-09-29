@@ -9,14 +9,52 @@ import org.jgrapht.ext.IntegerNameProvider;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Violation implements Comparable<Violation> {
+
+    private static class GraphNameCorrectingPrintWriter extends PrintWriter {
+        private final Instance instance;
+
+        GraphNameCorrectingPrintWriter(Writer writer, Instance instance) {
+            super(writer);
+            this.instance = instance;
+        }
+
+        @Override
+        public void write(String s, int off, int len) {
+            if (s.equals("digraph G {")) {
+                s = "digraph \"" + instance.getLocation().getMethodName() + "\" {";
+            }
+            super.write(s, 0, s.length());
+        }
+    }
+
     private final IntegerNameProvider<EGroumNode> nodeIdProvider = new IntegerNameProvider<>();
-    private DOTExporter<EGroumNode, EGroumEdge> dotExporter =
-            new DOTExporter<>(nodeIdProvider, EGroumNode::getLabel, EGroumEdge::getLabel, this::getAttributes, this::getAttributes);
+
+    private final DOTExporter<EGroumNode, EGroumEdge> violationDotExporter =
+            new DOTExporter<>(nodeIdProvider,
+                    EGroumNode::getLabel,
+                    EGroumEdge::getLabel,
+                    node -> {
+                        Map<String, String> attributes = new LinkedHashMap<>();
+                        if (!this.instance.mapsPatternNode(node)) {
+                            attributes.put("missing", "true");
+                            attributes.put("color", "red");
+                            attributes.put("fontcolor", "red");
+                        }
+                        return attributes;
+                    },
+                    edge -> {
+                        Map<String, String> attributes = new LinkedHashMap<>();
+                        if (!this.instance.mapsPatternEdge(edge)) {
+                            attributes.put("missing", "true");
+                            attributes.put("color", "red");
+                            attributes.put("fontcolor", "red");
+                        }
+                        return attributes;
+                    });
 
     private Instance instance;
     private float confidence;
@@ -32,37 +70,9 @@ public class Violation implements Comparable<Violation> {
         return writer.toString();
     }
 
-    public void toDotGraph(Writer writer) {
+    private void toDotGraph(Writer writer) {
         nodeIdProvider.clear();
-        dotExporter.export(new PrintWriter(writer) {
-            @Override
-            public void write(String s, int off, int len) {
-                if (s.equals("digraph G {")) {
-                    s = "digraph \"" + instance.getLocation().getMethodName() + "\" {";
-                }
-                super.write(s, 0, s.length());
-            }
-        }, this.instance.getPattern());
-    }
-
-    private Map<String, String> getAttributes(EGroumNode node) {
-        Map<String, String> attributes = new LinkedHashMap<>();
-        if (!this.instance.mapsPatternNode(node)) {
-            attributes.put("missing", "true");
-            attributes.put("color", "red");
-            attributes.put("fontcolor", "red");
-        }
-        return attributes;
-    }
-
-    private Map<String, String> getAttributes(EGroumEdge edge) {
-        Map<String, String> attributes = new LinkedHashMap<>();
-        if (!this.instance.mapsPatternEdge(edge)) {
-            attributes.put("missing", "true");
-            attributes.put("color", "red");
-            attributes.put("fontcolor", "red");
-        }
-        return attributes;
+        violationDotExporter.export(new GraphNameCorrectingPrintWriter(writer, instance), instance.getPattern());
     }
 
     public Location getLocation() {
