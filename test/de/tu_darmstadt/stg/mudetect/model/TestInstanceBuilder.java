@@ -1,6 +1,6 @@
-package de.tu_darmstadt.stg.mudetect;
+package de.tu_darmstadt.stg.mudetect.model;
 
-import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
+import de.tu_darmstadt.stg.mudetect.Instance;
 import egroum.EGroumDataEdge;
 import egroum.EGroumEdge;
 import egroum.EGroumNode;
@@ -8,23 +8,23 @@ import egroum.EGroumNode;
 import java.util.HashMap;
 import java.util.Map;
 
-class InstanceBuilder {
-    private TestAUGBuilder targetAUGBuilder;
-    private TestAUGBuilder patternAUGBuilder;
+public class TestInstanceBuilder {
 
-    public static InstanceBuilder createInstance(TestAUGBuilder targetAUGBuilder, TestAUGBuilder patternAUGBuilder) {
-        return new InstanceBuilder(targetAUGBuilder, patternAUGBuilder);
+    public static TestInstanceBuilder buildInstance(TestAUGBuilder targetAUGBuilder, TestAUGBuilder patternAUGBuilder) {
+        return new TestInstanceBuilder(targetAUGBuilder, patternAUGBuilder);
     }
 
+    private final TestAUGBuilder targetAUGBuilder;
+    private final TestAUGBuilder patternAUGBuilder;
     private final Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
     private final Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge = new HashMap<>();
 
-    private InstanceBuilder(TestAUGBuilder targetAUGBuilder, TestAUGBuilder patternAUGBuilder) {
+    private TestInstanceBuilder(TestAUGBuilder targetAUGBuilder, TestAUGBuilder patternAUGBuilder) {
         this.targetAUGBuilder = targetAUGBuilder;
         this.patternAUGBuilder = patternAUGBuilder;
     }
 
-    public InstanceBuilder withNode(String targetNodeId, String patternNodeId) {
+    public TestInstanceBuilder withNode(String targetNodeId, String patternNodeId) {
         EGroumNode targetNode = targetAUGBuilder.getNode(targetNodeId);
         if (targetNodeByPatternNode.containsValue(targetNode)) {
             throw new IllegalArgumentException("Target node '" + targetNodeId + "' is already mapped.");
@@ -37,7 +37,7 @@ class InstanceBuilder {
         return this;
     }
 
-    public InstanceBuilder withEdge(String targetSourceNodeId, String patternSourceNodeId, EGroumDataEdge.Type type, String targetTargetNodeId, String patternTargetNodeId) {
+    public TestInstanceBuilder withEdge(String targetSourceNodeId, String patternSourceNodeId, EGroumDataEdge.Type type, String targetTargetNodeId, String patternTargetNodeId) {
         targetEdgeByPatternEdge.put(
                 patternAUGBuilder.getEdge(patternSourceNodeId, type, patternTargetNodeId),
                 targetAUGBuilder.getEdge(targetSourceNodeId, type, targetTargetNodeId));
