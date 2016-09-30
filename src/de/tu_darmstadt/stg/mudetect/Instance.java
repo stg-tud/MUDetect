@@ -81,6 +81,8 @@ public class Instance {
         return targetOverlap.edgeSet().size();
     }
 
+    // TODO move extension logic to GreedyInstanceFinder
+
     void extend(EGroumNode targetNode, EGroumNode patternNode) {
         tryExtend(targetNode, patternNode);
     }
