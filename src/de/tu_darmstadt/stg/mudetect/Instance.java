@@ -181,16 +181,21 @@ public class Instance {
         if (o == null || getClass() != o.getClass()) return false;
         Instance instance = (Instance) o;
         return Objects.equals(patternOverlap, instance.patternOverlap) &&
-                Objects.equals(targetOverlap, instance.targetOverlap);
+                Objects.equals(targetOverlap, instance.targetOverlap) &&
+                Objects.equals(targetNodeByPatternNode, instance.targetNodeByPatternNode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(patternOverlap, targetOverlap);
+        return Objects.hash(patternOverlap, targetOverlap, targetNodeByPatternNode);
     }
 
     @Override
     public String toString() {
-        return patternOverlap.toString();
+        return "Instance{" +
+                "patternOverlap=" + patternOverlap +
+                ", targetOverlap=" + targetOverlap +
+                ", targetNodeByPatternNode=" + targetNodeByPatternNode +
+                '}';
     }
 }
