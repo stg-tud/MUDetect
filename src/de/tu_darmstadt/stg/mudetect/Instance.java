@@ -160,10 +160,6 @@ public class Instance {
         return !targetOverlap.vertexSet().contains(targetNode) && !patternOverlap.vertexSet().contains(patterNode);
     }
 
-    private boolean containsPatternNode(EGroumNode node) {
-        return patternOverlap.containsVertex(node);
-    }
-
     private void map(EGroumNode targetNode, EGroumNode patternNode) {
         targetOverlap.addVertex(targetNode);
         patternOverlap.addVertex(patternNode);
