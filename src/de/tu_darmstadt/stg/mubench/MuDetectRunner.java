@@ -33,7 +33,7 @@ public class MuDetectRunner extends MuBenchRunner {
     @Override
     protected void mineAndDetect(CodePath trainingAndTargetPath, DetectorOutput output) throws Exception {
         run(new MuDetect(
-                new MinedPatternsModel(10, 3, buildGroums(trainingAndTargetPath)),
+                new MinedPatternsModel(10, 1, buildGroums(trainingAndTargetPath)),
                 new GreedyInstanceFinder(),
                 new MissingElementViolationFactory()
         ), trainingAndTargetPath, output);

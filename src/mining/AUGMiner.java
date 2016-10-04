@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class AUGMiner {
-    public static final int DEFAULT_MAX_PATTERN_SIZE = 10;
+    public static final int DEFAULT_MAX_PATTERN_SIZE = Integer.MAX_VALUE;
     public static final int DEFAULT_MAX_PATTERN_SUPPORT = 1000;
 
     private int minPatternSupport;
