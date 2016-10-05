@@ -8,7 +8,14 @@ import egroum.EGroumNode;
 import java.util.HashMap;
 import java.util.Map;
 
+import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
+
 public class TestInstanceBuilder {
+
+    public static Instance someInstance() {
+        final AUG aug = someAUG();
+        return new Instance(aug, aug.vertexSet(), aug.edgeSet());
+    }
 
     public static TestInstanceBuilder buildInstance(TestAUGBuilder targetAUGBuilder, TestAUGBuilder patternAUGBuilder) {
         return new TestInstanceBuilder(targetAUGBuilder, patternAUGBuilder);

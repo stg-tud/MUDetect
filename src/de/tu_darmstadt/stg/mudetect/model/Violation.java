@@ -141,6 +141,10 @@ public class Violation implements Comparable<Violation> {
         targetDotExporter.export(new GraphNameCorrectingPrintWriter(writer, instance), instance.getTarget());
     }
 
+    public Instance getInstance() {
+        return instance;
+    }
+
     public Location getLocation() {
         return instance.getLocation();
     }
