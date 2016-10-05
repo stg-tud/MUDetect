@@ -59,6 +59,17 @@ public class FindPartialInstancesTest {
         assertFindsInstance(pattern, target, expectedInstance);
     }
 
+    @Test
+    public void findsOnlyOneInstance() throws Exception {
+        final TestAUGBuilder builder = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a")
+                .withActionNode("b").withDataEdge("a1", ORDER, "a2").withDataEdge("a1", ORDER, "b");
+
+        final AUG pattern = extend(builder).withDataEdge("b", ORDER, "a2").build();
+        final AUG target = extend(builder).withDataEdge("a2", ORDER, "b").build();
+
+        assertFindsInstance(pattern, target, builder.build());
+    }
+
     private void assertFindsInstance(AUG pattern, AUG target, AUG expectedInstance) {
         List<Instance> instances = new GreedyInstanceFinder().findInstances(target, pattern);
 
