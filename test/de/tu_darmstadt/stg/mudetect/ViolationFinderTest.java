@@ -39,6 +39,21 @@ public class ViolationFinderTest {
         assertThat(violations.get(0).getInstance(), is(instance));
     }
 
+    @Test
+    public void filtersInstances() throws Exception {
+        final Instance instance = someInstance();
+        final Instances instances = new Instances(instance);
+
+        context.checking(new Expectations() {{
+            allowing(violationFactory).isViolation(with(any(Instance.class))); will(returnValue(false));
+        }});
+
+        final ViolationFinder violationFinder = new ViolationFinder(violationFactory);
+        List<Violation> violations = violationFinder.findViolations(instances);
+
+        assertThat(violations, is(empty()));
+    }
+
     private class ViolationFinder {
         private final ViolationFactory violationFactory;
 
@@ -49,7 +64,9 @@ public class ViolationFinderTest {
         public List<Violation> findViolations(Instances instances) {
             List<Violation> violations = new ArrayList<>();
             for (Instance instance : instances) {
-                violations.add(new Violation(instance, -1));
+                if (violationFactory.isViolation(instance)) {
+                    violations.add(new Violation(instance, -1));
+                }
             }
             return violations;
         }
