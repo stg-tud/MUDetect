@@ -3,6 +3,7 @@ package de.tu_darmstadt.stg.mudetect;
 import de.tu_darmstadt.stg.mudetect.model.*;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class MuDetect {
 
@@ -17,24 +18,24 @@ public class MuDetect {
     }
 
     public List<Violation> findViolations(Collection<AUG> targets) {
-        return findViolations(findInstances(targets));
+        return findViolations(findInstances(targets, model.getPatterns()));
     }
 
-    private Set<Instance> findInstances(Collection<AUG> targets) {
-        Set<Instance> overlaps = new HashSet<>();
+    private Instances findInstances(Collection<AUG> targets, Collection<Pattern> patterns) {
+        Instances instances = new Instances();
         for (AUG target : targets) {
-            for (Pattern pattern : model.getPatterns()) {
-                overlaps.addAll(instanceFinder.findInstances(target, pattern.getAUG()));
+            for (Pattern pattern : patterns) {
+                instances.addAll(instanceFinder.findInstances(target, pattern.getAUG()));
             }
         }
-        return overlaps;
+        return instances;
     }
 
-    private List<Violation> findViolations(Set<Instance> overlaps) {
+    private List<Violation> findViolations(Instances instances) {
         PriorityQueue<Violation> violations = new PriorityQueue<>(Comparator.reverseOrder());
-        for (Instance overlap : overlaps) {
-            if (violationFactory.isViolation(overlap)) {
-                Violation violation = violationFactory.createViolation(overlap);
+        for (Instance instance : instances) {
+            if (violationFactory.isViolation(instance)) {
+                Violation violation = violationFactory.createViolation(instance);
                 violations.add(violation);
             }
         }
@@ -47,5 +48,28 @@ public class MuDetect {
             result.add(violations.poll());
         }
         return result;
+    }
+}
+
+class Instances implements Iterable<Instance> {
+    private final Set<Instance> instances = new HashSet<>();
+
+    public void addAll(Collection<Instance> instances) {
+        this.instances.addAll(instances);
+    }
+
+    @Override
+    public Iterator<Instance> iterator() {
+        return instances.iterator();
+    }
+
+    @Override
+    public void forEach(Consumer<? super Instance> action) {
+        instances.forEach(action);
+    }
+
+    @Override
+    public Spliterator<Instance> spliterator() {
+        return instances.spliterator();
     }
 }
