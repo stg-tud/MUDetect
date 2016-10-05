@@ -1,5 +1,6 @@
 package de.tu_darmstadt.stg.mudetect;
 
+import de.tu_darmstadt.stg.mudetect.filters.InstanceFilter;
 import de.tu_darmstadt.stg.mudetect.model.Instances;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import org.jmock.Expectations;
@@ -40,7 +41,7 @@ public class ViolationFinderTest {
         final Instance instance1 = someInstance();
         final Instance instance2 = someInstance();
         final Instances instances = new Instances(instance1, instance2);
-        InstancePredicate instancePredicate = context.mock(InstancePredicate.class);
+        InstanceFilter instancePredicate = context.mock(InstanceFilter.class);
 
         context.checking(new Expectations() {{
             allowing(instancePredicate).test(instance1, instances); will(returnValue(false));
@@ -58,8 +59,8 @@ public class ViolationFinderTest {
     public void filtersInstanceThatMatchesAnyPredicate() throws Exception {
         final Instance instance = someInstance();
         final Instances instances = new Instances(instance);
-        InstancePredicate predicate1 = context.mock(InstancePredicate.class, "predicate 1");
-        InstancePredicate predicate2 = context.mock(InstancePredicate.class, "predicate 2");
+        InstanceFilter predicate1 = context.mock(InstanceFilter.class, "predicate 1");
+        InstanceFilter predicate2 = context.mock(InstanceFilter.class, "predicate 2");
 
         context.checking(new Expectations() {{
             allowing(predicate1).and(predicate2);
@@ -73,12 +74,10 @@ public class ViolationFinderTest {
         assertThat(violations, is(empty()));
     }
 
-    private interface InstancePredicate extends BiPredicate<Instance, Instances> {}
-
     private class ViolationFinder {
         private final BiPredicate<Instance, Instances> predicate;
 
-        public ViolationFinder(InstancePredicate... instancePredicates) {
+        public ViolationFinder(InstanceFilter... instancePredicates) {
             predicate = Arrays.<BiPredicate<Instance, Instances>>stream(instancePredicates)
                     .reduce(BiPredicate::and)
                     .orElse((i, is) -> true);
