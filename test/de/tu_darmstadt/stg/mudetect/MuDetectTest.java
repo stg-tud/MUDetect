@@ -4,21 +4,22 @@ import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
-import egroum.EGroumNode;
 import org.jmock.Expectations;
 import org.jmock.auto.Mock;
 import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.buildInstance;
 import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class MuDetectTest {
