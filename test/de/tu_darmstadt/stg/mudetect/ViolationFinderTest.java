@@ -1,5 +1,6 @@
 package de.tu_darmstadt.stg.mudetect;
 
+import de.tu_darmstadt.stg.mudetect.model.Instances;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
