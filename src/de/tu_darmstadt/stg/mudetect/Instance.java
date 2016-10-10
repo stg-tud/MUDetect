@@ -187,6 +187,10 @@ public class Instance {
         return this == instance || Objects.equals(targetOverlap, instance.targetOverlap);
     }
 
+    public boolean isSamePatternOverlap(Instance instance) {
+        return this == instance || Objects.equals(patternOverlap, instance.patternOverlap);
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(patternOverlap, targetOverlap, targetNodeByPatternNode);
