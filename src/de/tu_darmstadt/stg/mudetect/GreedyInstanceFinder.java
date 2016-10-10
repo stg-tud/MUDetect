@@ -1,11 +1,21 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.model.Equation;
+import egroum.EGroumEdge;
 import egroum.EGroumNode;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class GreedyInstanceFinder implements InstanceFinder {
+
+    private interface NodeMatcher {
+        boolean match(EGroumNode targetNode, EGroumNode patternNode);
+    }
+
+    private static final NodeMatcher EQUAL_NODES =
+            (targetNode, patternNode) -> targetNode.getLabel().equals(patternNode.getLabel());
 
     private static class WorkItem {
         EGroumNode patternNode;
@@ -57,8 +67,9 @@ public class GreedyInstanceFinder implements InstanceFinder {
         List<Instance> instances = new ArrayList<>();
         while (nodesToCover.hasNext()) {
             WorkItem item = nodesToCover.poll();
-            Instance instance = new Instance(pattern, target);
-            instance.extend(item.targetNode, item.patternNode);
+            final InstanceBuilder builder = new InstanceBuilder(target, pattern);
+            extend(builder, item.targetNode, item.patternNode);
+            final Instance instance = builder.build();
             instances.add(instance);
             nodesToCover.removeAll(instance.getMappedTargetNodes());
         }
@@ -106,6 +117,82 @@ public class GreedyInstanceFinder implements InstanceFinder {
                     instances.remove(i);
                     i--;
                     break;
+                }
+            }
+        }
+    }
+
+    private void extend(InstanceBuilder builder, EGroumNode targetNode, EGroumNode patternNode) {
+        tryExtend(builder, targetNode, patternNode);
+    }
+
+    private boolean tryExtend(InstanceBuilder builder, EGroumNode targetNode, EGroumNode patternNode) {
+        final AUG target = builder.getTarget();
+        final AUG pattern = builder.getPattern();
+
+        if (patternNode.isInfixOperator()) {
+            Equation targetEquation = Equation.from(targetNode, target);
+            Equation patternEquation = Equation.from(patternNode, pattern);
+            if (!targetEquation.isInstanceOf(patternEquation)) {
+                return false;
+            }
+        }
+
+        builder.map(targetNode, patternNode);
+
+        Map<String, Set<EGroumEdge>> patternNodeInEdgesByType = pattern.getInEdgesByType(patternNode);
+        Map<String, Set<EGroumEdge>> targetNodeInEdgesByType = target.getInEdgesByType(targetNode);
+        for (String edgeType : patternNodeInEdgesByType.keySet()) {
+            if (targetNodeInEdgesByType.containsKey(edgeType)) {
+                Set<EGroumEdge> patternInEdges = patternNodeInEdgesByType.get(edgeType);
+                Set<EGroumEdge> targetInEdges = targetNodeInEdgesByType.get(edgeType);
+                switch (edgeType) {
+                    default:
+                        extendUpwards(builder, patternInEdges, targetInEdges, EQUAL_NODES);
+                }
+            }
+        }
+
+        Map<String, Set<EGroumEdge>> patternNodeOutEdgesByType = pattern.getOutEdgesByType(patternNode);
+        Map<String, Set<EGroumEdge>> targetNodeOutEdgesByType = target.getOutEdgesByType(targetNode);
+        for (String edgeType : patternNodeOutEdgesByType.keySet()) {
+            if (targetNodeOutEdgesByType.containsKey(edgeType)) {
+                Set<EGroumEdge> patternOutEdges = patternNodeOutEdgesByType.get(edgeType);
+                Set<EGroumEdge> targetOutEdges = targetNodeOutEdgesByType.get(edgeType);
+                switch (edgeType) {
+                    default:
+                        extendDownwards(builder, patternOutEdges, targetOutEdges, EQUAL_NODES);
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private void extendUpwards(InstanceBuilder builder, Set<EGroumEdge> patternInEdges, Set<EGroumEdge> targetInEdges,
+                               NodeMatcher matcher) {
+        extend(builder, patternInEdges, targetInEdges, matcher, EGroumEdge::getSource);
+    }
+
+    private void extendDownwards(InstanceBuilder builder, Set<EGroumEdge> patternOutEdges,
+                                 Set<EGroumEdge> targetOutEdges, NodeMatcher matcher) {
+        extend(builder, patternOutEdges, targetOutEdges, matcher, EGroumEdge::getTarget);
+    }
+
+    private void extend(InstanceBuilder builder, Set<EGroumEdge> patternEdges, Set<EGroumEdge> targetEdges,
+                        NodeMatcher matcher, Function<EGroumEdge, EGroumNode> extensionNodeSelector) {
+        for (EGroumEdge patternEdge : patternEdges) {
+            for (EGroumEdge targetEdge : targetEdges) {
+                EGroumNode targetEdgeExtensionNode = extensionNodeSelector.apply(targetEdge);
+                EGroumNode patternEdgeExtensionNode = extensionNodeSelector.apply(patternEdge);
+                if (matcher.match(targetEdgeExtensionNode, patternEdgeExtensionNode)) {
+                    if (builder.isCompatibleMappingExtension(targetEdgeExtensionNode, patternEdgeExtensionNode)) {
+                        if (tryExtend(builder, targetEdgeExtensionNode, patternEdgeExtensionNode)) {
+                            builder.map(targetEdge, patternEdge);
+                        }
+                    } else if (builder.isMapped(targetEdgeExtensionNode, patternEdgeExtensionNode)) {
+                        builder.map(targetEdge, patternEdge);
+                    }
                 }
             }
         }
