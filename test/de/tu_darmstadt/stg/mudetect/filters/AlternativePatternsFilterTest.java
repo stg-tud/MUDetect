@@ -31,6 +31,18 @@ public class AlternativePatternsFilterTest {
     }
 
     @Test
+    public void keepsViolation_relatedInstance() throws Exception {
+        final TestAUGBuilder target = buildAUG().withActionNodes("a", "c");
+        final TestAUGBuilder violatedPattern = buildAUG().withActionNodes("a", "b");
+        final TestAUGBuilder satisfiedPattern = buildAUG().withActionNodes("a", "c");
+        final Instance violation = buildInstance(target, violatedPattern).withNode("a", "a").build();
+        final Instance instance = buildInstance(target, satisfiedPattern).withNode("a", "a").withNode("c", "c").build();
+        final AlternativePatternsFilter filter = new AlternativePatternsFilter();
+
+        assertFalse(filter.test(violation, new Instances(instance)));
+    }
+
+    @Test
     public void filtersViolation_isInstanceOfOtherPattern() throws Exception {
         final TestAUGBuilder target = buildAUG().withActionNode("a");
         final TestAUGBuilder violatedPattern = buildAUG().withActionNodes("a", "b");
