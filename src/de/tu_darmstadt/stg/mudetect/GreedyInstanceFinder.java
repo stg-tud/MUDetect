@@ -8,6 +8,7 @@ import egroum.EGroumNode;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class GreedyInstanceFinder implements InstanceFinder {
 
@@ -62,6 +63,16 @@ public class GreedyInstanceFinder implements InstanceFinder {
         }
     }
 
+    private final Predicate<Instance> instancePredicate;
+
+    public GreedyInstanceFinder(Predicate<Instance> instancePredicate) {
+        this.instancePredicate = instancePredicate;
+    }
+
+    public GreedyInstanceFinder() {
+        this(i -> true);
+    }
+
     @Override
     public List<Instance> findInstances(AUG target, AUG pattern) {
         WorkQueue nodesToCover = getCommonNodesToCover(target, pattern);
@@ -71,8 +82,10 @@ public class GreedyInstanceFinder implements InstanceFinder {
             final InstanceBuilder builder = new InstanceBuilder(target, pattern);
             extend(builder, item.targetNode, item.patternNode);
             final Instance instance = builder.build();
-            instances.add(instance);
-            nodesToCover.removeAll(instance.getMappedTargetNodes());
+            if (instancePredicate.test(instance)) {
+                instances.add(instance);
+                nodesToCover.removeAll(instance.getMappedTargetNodes());
+            }
         }
         removeSubInstances(instances);
         return instances;
