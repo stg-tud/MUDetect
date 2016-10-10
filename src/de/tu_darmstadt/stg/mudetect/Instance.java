@@ -184,9 +184,7 @@ public class Instance {
     }
 
     public boolean isSameTargetOverlap(Instance instance) {
-        if (this == instance) return true;
-        if (instance == null) return false;
-        return Objects.equals(targetOverlap, instance.targetOverlap);
+        return this == instance || Objects.equals(targetOverlap, instance.targetOverlap);
     }
 
     @Override
