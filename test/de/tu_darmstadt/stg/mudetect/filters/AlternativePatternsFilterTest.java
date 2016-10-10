@@ -9,6 +9,7 @@ import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.buildInstance;
 import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.someInstance;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class AlternativePatternsFilterTest {
     @Test
@@ -19,8 +20,25 @@ public class AlternativePatternsFilterTest {
         assertFalse(filter.test(violation, new Instances()));
     }
 
+    @Test
+    public void filtersViolation_isInstanceOfOtherPattern() throws Exception {
+        final TestAUGBuilder target = buildAUG().withActionNode("a");
+        final TestAUGBuilder violatedPattern = buildAUG().withActionNodes("a", "b");
+        final TestAUGBuilder satisfiedPattern = buildAUG().withActionNode("a");
+        final Instance violation = buildInstance(target, violatedPattern).withNode("a", "a").build();
+        final Instance instance = buildInstance(target, satisfiedPattern).withNode("a", "a").build();
+        final AlternativePatternsFilter filter = new AlternativePatternsFilter();
+
+        assertTrue(filter.test(violation, new Instances(instance)));
+    }
+
     private class AlternativePatternsFilter {
         public boolean test(Instance violation, Instances instances) {
+            for (Instance instance : instances) {
+                if (violation.isSameTargetOverlap(instance)) {
+                    return true;
+                }
+            }
             return false;
         }
     }
