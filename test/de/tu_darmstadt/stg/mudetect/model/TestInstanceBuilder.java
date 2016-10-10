@@ -1,6 +1,5 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
-import de.tu_darmstadt.stg.mudetect.Instance;
 import egroum.EGroumDataEdge;
 import egroum.EGroumEdge;
 import egroum.EGroumNode;

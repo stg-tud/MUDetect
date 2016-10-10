@@ -1,6 +1,7 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.model.Instance;
 import org.junit.Test;
 
 import java.util.List;

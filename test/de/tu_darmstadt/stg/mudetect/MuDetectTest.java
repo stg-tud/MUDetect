@@ -1,9 +1,6 @@
 package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Pattern;
-import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
-import de.tu_darmstadt.stg.mudetect.model.Violation;
+import de.tu_darmstadt.stg.mudetect.model.*;
 import org.jmock.Expectations;
 import org.jmock.auto.Mock;
 import org.jmock.integration.junit4.JUnitRuleMockery;

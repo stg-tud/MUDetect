@@ -1,13 +1,10 @@
-package de.tu_darmstadt.stg.mudetect;
+package de.tu_darmstadt.stg.mudetect.model;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Equation;
-import de.tu_darmstadt.stg.mudetect.model.Location;
-import egroum.*;
+import egroum.EGroumEdge;
+import egroum.EGroumNode;
 import org.jgrapht.graph.DirectedSubgraph;
 
 import java.util.*;
-import java.util.function.Function;
 
 public class Instance {
 
@@ -45,11 +42,11 @@ public class Instance {
         return (AUG) patternOverlap.getBase();
     }
 
-    public boolean mapsPatternNode(EGroumNode patternNode) {
+    boolean mapsPatternNode(EGroumNode patternNode) {
         return patternOverlap.containsVertex(patternNode);
     }
 
-    public boolean mapsPatternEdge(EGroumEdge patternEdge) {
+    boolean mapsPatternEdge(EGroumEdge patternEdge) {
         return patternOverlap.containsEdge(patternEdge);
     }
 
@@ -59,7 +56,7 @@ public class Instance {
         return getTarget().getLocation();
     }
 
-    Set<EGroumNode> getMappedTargetNodes() {
+    public Set<EGroumNode> getMappedTargetNodes() {
         return targetOverlap.vertexSet();
     }
 

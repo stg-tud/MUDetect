@@ -1,6 +1,5 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
-import de.tu_darmstadt.stg.mudetect.Instance;
 import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;

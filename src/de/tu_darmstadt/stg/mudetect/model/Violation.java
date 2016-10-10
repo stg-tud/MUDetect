@@ -1,6 +1,5 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
-import de.tu_darmstadt.stg.mudetect.Instance;
 import egroum.*;
 import org.jgrapht.ext.ComponentAttributeProvider;
 import org.jgrapht.ext.DOTExporter;

@@ -1,6 +1,7 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.filters.InstanceFilter;
+import de.tu_darmstadt.stg.mudetect.model.Instance;
 import de.tu_darmstadt.stg.mudetect.model.Instances;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import org.jmock.Expectations;

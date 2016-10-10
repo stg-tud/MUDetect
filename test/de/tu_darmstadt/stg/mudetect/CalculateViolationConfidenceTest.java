@@ -1,5 +1,6 @@
 package de.tu_darmstadt.stg.mudetect;
 
+import de.tu_darmstadt.stg.mudetect.model.Instance;
 import de.tu_darmstadt.stg.mudetect.model.Instances;
 import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;

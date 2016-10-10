@@ -1,6 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.filters;
 
-import de.tu_darmstadt.stg.mudetect.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Instance;
 import de.tu_darmstadt.stg.mudetect.model.Instances;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
