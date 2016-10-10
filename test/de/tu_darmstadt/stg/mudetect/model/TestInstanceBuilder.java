@@ -17,6 +17,14 @@ public class TestInstanceBuilder {
         return new Instance(aug, aug.vertexSet(), aug.edgeSet());
     }
 
+    public static Instance someInstance(AUG pattern, AUG target) {
+        return emptyInstance(pattern, target);
+    }
+
+    public static Instance emptyInstance(AUG pattern, AUG target) {
+        return new Instance(pattern, target, new HashMap<>(), new HashMap<>());
+    }
+
     public static TestInstanceBuilder buildInstance(TestAUGBuilder targetAUGBuilder, TestAUGBuilder patternAUGBuilder) {
         return new TestInstanceBuilder(targetAUGBuilder, patternAUGBuilder);
     }

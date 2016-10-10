@@ -11,6 +11,7 @@ import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
+import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.someInstance;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
@@ -38,10 +39,10 @@ public class NoOverlapInstanceFinderTest {
 
     @Test
     public void returnsOriginalInstancesIfAny() throws Exception {
-        AUG pattern = someAUG();
-        AUG target = someAUG();
+        Instance instance = someInstance();
+        AUG pattern = instance.getPattern();
+        AUG target = instance.getTarget();
         InstanceFinder wrappedFinder = context.mock(InstanceFinder.class);
-        Instance instance = new Instance(pattern, target);
         context.checking(new Expectations() {{
             oneOf(wrappedFinder).findInstances(target, pattern); will(returnValue(Collections.singletonList(instance)));
         }});

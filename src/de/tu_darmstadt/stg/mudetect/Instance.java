@@ -17,6 +17,8 @@ public class Instance {
 
     /**
      * Use for testing only.
+     *
+     * TODO move this to the test instance builder
      */
     public Instance(AUG pattern, Set<EGroumNode> vertexSubset, Set<EGroumEdge> edgeSubset) {
         patternOverlap = new DirectedSubgraph<>(pattern, vertexSubset, edgeSubset);
@@ -37,11 +39,6 @@ public class Instance {
         patternOverlap = new DirectedSubgraph<>(pattern, patternNodeSet, patternEdgeSet);
 
         this.targetNodeByPatternNode.putAll(targetNodeByPatternNode);
-    }
-
-    Instance(AUG pattern, AUG target) {
-        patternOverlap = new DirectedSubgraph<>(pattern, new HashSet<>(), new HashSet<>());
-        targetOverlap = new DirectedSubgraph<>(target, new HashSet<>(), new HashSet<>());
     }
 
     public AUG getPattern() {
