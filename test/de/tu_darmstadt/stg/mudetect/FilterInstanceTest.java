@@ -24,6 +24,7 @@ public class FilterInstanceTest {
     @Test
     public void keepsInstance() throws Exception {
         AUG aug = someAUG();
+        @SuppressWarnings("unchecked")
         Predicate<Instance> instancePredicate = context.mock(Predicate.class);
 
         context.checking(new Expectations() {{
@@ -39,6 +40,7 @@ public class FilterInstanceTest {
     @Test
     public void filtersInstance() throws Exception {
         AUG aug = someAUG();
+        @SuppressWarnings("unchecked")
         Predicate<Instance> instanceFilter = context.mock(Predicate.class);
 
         context.checking(new Expectations() {{
