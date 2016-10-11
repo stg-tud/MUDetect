@@ -26,8 +26,9 @@ public class MuDetectRunner extends MuBenchRunner {
         run(new MuDetect(
                 new ProvidedPatternsModel(buildGroums(patternPath)),
                 new NoOverlapInstanceFinder(new GreedyInstanceFinder()),
-                new MissingElementViolationFactory()
-        ), targetPath, output);
+                new MissingElementViolationFactory(),
+                new NoRankingStrategy()),
+                targetPath, output);
     }
 
     @Override
@@ -35,8 +36,9 @@ public class MuDetectRunner extends MuBenchRunner {
         run(new MuDetect(
                 new MinedPatternsModel(10, 1, buildGroums(trainingAndTargetPath)),
                 new GreedyInstanceFinder(new InstanceSizePredicate(0.5)),
-                new MissingElementViolationFactory()
-        ), trainingAndTargetPath, output);
+                new MissingElementViolationFactory(),
+                new NoRankingStrategy()),
+                trainingAndTargetPath, output);
     }
 
     private void run(MuDetect detector, CodePath targetPath, DetectorOutput output) {
