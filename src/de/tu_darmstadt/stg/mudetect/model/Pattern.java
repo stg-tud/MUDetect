@@ -1,5 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
+import java.util.Objects;
+
 public class Pattern {
     private final AUG aug;
     private int support;
@@ -23,5 +25,19 @@ public class Pattern {
 
     public int getEdgeSize() {
         return aug.edgeSet().size();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pattern pattern = (Pattern) o;
+        return support == pattern.support &&
+                Objects.equals(aug, pattern.aug);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(aug, support);
     }
 }

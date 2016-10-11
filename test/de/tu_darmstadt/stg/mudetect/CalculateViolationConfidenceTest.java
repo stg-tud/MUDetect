@@ -1,9 +1,6 @@
 package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.mudetect.model.Instance;
-import de.tu_darmstadt.stg.mudetect.model.Instances;
-import de.tu_darmstadt.stg.mudetect.model.Pattern;
-import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
+import de.tu_darmstadt.stg.mudetect.model.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,7 +21,7 @@ public class CalculateViolationConfidenceTest {
     private Pattern pattern;
     private Model model;
     private Instance violation;
-    private Instances violations;
+    private Overlaps overlaps;
 
     @Before
     public void setup() {
@@ -35,14 +32,15 @@ public class CalculateViolationConfidenceTest {
         model = () -> asSet(pattern);
 
         violation = buildInstance(aTargetBuilder, patternBuilder).withNode("a", "a").build();
-        violations = new Instances(violation);
+        overlaps = new Overlaps();
+        overlaps.addViolation(violation);
     }
 
     @Test
     public void calculatesPatternSupportWeight_noEquallySizedPattern() throws Exception {
         ConfidenceCalculator calculator = new ConfidenceCalculator(1, 0, 0);
 
-        float confidence = calculator.getViolationConfidence(violation, violations, model);
+        float confidence = calculator.getConfidence(violation, overlaps, model);
 
         assertThat(confidence, is(1f));
     }
@@ -53,7 +51,7 @@ public class CalculateViolationConfidenceTest {
         model = () -> asSet(pattern, pattern2);
         ConfidenceCalculator calculator = new ConfidenceCalculator(1, 0, 0);
 
-        float confidence = calculator.getViolationConfidence(violation, violations, model);
+        float confidence = calculator.getConfidence(violation, overlaps, model);
 
         assertThat(confidence, is(0.5f));
     }
@@ -64,7 +62,7 @@ public class CalculateViolationConfidenceTest {
         model = () -> asSet(pattern, pattern2);
         ConfidenceCalculator calculator = new ConfidenceCalculator(1, 0, 0);
 
-        float confidence = calculator.getViolationConfidence(violation, violations, model);
+        float confidence = calculator.getConfidence(violation, overlaps, model);
 
         assertThat(confidence, is(1f));
     }
@@ -73,7 +71,7 @@ public class CalculateViolationConfidenceTest {
     public void calculatesOverlapWeight() throws Exception {
         final ConfidenceCalculator calculator = new ConfidenceCalculator(0, 1, 0);
 
-        final float confidence = calculator.getViolationConfidence(violation, violations, model);
+        final float confidence = calculator.getConfidence(violation, overlaps, model);
 
         assertThat(confidence, is(0.5f));
     }
@@ -82,7 +80,7 @@ public class CalculateViolationConfidenceTest {
     public void calculatesViolationSupportWeight_noEqualViolations() throws Exception {
         final ConfidenceCalculator calculator = new ConfidenceCalculator(0, 0, 1);
 
-        final float confidence = calculator.getViolationConfidence(violation, violations, model);
+        final float confidence = calculator.getConfidence(violation, overlaps, model);
 
         assertThat(confidence, is(1f));
     }
@@ -91,10 +89,10 @@ public class CalculateViolationConfidenceTest {
     public void calculatesViolationSupportWeight_anEqualViolation() throws Exception {
         TestAUGBuilder anotherTarget = buildAUG().withActionNode("a");
         Instance anEqualViolation = buildInstance(anotherTarget, patternBuilder).withNode("a", "a").build();
-        violations = new Instances(violation, anEqualViolation);
+        overlaps.addViolation(anEqualViolation);
         final ConfidenceCalculator calculator = new ConfidenceCalculator(0, 0, 1);
 
-        final float confidence = calculator.getViolationConfidence(violation, violations, model);
+        final float confidence = calculator.getConfidence(violation, overlaps, model);
 
         assertThat(confidence, is(0.5f));
     }
@@ -103,12 +101,12 @@ public class CalculateViolationConfidenceTest {
     public void normalizesConfidence() throws Exception {
         final ConfidenceCalculator calculator = new ConfidenceCalculator(1, 1, 1);
 
-        float confidence = calculator.getViolationConfidence(violation, violations, model);
+        float confidence = calculator.getConfidence(violation, overlaps, model);
 
         assertThat(confidence, is(lessThanOrEqualTo(1f)));
     }
 
-    private static class ConfidenceCalculator {
+    private static class ConfidenceCalculator implements de.tu_darmstadt.stg.mudetect.ConfidenceCalculator {
         private final float patternSupportWeightFactor;
         private final float overlapSizeWeightFactor;
         private final float violationSupportWeightFactor;
@@ -122,10 +120,11 @@ public class CalculateViolationConfidenceTest {
             this.violationSupportWeightFactor = violationSupportWeightFactor / factorSum;
         }
 
-        public float getViolationConfidence(Instance violation, Instances violations, Model model) {
+        @Override
+        public float getConfidence(Instance violation, Overlaps overlaps, Model model) {
             return patternSupportWeightFactor * getPatternSupportWeight(violation.getPattern(), model) +
                     overlapSizeWeightFactor * getOverlapWeight(violation) +
-                    violationSupportWeightFactor * getViolationSupportWeight(violation, violations);
+                    violationSupportWeightFactor * getViolationSupportWeight(violation, overlaps);
         }
 
         private float getPatternSupportWeight(Pattern pattern, Model model) {
@@ -136,10 +135,10 @@ public class CalculateViolationConfidenceTest {
             return violation.getNodeSize() / (float) violation.getPattern().getNodeSize();
         }
 
-        private float getViolationSupportWeight(Instance violation, Instances violations) {
+        private float getViolationSupportWeight(Instance violation, Overlaps overlaps) {
             float numberOfEqualViolations = 0;
-            for (Instance otherViolation : violations) {
-                // two violations are equal, if they violate the same aPatternBuilder in the same way,
+            for (Instance otherViolation : overlaps.getViolationsOfSamePattern(violation)) {
+                // two overlaps are equal, if they violate the same aPatternBuilder in the same way,
                 // i.e., if the aPatternBuilder overlap is the same.
                 if (violation.isSamePatternOverlap(otherViolation)) {
                     numberOfEqualViolations++;
