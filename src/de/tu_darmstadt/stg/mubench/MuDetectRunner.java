@@ -37,7 +37,7 @@ public class MuDetectRunner extends MuBenchRunner {
                 new MinedPatternsModel(10, 1, buildGroums(trainingAndTargetPath)),
                 new GreedyInstanceFinder(new InstanceSizePredicate(0.5)),
                 new MissingElementViolationFactory(),
-                new NoRankingStrategy()),
+                new ConfidenceViolationRankingStrategy(new SupportConfidenceCalculator(1, 1, 1))),
                 trainingAndTargetPath, output);
     }
 

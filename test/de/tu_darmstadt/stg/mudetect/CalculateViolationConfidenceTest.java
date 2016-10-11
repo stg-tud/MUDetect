@@ -38,7 +38,7 @@ public class CalculateViolationConfidenceTest {
 
     @Test
     public void calculatesPatternSupportWeight_noEquallySizedPattern() throws Exception {
-        ConfidenceCalculator calculator = new ConfidenceCalculator(1, 0, 0);
+        SupportConfidenceCalculator calculator = new SupportConfidenceCalculator(1, 0, 0);
 
         float confidence = calculator.getConfidence(violation, overlaps, model);
 
@@ -49,7 +49,7 @@ public class CalculateViolationConfidenceTest {
     public void calculatesPatternSupportWeight_equallySizedPatternWithLargerSupport() throws Exception {
         Pattern pattern2 = new Pattern(pattern.getAUG(), pattern.getSupport() * 2);
         model = () -> asSet(pattern, pattern2);
-        ConfidenceCalculator calculator = new ConfidenceCalculator(1, 0, 0);
+        SupportConfidenceCalculator calculator = new SupportConfidenceCalculator(1, 0, 0);
 
         float confidence = calculator.getConfidence(violation, overlaps, model);
 
@@ -60,7 +60,7 @@ public class CalculateViolationConfidenceTest {
     public void calculatesPatternSupportWeight_equallySizedPatternWithSmallerSupport() throws Exception {
         Pattern pattern2 = new Pattern(pattern.getAUG(), 1);
         model = () -> asSet(pattern, pattern2);
-        ConfidenceCalculator calculator = new ConfidenceCalculator(1, 0, 0);
+        SupportConfidenceCalculator calculator = new SupportConfidenceCalculator(1, 0, 0);
 
         float confidence = calculator.getConfidence(violation, overlaps, model);
 
@@ -69,7 +69,7 @@ public class CalculateViolationConfidenceTest {
 
     @Test
     public void calculatesOverlapWeight() throws Exception {
-        final ConfidenceCalculator calculator = new ConfidenceCalculator(0, 1, 0);
+        final SupportConfidenceCalculator calculator = new SupportConfidenceCalculator(0, 1, 0);
 
         final float confidence = calculator.getConfidence(violation, overlaps, model);
 
@@ -78,7 +78,7 @@ public class CalculateViolationConfidenceTest {
 
     @Test
     public void calculatesViolationSupportWeight_noEqualViolations() throws Exception {
-        final ConfidenceCalculator calculator = new ConfidenceCalculator(0, 0, 1);
+        final SupportConfidenceCalculator calculator = new SupportConfidenceCalculator(0, 0, 1);
 
         final float confidence = calculator.getConfidence(violation, overlaps, model);
 
@@ -90,7 +90,7 @@ public class CalculateViolationConfidenceTest {
         TestAUGBuilder anotherTarget = buildAUG().withActionNode("a");
         Instance anEqualViolation = buildInstance(anotherTarget, patternBuilder).withNode("a", "a").build();
         overlaps.addViolation(anEqualViolation);
-        final ConfidenceCalculator calculator = new ConfidenceCalculator(0, 0, 1);
+        final SupportConfidenceCalculator calculator = new SupportConfidenceCalculator(0, 0, 1);
 
         final float confidence = calculator.getConfidence(violation, overlaps, model);
 
@@ -99,53 +99,11 @@ public class CalculateViolationConfidenceTest {
 
     @Test
     public void normalizesConfidence() throws Exception {
-        final ConfidenceCalculator calculator = new ConfidenceCalculator(1, 1, 1);
+        final SupportConfidenceCalculator calculator = new SupportConfidenceCalculator(1, 1, 1);
 
         float confidence = calculator.getConfidence(violation, overlaps, model);
 
         assertThat(confidence, is(lessThanOrEqualTo(1f)));
-    }
-
-    private static class ConfidenceCalculator implements de.tu_darmstadt.stg.mudetect.ConfidenceCalculator {
-        private final float patternSupportWeightFactor;
-        private final float overlapSizeWeightFactor;
-        private final float violationSupportWeightFactor;
-
-        public ConfidenceCalculator(int patternSupportWeightFactor,
-                                    int overlapSizeWeightFactor,
-                                    int violationSupportWeightFactor) {
-            float factorSum = patternSupportWeightFactor + overlapSizeWeightFactor + violationSupportWeightFactor;
-            this.patternSupportWeightFactor = patternSupportWeightFactor / factorSum;
-            this.overlapSizeWeightFactor = overlapSizeWeightFactor / factorSum;
-            this.violationSupportWeightFactor = violationSupportWeightFactor / factorSum;
-        }
-
-        @Override
-        public float getConfidence(Instance violation, Overlaps overlaps, Model model) {
-            return patternSupportWeightFactor * getPatternSupportWeight(violation.getPattern(), model) +
-                    overlapSizeWeightFactor * getOverlapWeight(violation) +
-                    violationSupportWeightFactor * getViolationSupportWeight(violation, overlaps);
-        }
-
-        private float getPatternSupportWeight(Pattern pattern, Model model) {
-            return pattern.getSupport() / (float) model.getMaxPatternSupport(pattern.getNodeSize());
-        }
-
-        private float getOverlapWeight(Instance violation) {
-            return violation.getNodeSize() / (float) violation.getPattern().getNodeSize();
-        }
-
-        private float getViolationSupportWeight(Instance violation, Overlaps overlaps) {
-            float numberOfEqualViolations = 0;
-            for (Instance otherViolation : overlaps.getViolationsOfSamePattern(violation)) {
-                // two overlaps are equal, if they violate the same aPatternBuilder in the same way,
-                // i.e., if the aPatternBuilder overlap is the same.
-                if (violation.isSamePatternOverlap(otherViolation)) {
-                    numberOfEqualViolations++;
-                }
-            }
-            return 1 / numberOfEqualViolations;
-        }
     }
 
     @SafeVarargs
