@@ -1,9 +1,13 @@
-package de.tu_darmstadt.stg.mudetect.filters;
+package de.tu_darmstadt.stg.mudetect;
 
+import de.tu_darmstadt.stg.mudetect.AlternativePatternInstancePredicate;
 import de.tu_darmstadt.stg.mudetect.model.Instance;
 import de.tu_darmstadt.stg.mudetect.model.Instances;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.buildInstance;
@@ -11,13 +15,13 @@ import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.someInstanc
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class AlternativePatternsFilterTest {
+public class AlternativePatternInstancePredicateTest {
     @Test
     public void keepsViolation_noInstances() throws Exception {
         final Instance violation = someInstance();
-        final AlternativePatternsFilter filter = new AlternativePatternsFilter();
+        final AlternativePatternInstancePredicate filter = new AlternativePatternInstancePredicate();
 
-        assertFalse(filter.test(violation, new Instances()));
+        assertFalse(filter.test(violation, Collections.emptyList()));
     }
 
     @Test
@@ -25,9 +29,9 @@ public class AlternativePatternsFilterTest {
         final Instance violation = someInstance();
         final Instance instance1 = someInstance();
         final Instance instance2 = someInstance();
-        final AlternativePatternsFilter filter = new AlternativePatternsFilter();
+        final AlternativePatternInstancePredicate filter = new AlternativePatternInstancePredicate();
 
-        assertFalse(filter.test(violation, new Instances(instance1, instance2)));
+        assertFalse(filter.test(violation, Arrays.asList(instance1, instance2)));
     }
 
     @Test
@@ -37,9 +41,9 @@ public class AlternativePatternsFilterTest {
         final TestAUGBuilder satisfiedPattern = buildAUG().withActionNodes("a", "c");
         final Instance violation = buildInstance(target, violatedPattern).withNode("a", "a").build();
         final Instance instance = buildInstance(target, satisfiedPattern).withNode("a", "a").withNode("c", "c").build();
-        final AlternativePatternsFilter filter = new AlternativePatternsFilter();
+        final AlternativePatternInstancePredicate filter = new AlternativePatternInstancePredicate();
 
-        assertFalse(filter.test(violation, new Instances(instance)));
+        assertFalse(filter.test(violation, Collections.singleton(instance)));
     }
 
     @Test
@@ -49,19 +53,9 @@ public class AlternativePatternsFilterTest {
         final TestAUGBuilder satisfiedPattern = buildAUG().withActionNode("a");
         final Instance violation = buildInstance(target, violatedPattern).withNode("a", "a").build();
         final Instance instance = buildInstance(target, satisfiedPattern).withNode("a", "a").build();
-        final AlternativePatternsFilter filter = new AlternativePatternsFilter();
+        final AlternativePatternInstancePredicate filter = new AlternativePatternInstancePredicate();
 
-        assertTrue(filter.test(violation, new Instances(instance)));
+        assertTrue(filter.test(violation, Collections.singleton(instance)));
     }
 
-    private class AlternativePatternsFilter {
-        public boolean test(Instance violation, Instances instances) {
-            for (Instance instance : instances) {
-                if (violation.isSameTargetOverlap(instance)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
 }
