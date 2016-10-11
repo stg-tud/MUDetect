@@ -10,6 +10,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Violation implements Comparable<Violation> {
 
@@ -157,6 +158,20 @@ public class Violation implements Comparable<Violation> {
     @Override
     public int compareTo(Violation o) {
         return Float.compare(getConfidence(), o.getConfidence());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Violation violation = (Violation) o;
+        return Float.compare(violation.confidence, confidence) == 0 &&
+                Objects.equals(instance, violation.instance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(instance, confidence);
     }
 
     @Override
