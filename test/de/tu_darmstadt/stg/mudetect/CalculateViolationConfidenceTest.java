@@ -13,6 +13,7 @@ import java.util.Set;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.buildInstance;
+import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThat;
@@ -30,8 +31,8 @@ public class CalculateViolationConfidenceTest {
         TestAUGBuilder aTargetBuilder = buildAUG().withActionNode("a");
 
         patternBuilder = buildAUG().withActionNodes("a", "b");
-        pattern = new Pattern(patternBuilder.build(), 21);
-        model = new TestModel(pattern);
+        pattern = somePattern(patternBuilder);
+        model = () -> asSet(pattern);
 
         violation = buildInstance(aTargetBuilder, patternBuilder).withNode("a", "a").build();
         violations = new Instances(violation);
@@ -41,7 +42,7 @@ public class CalculateViolationConfidenceTest {
     public void calculatesPatternSupportWeight_noEquallySizedPattern() throws Exception {
         ConfidenceCalculator calculator = new ConfidenceCalculator(1, 0, 0);
 
-        float confidence = calculator.getViolationConfidence(violation, violations, pattern, model);
+        float confidence = calculator.getViolationConfidence(violation, violations, model);
 
         assertThat(confidence, is(1f));
     }
@@ -49,10 +50,10 @@ public class CalculateViolationConfidenceTest {
     @Test
     public void calculatesPatternSupportWeight_equallySizedPatternWithLargerSupport() throws Exception {
         Pattern pattern2 = new Pattern(pattern.getAUG(), pattern.getSupport() * 2);
-        model = new TestModel(pattern, pattern2);
+        model = () -> asSet(pattern, pattern2);
         ConfidenceCalculator calculator = new ConfidenceCalculator(1, 0, 0);
 
-        float confidence = calculator.getViolationConfidence(violation, violations, pattern, model);
+        float confidence = calculator.getViolationConfidence(violation, violations, model);
 
         assertThat(confidence, is(0.5f));
     }
@@ -60,10 +61,10 @@ public class CalculateViolationConfidenceTest {
     @Test
     public void calculatesPatternSupportWeight_equallySizedPatternWithSmallerSupport() throws Exception {
         Pattern pattern2 = new Pattern(pattern.getAUG(), 1);
-        model = new TestModel(pattern, pattern2);
+        model = () -> asSet(pattern, pattern2);
         ConfidenceCalculator calculator = new ConfidenceCalculator(1, 0, 0);
 
-        float confidence = calculator.getViolationConfidence(violation, violations, pattern, model);
+        float confidence = calculator.getViolationConfidence(violation, violations, model);
 
         assertThat(confidence, is(1f));
     }
@@ -72,7 +73,7 @@ public class CalculateViolationConfidenceTest {
     public void calculatesOverlapWeight() throws Exception {
         final ConfidenceCalculator calculator = new ConfidenceCalculator(0, 1, 0);
 
-        final float confidence = calculator.getViolationConfidence(violation, violations, pattern, model);
+        final float confidence = calculator.getViolationConfidence(violation, violations, model);
 
         assertThat(confidence, is(0.5f));
     }
@@ -81,7 +82,7 @@ public class CalculateViolationConfidenceTest {
     public void calculatesViolationSupportWeight_noEqualViolations() throws Exception {
         final ConfidenceCalculator calculator = new ConfidenceCalculator(0, 0, 1);
 
-        final float confidence = calculator.getViolationConfidence(violation, violations, pattern, model);
+        final float confidence = calculator.getViolationConfidence(violation, violations, model);
 
         assertThat(confidence, is(1f));
     }
@@ -93,7 +94,7 @@ public class CalculateViolationConfidenceTest {
         violations = new Instances(violation, anEqualViolation);
         final ConfidenceCalculator calculator = new ConfidenceCalculator(0, 0, 1);
 
-        final float confidence = calculator.getViolationConfidence(violation, violations, pattern, model);
+        final float confidence = calculator.getViolationConfidence(violation, violations, model);
 
         assertThat(confidence, is(0.5f));
     }
@@ -102,7 +103,7 @@ public class CalculateViolationConfidenceTest {
     public void normalizesConfidence() throws Exception {
         final ConfidenceCalculator calculator = new ConfidenceCalculator(1, 1, 1);
 
-        float confidence = calculator.getViolationConfidence(violation, violations, pattern, model);
+        float confidence = calculator.getViolationConfidence(violation, violations, model);
 
         assertThat(confidence, is(lessThanOrEqualTo(1f)));
     }
@@ -121,8 +122,8 @@ public class CalculateViolationConfidenceTest {
             this.violationSupportWeightFactor = violationSupportWeightFactor / factorSum;
         }
 
-        public float getViolationConfidence(Instance violation, Instances violations, Pattern pattern, Model model) {
-            return patternSupportWeightFactor * getPatternSupportWeight(pattern, model) +
+        public float getViolationConfidence(Instance violation, Instances violations, Model model) {
+            return patternSupportWeightFactor * getPatternSupportWeight(violation.getPattern(), model) +
                     overlapSizeWeightFactor * getOverlapWeight(violation) +
                     violationSupportWeightFactor * getViolationSupportWeight(violation, violations);
         }
@@ -148,16 +149,8 @@ public class CalculateViolationConfidenceTest {
         }
     }
 
-    private static class TestModel implements Model {
-        private final Set<Pattern> patterns;
-
-        TestModel(Pattern... patterns) {
-            this.patterns = new HashSet<>(Arrays.asList(patterns));
-        }
-
-        @Override
-        public Set<Pattern> getPatterns() {
-            return patterns;
-        }
+    @SafeVarargs
+    private static <T> Set<T> asSet(T... elements) {
+        return new HashSet<T>(Arrays.asList(elements));
     }
 }
