@@ -69,6 +69,7 @@ import org.eclipse.jdt.core.dom.WhileStatement;
 
 import egroum.EGroumDataEdge.Type;
 import graphics.DotGraph;
+import mcs.MCSFragment;
 import mining.Fragment;
 import utils.JavaASTUtil;
 
@@ -157,6 +158,26 @@ public class EGroumGraph implements Serializable {
 			statementNodes.add(node);
 			statementSources.add(node);
 			statementSinks.add(node);
+		}
+	}
+
+	public EGroumGraph(MCSFragment f) {
+		this.name = f.getGraph().getName();
+		this.filePath = f.getGraph().filePath;
+		HashMap<EGroumNode, EGroumNode> map = new HashMap<>();
+		for (EGroumNode node : f.getNodes()) {
+			EGroumNode cn = EGroumNode.createNode(node);
+			cn.setGraph(this);
+			map.put(node, cn);
+			this.nodes.add(cn);
+		}
+		for (EGroumNode node : f.getNodes()) {
+			EGroumNode cn = map.get(node);
+			for (EGroumEdge e : node.getInEdges()) {
+				EGroumNode s = e.source;
+				if (map.containsKey(s))
+					EGroumEdge.createEdge(map.get(s), cn, e);
+			}
 		}
 	}
 
