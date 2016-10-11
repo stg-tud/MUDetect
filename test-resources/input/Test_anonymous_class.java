@@ -1,5 +1,7 @@
 package input;
 
+import java.io.File;
+
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -24,6 +26,8 @@ class Test_anonymous_class {
 	}
 
 	public void m() {
+		// create a lock file
+		final File lockFile = new File("");
 		new Object() {
 			public boolean obtain() throws IOException {
 				if (DISABLE_LOCKS) {
