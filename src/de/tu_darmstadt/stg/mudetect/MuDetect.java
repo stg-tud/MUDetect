@@ -24,7 +24,7 @@ public class MuDetect {
         Instances instances = new Instances();
         for (AUG target : targets) {
             for (Pattern pattern : patterns) {
-                instances.addAll(instanceFinder.findInstances(target, pattern.getAUG()));
+                instances.addAll(instanceFinder.findInstances(target, pattern));
             }
         }
         return instances;

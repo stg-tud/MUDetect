@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.buildInstance;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.extend;
+import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static egroum.EGroumDataEdge.Type.ORDER;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
@@ -30,7 +32,7 @@ public class FindMultipleInstancesTest {
                 .withNode("B2", "B")
                 .withEdge("A", "A", ORDER, "B2", "B").build();
 
-        AUG pattern = builder.build();
+        Pattern pattern = somePattern(builder);
         AUG target = targetBuilder.build();
 
         List<Instance> instances = new GreedyInstanceFinder().findInstances(target, pattern);

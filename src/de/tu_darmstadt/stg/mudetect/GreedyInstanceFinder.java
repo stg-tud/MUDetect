@@ -3,6 +3,7 @@ package de.tu_darmstadt.stg.mudetect;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Equation;
 import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import egroum.EGroumEdge;
 import egroum.EGroumNode;
 
@@ -74,8 +75,8 @@ public class GreedyInstanceFinder implements InstanceFinder {
     }
 
     @Override
-    public List<Instance> findInstances(AUG target, AUG pattern) {
-        WorkQueue nodesToCover = getCommonNodesToCover(target, pattern);
+    public List<Instance> findInstances(AUG target, Pattern pattern) {
+        WorkQueue nodesToCover = getCommonNodesToCover(target, pattern.getAUG());
         List<Instance> instances = new ArrayList<>();
         while (nodesToCover.hasNext()) {
             WorkItem item = nodesToCover.poll();
@@ -142,7 +143,7 @@ public class GreedyInstanceFinder implements InstanceFinder {
 
     private boolean tryExtend(InstanceBuilder builder, EGroumNode targetNode, EGroumNode patternNode) {
         final AUG target = builder.getTarget();
-        final AUG pattern = builder.getPattern();
+        final AUG pattern = builder.getPattern().getAUG();
 
         if (patternNode.isInfixOperator()) {
             Equation targetEquation = Equation.from(targetNode, target);

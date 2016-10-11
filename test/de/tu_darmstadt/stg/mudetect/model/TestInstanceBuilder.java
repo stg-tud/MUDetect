@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
+import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 
 public class TestInstanceBuilder {
 
@@ -16,11 +17,11 @@ public class TestInstanceBuilder {
         return new Instance(aug, aug.vertexSet(), aug.edgeSet());
     }
 
-    public static Instance someInstance(AUG pattern, AUG target) {
+    public static Instance someInstance(Pattern pattern, AUG target) {
         return emptyInstance(pattern, target);
     }
 
-    public static Instance emptyInstance(AUG pattern, AUG target) {
+    public static Instance emptyInstance(Pattern pattern, AUG target) {
         return new Instance(pattern, target, new HashMap<>(), new HashMap<>());
     }
 
@@ -60,7 +61,7 @@ public class TestInstanceBuilder {
 
     public Instance build() {
         return new Instance(
-                patternAUGBuilder.build(), targetAUGBuilder.build(),
+                somePattern(patternAUGBuilder), targetAUGBuilder.build(),
                 targetNodeByPatternNode, targetEdgeByPatternEdge);
     }
 }

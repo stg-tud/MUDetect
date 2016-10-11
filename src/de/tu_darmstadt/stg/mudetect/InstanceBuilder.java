@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import egroum.EGroumEdge;
 import egroum.EGroumNode;
 
@@ -10,11 +11,11 @@ import java.util.Map;
 
 class InstanceBuilder {
     private final AUG target;
-    private final AUG pattern;
+    private final Pattern pattern;
     private final Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
     private final Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge = new HashMap<>();
 
-    public InstanceBuilder(AUG target, AUG pattern) {
+    public InstanceBuilder(AUG target, Pattern pattern) {
         this.target = target;
         this.pattern = pattern;
     }
@@ -23,7 +24,7 @@ class InstanceBuilder {
         return target;
     }
 
-    public AUG getPattern() {
+    public Pattern getPattern() {
         return pattern;
     }
 

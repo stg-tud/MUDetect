@@ -36,12 +36,12 @@ public class MuDetectTest {
         final Pattern pattern = somePattern();
         final AUG target = someAUG();
         final Collection<AUG> targets = Collections.singletonList(target);
-        final Instance instance = someInstance(pattern.getAUG(), target);
+        final Instance instance = someInstance(pattern, target);
         final Violation violation = new Violation(instance, 1);
 
         context.checking(new Expectations() {{
             oneOf(model).getPatterns(); will(returnValue(Collections.singleton(pattern)));
-            oneOf(instanceFinder).findInstances(target, pattern.getAUG()); will(returnValue(Collections.singletonList(instance)));
+            oneOf(instanceFinder).findInstances(target, pattern); will(returnValue(Collections.singletonList(instance)));
             oneOf(violationFactory).isViolation(instance); will(returnValue(true));
             oneOf(violationFactory).createViolation(instance); will(returnValue(violation));
         }});
@@ -58,11 +58,11 @@ public class MuDetectTest {
         final Pattern pattern = somePattern();
         final AUG target = someAUG();
         final Collection<AUG> targets = Collections.singletonList(target);
-        final Instance instance = someInstance(pattern.getAUG(), target);
+        final Instance instance = someInstance(pattern, target);
 
         context.checking(new Expectations() {{
             oneOf(model).getPatterns(); will(returnValue(Collections.singleton(pattern)));
-            oneOf(instanceFinder).findInstances(target, pattern.getAUG()); will(returnValue(Collections.singletonList(instance)));
+            oneOf(instanceFinder).findInstances(target, pattern); will(returnValue(Collections.singletonList(instance)));
             allowing(violationFactory).isViolation(with(any(Instance.class))); will(returnValue(false));
         }});
 
@@ -75,7 +75,7 @@ public class MuDetectTest {
     @Test
     public void ranksViolations() throws Exception {
         TestAUGBuilder builder = buildAUG().withActionNodes("a", "b");
-        final AUG pattern = builder.build();
+        final Pattern pattern = somePattern(builder);
         final AUG target = builder.build();
         final Collection<AUG> targets = Collections.singletonList(target);
         final Instance instance1 = buildInstance(builder, builder).withNode("a", "a").build();
@@ -84,7 +84,7 @@ public class MuDetectTest {
         final Violation violation2 = new Violation(instance2, 0.7f);
 
         context.checking(new Expectations() {{
-            oneOf(model).getPatterns(); will(returnValue(Collections.singleton(somePattern(pattern))));
+            oneOf(model).getPatterns(); will(returnValue(Collections.singleton(pattern)));
             oneOf(instanceFinder).findInstances(target, pattern); will(returnValue(Arrays.asList(instance2, instance1)));
             allowing(violationFactory).isViolation(instance1); will(returnValue(true));
             oneOf(violationFactory).createViolation(with(instance1)); will(returnValue(violation1));
@@ -101,7 +101,7 @@ public class MuDetectTest {
     @Test
     public void ranksViolationsWithSameConfidenceInAnyOrder() throws Exception {
         TestAUGBuilder builder = buildAUG().withActionNodes("a", "b");
-        final AUG pattern = builder.build();
+        final Pattern pattern = somePattern(builder);
         final AUG target = builder.build();
         final Collection<AUG> targets = Collections.singletonList(target);
         final Instance instance1 = buildInstance(builder, builder).withNode("a", "a").build();
@@ -110,7 +110,7 @@ public class MuDetectTest {
         final Violation violation2 = new Violation(instance2, 0.7f);
 
         context.checking(new Expectations() {{
-            oneOf(model).getPatterns(); will(returnValue(Collections.singleton(somePattern(pattern))));
+            oneOf(model).getPatterns(); will(returnValue(Collections.singleton(pattern)));
             oneOf(instanceFinder).findInstances(target, pattern); will(returnValue(Arrays.asList(instance2, instance1)));
             allowing(violationFactory).isViolation(instance1); will(returnValue(true));
             oneOf(violationFactory).createViolation(with(instance1)); will(returnValue(violation1));

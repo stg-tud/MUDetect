@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Pattern;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +15,7 @@ public class NoOverlapInstanceFinder implements InstanceFinder {
     }
 
     @Override
-    public List<Instance> findInstances(AUG target, AUG pattern) {
+    public List<Instance> findInstances(AUG target, Pattern pattern) {
         List<Instance> instances = finder.findInstances(target, pattern);
         if (instances.isEmpty()) {
             return Collections.singletonList(

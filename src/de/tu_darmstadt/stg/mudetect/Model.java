@@ -10,7 +10,7 @@ public interface Model {
     default int getMaxPatternSupport(int nodeCount) {
         int maxSupport = 0;
         for (Pattern pattern : getPatterns()) {
-            if (pattern.getNodeCount() == nodeCount) {
+            if (pattern.getNodeSize() == nodeCount) {
                 int support = pattern.getSupport();
                 if (support > maxSupport) {
                     maxSupport = support;

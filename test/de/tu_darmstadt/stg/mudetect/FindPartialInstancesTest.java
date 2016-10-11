@@ -2,17 +2,18 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.*;
-import static de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils.*;
+import static de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils.hasInstance;
+import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.extend;
 import static egroum.EGroumDataEdge.Type.*;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 public class FindPartialInstancesTest {
@@ -73,7 +74,7 @@ public class FindPartialInstancesTest {
     }
 
     private void assertFindsInstance(AUG pattern, AUG target, AUG expectedInstance) {
-        List<Instance> instances = new GreedyInstanceFinder().findInstances(target, pattern);
+        List<Instance> instances = new GreedyInstanceFinder().findInstances(target, new Pattern(pattern, 1));
 
         assertThat(instances, hasSize(1));
         assertThat(instances, hasInstance(expectedInstance));

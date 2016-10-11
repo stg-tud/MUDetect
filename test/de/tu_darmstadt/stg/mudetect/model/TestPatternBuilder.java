@@ -10,4 +10,8 @@ public class TestPatternBuilder {
     public static Pattern somePattern(AUG patternAUG) {
         return new Pattern(patternAUG, 1);
     }
+
+    public static Pattern somePattern(TestAUGBuilder builder) {
+        return somePattern(builder.build());
+    }
 }

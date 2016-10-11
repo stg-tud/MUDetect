@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils.hasInstance;
+import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static egroum.EGroumDataEdge.Type.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
@@ -98,7 +100,7 @@ public class FindCompleteInstancesTest {
     }
 
     private void assertFindsInstance(TestAUGBuilder builder) {
-        AUG pattern = builder.build();
+        Pattern pattern = somePattern(builder);
         AUG target = builder.build();
 
         List<Instance> instances = new GreedyInstanceFinder().findInstances(target, pattern);

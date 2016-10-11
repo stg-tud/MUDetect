@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Rule;
@@ -10,9 +11,9 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.someInstance;
+import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
@@ -23,7 +24,7 @@ public class NoOverlapInstanceFinderTest {
 
     @Test
     public void insertsNoOverlapInstanceIfNoOverlap() throws Exception {
-        AUG pattern = someAUG();
+        Pattern pattern = somePattern();
         AUG target = someAUG();
         InstanceFinder wrappedFinder = context.mock(InstanceFinder.class);
         context.checking(new Expectations() {{
@@ -41,7 +42,7 @@ public class NoOverlapInstanceFinderTest {
     @Test
     public void returnsOriginalInstancesIfAny() throws Exception {
         Instance instance = someInstance();
-        AUG pattern = instance.getPattern();
+        Pattern pattern = instance.getPattern();
         AUG target = instance.getTarget();
         InstanceFinder wrappedFinder = context.mock(InstanceFinder.class);
         context.checking(new Expectations() {{

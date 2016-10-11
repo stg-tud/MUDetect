@@ -128,7 +128,7 @@ public class CalculateViolationConfidenceTest {
         }
 
         private float getPatternSupportWeight(Pattern pattern, Model model) {
-            return pattern.getSupport() / (float) model.getMaxPatternSupport(pattern.getNodeCount());
+            return pattern.getSupport() / (float) model.getMaxPatternSupport(pattern.getNodeSize());
         }
 
         private float getOverlapWeight(Instance violation) {

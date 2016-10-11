@@ -11,6 +11,7 @@ public class Instance {
     private final DirectedSubgraph<EGroumNode, EGroumEdge> patternOverlap;
     private final DirectedSubgraph<EGroumNode, EGroumEdge> targetOverlap;
     private final Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
+    private final Pattern pattern;
 
     /**
      * Use for testing only.
@@ -18,6 +19,7 @@ public class Instance {
      * TODO move this to the test instance builder
      */
     public Instance(AUG pattern, Set<EGroumNode> vertexSubset, Set<EGroumEdge> edgeSubset) {
+        this.pattern = new Pattern(pattern, 1);
         patternOverlap = new DirectedSubgraph<>(pattern, vertexSubset, edgeSubset);
         targetOverlap = patternOverlap;
         for (EGroumNode node : vertexSubset) {
@@ -25,21 +27,23 @@ public class Instance {
         }
     }
 
-    public Instance(AUG pattern, AUG target, Map<EGroumNode, EGroumNode> targetNodeByPatternNode,
+    public Instance(Pattern pattern, AUG target, Map<EGroumNode, EGroumNode> targetNodeByPatternNode,
                     Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge) {
+        this.pattern = pattern;
+
         final Set<EGroumNode> targetNodeSet = new HashSet<>(targetNodeByPatternNode.values());
         final Set<EGroumEdge> targetEdgeSet = new HashSet<>(targetEdgeByPatternEdge.values());
         targetOverlap = new DirectedSubgraph<>(target, targetNodeSet, targetEdgeSet);
 
         final Set<EGroumNode> patternNodeSet = targetNodeByPatternNode.keySet();
         final Set<EGroumEdge> patternEdgeSet = targetEdgeByPatternEdge.keySet();
-        patternOverlap = new DirectedSubgraph<>(pattern, patternNodeSet, patternEdgeSet);
+        patternOverlap = new DirectedSubgraph<>(pattern.getAUG(), patternNodeSet, patternEdgeSet);
 
         this.targetNodeByPatternNode.putAll(targetNodeByPatternNode);
     }
 
-    public AUG getPattern() {
-        return (AUG) patternOverlap.getBase();
+    public Pattern getPattern() {
+        return pattern;
     }
 
     boolean mapsPatternNode(EGroumNode patternNode) {

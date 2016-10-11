@@ -2,11 +2,13 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.emptyInstance;
+import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static egroum.EGroumDataEdge.Type.ORDER;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
@@ -14,7 +16,7 @@ import static org.junit.Assert.assertThat;
 public class GenerateTargetDotGraphTest {
     @Test
     public void includesTargetOnlyNode() throws Exception {
-        AUG pattern = buildAUG().build();
+        Pattern pattern = somePattern(buildAUG());
         AUG target = buildAUG().withActionNode(":action:").build();
         Violation violation = new Violation(emptyInstance(pattern, target), 1);
 
@@ -24,7 +26,7 @@ public class GenerateTargetDotGraphTest {
 
     @Test
     public void includesTargetOnlyEdge() throws Exception {
-        AUG pattern = buildAUG().build();
+        Pattern pattern = somePattern(buildAUG());
         AUG target = buildAUG(":G:").withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
         Violation violation = new Violation(emptyInstance(pattern, target), 1);
 

@@ -17,7 +17,11 @@ public class Pattern {
         return support;
     }
 
-    public int getNodeCount() {
+    public int getNodeSize() {
         return aug.vertexSet().size();
+    }
+
+    public int getEdgeSize() {
+        return aug.edgeSet().size();
     }
 }

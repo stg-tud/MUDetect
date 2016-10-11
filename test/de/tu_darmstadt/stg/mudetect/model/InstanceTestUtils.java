@@ -42,4 +42,8 @@ public class InstanceTestUtils {
     public static Matcher<Iterable<Instance>> hasInstance(AUG aug) {
         return hasItems(new Instance(aug, aug.vertexSet(), aug.edgeSet()));
     }
+
+    public static Matcher<Iterable<Instance>> hasInstance(Pattern pattern) {
+        return hasInstance(pattern.getAUG());
+    }
 }
