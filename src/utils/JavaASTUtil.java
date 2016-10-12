@@ -202,48 +202,13 @@ public class JavaASTUtil {
 		throw new UnsupportedOperationException("Get type of a declaration!!!");
 	}
 
-	public static String getCompactType(Type type) {
-		if (type.isArrayType()) {
-			ArrayType t = (ArrayType) type;
-			return getCompactType(t.getComponentType()) + "[]";
-		} else if (type.isParameterizedType()) {
-			ParameterizedType t = (ParameterizedType) type;
-			return getCompactType(t.getType());
-		} else if (type.isPrimitiveType()) {
-			String pt = type.toString();
-			if (pt.equals("byte") || pt.equals("short") || pt.equals("int") || pt.equals("long") 
-					|| pt.equals("float") || pt.equals("double"))
-				return "number";
-			return pt;
-		} else if (type.isQualifiedType()) {
-			QualifiedType t = (QualifiedType) type;
-			return getCompactType(t.getQualifier()) + "." + t.getName().getIdentifier();
-		} else if (type.isSimpleType()) {
-			String pt = type.toString();
-			if (pt.equals("Byte") || pt.equals("Short") || pt.equals("Integer") || pt.equals("Long") 
-					|| pt.equals("Float") || pt.equals("Double"))
-				return "number";
-			return pt;
-		} else if (type.isUnionType()) {
-			UnionType ut = (UnionType) type;
-			String s = getCompactType((Type) ut.types().get(0));
-			for (int i = 1; i < ut.types().size(); i++)
-				s += "|" + getCompactType((Type) ut.types().get(i));
-			return s;
-		} else if (type.isWildcardType()) {
-			//WildcardType t = (WildcardType) type;
-			System.err.println("ERROR: Declare a variable with wildcard type!!!");
-			System.exit(0);
-		}
-		System.err.println("ERROR: Declare a variable with unknown type!!!");
-		System.exit(0);
-		return null;
-	}
-
 	public static String getSimpleType(Type type) {
 		if (type.isArrayType()) {
 			ArrayType t = (ArrayType) type;
-			return getSimpleType(t.getComponentType()) + "[]";
+			String pt = getSimpleType(t.getElementType());
+			for (int i = 0; i < t.getDimensions(); i++)
+				pt += "[]";
+			return pt;
 			//return type.toString();
 		} else if (type.isParameterizedType()) {
 			ParameterizedType t = (ParameterizedType) type;
@@ -279,40 +244,13 @@ public class JavaASTUtil {
 		return null;
 	}
 
-	public static String getQualifiedType(Type type) {
-		if (type.isArrayType()) {
-			ArrayType t = (ArrayType) type;
-			return getQualifiedType(t.getComponentType()) + "[]";
-			//return type.toString();
-		} else if (type.isParameterizedType()) {
-			ParameterizedType t = (ParameterizedType) type;
-			return getQualifiedType(t.getType());
-		} else if (type.isPrimitiveType()) {
-			return type.toString();
-		} else if (type.isQualifiedType()) {
-			return type.toString();
-		} else if (type.isSimpleType()) {
-			return type.toString();
-		} else if (type.isUnionType()) {
-			UnionType ut = (UnionType) type;
-			String s = getQualifiedType((Type) ut.types().get(0));
-			for (int i = 1; i < ut.types().size(); i++)
-				s += "|" + getQualifiedType((Type) ut.types().get(i));
-			return s;
-		} else if (type.isWildcardType()) {
-			//WildcardType t = (WildcardType) type;
-			System.err.println("ERROR: Declare a variable with wildcard type!!!");
-			System.exit(0);
-		}
-		System.err.println("ERROR: Declare a variable with unknown type!!!");
-		System.exit(0);
-		return null;
-	}
-
 	public static String getSimpleType(Type type, HashSet<String> typeParameters) {
 		if (type.isArrayType()) {
 			ArrayType t = (ArrayType) type;
-			return getSimpleType(t.getComponentType(), typeParameters) + "[]";
+			String pt = getSimpleType(t.getElementType(), typeParameters);
+			for (int i = 0; i < t.getDimensions(); i++)
+				pt += "[]";
+			return pt;
 			//return type.toString();
 		} else if (type.isParameterizedType()) {
 			ParameterizedType t = (ParameterizedType) type;
