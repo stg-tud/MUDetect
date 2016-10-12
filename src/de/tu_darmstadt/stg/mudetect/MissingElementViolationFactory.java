@@ -1,9 +1,7 @@
 package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Instance;
 import de.tu_darmstadt.stg.mudetect.model.Pattern;
-import de.tu_darmstadt.stg.mudetect.model.Violation;
 
 public class MissingElementViolationFactory implements ViolationFactory {
     @Override
@@ -13,8 +11,4 @@ public class MissingElementViolationFactory implements ViolationFactory {
                 instance.getEdgeSize() < pattern.getEdgeSize();
     }
 
-    @Override
-    public Violation createViolation(Instance instance) {
-        return new Violation(instance, -1);
-    }
 }
