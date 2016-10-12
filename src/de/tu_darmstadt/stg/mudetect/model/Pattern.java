@@ -1,14 +1,25 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+import egroum.EGroumNode;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class Pattern {
     private final AUG aug;
     private int support;
+    private final Map<EGroumNode, Multiset<String>> literals;
 
     public Pattern(AUG aug, int support) {
+        this(aug, support, new HashMap<>());
+    }
+    public Pattern(AUG aug, int support, Map<EGroumNode, Multiset<String>> literals) {
         this.aug = aug;
         this.support = support;
+        this.literals = literals;
     }
 
     public AUG getAUG() {
@@ -47,5 +58,9 @@ public class Pattern {
                 "aug=" + aug +
                 ", support=" + support +
                 '}';
+    }
+
+    public Multiset<String> getLiterals(EGroumNode node) {
+        return literals.getOrDefault(node, HashMultiset.create());
     }
 }

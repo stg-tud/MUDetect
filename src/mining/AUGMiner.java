@@ -1,5 +1,7 @@
 package mining;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import egroum.*;
 
@@ -90,6 +92,20 @@ public class AUGMiner {
         EGroumGraph graph = f.getGraph();
 
         AUG aug = new AUG(AUGBuilder.getMethodSignature(graph), graph.getFilePath());
+        Map<EGroumNode, Multiset<String>> literals = new HashMap<>();
+        List<EGroumNode> nodes = f.getNodes();
+        for (int i = 0; i < nodes.size(); i++) {
+            EGroumNode node = nodes.get(i);
+            aug.addVertex(node);
+
+            if (node instanceof EGroumDataNode) {
+                HashMultiset<String> lits = HashMultiset.create();
+                for (Fragment fragment : pattern.getFragments()) {
+                    lits.add(fragment.getNodes().get(i).getDataName());
+                }
+                literals.put(node, lits);
+            }
+        }
         for (EGroumNode node : f.getNodes()) {
             aug.addVertex(node);
         }
@@ -100,6 +116,6 @@ public class AUGMiner {
             }
         }
 
-        return new de.tu_darmstadt.stg.mudetect.model.Pattern(aug, pattern.getFreq());
+        return new de.tu_darmstadt.stg.mudetect.model.Pattern(aug, pattern.getFreq(), literals);
     }
 }
