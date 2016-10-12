@@ -1,5 +1,6 @@
 package mining;
 
+import de.tu_darmstadt.stg.mudetect.model.AUG;
 import egroum.EGroumGraph;
 import org.junit.Test;
 
@@ -8,6 +9,7 @@ import java.util.Set;
 
 import static de.tu_darmstadt.stg.mudetect.model.PatternTestUtils.isPattern;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
+import static egroum.EGroumDataEdge.Type;
 import static egroum.EGroumTestUtils.buildGroumsForClass;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
@@ -23,5 +25,19 @@ public class AUGMinerTest {
         Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = new AUGMiner(2, 1).mine(groums);
 
         assertThat(patterns, contains(isPattern(buildAUG().withActionNode("C.foo()"), 2)));
+    }
+
+    @Test
+    public void findsDataNode() throws Exception {
+        List<EGroumGraph> groums = buildGroumsForClass("class A {" +
+                "  void m(C c) { c.foo(\"literal\"); }" +
+                "  void n(C c) { c.foo(\"literal\"); }" +
+                "}");
+
+        Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = new AUGMiner(2, 1).mine(groums);
+
+        AUG patternAUG = buildAUG().withActionNode("C.foo()").withDataNode("String")
+                .withDataEdge("String", Type.PARAMETER, "C.foo()").build();
+        assertThat(patterns, contains(isPattern(patternAUG, 2)));
     }
 }
