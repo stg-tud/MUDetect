@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.InfixExpression;
-
 import egroum.EGroumDataEdge.Type;
 import utils.JavaASTUtil;
 

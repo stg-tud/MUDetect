@@ -478,14 +478,14 @@ public class EGroumGraph implements Serializable {
 			TryStatement astNode) {
 		context.pushTry();
 		context.addScope();
-		List resources = astNode.resources();
+		List<?> resources = astNode.resources();
 		HashSet<String> resourceNames = new HashSet<>();
 		EGroumGraph pdg = null;
 		if (resources != null && !resources.isEmpty()) {
 			pdg = buildPDG(control, branch, resources);
 			for (int i = 0; i < resources.size(); i++) {
 				VariableDeclarationExpression res = (VariableDeclarationExpression) resources.get(i);
-				List fragments = res.fragments();
+				List<?> fragments = res.fragments();
 				for (int j = 0; j < fragments.size(); j++) {
 					VariableDeclarationFragment f = (VariableDeclarationFragment) fragments.get(j);
 					SimpleName name = f.getName();

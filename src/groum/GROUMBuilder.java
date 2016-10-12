@@ -71,7 +71,7 @@ public class GROUMBuilder {
 	    		charCount = content.indexOf("\n", charCount);
 	    	} while (charCount > -1);
 			
-			ASTParser parser = ASTParser.newParser(AST.JLS3);
+			ASTParser parser = ASTParser.newParser(AST.JLS4);
 			parser.setSource(content.toCharArray());
 			//parser.setBindingsRecovery(true);
 			//parser.setResolveBindings(true);

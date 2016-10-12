@@ -5,16 +5,13 @@ import static org.junit.Assert.assertThat;
 
 import java.util.*;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 
 import egroum.EGroumBuilder;
-import egroum.EGroumEdge;
 import egroum.EGroumGraph;
 import egroum.EGroumNode;
-import utils.FileIO;
 
 public class MinerTest {
 

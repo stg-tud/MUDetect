@@ -18,6 +18,7 @@ public class TypeResolveVisitor extends ASTVisitor {
 		File file = new File("src/main/Mine.java");
 		String name = file.getName();
 		String source = FileIO.readStringFromFile(file.getAbsolutePath());
+		@SuppressWarnings("rawtypes")
 		Map options = JavaCore.getOptions();
 		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_7);
 		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_7);

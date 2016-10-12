@@ -138,8 +138,8 @@ public class EGroumBuilder {
 		HashSet<String> exceptions = methodExceptions.get(name);
 		if (exceptions == null)
 			exceptions = new HashSet<>();
-		for (int i = 0; i < method.thrownExceptions().size(); i++)
-			exceptions.add(JavaASTUtil.getSimpleName((Name)method.thrownExceptions().get(i)));
+		for (int i = 0; i < method.thrownExceptionTypes().size(); i++)
+			exceptions.add(JavaASTUtil.getSimpleType((org.eclipse.jdt.core.dom.Type)method.thrownExceptionTypes().get(i)));
 		if (!exceptions.isEmpty())
 			methodExceptions.put(name, exceptions);
 	}

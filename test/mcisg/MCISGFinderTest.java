@@ -5,7 +5,6 @@ import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -109,6 +108,7 @@ public class MCISGFinderTest {
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private ArrayList<EGroumGraph> buildGroumsFromFile(String path) {
 		return new EGroumBuilder().build(path);
 	}
@@ -143,6 +143,7 @@ public class MCISGFinderTest {
 		return matcher.match(groums);
 	}
 	
+	@SuppressWarnings("unused")
 	private void print(Pattern pattern) {
 		print(Arrays.asList(pattern));
 	}
