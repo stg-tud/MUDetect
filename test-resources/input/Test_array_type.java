@@ -1,6 +1,6 @@
 package input;
 
-class Test_finally extends BufferedIndexOutput {
+class Test_array_type extends BufferedIndexOutput {
 	
 	void m1() {
 		int[] a = new int[2];
