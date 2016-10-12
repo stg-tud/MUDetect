@@ -1,21 +1,19 @@
 package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
 
-import java.util.HashSet;
-
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
-import static egroum.EGroumDataEdge.Type.*;
+import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.buildInstance;
+import static egroum.EGroumDataEdge.Type.ORDER;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class MissingElementViolationFactoryTest {
     @Test
     public void fullInstance() throws Exception {
-        AUG patternAUG = buildAUG().withActionNode(":action:").build();
-        Instance instance = new Instance(patternAUG, patternAUG.vertexSet(), patternAUG.edgeSet());
+        Instance instance = buildInstance(buildAUG().withActionNode(":action:")).withNode(":action:").build();
 
         ViolationFactory strategy = new MissingElementViolationFactory();
         assertFalse(strategy.isViolation(instance));
@@ -23,8 +21,7 @@ public class MissingElementViolationFactoryTest {
 
     @Test
     public void missingNode() throws Exception {
-        AUG patternAUG = buildAUG().withActionNode(":action:").build();
-        Instance instance = new Instance(patternAUG, new HashSet<>(), new HashSet<>());
+        Instance instance = buildInstance(buildAUG().withActionNode(":action:")).build();
 
         MissingElementViolationFactory strategy = new MissingElementViolationFactory();
         assertTrue(strategy.isViolation(instance));
@@ -32,8 +29,8 @@ public class MissingElementViolationFactoryTest {
 
     @Test
     public void missingEdge() throws Exception {
-        AUG patternAUG = buildAUG().withActionNodes(":a1:", ":a2:").withDataEdge(":a1:", ORDER, ":a2:").build();
-        Instance instance = new Instance(patternAUG, patternAUG.vertexSet(), new HashSet<>());
+        final TestAUGBuilder builder = buildAUG().withActionNodes(":a1:", ":a2:").withDataEdge(":a1:", ORDER, ":a2:");
+        Instance instance = buildInstance(builder).withNode(":a1:").withNode(":a2:").build();
 
         MissingElementViolationFactory strategy = new MissingElementViolationFactory();
         assertTrue(strategy.isViolation(instance));

@@ -29,6 +29,10 @@ public class TestInstanceBuilder {
         return new TestInstanceBuilder(targetAUGBuilder, patternAUGBuilder);
     }
 
+    public static TestInstanceBuilder buildInstance(TestAUGBuilder targetAndPatternAUGBuilder) {
+        return buildInstance(targetAndPatternAUGBuilder, targetAndPatternAUGBuilder);
+    }
+
     private final TestAUGBuilder targetAUGBuilder;
     private final TestAUGBuilder patternAUGBuilder;
     private final Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
@@ -37,6 +41,10 @@ public class TestInstanceBuilder {
     private TestInstanceBuilder(TestAUGBuilder targetAUGBuilder, TestAUGBuilder patternAUGBuilder) {
         this.targetAUGBuilder = targetAUGBuilder;
         this.patternAUGBuilder = patternAUGBuilder;
+    }
+
+    public TestInstanceBuilder withNode(String targetAndPatternNodeId) {
+        return withNode(targetAndPatternNodeId, targetAndPatternNodeId);
     }
 
     public TestInstanceBuilder withNode(String targetNodeId, String patternNodeId) {
