@@ -26,7 +26,7 @@ public class MuDetectRunner extends MuBenchRunner {
         run(new MuDetect(
                 new ProvidedPatternsModel(buildGroums(patternPath)),
                 new NoOverlapInstanceFinder(new GreedyInstanceFinder()),
-                new MissingElementViolationFactory(),
+                new EverythingViolationFactory(),
                 new NoRankingStrategy()),
                 targetPath, output);
     }
