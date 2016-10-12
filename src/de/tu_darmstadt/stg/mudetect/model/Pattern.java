@@ -40,4 +40,12 @@ public class Pattern {
     public int hashCode() {
         return Objects.hash(aug, support);
     }
+
+    @Override
+    public String toString() {
+        return "Pattern{" +
+                "aug=" + aug +
+                ", support=" + support +
+                '}';
+    }
 }
