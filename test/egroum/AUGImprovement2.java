@@ -44,4 +44,8 @@ public class AUGImprovement2 {
         
     }
 
+    @Test
+    public void arrayType() throws Exception {
+        EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_array_type.java", "aug-improvement");
+    }
 }

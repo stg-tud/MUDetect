@@ -1528,8 +1528,11 @@ public class EGroumGraph implements Serializable {
 			pgs[i] = buildArgumentPDG(control, branch,
 					(Expression) astNode.expressions().get(i));
 		}
+		String type = "";
+		if (astNode.resolveTypeBinding() != null)
+			type = astNode.resolveTypeBinding().getElementType().getName();
 		EGroumNode node = new EGroumActionNode(control, branch, astNode, astNode.getNodeType(),
-				null, "{}", "{}");
+				null, "{" + type + "}", "{" + type + "}");
 		if (pgs.length > 0) {
 			for (EGroumGraph pg : pgs)
 				pg.mergeSequentialData(node, Type.PARAMETER);
@@ -1549,8 +1552,9 @@ public class EGroumGraph implements Serializable {
 		for (int i = 0; i < astNode.dimensions().size(); i++)
 			pgs[i] = buildArgumentPDG(control, branch,
 					(Expression) astNode.dimensions().get(i));
+		String type = JavaASTUtil.getSimpleType(astNode.getType().getElementType());
 		EGroumNode node = new EGroumActionNode(control, branch,
-				astNode, astNode.getNodeType(), null, "{}", "<init>");
+				astNode, astNode.getNodeType(), null, "{" + type + "}", "{" + type + "}");
 		if (pgs.length > 0) {
 			for (EGroumGraph pg : pgs)
 				pg.mergeSequentialData(node, Type.PARAMETER);
