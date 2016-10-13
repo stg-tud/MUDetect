@@ -108,6 +108,6 @@ public class CalculateViolationConfidenceTest {
 
     @SafeVarargs
     private static <T> Set<T> asSet(T... elements) {
-        return new HashSet<T>(Arrays.asList(elements));
+        return new HashSet<>(Arrays.asList(elements));
     }
 }
