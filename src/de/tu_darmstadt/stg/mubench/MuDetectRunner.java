@@ -14,6 +14,7 @@ import egroum.EGroumGraph;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
 public class MuDetectRunner extends MuBenchRunner {
 
@@ -23,26 +24,59 @@ public class MuDetectRunner extends MuBenchRunner {
 
     @Override
     protected void detectOnly(CodePath patternPath, CodePath targetPath, DetectorOutput output) throws Exception {
-        run(new MuDetect(
-                new ProvidedPatternsModel(buildGroums(patternPath)),
+        run(patternPath,
+                ProvidedPatternsModel::new,
+                targetPath,
                 new NoOverlapInstanceFinder(new GreedyInstanceFinder()),
                 new EverythingViolationFactory(),
-                new NoRankingStrategy()),
-                targetPath, output);
+                new NoRankingStrategy(),
+                output);
     }
 
     @Override
     protected void mineAndDetect(CodePath trainingAndTargetPath, DetectorOutput output) throws Exception {
-        run(new MuDetect(
-                new MinedPatternsModel(10, 1, buildGroums(trainingAndTargetPath)),
+        run(trainingAndTargetPath,
+                groums -> new MinedPatternsModel(10, 1, groums),
+                trainingAndTargetPath,
                 new GreedyInstanceFinder(new InstanceSizePredicate(0.5)),
                 new MissingElementViolationFactory(),
-                new ConfidenceViolationRankingStrategy(new SupportConfidenceCalculator(1, 1, 1))),
-                trainingAndTargetPath, output);
+                new ConfidenceViolationRankingStrategy(new SupportConfidenceCalculator(1, 1, 1)),
+                output);
     }
 
-    private void run(MuDetect detector, CodePath targetPath, DetectorOutput output) {
-        report(detector.findViolations(buildAUGs(targetPath)), output);
+    private void run(CodePath trainingPath,
+                     Function<Collection<EGroumGraph>, Model> loadModel,
+                     CodePath targetPath,
+                     InstanceFinder instanceFinder,
+                     ViolationFactory violationFactory,
+                     ViolationRankingStrategy rankingStrategy,
+                     DetectorOutput output) {
+
+        long startTime = System.currentTimeMillis();
+        Collection<EGroumGraph> groums = buildGroums(trainingPath);
+        long endTrainingLoadTime = System.currentTimeMillis();
+        output.addRunInformation("trainingLoadTime", Long.toString(endTrainingLoadTime - startTime));
+        output.addRunInformation("numberOfTrainingExamples", Integer.toString(groums.size()));
+
+        Model model = loadModel.apply(groums);
+        long endTrainingTime = System.currentTimeMillis();
+        output.addRunInformation("trainingTime", Long.toString(endTrainingTime - endTrainingLoadTime));
+        output.addRunInformation("numberOfPatterns", Integer.toString(model.getPatterns().size()));
+
+        Collection<AUG> targets = buildAUGs(targetPath);
+        long endDetectionLoadTime = System.currentTimeMillis();
+        output.addRunInformation("detectionLoadTime", Long.toString(endDetectionLoadTime - endTrainingTime));
+        output.addRunInformation("numberOfTargets", Integer.toString(targets.size()));
+
+        MuDetect detector = new MuDetect(model, instanceFinder, violationFactory, rankingStrategy);
+        List<Violation> violations = detector.findViolations(targets);
+        long endDetectionTime = System.currentTimeMillis();
+        output.addRunInformation("detectionTime", Long.toString(endDetectionTime - endDetectionLoadTime));
+        output.addRunInformation("numberOfViolations", Integer.toString(violations.size()));
+
+        report(violations, output);
+        long endReportingTime = System.currentTimeMillis();
+        output.addRunInformation("reportingTime", Long.toString(endReportingTime - endDetectionTime));
     }
 
     private Collection<EGroumGraph> buildGroums(CodePath path) {
