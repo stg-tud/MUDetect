@@ -23,7 +23,7 @@ public class Instance {
 
         final Set<EGroumNode> patternNodeSet = targetNodeByPatternNode.keySet();
         final Set<EGroumEdge> patternEdgeSet = targetEdgeByPatternEdge.keySet();
-        patternOverlap = new DirectedSubgraph<>(pattern.getAUG(), patternNodeSet, patternEdgeSet);
+        patternOverlap = new DirectedSubgraph<>(pattern, patternNodeSet, patternEdgeSet);
 
         this.targetNodeByPatternNode.putAll(targetNodeByPatternNode);
     }

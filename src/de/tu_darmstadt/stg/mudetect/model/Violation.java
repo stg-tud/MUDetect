@@ -129,7 +129,7 @@ public class Violation implements Comparable<Violation> {
         nodeIdProvider.clear();
         violationDotExporter.export(
                 new GraphNameCorrectingPrintWriter(writer, instance),
-                instance.getPattern().getAUG());
+                instance.getPattern());
     }
 
     public String toTargetDotGraph() {

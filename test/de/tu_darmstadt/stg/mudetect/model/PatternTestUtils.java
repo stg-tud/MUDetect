@@ -20,7 +20,7 @@ public class PatternTestUtils {
                 if (item instanceof Pattern) {
                     Pattern actual = (Pattern) item;
                     return support == actual.getSupport() &&
-                            augMatcher.matches(actual.getAUG());
+                            augMatcher.matches(actual);
                 }
                 return false;
             }

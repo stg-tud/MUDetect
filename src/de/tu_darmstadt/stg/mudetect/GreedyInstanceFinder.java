@@ -76,7 +76,7 @@ public class GreedyInstanceFinder implements InstanceFinder {
 
     @Override
     public List<Instance> findInstances(AUG target, Pattern pattern) {
-        WorkQueue nodesToCover = getCommonNodesToCover(target, pattern.getAUG());
+        WorkQueue nodesToCover = getCommonNodesToCover(target, pattern);
         List<Instance> instances = new ArrayList<>();
         while (nodesToCover.hasNext()) {
             WorkItem item = nodesToCover.poll();
@@ -143,7 +143,7 @@ public class GreedyInstanceFinder implements InstanceFinder {
 
     private boolean tryExtend(InstanceBuilder builder, EGroumNode targetNode, EGroumNode patternNode) {
         final AUG target = builder.getTarget();
-        final AUG pattern = builder.getPattern().getAUG();
+        final AUG pattern = builder.getPattern();
 
         if (patternNode.isInfixOperator()) {
             Equation targetEquation = Equation.from(targetNode, target);

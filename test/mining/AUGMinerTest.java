@@ -57,7 +57,7 @@ public class AUGMinerTest {
         Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = new AUGMiner(2, 1).mine(groums);
 
         Pattern pattern = first(patterns);
-        assertThat(pattern.getLiterals(node("String", pattern.getAUG())), contains("l1", "l2"));
+        assertThat(pattern.getLiterals(node("String", pattern)), contains("l1", "l2"));
     }
 
     private EGroumNode node(String label, AUG aug) {

@@ -9,31 +9,17 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Pattern extends AUG {
-    private final AUG aug;
     private int support;
     private final Map<EGroumNode, Multiset<String>> literals;
 
     public Pattern(int support) {
         super("pattern", "model");
-        this.aug = this;
         this.support = support;
         this.literals = new HashMap<>();
     }
 
-    public AUG getAUG() {
-        return aug;
-    }
-
     public int getSupport() {
         return support;
-    }
-
-    public int getNodeSize() {
-        return aug.vertexSet().size();
-    }
-
-    public int getEdgeSize() {
-        return aug.edgeSet().size();
     }
 
     @Override
@@ -54,7 +40,7 @@ public class Pattern extends AUG {
     @Override
     public String toString() {
         return "Pattern{" +
-                "aug=" + aug +
+                "aug=" + super.toString() +
                 ", support=" + support +
                 '}';
     }
