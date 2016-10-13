@@ -19,9 +19,6 @@ import egroum.EGroumEdge;
 import egroum.EGroumEntryNode;
 import egroum.EGroumGraph;
 import egroum.EGroumNode;
-import groum.GROUMEdge;
-import groum.GROUMGraph;
-import groum.GROUMNode;
 
 public class DotGraph {
 	public static final String SHAPE_BOX = "box";
@@ -266,50 +263,6 @@ public class DotGraph {
 						graph.append(addEdge(sId, tId, null, null, label));
 				} else
 					graph.append(addEdge(sId, tId, null, null, label));
-			}
-		}
-
-		graph.append(addEnd());
-	}
-	
-	public DotGraph(GROUMGraph groum) {
-		graph.append(addStart(groum.getName()));
-
-		HashMap<GROUMNode, Integer> ids = new HashMap<GROUMNode, Integer>();
-		// add nodes
-		int id = 0;
-		for(GROUMNode node : groum.getNodes())
-		{
-			id++;
-			ids.put(node, id);
-			String label = node.getLabel();
-			/*if(node.getType() == GROUMNode.TYPE_ENTRY)
-				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getMethodID()), SHAPE_DIAMOND, null, null, null));
-				graph.append(addNode(id, node.getLabel(), SHAPE_ELLIPSE, null, null, null));
-			else */if(node.getType() == GROUMNode.TYPE_CONTROL)
-				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getMethodID()), SHAPE_DIAMOND, null, null, null));
-				graph.append(addNode(id, label, SHAPE_DIAMOND, null, null, null));
-			/*else if(node.getType() == GROUMNode.TYPE_DATA)
-				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getClassNameId()) + "." + node.getMethod(), SHAPE_BOX, STYLE_ROUNDED, null, null));
-				graph.append(addNode(id, node.getLabel(), SHAPE_BOX, null, null, null));*/
-			else if(node.getType() == GROUMNode.TYPE_METHOD)
-				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getClassNameId()) + "." + node.getMethod(), SHAPE_BOX, STYLE_ROUNDED, null, null));
-				graph.append(addNode(id, label, SHAPE_BOX, null, null, null));
-			else
-				//graph.append(addNode(id, GROUMNode.labelOfID.get(node.getMethodID()), SHAPE_DIAMOND, null, null, null));
-				graph.append(addNode(id, label, SHAPE_ELLIPSE, null, null, null));
-		}
-		// add file name
-		//String fileName = GROUMNode.fileNames.get(groum.getFileID());
-		//graph.append(addNode(++id, fileName.replace('\\', '#'), DotGraph.STYLE_ROUNDED, null, null, null));
-		// add edges
-		for(GROUMNode node : groum.getNodes())
-		{
-			int sId = ids.get(node);
-			for(GROUMEdge out : node.getOutEdges())
-			{
-				int eId = ids.get(out.getDest());
-				graph.append(addEdge(sId, eId, null, null, out.getLabel()));
 			}
 		}
 
