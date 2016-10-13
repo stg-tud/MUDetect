@@ -1,6 +1,7 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.Pattern;
+import de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -38,6 +39,6 @@ public class ModelTest {
         for (int i = 0; i < nodeCount; i++) {
             nodeNames[i] = Integer.toString(i);
         }
-        return new Pattern(buildAUG().withActionNodes(nodeNames).build(), support);
+        return TestPatternBuilder.somePattern(buildAUG().withActionNodes(nodeNames), support);
     }
 }

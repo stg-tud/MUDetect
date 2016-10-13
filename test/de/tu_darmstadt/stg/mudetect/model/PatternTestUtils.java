@@ -5,6 +5,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.isEqual;
+import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 
 public class PatternTestUtils {
     public static Matcher<Pattern> isPattern(TestAUGBuilder builder, int support) {
@@ -26,7 +27,7 @@ public class PatternTestUtils {
 
             @Override
             public void describeTo(Description description) {
-                description.appendValue(new Pattern(aug, support));
+                description.appendValue(somePattern(aug, support));
             }
         };
     }

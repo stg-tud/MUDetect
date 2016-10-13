@@ -8,18 +8,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class Pattern {
+public class Pattern extends AUG {
     private final AUG aug;
     private int support;
     private final Map<EGroumNode, Multiset<String>> literals;
 
-    public Pattern(AUG aug, int support) {
-        this(aug, support, new HashMap<>());
-    }
-    public Pattern(AUG aug, int support, Map<EGroumNode, Multiset<String>> literals) {
-        this.aug = aug;
+    public Pattern(int support) {
+        super("pattern", "model");
+        this.aug = this;
         this.support = support;
-        this.literals = literals;
+        this.literals = new HashMap<>();
     }
 
     public AUG getAUG() {
@@ -42,14 +40,15 @@ public class Pattern {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         Pattern pattern = (Pattern) o;
         return support == pattern.support &&
-                Objects.equals(aug, pattern.aug);
+                Objects.equals(literals, pattern.literals);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(aug, support);
+        return Objects.hash(super.hashCode(), support, literals);
     }
 
     @Override
@@ -58,6 +57,13 @@ public class Pattern {
                 "aug=" + aug +
                 ", support=" + support +
                 '}';
+    }
+
+    public void addLiteral(EGroumNode node, String literal) {
+        if (!literals.containsKey(node)) {
+            literals.put(node, HashMultiset.create());
+        }
+        literals.get(node).add(literal);
     }
 
     public Multiset<String> getLiterals(EGroumNode node) {

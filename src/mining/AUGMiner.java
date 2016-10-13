@@ -1,8 +1,5 @@
 package mining;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
-import de.tu_darmstadt.stg.mudetect.model.AUG;
 import egroum.*;
 
 import java.io.IOException;
@@ -88,34 +85,31 @@ public class AUGMiner {
     }
 
     private static de.tu_darmstadt.stg.mudetect.model.Pattern toAUGPattern(Pattern pattern) {
-        Fragment f = pattern.getRepresentative();
-        EGroumGraph graph = f.getGraph();
+        de.tu_darmstadt.stg.mudetect.model.Pattern augPattern =
+                new de.tu_darmstadt.stg.mudetect.model.Pattern(pattern.getFreq());
 
-        AUG aug = new AUG(AUGBuilder.getMethodSignature(graph), graph.getFilePath());
-        Map<EGroumNode, Multiset<String>> literals = new HashMap<>();
+        Fragment f = pattern.getRepresentative();
         List<EGroumNode> nodes = f.getNodes();
         for (int i = 0; i < nodes.size(); i++) {
             EGroumNode node = nodes.get(i);
-            aug.addVertex(node);
+            augPattern.addVertex(node);
 
             if (node instanceof EGroumDataNode) {
-                HashMultiset<String> lits = HashMultiset.create();
                 for (Fragment fragment : pattern.getFragments()) {
-                    lits.add(fragment.getNodes().get(i).getDataName());
+                    augPattern.addLiteral(node, fragment.getNodes().get(i).getDataName());
                 }
-                literals.put(node, lits);
             }
         }
         for (EGroumNode node : f.getNodes()) {
-            aug.addVertex(node);
+            augPattern.addVertex(node);
         }
         for (EGroumNode node : f.getNodes()) {
             for (EGroumEdge e : node.getInEdges()) {
                 if (f.getNodes().contains(e.getSource()))
-                    aug.addEdge(e.getSource(), e.getTarget(), e);
+                    augPattern.addEdge(e.getSource(), e.getTarget(), e);
             }
         }
 
-        return new de.tu_darmstadt.stg.mudetect.model.Pattern(aug, pattern.getFreq(), literals);
+        return augPattern;
     }
 }

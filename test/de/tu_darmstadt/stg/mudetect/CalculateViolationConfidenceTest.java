@@ -47,7 +47,7 @@ public class CalculateViolationConfidenceTest {
 
     @Test
     public void calculatesPatternSupportWeight_equallySizedPatternWithLargerSupport() throws Exception {
-        Pattern pattern2 = new Pattern(pattern.getAUG(), pattern.getSupport() * 2);
+        Pattern pattern2 = somePattern(pattern, pattern.getSupport() * 2);
         model = () -> asSet(pattern, pattern2);
         SupportConfidenceCalculator calculator = new SupportConfidenceCalculator(1, 0, 0);
 
@@ -58,7 +58,7 @@ public class CalculateViolationConfidenceTest {
 
     @Test
     public void calculatesPatternSupportWeight_equallySizedPatternWithSmallerSupport() throws Exception {
-        Pattern pattern2 = new Pattern(pattern.getAUG(), 1);
+        Pattern pattern2 = somePattern(pattern.getAUG(), 1);
         model = () -> asSet(pattern, pattern2);
         SupportConfidenceCalculator calculator = new SupportConfidenceCalculator(1, 0, 0);
 
