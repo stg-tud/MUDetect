@@ -6,6 +6,7 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
+import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.fullInstance;
 import static org.hamcrest.Matchers.hasItems;
 
 public class InstanceTestUtils {
@@ -40,7 +41,7 @@ public class InstanceTestUtils {
     }
 
     public static Matcher<Iterable<Instance>> hasInstance(AUG aug) {
-        return hasItems(new Instance(aug, aug.vertexSet(), aug.edgeSet()));
+        return hasItems(fullInstance(aug));
     }
 
     public static Matcher<Iterable<Instance>> hasInstance(Pattern pattern) {

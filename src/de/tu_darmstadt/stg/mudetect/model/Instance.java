@@ -13,20 +13,6 @@ public class Instance {
     private final Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
     private final Pattern pattern;
 
-    /**
-     * Use for testing only.
-     *
-     * TODO move this to the test instance builder
-     */
-    public Instance(AUG pattern, Set<EGroumNode> vertexSubset, Set<EGroumEdge> edgeSubset) {
-        this.pattern = new Pattern(pattern, 1);
-        patternOverlap = new DirectedSubgraph<>(pattern, vertexSubset, edgeSubset);
-        targetOverlap = patternOverlap;
-        for (EGroumNode node : vertexSubset) {
-            targetNodeByPatternNode.put(node, node);
-        }
-    }
-
     public Instance(Pattern pattern, AUG target, Map<EGroumNode, EGroumNode> targetNodeByPatternNode,
                     Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge) {
         this.pattern = pattern;

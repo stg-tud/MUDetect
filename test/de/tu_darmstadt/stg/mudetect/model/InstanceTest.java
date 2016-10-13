@@ -5,6 +5,7 @@ import org.junit.Test;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils.contains;
 import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.buildInstance;
+import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.fullInstance;
 import static egroum.EGroumDataEdge.Type.ORDER;
 import static egroum.EGroumDataEdge.Type.PARAMETER;
 import static org.junit.Assert.assertEquals;
@@ -18,7 +19,7 @@ public class InstanceTest {
                 .withDataEdge("A", PARAMETER, "B")
                 .withDataEdge("A", ORDER, "B");
         AUG aug = builder.build();
-        Instance instance = new Instance(aug, aug.vertexSet(), aug.edgeSet());
+        Instance instance = fullInstance(aug);
 
         assertThat(instance, contains(builder.getEdge("A", ORDER, "B")));
         assertThat(instance, contains(builder.getEdge("A", PARAMETER, "B")));

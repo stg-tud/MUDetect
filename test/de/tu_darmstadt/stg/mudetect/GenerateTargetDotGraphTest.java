@@ -1,13 +1,13 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Instance;
 import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.emptyInstance;
+import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.fullInstance;
 import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static egroum.EGroumDataEdge.Type.ORDER;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -37,7 +37,7 @@ public class GenerateTargetDotGraphTest {
     @Test
     public void includesMappedElements() throws Exception {
         AUG aug = buildAUG(":G:").withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
-        Violation violation = new Violation(new Instance(aug, aug.vertexSet(), aug.edgeSet()), 1);
+        Violation violation = new Violation(fullInstance(aug), 1);
 
         assertTargetDotGraphContains(violation, " [ label=\":b:\" shape=\"box\" ];");
         assertTargetDotGraphContains(violation, " [ label=\"order\" style=\"dotted\" ];");

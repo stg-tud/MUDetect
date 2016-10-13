@@ -6,6 +6,7 @@ import egroum.EGroumNode;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
@@ -13,16 +14,35 @@ import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 public class TestInstanceBuilder {
 
     public static Instance someInstance() {
-        final AUG aug = someAUG();
-        return new Instance(aug, aug.vertexSet(), aug.edgeSet());
+        return fullInstance(someAUG());
     }
 
-    public static Instance someInstance(Pattern pattern, AUG target) {
-        return emptyInstance(pattern, target);
+    public static Instance emptyInstance(AUG aug) {
+        return emptyInstance(somePattern(aug), aug);
+    }
+
+    public static Instance fullInstance(AUG aug) {
+        return someInstance(aug, aug.vertexSet(), aug.edgeSet());
+    }
+
+    public static Instance someInstance(AUG pattern, Set<EGroumNode> vertexSubset, Set<EGroumEdge> edgeSubset) {
+        Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
+        for (EGroumNode node : vertexSubset) {
+            targetNodeByPatternNode.put(node, node);
+        }
+        Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge = new HashMap<>();
+        for (EGroumEdge edge : edgeSubset) {
+            targetEdgeByPatternEdge.put(edge, edge);
+        }
+        return new Instance(somePattern(pattern), pattern, targetNodeByPatternNode, targetEdgeByPatternEdge);
     }
 
     public static Instance emptyInstance(Pattern pattern, AUG target) {
         return new Instance(pattern, target, new HashMap<>(), new HashMap<>());
+    }
+
+    public static Instance someInstance(Pattern pattern, AUG target) {
+        return emptyInstance(pattern, target);
     }
 
     public static TestInstanceBuilder buildInstance(TestAUGBuilder targetAUGBuilder, TestAUGBuilder patternAUGBuilder) {
