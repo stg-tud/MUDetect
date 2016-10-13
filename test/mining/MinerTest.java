@@ -14,7 +14,6 @@ import egroum.EGroumGraph;
 import egroum.EGroumNode;
 
 public class MinerTest {
-
 	
 	@Rule
 	public TestName testName = new TestName();
@@ -29,16 +28,6 @@ public class MinerTest {
 		print(patterns.get(0));
 	}
 	
-	@Test
-	public void mineFrequentSubPatterns() {
-		ArrayList<EGroumGraph> groums = buildGroumsFromFile("test-resources/input/Test_mine.java");
-		
-		List<Pattern> patterns = mine(groums);
-		
-		assertThat(patterns.size(), is(2));
-		print(patterns.get(0));
-	}
-
 	@Test
 	public void mineMinimalCode() {
 		ArrayList<EGroumGraph> groums = buildGroums(
