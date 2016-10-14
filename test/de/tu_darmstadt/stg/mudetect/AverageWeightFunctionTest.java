@@ -9,13 +9,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static utils.SetUtils.asSet;
 
-public class LinearCombinationWeightFunctionTest {
+public class AverageWeightFunctionTest {
     @Test
-    public void combinesSingleWeight() throws Exception {
+    public void takesOverSingleWeight() throws Exception {
         Instance instance = someInstance();
         Overlaps overlaps = new Overlaps();
         Model model = () -> asSet(instance.getPattern());
-        ViolationWeightFunction weightFunction = new LinearCombinationWeightFunction((v, os, m) -> 42f);
+        ViolationWeightFunction weightFunction = new AverageWeightFunction((v, os, m) -> 42f);
 
         float weight = weightFunction.getWeight(instance, overlaps, model);
 
@@ -23,24 +23,24 @@ public class LinearCombinationWeightFunctionTest {
     }
 
     @Test
-    public void combinesTwoWeights() throws Exception {
+    public void addsAndNormalizesTwoWeights() throws Exception {
         Instance instance = someInstance();
         Overlaps overlaps = new Overlaps();
         Model model = () -> asSet(instance.getPattern());
-        ViolationWeightFunction weightFunction = new LinearCombinationWeightFunction(
-                (v, os, m) -> 42f,
-                (v, os, m) -> 23f);
+        ViolationWeightFunction weightFunction = new AverageWeightFunction(
+                (v, os, m) -> 2f,
+                (v, os, m) -> 4f);
 
         float weight = weightFunction.getWeight(instance, overlaps, model);
 
-        assertThat(weight, is(42f + 23f));
+        assertThat(weight, is(3f));
     }
 
-    private class LinearCombinationWeightFunction implements ViolationWeightFunction {
+    private class AverageWeightFunction implements ViolationWeightFunction {
         private final ViolationWeightFunction[] strategies;
 
-        public LinearCombinationWeightFunction(ViolationWeightFunction... strategies) {
-            this.strategies = strategies;
+        public AverageWeightFunction(ViolationWeightFunction... functions) {
+            this.strategies = functions;
         }
 
         @Override
@@ -49,7 +49,7 @@ public class LinearCombinationWeightFunctionTest {
             for (ViolationWeightFunction strategy : strategies) {
                 weight += strategy.getWeight(violation, overlaps, model);
             }
-            return weight;
+            return weight / strategies.length;
         }
     }
 }
