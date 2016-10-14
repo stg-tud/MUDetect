@@ -9,6 +9,14 @@ public class TestPatternBuilder {
         return somePattern(someAUG());
     }
 
+    public static Pattern somePattern(int nodeCount, int support) {
+        String[] nodeNames = new String[nodeCount];
+        for (int i = 0; i < nodeCount; i++) {
+            nodeNames[i] = Integer.toString(i);
+        }
+        return TestPatternBuilder.somePattern(buildAUG().withActionNodes(nodeNames), support);
+    }
+
     public static Pattern somePattern(AUG patternAUG) {
         return somePattern(patternAUG, 1);
     }
