@@ -9,18 +9,18 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 
-public class ConfidenceViolationRankingStrategy implements ViolationRankingStrategy {
-    private ConfidenceCalculator confidenceCalculator;
+public class WeightRankingStrategy implements ViolationRankingStrategy {
+    private ViolationWeightFunction weightFunction;
 
-    public ConfidenceViolationRankingStrategy(ConfidenceCalculator confidenceCalculator) {
-        this.confidenceCalculator = confidenceCalculator;
+    public WeightRankingStrategy(ViolationWeightFunction weightFunction) {
+        this.weightFunction = weightFunction;
     }
 
     @Override
     public List<Violation> rankViolations(Overlaps overlaps, Model model) {
         PriorityQueue<Violation> violations = new PriorityQueue<>(Comparator.reverseOrder());
         for (Instance violation : overlaps.getViolations()) {
-            float confidence = confidenceCalculator.getConfidence(violation, overlaps, model);
+            float confidence = weightFunction.getWeight(violation, overlaps, model);
             violations.add(new Violation(violation, confidence));
         }
         return toList(violations);

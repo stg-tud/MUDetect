@@ -35,21 +35,4 @@ public class AverageWeightFunctionTest {
 
         assertThat(weight, is(3f));
     }
-
-    private class AverageWeightFunction implements ViolationWeightFunction {
-        private final ViolationWeightFunction[] strategies;
-
-        public AverageWeightFunction(ViolationWeightFunction... functions) {
-            this.strategies = functions;
-        }
-
-        @Override
-        public float getWeight(Instance violation, Overlaps overlaps, Model model) {
-            float weight = 0;
-            for (ViolationWeightFunction strategy : strategies) {
-                weight += strategy.getWeight(violation, overlaps, model);
-            }
-            return weight / strategies.length;
-        }
-    }
 }

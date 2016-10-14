@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
-public class ConfidenceViolationRankingStrategyTest {
+public class WeightRankingStrategyTest {
     @Rule
     public final JUnitRuleMockery context = new JUnitRuleMockery();
 
@@ -30,13 +30,13 @@ public class ConfidenceViolationRankingStrategyTest {
 
         Model model = context.mock(Model.class);
 
-        ConfidenceCalculator confidenceCalculator = context.mock(ConfidenceCalculator.class);
+        ViolationWeightFunction weightFunction = context.mock(ViolationWeightFunction.class);
         context.checking(new Expectations() {{
-            allowing(confidenceCalculator).getConfidence(violation1, overlaps, model); will(returnValue(0.5f));
-            allowing(confidenceCalculator).getConfidence(violation2, overlaps, model); will(returnValue(0.7f));
+            allowing(weightFunction).getWeight(violation1, overlaps, model); will(returnValue(0.5f));
+            allowing(weightFunction).getWeight(violation2, overlaps, model); will(returnValue(0.7f));
         }});
 
-        ViolationRankingStrategy strategy = new ConfidenceViolationRankingStrategy(confidenceCalculator);
+        ViolationRankingStrategy strategy = new WeightRankingStrategy(weightFunction);
         final List<Violation> violations = strategy.rankViolations(overlaps, model);
 
         assertThat(violations, contains(new Violation(violation2, 0.7f), new Violation(violation1, 0.5f)));
@@ -53,13 +53,13 @@ public class ConfidenceViolationRankingStrategyTest {
 
         Model model = context.mock(Model.class);
 
-        ConfidenceCalculator confidenceCalculator = context.mock(ConfidenceCalculator.class);
+        ViolationWeightFunction weightFunction = context.mock(ViolationWeightFunction.class);
         context.checking(new Expectations() {{
-            allowing(confidenceCalculator).getConfidence(violation1, overlaps, model); will(returnValue(1f));
-            allowing(confidenceCalculator).getConfidence(violation2, overlaps, model); will(returnValue(1f));
+            allowing(weightFunction).getWeight(violation1, overlaps, model); will(returnValue(1f));
+            allowing(weightFunction).getWeight(violation2, overlaps, model); will(returnValue(1f));
         }});
 
-        ViolationRankingStrategy strategy = new ConfidenceViolationRankingStrategy(confidenceCalculator);
+        ViolationRankingStrategy strategy = new WeightRankingStrategy(weightFunction);
         final List<Violation> violations = strategy.rankViolations(overlaps, model);
 
         assertThat(violations, containsInAnyOrder(new Violation(violation2, 1f), new Violation(violation1, 1f)));

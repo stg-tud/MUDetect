@@ -41,7 +41,11 @@ public class MuDetectRunner extends MuBenchRunner {
                 trainingAndTargetPath,
                 new GreedyInstanceFinder(new InstanceSizePredicate(0.5)),
                 new MissingElementViolationFactory(),
-                new ConfidenceViolationRankingStrategy(new SupportConfidenceCalculator(1, 1, 1)),
+                new WeightRankingStrategy(
+                        new AverageWeightFunction(
+                                new PatternSupportWeightFunction(),
+                                new ViolationSupportWeightFunction(),
+                                new NodeOverlapWeightFunction())),
                 output);
     }
 
