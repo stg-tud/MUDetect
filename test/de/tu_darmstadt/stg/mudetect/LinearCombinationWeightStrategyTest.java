@@ -22,6 +22,20 @@ public class LinearCombinationWeightStrategyTest {
         assertThat(weight, is(42f));
     }
 
+    @Test
+    public void combinesTwoWeights() throws Exception {
+        Instance instance = someInstance();
+        Overlaps overlaps = new Overlaps();
+        Model model = () -> asSet(instance.getPattern());
+        ViolationWeightStrategy strategy = new LinearCombinationWeightStrategy(
+                (v, os, m) -> 42f,
+                (v, os, m) -> 23f);
+
+        float weight = strategy.getWeight(instance, overlaps, model);
+
+        assertThat(weight, is(42f + 23f));
+    }
+
     private class LinearCombinationWeightStrategy implements ViolationWeightStrategy {
         private final ViolationWeightStrategy[] strategies;
 
@@ -33,7 +47,7 @@ public class LinearCombinationWeightStrategyTest {
         public float getWeight(Instance violation, Overlaps overlaps, Model model) {
             float weight = 0;
             for (ViolationWeightStrategy strategy : strategies) {
-                weight = strategy.getWeight(violation, overlaps, model);
+                weight += strategy.getWeight(violation, overlaps, model);
             }
             return weight;
         }
