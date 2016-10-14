@@ -21,27 +21,27 @@ public class EGroumBuilderTest {
 
 	@Test
 	public void singleCall() {
-		print(buildGroumForMethod("void m(Object o) { o.hashCode(); }"));
+		print(buildGroumForMethod("void m(Object o) { o.hashCode(); }", null));
 	}
 	
 	@Test
 	public void singleCallAssignResult() {
-		print(buildGroumForMethod("void m(Object o) { int i = o.hashCode(); }"));
+		print(buildGroumForMethod("void m(Object o) { int i = o.hashCode(); }", null));
 	}
 	
 	@Test
 	public void reassignment() {
-		print(buildGroumForMethod("void m(int i) { if (i < 0) { i = -i; m(i); } }"));
+		print(buildGroumForMethod("void m(int i) { if (i < 0) { i = -i; m(i); } }", null));
 	}
 	
 	@Test
 	public void alternativeReassignments() {
-		print(buildGroumForMethod("void m(int i) { if (i < 0)	i = -i;	else i++; m(i); }"));
+		print(buildGroumForMethod("void m(int i) { if (i < 0)	i = -i;	else i++; m(i); }", null));
 	}
 	
 	@Test
 	public void controlChars() {
-		print(buildGroumForMethod("String cc() { return \" \\n \\t \\b \\f \\\\ \\\" \"; }"));
+		print(buildGroumForMethod("String cc() { return \" \\n \\t \\b \\f \\\\ \\\" \"; }", null));
 	}
 	
 	@Test
@@ -52,7 +52,7 @@ public class EGroumBuilderTest {
 				+ "  else break; this.m();"
 				+ "  super.m();"
 				+ "  assert true;"
-				+ "  throw new RuntimeException(); }"));
+				+ "  throw new RuntimeException(); }", null));
 	}
 	
 	@Test
@@ -65,14 +65,14 @@ public class EGroumBuilderTest {
 				"		fis.close();\n" + 
 				"		\n" + 
 				"		return firstByte;\n" + 
-				"	}"));
+				"	}", null));
 	}
 	
 	@Test @Ignore
 	public void illegalOutNode() throws IOException {
 		FileSystem FileSystem = FileSystems.getDefault();
 		Path targetSourcePath = FileSystem.getPath("/Users/svenamann/Documents/PhD/API Misuse Benchmark/MUBench/checkouts/itext/5091/original-src/com/itextpdf/text");
-		ArrayList<EGroumGraph> groums = new EGroumBuilder().build(targetSourcePath.toString());
+		ArrayList<EGroumGraph> groums = new EGroumBuilder(new String[]{}).build(targetSourcePath.toString());
 		
 		for (EGroumGraph groum : groums) {
 			GroumValidationUtils.validate(groum);
@@ -83,7 +83,7 @@ public class EGroumBuilderTest {
 	public void illegalOutNode1() throws IOException {
 		FileSystem FileSystem = FileSystems.getDefault();
 		Path targetSourcePath = FileSystem.getPath("T:\\repos\\itext\\5090\\original-src");
-		ArrayList<EGroumGraph> groums = new EGroumBuilder().build(targetSourcePath.toString());
+		ArrayList<EGroumGraph> groums = new EGroumBuilder(new String[]{}).build(targetSourcePath.toString());
 		
 		for (EGroumGraph groum : groums) {
 			GroumValidationUtils.validate(groum);
@@ -94,7 +94,7 @@ public class EGroumBuilderTest {
 	public void illegalOutNode2() throws IOException {
 		FileSystem FileSystem = FileSystems.getDefault();
 		Path targetSourcePath = FileSystem.getPath("T:\\repos\\itext\\5091\\original-src");
-		ArrayList<EGroumGraph> groums = new EGroumBuilder().build(targetSourcePath.toString());
+		ArrayList<EGroumGraph> groums = new EGroumBuilder(new String[]{}).build(targetSourcePath.toString());
 		
 		for (EGroumGraph groum : groums) {
 			GroumValidationUtils.validate(groum);
@@ -105,7 +105,7 @@ public class EGroumBuilderTest {
 	public void illegalOutNode3() throws IOException {
 		FileSystem FileSystem = FileSystems.getDefault();
 		Path targetSourcePath = FileSystem.getPath("T:\\repos\\lucene-solr");
-		ArrayList<EGroumGraph> groums = new EGroumBuilder().build(targetSourcePath.toString());
+		ArrayList<EGroumGraph> groums = new EGroumBuilder(new String[]{}).build(targetSourcePath.toString());
 		
 		for (EGroumGraph groum : groums) {
 			GroumValidationUtils.validate(groum);
@@ -141,7 +141,7 @@ public class EGroumBuilderTest {
 				"            return false;\n" + 
 				"        }\n" + 
 				"        return true;\n" + 
-				"    }");
+				"    }", null);
 		
 		GroumValidationUtils.validate(groum);
 	}
@@ -154,7 +154,7 @@ public class EGroumBuilderTest {
 				"    } catch(FileNotFoundException fnfe) {\n" +
 				"      fnfe.printStackTrace();\n" +
 				"    }" +
-				"}"));
+				"}", null));
 	}
 
     @Test
@@ -165,7 +165,7 @@ public class EGroumBuilderTest {
                 "  } finally {\n" +
                 "    m();\n" +
                 "  }\n" +
-                "}"));
+                "}", null));
     }
 
     private void print(EGroumGraph groum) {

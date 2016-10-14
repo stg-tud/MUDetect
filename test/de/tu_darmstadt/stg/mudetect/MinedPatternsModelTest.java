@@ -15,7 +15,7 @@ public class MinedPatternsModelTest {
         List<EGroumGraph> groums = buildGroumsForClass("class A {" +
                 "  void m(C c) { c.foo(); }" +
                 "  void n(C c) { c.foo(); }" +
-                "}");
+                "}", null);
 
         Model model = new MinedPatternsModel(2, 1, groums);
 

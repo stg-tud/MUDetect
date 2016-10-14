@@ -9,7 +9,7 @@ import static org.junit.Assert.assertThat;
 public class GetGroumMethodNameTest {
     @Test
     public void simpleMethod() throws Exception {
-        EGroumGraph groum = buildGroumForMethod("void m() {}");
+        EGroumGraph groum = buildGroumForMethod("void m() {}", null);
 
         String methodName = AUGBuilder.getMethodSignature(groum);
 
@@ -18,7 +18,7 @@ public class GetGroumMethodNameTest {
 
     @Test
     public void withParameters() throws Exception {
-        EGroumGraph groum = buildGroumForMethod("void m(Object o, int i) {}");
+        EGroumGraph groum = buildGroumForMethod("void m(Object o, int i) {}", null);
 
         String methodName = AUGBuilder.getMethodSignature(groum);
 
@@ -27,7 +27,7 @@ public class GetGroumMethodNameTest {
 
     @Test
     public void withArrayParameter() throws Exception {
-        EGroumGraph groum = buildGroumForMethod("void m(int[] is) {}");
+        EGroumGraph groum = buildGroumForMethod("void m(int[] is) {}", null);
 
         String methodName = AUGBuilder.getMethodSignature(groum);
 
@@ -36,7 +36,7 @@ public class GetGroumMethodNameTest {
 
     @Test
     public void qualifiedParameter() throws Exception {
-        EGroumGraph groum = buildGroumForMethod("void m(Foo.Bar b) {}");
+        EGroumGraph groum = buildGroumForMethod("void m(Foo.Bar b) {}", null);
 
         String methodName = AUGBuilder.getMethodSignature(groum);
 
@@ -45,7 +45,7 @@ public class GetGroumMethodNameTest {
 
     @Test
     public void parameterizedParameter() throws Exception {
-        EGroumGraph groum = buildGroumForMethod("void m(List<String> l) {}");
+        EGroumGraph groum = buildGroumForMethod("void m(List<String> l) {}", null);
 
         String methodName = AUGBuilder.getMethodSignature(groum);
 
@@ -54,7 +54,7 @@ public class GetGroumMethodNameTest {
 
     @Test
     public void nestedType() throws Exception {
-        EGroumGraph groum = buildGroumForMethod("class Inner { void m() {} }");
+        EGroumGraph groum = buildGroumForMethod("class Inner { void m() {} }", null);
 
         String methodName = AUGBuilder.getMethodSignature(groum);
 
@@ -63,7 +63,7 @@ public class GetGroumMethodNameTest {
 
     @Test
     public void anaonymousClassMethod() throws Exception {
-        EGroumGraph groum = buildGroumForMethod("void m() { new T { void n() {} }; }");
+        EGroumGraph groum = buildGroumForMethod("void m() { new T { void n() {} }; }", null);
 
         String methodName = AUGBuilder.getMethodSignature(groum);
 

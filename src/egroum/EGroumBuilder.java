@@ -23,7 +23,6 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
@@ -31,6 +30,16 @@ import utils.FileIO;
 import utils.JavaASTUtil;
 
 public class EGroumBuilder {
+
+	private String[] classpaths;
+	
+	public EGroumBuilder(String[] classpaths) {
+		if (classpaths != null) {
+			this.classpaths = new String[classpaths.length];
+			for (int i = 0; i < classpaths.length; i++)
+				this.classpaths[i] = classpaths[i];
+		}
+	}
 
 	public ArrayList<EGroumGraph> build(String path) {
 		buildStandardJars();
@@ -299,7 +308,7 @@ public class EGroumBuilder {
 
 	public ArrayList<EGroumGraph> buildGroums(String sourceCode, String path, String name) {
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
-		CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(sourceCode, path, name);
+		CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(sourceCode, path, name, classpaths);
 		for (int i = 0 ; i < cu.types().size(); i++)
 			if (cu.types().get(i) instanceof TypeDeclaration)
 				groums.addAll(buildGroums((TypeDeclaration) cu.types().get(i), path, ""));

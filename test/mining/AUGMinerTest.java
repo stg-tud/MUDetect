@@ -4,7 +4,6 @@ import de.tu_darmstadt.stg.mudetect.model.*;
 import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import egroum.EGroumGraph;
 import egroum.EGroumNode;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -26,7 +25,7 @@ public class AUGMinerTest {
         List<EGroumGraph> groums = buildGroumsForClass("class A {" +
                 "  void m(C c) { c.foo(); }" +
                 "  void n(C c) { c.foo(); }" +
-                "}");
+                "}", null);
 
         Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = new AUGMiner(2, 1).mine(groums);
 
@@ -38,7 +37,7 @@ public class AUGMinerTest {
         List<EGroumGraph> groums = buildGroumsForClass("class A {" +
                 "  void m(C c) { c.foo(\"literal\"); }" +
                 "  void n(C c) { c.foo(\"literal\"); }" +
-                "}");
+                "}", null);
 
         Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = new AUGMiner(2, 1).mine(groums);
 
@@ -52,7 +51,7 @@ public class AUGMinerTest {
         List<EGroumGraph> groums = buildGroumsForClass("class A {" +
                 "  void m(C c) { c.foo(\"l1\"); }" +
                 "  void n(C c) { c.foo(\"l2\"); }" +
-                "}");
+                "}", null);
 
         Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = new AUGMiner(2, 1).mine(groums);
 

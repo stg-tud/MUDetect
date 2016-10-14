@@ -14,23 +14,23 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class EGroumTestUtils {
-	public static EGroumGraph buildGroumForMethod(String code) {
+	public static EGroumGraph buildGroumForMethod(String code, String[] classpaths) {
 		String classCode = "class C { " + code + "}";
-		ArrayList<EGroumGraph> groums = buildGroumsForClass(classCode);
+		ArrayList<EGroumGraph> groums = buildGroumsForClass(classCode, classpaths);
 		assertThat(groums.size(), is(1));
 		return groums.iterator().next();
 	}
 
-	public static ArrayList<EGroumGraph> buildGroumsForClass(String classCode) {
-		EGroumBuilder builder = new EGroumBuilder();
+	public static ArrayList<EGroumGraph> buildGroumsForClass(String classCode, String[] classpaths) {
+		EGroumBuilder builder = new EGroumBuilder(classpaths);
 		return builder.buildGroums(classCode, "test", "test");
 	}
 
-	public static void buildAndPrintGroumsForFile(String inputPath, String name, String outputPath) {
-		EGroumBuilder gb = new EGroumBuilder();
+	public static void buildAndPrintGroumsForFile(String inputPath, String name, String[] classpaths, String outputPath) {
+		EGroumBuilder gb = new EGroumBuilder(classpaths);
 		inputPath = inputPath + "/" + name;
 		String content = FileIO.readStringFromFile(inputPath);
-		ASTNode ast = JavaASTUtil.parseSource(content, inputPath, name);
+		ASTNode ast = JavaASTUtil.parseSource(content);
 		CompilationUnit cu = (CompilationUnit) ast;
 		TypeDeclaration type = (TypeDeclaration) cu.types().get(0);
 		for (MethodDeclaration m : type.getMethods()) {

@@ -56,7 +56,7 @@ public class AUGMiner {
         return mine(new ArrayList<>(groums));
     }
 
-    public Set<de.tu_darmstadt.stg.mudetect.model.Pattern> mine(ArrayList<EGroumGraph> groums) {
+    public Set<de.tu_darmstadt.stg.mudetect.model.Pattern> mine(ArrayList<EGroumGraph> groums, String[] classpaths) {
         Pattern.minFreq = this.minPatternSupport;
         Pattern.maxFreq = this.maxPatternSupport;
         Pattern.minSize = this.minPatternSize;
@@ -71,7 +71,7 @@ public class AUGMiner {
             if (out != null) {
                 System.setOut(out);
             }
-            mining.Miner miner = new mining.Miner(":irrelevant:", "-subgraph-finder-");
+            mining.Miner miner = new mining.Miner("-subgraph-finder-");
             miner.output_path = this.outputPath;
             miner.maxSingleNodePrevalence = 100;
             return toAUGPatterns(miner.mine(groums));

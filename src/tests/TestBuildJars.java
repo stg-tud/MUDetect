@@ -14,7 +14,7 @@ public class TestBuildJars {
 	}
 	
 	public static void main(String[] args) {
-		EGroumBuilder b = new EGroumBuilder();
+		EGroumBuilder b = new EGroumBuilder(new String[]{});
 		b.build("");
 	}
 

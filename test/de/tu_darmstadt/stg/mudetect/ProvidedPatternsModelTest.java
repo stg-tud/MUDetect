@@ -15,7 +15,7 @@ public class ProvidedPatternsModelTest {
         List<EGroumGraph> groums = buildGroumsForClass("class A {" +
                 "  void m(C c) { c.foo(); }" +
                 "  void n(C c) { c.bar(); }" +
-                "}");
+                "}", null);
 
         Model model = new ProvidedPatternsModel(groums);
 

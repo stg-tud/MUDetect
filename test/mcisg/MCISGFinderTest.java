@@ -110,11 +110,11 @@ public class MCISGFinderTest {
 	
 	@SuppressWarnings("unused")
 	private ArrayList<EGroumGraph> buildGroumsFromFile(String path) {
-		return new EGroumBuilder().build(path);
+		return new EGroumBuilder(new String[]{}).build(path);
 	}
 
 	private ArrayList<EGroumGraph> buildGroums(String... sourceCodes) {
-		EGroumBuilder builder = new EGroumBuilder();
+		EGroumBuilder builder = new EGroumBuilder(new String[]{});
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		for (String sourceCode : sourceCodes) {
 			groums.addAll(builder.buildGroums(sourceCode, "", ""));
@@ -126,7 +126,7 @@ public class MCISGFinderTest {
 		Pattern.minFreq = 2;
 		Pattern.minSize = 1;
 		Pattern.maxSize = 30;
-		Miner miner = new Miner("", "test");
+		Miner miner = new Miner("test");
 		miner.maxSingleNodePrevalence = 100;
 		miner.mine(groums);
 		

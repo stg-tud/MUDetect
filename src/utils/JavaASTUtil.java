@@ -68,7 +68,7 @@ public class JavaASTUtil {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static ASTNode parseSource(String source, String path, String name) {
+	public static ASTNode parseSource(String source, String path, String name, String[] classpaths) {
 		Map options = JavaCore.getOptions();
 		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
 		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_8);
@@ -77,7 +77,7 @@ public class JavaASTUtil {
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
     	parser.setCompilerOptions(options);
 		parser.setEnvironment(
-				new String[]{}, 
+				classpaths == null ? new String[]{} : classpaths, 
 				new String[]{srcDir}, 
 				new String[]{"UTF-8"}, 
 				true);
