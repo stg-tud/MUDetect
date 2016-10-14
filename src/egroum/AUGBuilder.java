@@ -6,18 +6,9 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class AUGBuilder {
-    private String[] classpaths;
-	
-	public AUGBuilder(String[] classpaths) {
-		if (classpaths != null) {
-			this.classpaths = new String[classpaths.length];
-			for (int i = 0; i < classpaths.length; i++)
-				this.classpaths[i] = classpaths[i];
-		}
-	}
-
-	public Collection<AUG> build(String path) {
-        return new EGroumBuilder(classpaths).build(path).stream().map(AUGBuilder::toAUG).collect(Collectors.toSet());
+	public Collection<AUG> build(String sourcePath, String classPath) {
+        return new EGroumBuilder(new String[] {classPath}).build(sourcePath).stream()
+                .map(AUGBuilder::toAUG).collect(Collectors.toSet());
     }
 
     public static AUG toAUG(EGroumGraph groum) {

@@ -56,7 +56,7 @@ public class AUGMiner {
         return mine(new ArrayList<>(groums));
     }
 
-    public Set<de.tu_darmstadt.stg.mudetect.model.Pattern> mine(ArrayList<EGroumGraph> groums, String[] classpaths) {
+    public Set<de.tu_darmstadt.stg.mudetect.model.Pattern> mine(ArrayList<EGroumGraph> groums) {
         Pattern.minFreq = this.minPatternSupport;
         Pattern.maxFreq = this.maxPatternSupport;
         Pattern.minSize = this.minPatternSize;
