@@ -11,15 +11,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static utils.SetUtils.asSet;
 
-public class SupportViolationWeightStrategyTest {
+public class PatternSupportWeightFunctionTest {
     @Test
     public void computesSinglePatternWeight() throws Exception {
         Instance instance = someInstance();
         Pattern pattern = instance.getPattern();
         Model model = () -> asSet(pattern);
-        ViolationWeightStrategy weightStrategy = new SupportPatternWeightStrategy();
+        ViolationWeightFunction weightFunction = new PatternSupportWeightFunction();
 
-        float weight = weightStrategy.getWeight(instance, null, model);
+        float weight = weightFunction.getWeight(instance, null, model);
 
         assertThat(weight, is(1f));
     }
@@ -28,9 +28,9 @@ public class SupportViolationWeightStrategyTest {
     public void weightsRelativeToLargestSupport() throws Exception {
         Pattern pattern = somePattern(2);
         Model model = () -> asSet(pattern, somePattern(4));
-        ViolationWeightStrategy weightStrategy = new SupportPatternWeightStrategy();
+        ViolationWeightFunction weigthFunction = new PatternSupportWeightFunction();
 
-        float weight = weightStrategy.getWeight(emptyInstance(pattern), null, model);
+        float weight = weigthFunction.getWeight(emptyInstance(pattern), null, model);
 
         assertThat(weight, is(0.5f));
     }
