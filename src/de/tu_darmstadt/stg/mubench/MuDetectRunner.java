@@ -46,7 +46,7 @@ public class MuDetectRunner extends MuBenchRunner {
                         new AverageWeightFunction(
                                 new PatternSupportWeightFunction(),
                                 new ViolationSupportWeightFunction(),
-                                new NodeOverlapWeightFunction())),
+                                new OverlapWeightFunction())),
                 output);
     }
 
