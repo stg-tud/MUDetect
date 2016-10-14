@@ -22,7 +22,7 @@ public class SupportConfidenceCalculator implements ConfidenceCalculator {
     public float getConfidence(Instance violation, Overlaps overlaps, Model model) {
         return patternSupportWeightFactor * getPatternSupportWeight(violation, model) +
                 overlapSizeWeightFactor * getOverlapWeight(violation) +
-                violationSupportWeightFactor * getViolationSupportWeight(violation, overlaps);
+                violationSupportWeightFactor * new ViolationSupportWeightFunction().getWeight(violation, overlaps, model);
     }
 
     private float getPatternSupportWeight(Instance violation, Model model) {
@@ -32,17 +32,5 @@ public class SupportConfidenceCalculator implements ConfidenceCalculator {
 
     private float getOverlapWeight(Instance violation) {
         return violation.getNodeSize() / (float) violation.getPattern().getNodeSize();
-    }
-
-    private float getViolationSupportWeight(Instance violation, Overlaps overlaps) {
-        float numberOfEqualViolations = 0;
-        for (Instance otherViolation : overlaps.getViolationsOfSamePattern(violation)) {
-            // two overlaps are equal, if they violate the same aPatternBuilder in the same way,
-            // i.e., if the aPatternBuilder overlap is the same.
-            if (violation.isSamePatternOverlap(otherViolation)) {
-                numberOfEqualViolations++;
-            }
-        }
-        return 1 / numberOfEqualViolations;
     }
 }
