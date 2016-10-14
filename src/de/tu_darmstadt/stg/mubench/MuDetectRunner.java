@@ -9,6 +9,7 @@ import de.tu_darmstadt.stg.mudetect.dot.ViolationDotExporter;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Location;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
+import de.tu_darmstadt.stg.mudetect.ranking.*;
 import egroum.AUGBuilder;
 import egroum.EGroumBuilder;
 import egroum.EGroumGraph;
