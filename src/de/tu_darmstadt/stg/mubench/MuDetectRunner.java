@@ -96,7 +96,7 @@ public class MuDetectRunner extends MuBenchRunner {
             DetectorFinding finding = output.add(location.getFilePath(), location.getMethodName());
             finding.put("rank", Integer.toString(rank));
             finding.put("pattern_violation", violationDotExporter.toDotGraph(violation));
-            finding.put("target_mapping", violationDotExporter.toTargetDotGraph(violation));
+            finding.put("target_environment_mapping", violationDotExporter.toTargetEnvironmentDotGraph(violation));
             finding.put("confidence", Float.toString(violation.getConfidence()));
             finding.put("pattern_support", Integer.toString(violation.getInstance().getPattern().getSupport()));
         }
