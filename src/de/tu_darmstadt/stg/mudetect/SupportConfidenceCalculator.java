@@ -20,7 +20,7 @@ public class SupportConfidenceCalculator implements ConfidenceCalculator {
 
     @Override
     public float getConfidence(Instance violation, Overlaps overlaps, Model model) {
-        return patternSupportWeightFactor * getPatternSupportWeight(violation, model) +
+        return patternSupportWeightFactor * new PatternSameSizeSupportWeightFunction().getWeight(violation, overlaps, model) +
                 overlapSizeWeightFactor * new NodeOverlapWeightFunction().getWeight(violation, overlaps, model) +
                 violationSupportWeightFactor * new ViolationSupportWeightFunction().getWeight(violation, overlaps, model);
     }
