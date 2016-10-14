@@ -2,11 +2,16 @@ package de.tu_darmstadt.stg.mudetect.model;
 
 import egroum.EGroumEdge;
 
+import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
 
 public class TestPatternBuilder {
     public static Pattern somePattern() {
         return somePattern(someAUG());
+    }
+
+    public static Pattern somePattern(int support) {
+        return somePattern(someAUG(), support);
     }
 
     public static Pattern somePattern(int nodeCount, int support) {

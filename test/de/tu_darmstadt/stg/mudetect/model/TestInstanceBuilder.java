@@ -17,6 +17,10 @@ public class TestInstanceBuilder {
         return fullInstance(someAUG());
     }
 
+    public static Instance emptyInstance(Pattern pattern) {
+        return emptyInstance(pattern, pattern);
+    }
+
     public static Instance emptyInstance(AUG aug) {
         return emptyInstance(somePattern(aug), aug);
     }
