@@ -1,5 +1,6 @@
-package de.tu_darmstadt.stg.mudetect;
+package de.tu_darmstadt.stg.mudetect.dot;
 
+import de.tu_darmstadt.stg.mudetect.dot.ViolationDotExporter;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Instance;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
@@ -58,7 +59,7 @@ public class GenerateViolationDotGraphTest {
     }
 
     private void assertDotGraphContains(Violation violation, String expectedDotGraphFragment) {
-        String dotGraph = violation.toDotGraph();
+        String dotGraph = new ViolationDotExporter().toDotGraph(violation);
 
         assertThat(dotGraph, containsString(expectedDotGraphFragment));
     }
