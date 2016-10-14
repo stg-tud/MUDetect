@@ -36,5 +36,10 @@ public class ModelTest {
         assertThat(maxPatternSupport, is(23));
     }
 
+    @Test
+    public void computesMaxSupport() throws Exception {
+        Model model = () -> asSet(somePattern(5), somePattern(42), somePattern(23));
+
+        assertThat(model.getMaxPatternSupport(), is(42));
     }
 }
