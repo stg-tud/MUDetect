@@ -15,7 +15,7 @@ import static utils.SetUtils.asSet;
 
 public class ModelTest {
     @Test
-    public void computesMaxSupport() throws Exception {
+    public void computesMaxSupportBySize() throws Exception {
         Pattern pattern1 = somePattern(3, 5);
         Pattern pattern2 = somePattern(3, 23);
         Model model = () -> asSet(pattern1, pattern2);
