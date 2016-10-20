@@ -9,6 +9,16 @@ public class AUGImprovement2 {
     public TestName name = new TestName();
 
     @Test
+    public void collapse1() throws Exception {
+    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_collapse1.java", null, "aug-improvement");
+    }
+
+    @Test
+    public void collapse2() throws Exception {
+    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_collapse2.java", null, "aug-improvement");
+    }
+
+    @Test
     public void order() throws Exception {
     	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_order.java", null, "aug-improvement");
     }
