@@ -26,7 +26,7 @@ public class TypeResolveVisitor extends ASTVisitor {
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
     	parser.setCompilerOptions(options);
 		parser.setEnvironment(
-				new String[]{"target/classes"}, 
+				new String[]{"D:/Projects/aug-miner.jar"}, 
 				new String[]{}, 
 				new String[]{}, 
 				true);
