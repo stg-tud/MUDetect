@@ -15,7 +15,7 @@ import org.eclipse.jdt.core.dom.Name;
 public class TypeResolveVisitor extends ASTVisitor {
 
 	public static void main(String[] args) {
-		File file = new File("src/main/Mine.java");
+		File file = new File("src/utils/TypeResolveVisitor.java");
 		String name = file.getName();
 		String source = FileIO.readStringFromFile(file.getAbsolutePath());
 		@SuppressWarnings("rawtypes")
