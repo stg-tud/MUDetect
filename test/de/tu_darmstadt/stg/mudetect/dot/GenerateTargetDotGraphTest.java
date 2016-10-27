@@ -1,6 +1,5 @@
 package de.tu_darmstadt.stg.mudetect.dot;
 
-import de.tu_darmstadt.stg.mudetect.dot.ViolationDotExporter;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
@@ -40,8 +39,8 @@ public class GenerateTargetDotGraphTest {
         AUG aug = buildAUG(":G:").withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
         Violation violation = new Violation(fullInstance(aug), 1);
 
-        assertTargetDotGraphContains(violation, " [ label=\":b:\" shape=\"box\" ];");
-        assertTargetDotGraphContains(violation, " [ label=\"order\" style=\"dotted\" ];");
+        assertTargetDotGraphContains(violation, " [ label=\":b:\" shape=\"box\" ");
+        assertTargetDotGraphContains(violation, " [ label=\"order\" style=\"dotted\" ");
     }
 
     private void assertTargetDotGraphContains(Violation violation, String expectedDotGraph) {

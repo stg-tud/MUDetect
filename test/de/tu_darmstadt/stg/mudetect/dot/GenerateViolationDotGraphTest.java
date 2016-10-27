@@ -1,17 +1,13 @@
 package de.tu_darmstadt.stg.mudetect.dot;
 
-import de.tu_darmstadt.stg.mudetect.dot.ViolationDotExporter;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Instance;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import org.junit.Test;
 
 import java.util.HashSet;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.emptyInstance;
-import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.fullInstance;
-import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.someInstance;
+import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.*;
 import static egroum.EGroumDataEdge.Type.ORDER;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
@@ -23,7 +19,7 @@ public class GenerateViolationDotGraphTest {
         AUG aug = buildAUG(":G:").withActionNode(":action:").build();
         Violation violation = new Violation(fullInstance(aug), 1);
 
-        assertDotGraphContains(violation, " [ label=\":action:\" shape=\"box\" ];");
+        assertDotGraphContains(violation, " [ label=\":action:\" shape=\"box\" ");
     }
 
     @Test
@@ -31,7 +27,7 @@ public class GenerateViolationDotGraphTest {
         AUG aug = buildAUG(":G:").withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
         Violation violation = new Violation(fullInstance(aug), 1);
 
-        assertDotGraphContains(violation, " [ label=\"order\" style=\"dotted\" ];");
+        assertDotGraphContains(violation, " [ label=\"order\" style=\"dotted\" ");
     }
 
     @Test
@@ -55,7 +51,7 @@ public class GenerateViolationDotGraphTest {
         final AUG aug = buildAUG().withDataNode("D").build();
         final Violation violation = new Violation(fullInstance(aug), 1);
 
-        assertDotGraphContains(violation, "[ label=\"D\" shape=\"ellipse\" ];");
+        assertDotGraphContains(violation, "[ label=\"D\" shape=\"ellipse\" ");
     }
 
     private void assertDotGraphContains(Violation violation, String expectedDotGraphFragment) {
