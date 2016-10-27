@@ -71,6 +71,13 @@ public class TestInstanceBuilder {
         return withNode(targetAndPatternNodeId, targetAndPatternNodeId);
     }
 
+    public TestInstanceBuilder withNodes(String... targetAndPatternNodeIds) {
+        for (String targetAndPatternNodeId : targetAndPatternNodeIds) {
+            withNode(targetAndPatternNodeId);
+        }
+        return this;
+    }
+
     public TestInstanceBuilder withNode(String targetNodeId, String patternNodeId) {
         EGroumNode targetNode = targetAUGBuilder.getNode(targetNodeId);
         if (targetNodeByPatternNode.containsValue(targetNode)) {
@@ -89,6 +96,10 @@ public class TestInstanceBuilder {
                 patternAUGBuilder.getEdge(patternSourceNodeId, type, patternTargetNodeId),
                 targetAUGBuilder.getEdge(targetSourceNodeId, type, targetTargetNodeId));
         return this;
+    }
+
+    public TestInstanceBuilder withEdge(String targetAndPatternSourceNodeId, EGroumDataEdge.Type type, String targetAndPatternTargetNodeId) {
+        return withEdge(targetAndPatternSourceNodeId, targetAndPatternSourceNodeId, type, targetAndPatternTargetNodeId, targetAndPatternTargetNodeId);
     }
 
     public Instance build() {
