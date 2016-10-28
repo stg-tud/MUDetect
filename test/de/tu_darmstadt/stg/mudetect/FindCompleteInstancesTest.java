@@ -10,6 +10,7 @@ import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils.hasInstance;
+import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.extend;
 import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static egroum.EGroumDataEdge.Type.*;
 import static org.hamcrest.Matchers.hasSize;
@@ -18,7 +19,20 @@ import static org.junit.Assert.assertThat;
 public class FindCompleteInstancesTest {
     @Test
     public void findsSingleNodeInstance() throws Exception {
-        assertFindsInstance(buildAUG().withActionNode("C.m()"));
+        assertFindsInstance2(buildAUG().withActionNode("C.m()"));
+    }
+
+    @Test
+    public void findsTwoNodeInstance() throws Exception {
+        assertFindsInstance2(buildAUG().withActionNodes("C.a()", "C.b()").withDataEdge("C.a()", ORDER, "C.b()"));
+    }
+
+    @Test
+    public void ignoresUnmappableTargetNode() throws Exception {
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
+        TestAUGBuilder target = extend(pattern).withDataNode("C").withDataEdge("A", ORDER, "C");
+
+        assertFindsInstance2(pattern, target);
     }
 
     @Test
@@ -104,6 +118,20 @@ public class FindCompleteInstancesTest {
         AUG target = builder.build();
 
         List<Instance> instances = new GreedyInstanceFinder().findInstances(target, pattern);
+
+        assertThat(instances, hasSize(1));
+        assertThat(instances, hasInstance(pattern));
+    }
+
+    private void assertFindsInstance2(TestAUGBuilder patternAndTargetBuilder) {
+        assertFindsInstance2(patternAndTargetBuilder, patternAndTargetBuilder);
+    }
+
+    private void assertFindsInstance2(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder) {
+        Pattern pattern = somePattern(patternBuilder);
+        AUG target = targetBuilder.build();
+
+        List<Instance> instances = new AlternativeMappingsInstanceFinder().findInstances(target, pattern);
 
         assertThat(instances, hasSize(1));
         assertThat(instances, hasInstance(pattern));

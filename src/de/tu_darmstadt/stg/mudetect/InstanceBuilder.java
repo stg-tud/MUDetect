@@ -41,8 +41,19 @@ class InstanceBuilder {
         targetNodeByPatternNode.put(patternNode, targetNode);
     }
 
+    public EGroumNode getMappedTargetNode(EGroumNode patternNode) {
+        return targetNodeByPatternNode.get(patternNode);
+    }
+
     public void map(EGroumEdge targetEdge, EGroumEdge patternEdge) {
         targetEdgeByPatternEdge.put(patternEdge, targetEdge);
+    }
+
+    public InstanceBuilder copy() {
+        InstanceBuilder clone = new InstanceBuilder(target, pattern);
+        clone.targetNodeByPatternNode.putAll(targetNodeByPatternNode);
+        clone.targetEdgeByPatternEdge.putAll(targetEdgeByPatternEdge);
+        return clone;
     }
 
     public Instance build() {
