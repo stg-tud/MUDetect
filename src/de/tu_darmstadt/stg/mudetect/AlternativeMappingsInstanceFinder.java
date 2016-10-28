@@ -80,7 +80,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
     }
 
     private void extend(Extension extension, EGroumNode currentPatternNode) {
-        if (extension.hasNextPatternExtensionEdge()) {
+        while (extension.hasNextPatternExtensionEdge()) {
             EGroumEdge patternEdge = extension.nextPatternExtensionEdge();
             for (InstanceBuilder alternative : extension.alternatives) {
                 // find alternative target edges to map to
