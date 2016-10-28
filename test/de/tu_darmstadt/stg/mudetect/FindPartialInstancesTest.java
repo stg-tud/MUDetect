@@ -46,6 +46,16 @@ public class FindPartialInstancesTest {
     }
 
     @Test
+    public void ignoresReverseEdge() throws Exception {
+        TestAUGBuilder expectation1 = buildAUG().withActionNode("A");
+        TestAUGBuilder expectation2 = buildAUG().withActionNode("B");
+        TestAUGBuilder pattern = extend(expectation1, expectation2).withDataEdge("A", ORDER, "B");
+        TestAUGBuilder target = extend(expectation1, expectation2).withDataEdge("B", ORDER, "A");
+
+        assertFindsInstance2(pattern, target, expectation1, expectation2);
+    }
+
+    @Test
     public void findsMissingConditionEquation() throws Exception {
         TestAUGBuilder builder = buildAUG().withActionNode("List.get()");
         AUG expectedInstance = builder.build();
