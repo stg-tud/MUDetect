@@ -27,7 +27,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             patternExtensionEdges.addAll(pattern.edgesOf(firstPatternNode));
         }
 
-        protected void addFirstPatternNodeAlternative(EGroumNode targetNodeAlternative) {
+        void addFirstPatternNodeAlternative(EGroumNode targetNodeAlternative) {
             InstanceBuilder alternative = new InstanceBuilder(target, pattern);
             alternative.map(targetNodeAlternative, firstPatternNode);
             alternatives.add(alternative);
@@ -39,14 +39,6 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
 
         EGroumEdge nextPatternExtensionEdge() {
             return patternExtensionEdges.poll();
-        }
-
-        public boolean hasAlternatives() {
-            return getNumberOfAlternatives() > 1;
-        }
-
-        public int getNumberOfAlternatives() {
-            return alternatives.size();
         }
 
         public Collection<Instance> getInstances() {
