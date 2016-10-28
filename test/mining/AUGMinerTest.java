@@ -1,6 +1,6 @@
 package mining;
 
-import de.tu_darmstadt.stg.mudetect.model.*;
+import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import egroum.EGroumGraph;
 import egroum.EGroumNode;
@@ -13,11 +13,9 @@ import static de.tu_darmstadt.stg.mudetect.model.PatternTestUtils.isPattern;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static egroum.EGroumDataEdge.Type;
 import static egroum.EGroumTestUtils.buildGroumsForClass;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
+import static utils.CollectionUtils.first;
 
 public class AUGMinerTest {
     @Test
@@ -66,10 +64,5 @@ public class AUGMinerTest {
             }
         }
         throw new IllegalArgumentException("no such node '" + label + "' in " + aug);
-    }
-
-    private static <T> T first(Set<T> set) {
-        assertThat(set, is(not(empty())));
-        return set.iterator().next();
     }
 }
