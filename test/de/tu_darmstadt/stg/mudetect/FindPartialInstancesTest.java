@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,12 +20,10 @@ import static org.junit.Assert.assertThat;
 public class FindPartialInstancesTest {
     @Test
     public void findsMissingMethod() throws Exception {
-        TestAUGBuilder builder = buildAUG().withActionNode("C.m()");
-        AUG target = builder.build();
-        AUG pattern = builder.withActionNode("C.n()")
-                .withDataEdge("C.m()", ORDER, "C.n()").build();
+        TestAUGBuilder target = buildAUG().withActionNode("C.m()");
+        TestAUGBuilder pattern = extend(target).withActionNode("C.n()").withDataEdge("C.m()", ORDER, "C.n()");
 
-        assertFindsInstance(pattern, target, target);
+        assertFindsInstance2(pattern, target, target);
     }
 
     @Test
@@ -75,6 +74,19 @@ public class FindPartialInstancesTest {
 
     private void assertFindsInstance(AUG patternAUG, AUG target, AUG expectedInstance) {
         List<Instance> instances = new GreedyInstanceFinder().findInstances(target, somePattern(patternAUG));
+
+        assertThat(instances, hasSize(1));
+        assertThat(instances, hasInstance(expectedInstance));
+    }
+
+    private void assertFindsInstance2(TestAUGBuilder patternBuilder,
+                                      TestAUGBuilder targetBuilder,
+                                      TestAUGBuilder expectedInstanceBuilder) {
+        AUG target = targetBuilder.build();
+        Pattern pattern = somePattern(patternBuilder.build());
+        AUG expectedInstance = expectedInstanceBuilder.build();
+
+        List<Instance> instances = new AlternativeMappingsInstanceFinder().findInstances(target, pattern);
 
         assertThat(instances, hasSize(1));
         assertThat(instances, hasInstance(expectedInstance));

@@ -17,16 +17,28 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         private final EGroumNode firstPatternNode;
         private final Set<InstanceBuilder> alternatives = new HashSet<>();
 
+        private final Queue<EGroumEdge> patternExtensionEdges = new LinkedList<>();
+
         private Extension(AUG target, Pattern pattern, EGroumNode firstPatternNode) {
             this.target = target;
             this.pattern = pattern;
             this.firstPatternNode = firstPatternNode;
+
+            patternExtensionEdges.addAll(pattern.edgesOf(firstPatternNode));
         }
 
         protected void addFirstPatternNodeAlternative(EGroumNode targetNodeAlternative) {
             InstanceBuilder alternative = new InstanceBuilder(target, pattern);
             alternative.map(targetNodeAlternative, firstPatternNode);
             alternatives.add(alternative);
+        }
+
+        boolean hasNextPatternExtensionEdge() {
+            return !patternExtensionEdges.isEmpty();
+        }
+
+        EGroumEdge nextPatternExtensionEdge() {
+            return patternExtensionEdges.poll();
         }
 
         public boolean hasAlternatives() {
@@ -76,20 +88,19 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
     }
 
     private void extend(Extension extension, EGroumNode currentPatternNode) {
-        // get next pattern edge
-        Map<String, Set<EGroumEdge>> patternOutEdgesByType = extension.pattern.getOutEdgesByType(currentPatternNode);
-        if (!patternOutEdgesByType.isEmpty()) {
-            String edgeType = patternOutEdgesByType.keySet().iterator().next();
-            EGroumEdge patternOutEdge = patternOutEdgesByType.get(edgeType).iterator().next();
+        if (extension.hasNextPatternExtensionEdge()) {
+            EGroumEdge patternOutEdge = extension.nextPatternExtensionEdge();
 
             for (InstanceBuilder alternative : extension.alternatives) {
                 // find alternative target edges to map to
                 EGroumNode mappedTargetNode = alternative.getMappedTargetNode(currentPatternNode);
-                Map<String, Set<EGroumEdge>> targetOutEdgesByType = extension.target.getOutEdgesByType(mappedTargetNode);
-                EGroumEdge targetOutEdge = targetOutEdgesByType.get(edgeType).iterator().next();
+                Set<EGroumEdge> targetOutEdgesByType = extension.target.edgesOf(mappedTargetNode);
+                if (!targetOutEdgesByType.isEmpty()) {
+                    EGroumEdge targetOutEdge = targetOutEdgesByType.iterator().next();
 
-                alternative.map(targetOutEdge.getTarget(), patternOutEdge.getTarget());
-                alternative.map(targetOutEdge, patternOutEdge);
+                    alternative.map(targetOutEdge.getTarget(), patternOutEdge.getTarget());
+                    alternative.map(targetOutEdge, patternOutEdge);
+                }
             }
         }
     }
