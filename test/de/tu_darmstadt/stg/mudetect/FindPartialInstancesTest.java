@@ -36,6 +36,16 @@ public class FindPartialInstancesTest {
     }
 
     @Test
+    public void ignoresNonEqualEdge() throws Exception {
+        TestAUGBuilder expectation1 = buildAUG().withActionNode("A");
+        TestAUGBuilder expectation2 = buildAUG().withActionNode("B");
+        TestAUGBuilder pattern = extend(expectation1, expectation2).withDataEdge("A", ORDER, "B");
+        TestAUGBuilder target = extend(expectation1, expectation2).withDataEdge("A", PARAMETER, "B");
+
+        assertFindsInstance2(pattern, target, expectation1, expectation2);
+    }
+
+    @Test
     public void findsMissingConditionEquation() throws Exception {
         TestAUGBuilder builder = buildAUG().withActionNode("List.get()");
         AUG expectedInstance = builder.build();
@@ -90,14 +100,15 @@ public class FindPartialInstancesTest {
 
     private void assertFindsInstance2(TestAUGBuilder patternBuilder,
                                       TestAUGBuilder targetBuilder,
-                                      TestAUGBuilder expectedInstanceBuilder) {
+                                      TestAUGBuilder... expectedInstanceBuilder) {
         AUG target = targetBuilder.build();
         Pattern pattern = somePattern(patternBuilder.build());
-        AUG expectedInstance = expectedInstanceBuilder.build();
 
         List<Instance> instances = new AlternativeMappingsInstanceFinder().findInstances(target, pattern);
 
-        assertThat(instances, hasSize(1));
-        assertThat(instances, hasInstance(expectedInstance));
+        assertThat(instances, hasSize(expectedInstanceBuilder.length));
+        for (TestAUGBuilder expectationBuilder : expectedInstanceBuilder) {
+            assertThat(instances, hasInstance(expectationBuilder.build()));
+        }
     }
 }

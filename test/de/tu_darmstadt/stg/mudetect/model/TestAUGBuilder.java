@@ -40,7 +40,20 @@ public class TestAUGBuilder {
         return new TestAUGBuilder(name);
     }
 
-    public static TestAUGBuilder extend(TestAUGBuilder baseBuilder) {return new TestAUGBuilder(baseBuilder); }
+    public static TestAUGBuilder join(TestAUGBuilder... builder) {
+        TestAUGBuilder joinedBuilder = null;
+        for (int i = 0; i < builder.length; i++) {
+            if (i == 0) {
+                joinedBuilder = new TestAUGBuilder(builder[0]);
+            } else {
+                joinedBuilder.nodeMap.putAll(builder[i].nodeMap);
+                joinedBuilder.edges.addAll(builder[i].edges);
+            }
+        }
+        return joinedBuilder;
+    }
+
+    public static TestAUGBuilder extend(TestAUGBuilder... baseBuilder) {return new TestAUGBuilder(join(baseBuilder)); }
 
     public TestAUGBuilder withActionNodes(String... nodeNames) {
         for (String nodeName : nodeNames) {

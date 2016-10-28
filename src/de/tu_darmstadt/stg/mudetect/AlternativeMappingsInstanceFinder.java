@@ -96,11 +96,13 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                 EGroumNode mappedTargetNode = alternative.getMappedTargetNode(currentPatternNode);
                 Set<EGroumEdge> targetEdges = extension.target.edgesOf(mappedTargetNode);
                 for (EGroumEdge targetEdge : targetEdges) {
-                    String targetEdgeTargetLabel = targetEdge.getTarget().getLabel();
-                    if (patternEdgeTargetLabel.equals(targetEdgeTargetLabel)) {
-                        alternative.map(targetEdge.getTarget(), patternEdge.getTarget());
-                        alternative.map(targetEdge, patternEdge);
-                        break;
+                    if (patternEdge.getLabel().equals(targetEdge.getLabel())) {
+                        String targetEdgeTargetLabel = targetEdge.getTarget().getLabel();
+                        if (patternEdgeTargetLabel.equals(targetEdgeTargetLabel)) {
+                            alternative.map(targetEdge.getTarget(), patternEdge.getTarget());
+                            alternative.map(targetEdge, patternEdge);
+                            break;
+                        }
                     }
                 }
             }
