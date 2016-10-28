@@ -86,7 +86,7 @@ public class MuDetectRunner extends MuBenchRunner {
     }
 
     private Collection<EGroumGraph> buildGroums(CodePath path) {
-        return new EGroumBuilder(new String[] {path.classPath}).build(path.srcPath);
+        return new EGroumBuilder(null /*new String[] {path.classPath}*/).build(path.srcPath);
     }
 
     private Collection<AUG> buildAUGs(CodePath path) {

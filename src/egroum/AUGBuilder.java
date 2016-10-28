@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 public class AUGBuilder {
 	public Collection<AUG> build(String sourcePath, String classPath) {
-        return new EGroumBuilder(new String[] {classPath}).build(sourcePath).stream()
+        return new EGroumBuilder(null /*new String[] {classPath}*/).build(sourcePath).stream()
                 .map(AUGBuilder::toAUG).collect(Collectors.toSet());
     }
 
