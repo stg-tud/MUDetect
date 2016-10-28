@@ -82,23 +82,30 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
     private void extend(Extension extension, EGroumNode currentPatternNode) {
         if (extension.hasNextPatternExtensionEdge()) {
             EGroumEdge patternEdge = extension.nextPatternExtensionEdge();
-            String patternEdgeTargetLabel = patternEdge.getTarget().getLabel();
             for (InstanceBuilder alternative : extension.alternatives) {
                 // find alternative target edges to map to
                 EGroumNode mappedTargetNode = alternative.getMappedTargetNode(currentPatternNode);
                 Set<EGroumEdge> targetEdges = extension.target.edgesOf(mappedTargetNode);
                 for (EGroumEdge targetEdge : targetEdges) {
-                    if (patternEdge.getLabel().equals(targetEdge.getLabel())) {
-                        String targetEdgeTargetLabel = targetEdge.getTarget().getLabel();
-                        if (patternEdgeTargetLabel.equals(targetEdgeTargetLabel)) {
-                            alternative.map(targetEdge.getTarget(), patternEdge.getTarget());
-                            alternative.map(targetEdge, patternEdge);
-                            break;
-                        }
+                    if (match(patternEdge, targetEdge)) {
+                        alternative.map(targetEdge.getSource(), patternEdge.getSource());
+                        alternative.map(targetEdge.getTarget(), patternEdge.getTarget());
+                        alternative.map(targetEdge, patternEdge);
+                        break;
                     }
                 }
             }
         }
+    }
+
+    private boolean match(EGroumEdge patternEdge, EGroumEdge targetEdge) {
+        return match(patternEdge.getSource(), targetEdge.getSource())
+                && patternEdge.getLabel().equals(targetEdge.getLabel())
+                && match(patternEdge.getTarget(), targetEdge.getTarget());
+    }
+
+    private boolean match(EGroumNode patternNode, EGroumNode targetNode) {
+        return patternNode.getLabel().equals(targetNode.getLabel());
     }
 
     private void removeSubInstances(List<Instance> instances) {

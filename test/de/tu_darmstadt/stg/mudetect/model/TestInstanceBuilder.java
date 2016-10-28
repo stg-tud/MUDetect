@@ -57,6 +57,10 @@ public class TestInstanceBuilder {
         return buildInstance(targetAndPatternAUGBuilder, targetAndPatternAUGBuilder);
     }
 
+    public static Instance fullInstance(TestAUGBuilder targetAndPatternAUGBuilder) {
+        return fullInstance(targetAndPatternAUGBuilder.build());
+    }
+
     private final TestAUGBuilder targetAUGBuilder;
     private final TestAUGBuilder patternAUGBuilder;
     private final Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();

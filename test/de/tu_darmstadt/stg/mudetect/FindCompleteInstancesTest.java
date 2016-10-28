@@ -8,12 +8,13 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils.hasInstances;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils.hasInstance;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.extend;
+import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.buildInstance;
+import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.fullInstance;
 import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static egroum.EGroumDataEdge.Type.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
@@ -31,17 +32,24 @@ public class FindCompleteInstancesTest {
     @Test
     public void ignoresUnmappableTargetNode() throws Exception {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
-        TestAUGBuilder target = extend(pattern).withDataNode("C").withDataEdge("A", ORDER, "C");
+        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B")
+                .withDataNode("C").withDataEdge("A", ORDER, "C");
 
-        assertFindsInstance2(pattern, target);
+        Instance instance = buildInstance(target, pattern).withNodes("A", "B").withEdge("A", ORDER, "B").build();
+        assertFindsInstance2(pattern, target, instance);
     }
 
     @Test
     public void findsTwoOverlappingInstances() throws Exception {
-        TestAUGBuilder pattern = buildAUG().withActionNode("A").withActionNode("B1", "B").withDataEdge("A", ORDER, "B1");
-        TestAUGBuilder target = extend(pattern).withActionNode("B2", "B").withDataEdge("A", ORDER, "B2");
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
+        TestAUGBuilder target = buildAUG().withActionNode("A").withActionNode("B1", "B").withActionNode("B2", "B")
+                .withDataEdge("A", ORDER, "B1").withDataEdge("A", ORDER, "B2");
 
-        assertFindsInstance2(pattern, target, 2);
+        Instance instance1 = buildInstance(target, pattern).withNode("A", "A")
+                .withNode("B1", "B").withEdge("A", "A", ORDER, "B1", "B").build();
+        Instance instance2 = buildInstance(target, pattern).withNode("A", "A")
+                .withNode("B2", "B").withEdge("A", "A", ORDER, "B2", "B").build();
+        assertFindsInstance2(pattern, target, instance1, instance2);
     }
 
     @Test
@@ -133,20 +141,17 @@ public class FindCompleteInstancesTest {
     }
 
     private void assertFindsInstance2(TestAUGBuilder patternAndTargetBuilder) {
-        assertFindsInstance2(patternAndTargetBuilder, patternAndTargetBuilder);
+        assertFindsInstance2(patternAndTargetBuilder, patternAndTargetBuilder, fullInstance(patternAndTargetBuilder));
     }
 
-    private void assertFindsInstance2(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder) {
-        assertFindsInstance2(patternBuilder, targetBuilder, 1);
-    }
-
-    private void assertFindsInstance2(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder, int numberOfInstances) {
+    private void assertFindsInstance2(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder,
+                                      Instance... expectedInstances) {
         Pattern pattern = somePattern(patternBuilder);
         AUG target = targetBuilder.build();
 
         List<Instance> instances = new AlternativeMappingsInstanceFinder().findInstances(target, pattern);
 
-        assertThat(instances, hasSize(numberOfInstances));
-        assertThat(instances, hasInstances(pattern));
+        assertThat(instances, hasSize(expectedInstances.length));
+        assertThat(instances, containsInAnyOrder(expectedInstances));
     }
 }

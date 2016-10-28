@@ -1,9 +1,6 @@
 package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Instance;
-import de.tu_darmstadt.stg.mudetect.model.Pattern;
-import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
+import de.tu_darmstadt.stg.mudetect.model.*;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -12,8 +9,10 @@ import java.util.List;
 import static de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils.hasInstance;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.extend;
+import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.buildInstance;
 import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static egroum.EGroumDataEdge.Type.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
@@ -21,38 +20,40 @@ public class FindPartialInstancesTest {
     @Test
     public void findsMissingNode() throws Exception {
         TestAUGBuilder target = buildAUG().withActionNode("C.m()");
-        TestAUGBuilder pattern = extend(target).withActionNode("C.n()").withDataEdge("C.m()", ORDER, "C.n()");
+        TestAUGBuilder pattern = buildAUG().withActionNode("C.m()")
+                .withActionNode("C.n()").withDataEdge("C.m()", ORDER, "C.n()");
 
-        assertFindsInstance2(pattern, target, target);
+        TestInstanceBuilder instance = buildInstance(target, pattern).withNode("C.m()");
+        assertFindsInstance2(pattern, target, instance);
     }
 
     @Test
     public void excludesNonEqualNode() throws Exception {
-        TestAUGBuilder expectation = buildAUG().withActionNode("A");
-        TestAUGBuilder pattern = extend(expectation).withActionNode("B").withDataEdge("A", ORDER, "B");
-        TestAUGBuilder target = extend(expectation).withActionNode("C").withDataEdge("A", ORDER, "C");
+        TestAUGBuilder pattern = buildAUG().withActionNode("A").withActionNode("B").withDataEdge("A", ORDER, "B");
+        TestAUGBuilder target = buildAUG().withActionNode("A").withActionNode("C").withDataEdge("A", ORDER, "C");
 
-        assertFindsInstance2(pattern, target, expectation);
+        TestInstanceBuilder instance = buildInstance(target, pattern).withNode("A");
+        assertFindsInstance2(pattern, target, instance);
     }
 
     @Test
     public void ignoresNonEqualEdge() throws Exception {
-        TestAUGBuilder expectation1 = buildAUG().withActionNode("A");
-        TestAUGBuilder expectation2 = buildAUG().withActionNode("B");
-        TestAUGBuilder pattern = extend(expectation1, expectation2).withDataEdge("A", ORDER, "B");
-        TestAUGBuilder target = extend(expectation1, expectation2).withDataEdge("A", PARAMETER, "B");
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
+        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", PARAMETER, "B");
 
-        assertFindsInstance2(pattern, target, expectation1, expectation2);
+        TestInstanceBuilder instance1 = buildInstance(target, pattern).withNode("A");
+        TestInstanceBuilder instance2 = buildInstance(target, pattern).withNode("B");
+        assertFindsInstance2(pattern, target, instance1, instance2);
     }
 
     @Test
     public void ignoresReverseEdge() throws Exception {
-        TestAUGBuilder expectation1 = buildAUG().withActionNode("A");
-        TestAUGBuilder expectation2 = buildAUG().withActionNode("B");
-        TestAUGBuilder pattern = extend(expectation1, expectation2).withDataEdge("A", ORDER, "B");
-        TestAUGBuilder target = extend(expectation1, expectation2).withDataEdge("B", ORDER, "A");
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
+        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("B", ORDER, "A");
 
-        assertFindsInstance2(pattern, target, expectation1, expectation2);
+        TestInstanceBuilder instance1 = buildInstance(target, pattern).withNode("A");
+        TestInstanceBuilder instance2 = buildInstance(target, pattern).withNode("B");
+        assertFindsInstance2(pattern, target, instance1, instance2);
     }
 
     @Test
@@ -110,15 +111,18 @@ public class FindPartialInstancesTest {
 
     private void assertFindsInstance2(TestAUGBuilder patternBuilder,
                                       TestAUGBuilder targetBuilder,
-                                      TestAUGBuilder... expectedInstanceBuilder) {
+                                      TestInstanceBuilder... expectedInstanceBuilder) {
         AUG target = targetBuilder.build();
         Pattern pattern = somePattern(patternBuilder.build());
 
         List<Instance> instances = new AlternativeMappingsInstanceFinder().findInstances(target, pattern);
 
         assertThat(instances, hasSize(expectedInstanceBuilder.length));
-        for (TestAUGBuilder expectationBuilder : expectedInstanceBuilder) {
-            assertThat(instances, hasInstance(expectationBuilder.build()));
+        Instance[] expectedInstances = new Instance[expectedInstanceBuilder.length];
+        for (int i = 0; i < expectedInstanceBuilder.length; i++) {
+            expectedInstances[i] = expectedInstanceBuilder[i].build();
         }
+
+        assertThat(instances, containsInAnyOrder(expectedInstances));
     }
 }
