@@ -19,7 +19,7 @@ import static org.junit.Assert.assertThat;
 
 public class FindPartialInstancesTest {
     @Test
-    public void findsMissingMethod() throws Exception {
+    public void findsMissingNode() throws Exception {
         TestAUGBuilder target = buildAUG().withActionNode("C.m()");
         TestAUGBuilder pattern = extend(target).withActionNode("C.n()").withDataEdge("C.m()", ORDER, "C.n()");
 
