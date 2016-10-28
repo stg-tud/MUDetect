@@ -7,6 +7,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.fullInstance;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 
 public class InstanceTestUtils {
@@ -41,6 +42,14 @@ public class InstanceTestUtils {
     }
 
     public static Matcher<Iterable<Instance>> hasInstance(AUG aug) {
-        return hasItems(fullInstance(aug));
+        return hasInstances(aug);
+    }
+
+    public static Matcher<Iterable<Instance>> hasInstances(AUG... augs) {
+        Instance[] instances = new Instance[augs.length];
+        for (int i = 0; i < augs.length; i++) {
+            instances[i] = fullInstance(augs[i]);
+        }
+        return hasItems(instances);
     }
 }

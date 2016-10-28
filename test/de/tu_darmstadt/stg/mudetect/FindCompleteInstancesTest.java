@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils.hasInstances;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils.hasInstance;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.extend;
@@ -33,6 +34,14 @@ public class FindCompleteInstancesTest {
         TestAUGBuilder target = extend(pattern).withDataNode("C").withDataEdge("A", ORDER, "C");
 
         assertFindsInstance2(pattern, target);
+    }
+
+    @Test
+    public void findsTwoOverlappingInstances() throws Exception {
+        TestAUGBuilder pattern = buildAUG().withActionNode("A").withActionNode("B1", "B").withDataEdge("A", ORDER, "B1");
+        TestAUGBuilder target = extend(pattern).withActionNode("B2", "B").withDataEdge("A", ORDER, "B2");
+
+        assertFindsInstance2(pattern, target, 2);
     }
 
     @Test
@@ -128,12 +137,16 @@ public class FindCompleteInstancesTest {
     }
 
     private void assertFindsInstance2(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder) {
+        assertFindsInstance2(patternBuilder, targetBuilder, 1);
+    }
+
+    private void assertFindsInstance2(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder, int numberOfInstances) {
         Pattern pattern = somePattern(patternBuilder);
         AUG target = targetBuilder.build();
 
         List<Instance> instances = new AlternativeMappingsInstanceFinder().findInstances(target, pattern);
 
-        assertThat(instances, hasSize(1));
-        assertThat(instances, hasInstance(pattern));
+        assertThat(instances, hasSize(numberOfInstances));
+        assertThat(instances, hasInstances(pattern));
     }
 }
