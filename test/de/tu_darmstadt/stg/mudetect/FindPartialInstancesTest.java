@@ -27,6 +27,15 @@ public class FindPartialInstancesTest {
     }
 
     @Test
+    public void excludesNonEqualNode() throws Exception {
+        TestAUGBuilder expectation = buildAUG().withActionNode("A");
+        TestAUGBuilder pattern = extend(expectation).withActionNode("B").withDataEdge("A", ORDER, "B");
+        TestAUGBuilder target = extend(expectation).withActionNode("C").withDataEdge("A", ORDER, "C");
+
+        assertFindsInstance2(pattern, target, expectation);
+    }
+
+    @Test
     public void findsMissingConditionEquation() throws Exception {
         TestAUGBuilder builder = buildAUG().withActionNode("List.get()");
         AUG expectedInstance = builder.build();

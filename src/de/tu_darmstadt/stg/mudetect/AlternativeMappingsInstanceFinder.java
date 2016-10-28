@@ -90,16 +90,18 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
     private void extend(Extension extension, EGroumNode currentPatternNode) {
         if (extension.hasNextPatternExtensionEdge()) {
             EGroumEdge patternEdge = extension.nextPatternExtensionEdge();
-
+            String patternEdgeTargetLabel = patternEdge.getTarget().getLabel();
             for (InstanceBuilder alternative : extension.alternatives) {
                 // find alternative target edges to map to
                 EGroumNode mappedTargetNode = alternative.getMappedTargetNode(currentPatternNode);
                 Set<EGroumEdge> targetEdges = extension.target.edgesOf(mappedTargetNode);
-                if (!targetEdges.isEmpty()) {
-                    EGroumEdge targetEdge = targetEdges.iterator().next();
-
-                    alternative.map(targetEdge.getTarget(), patternEdge.getTarget());
-                    alternative.map(targetEdge, patternEdge);
+                for (EGroumEdge targetEdge : targetEdges) {
+                    String targetEdgeTargetLabel = targetEdge.getTarget().getLabel();
+                    if (patternEdgeTargetLabel.equals(targetEdgeTargetLabel)) {
+                        alternative.map(targetEdge.getTarget(), patternEdge.getTarget());
+                        alternative.map(targetEdge, patternEdge);
+                        break;
+                    }
                 }
             }
         }
