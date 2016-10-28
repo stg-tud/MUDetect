@@ -37,6 +37,10 @@ class InstanceBuilder {
                 !targetNodeByPatternNode.containsKey(patterNode);
     }
 
+    public boolean isUnmappedTargetEdge(EGroumEdge targetEdge) {
+        return !targetEdgeByPatternEdge.values().contains(targetEdge);
+    }
+
     public void map(EGroumNode targetNode, EGroumNode patternNode) {
         targetNodeByPatternNode.put(patternNode, targetNode);
     }

@@ -14,7 +14,9 @@ import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static egroum.EGroumDataEdge.Type.*;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static utils.CollectionUtils.only;
 
 public class FindPartialInstancesTest {
     @Test
@@ -54,6 +56,17 @@ public class FindPartialInstancesTest {
         TestInstanceBuilder instance1 = buildInstance(target, pattern).withNode("A");
         TestInstanceBuilder instance2 = buildInstance(target, pattern).withNode("B");
         assertFindsInstance2(pattern, target, instance1, instance2);
+    }
+
+    @Test
+    public void mapsTargetEdgeOnlyOnce() throws Exception {
+        TestAUGBuilder pattern = buildAUG().withActionNode("A").withActionNode("B1", "B").withActionNode("B2", "B")
+                .withDataEdge("A", ORDER, "B1").withDataEdge("A", ORDER, "B2");
+        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
+
+        List<Instance> instances = new AlternativeMappingsInstanceFinder().findInstances(target.build(), somePattern(pattern));
+
+        assertThat(only(instances).getNodeSize(), is(2));
     }
 
     @Test
