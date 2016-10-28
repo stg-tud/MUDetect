@@ -52,4 +52,18 @@ public class AUG extends DirectedMultigraph<EGroumNode, EGroumEdge> {
         }
         return inEdgesByType;
     }
+
+    public Map<String, Set<EGroumNode>> getMeaningfulActionNodesByLabel() {
+        Map<String, Set<EGroumNode>> nodesByLabel = new HashMap<>();
+        for (EGroumNode node : vertexSet()) {
+            if (node.isMeaningfulAction()) {
+                String label = node.getLabel();
+                if (!nodesByLabel.containsKey(label)) {
+                    nodesByLabel.put(label, new HashSet<>());
+                }
+                nodesByLabel.get(label).add(node);
+            }
+        }
+        return nodesByLabel;
+    }
 }

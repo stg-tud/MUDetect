@@ -93,7 +93,7 @@ public class GreedyInstanceFinder implements InstanceFinder {
     }
 
     private WorkQueue getCommonNodesToCover(AUG target, AUG pattern) {
-        Map<String, Set<EGroumNode>> patternNodesByLabel = getMeaningfulActionNodesByLabel(pattern);
+        Map<String, Set<EGroumNode>> patternNodesByLabel = pattern.getMeaningfulActionNodesByLabel();
         WorkQueue queue = new WorkQueue();
         for (EGroumNode targetNode : target.vertexSet()) {
             String label = targetNode.getLabel();
@@ -104,20 +104,6 @@ public class GreedyInstanceFinder implements InstanceFinder {
             }
         }
         return queue;
-    }
-
-    private Map<String, Set<EGroumNode>> getMeaningfulActionNodesByLabel(AUG aug) {
-        Map<String, Set<EGroumNode>> nodesByLabel = new HashMap<>();
-        for (EGroumNode node : aug.vertexSet()) {
-            if (node.isMeaningfulAction()) {
-                String label = node.getLabel();
-                if (!nodesByLabel.containsKey(label)) {
-                    nodesByLabel.put(label, new HashSet<>());
-                }
-                nodesByLabel.get(label).add(node);
-            }
-        }
-        return nodesByLabel;
     }
 
     private void removeSubInstances(List<Instance> instances) {
