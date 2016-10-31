@@ -1,0 +1,9 @@
+image: maven:3.3.3
+
+pipelines:
+  branches:
+    master:
+      - step:
+          script:
+            - mvn --version
+            - mvn clean verify

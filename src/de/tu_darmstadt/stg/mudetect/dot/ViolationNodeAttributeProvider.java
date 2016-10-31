@@ -17,7 +17,7 @@ public class ViolationNodeAttributeProvider extends AUGNodeAttributeProvider {
     @Override
     public Map<String, String> getComponentAttributes(EGroumNode node) {
         final Map<String, String> attributes = super.getComponentAttributes(node);
-        if (!instance.mapsPatternNode(node)) {
+        if (!instance.mapsNode(node)) {
             attributes.put("color", unmappedNodeColor);
             attributes.put("fontcolor", unmappedNodeColor);
         }

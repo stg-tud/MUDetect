@@ -32,12 +32,12 @@ public class Instance {
         return pattern;
     }
 
-    public boolean mapsPatternNode(EGroumNode patternNode) {
-        return patternOverlap.containsVertex(patternNode);
+    public boolean mapsNode(EGroumNode node) {
+        return patternOverlap.containsVertex(node) || targetOverlap.containsVertex(node);
     }
 
-    public boolean mapsPatternEdge(EGroumEdge patternEdge) {
-        return patternOverlap.containsEdge(patternEdge);
+    public boolean mapsEdge(EGroumEdge edge) {
+        return patternOverlap.containsEdge(edge) || targetOverlap.containsEdge(edge);
     }
 
     public AUG getTarget() { return (AUG) targetOverlap.getBase(); }

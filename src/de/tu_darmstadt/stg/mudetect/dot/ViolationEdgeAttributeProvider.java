@@ -17,7 +17,7 @@ public class ViolationEdgeAttributeProvider extends AUGEdgeAttributeProvider {
     @Override
     public Map<String, String> getComponentAttributes(EGroumEdge edge) {
         final Map<String, String> attributes = super.getComponentAttributes(edge);
-        if (!instance.mapsPatternEdge(edge)) {
+        if (!instance.mapsEdge(edge)) {
             attributes.put("color", unmappedNodeColor);
             attributes.put("fontcolor", unmappedNodeColor);
         }

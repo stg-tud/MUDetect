@@ -14,7 +14,7 @@ public class InstanceTestUtils {
         return new BaseMatcher<Instance>() {
             @Override
             public boolean matches(Object item) {
-                return item instanceof Instance && ((Instance) item).mapsPatternNode(node);
+                return item instanceof Instance && ((Instance) item).mapsNode(node);
             }
 
             @Override
@@ -29,7 +29,7 @@ public class InstanceTestUtils {
         return new BaseMatcher<Instance>() {
             @Override
             public boolean matches(Object item) {
-                return item instanceof Instance && ((Instance) item).mapsPatternEdge(edge);
+                return item instanceof Instance && ((Instance) item).mapsEdge(edge);
             }
 
             @Override

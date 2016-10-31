@@ -24,7 +24,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
 
         String dotGraph = toDotGraph(someViolation(instance));
 
-        assertThat(dotGraph, containsString("label=\"A\""));
+        assertDotGraphContains(dotGraph, "label=\"A\"");
     }
 
     @Test
@@ -44,13 +44,33 @@ public class GenerateTargetEnvironmentDotGraphTest {
         TestAUGBuilder target = extend(env).withActionNode("C").withDataEdge("B", ORDER, "C");
         TestInstanceBuilder instance = buildInstance(target, pattern).withNode("A", "A");
 
-        String dotGraph = toDotGraph(instance);
+        String dotGraph = toDotGraph(someViolation(instance));
 
         assertThat(dotGraph, not(containsString("label=\"C\"")));
     }
 
-    private String toDotGraph(TestInstanceBuilder instance) {
-        return toDotGraph(someViolation(instance));
+    @Test
+    public void graysOutTargetOnlyElements() throws Exception {
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A");
+        TestAUGBuilder target = extend(pattern).withActionNode("B").withDataEdge("A", ORDER, "B");
+        TestInstanceBuilder instance = buildInstance(target, pattern).withNode("A", "A");
+
+        String dotGraph = toDotGraph(someViolation(instance));
+
+        assertDotGraphContains(dotGraph, " [ label=\"B\" shape=\"box\" color=\"gray\" fontcolor=\"gray\" ];");
+        assertDotGraphContains(dotGraph, " [ label=\"order\" style=\"dotted\" color=\"gray\" fontcolor=\"gray\" ];");
+    }
+
+    @Test
+    public void highlightsMappedElements() throws Exception {
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
+        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
+        TestInstanceBuilder instance = buildInstance(target, pattern).withNodes("A", "B").withEdge("A", ORDER, "B");
+
+        String dotGraph = toDotGraph(someViolation(instance));
+
+        assertDotGraphContains(dotGraph, " [ label=\"A\" shape=\"box\" ];");
+        assertDotGraphContains(dotGraph, " [ label=\"order\" style=\"dotted\" ];");
     }
 
     private String toDotGraph(Violation violation) {
@@ -77,5 +97,9 @@ public class GenerateTargetEnvironmentDotGraphTest {
                 description.appendText(" exactly once");
             }
         };
+    }
+
+    private void assertDotGraphContains(String dotGraph, String substring) {
+        assertThat(dotGraph, containsString(substring));
     }
 }
