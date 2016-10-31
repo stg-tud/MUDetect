@@ -50,8 +50,10 @@ public class Mine {
 			sb.append("::");
 			sb.append(a.getPatternFreq());
 			sb.append("::");
-			for (Fragment f : a.getInstances())
+			for (Fragment f : a.getInstances()) {
 				sb.append(f.getNodes());
+				break;
+			}
 			sb.append("::");
 			sb.append(a.getPattern().getNodes());
 			FileIO.logStream.println(sb.toString());
