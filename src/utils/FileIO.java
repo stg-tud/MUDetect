@@ -174,6 +174,16 @@ public class FileIO {
 			return null;
 		}
 	}
+
+	public static ArrayList<File> getPaths(File dir) {
+		ArrayList<File> files = new ArrayList<>();
+		if (dir.isDirectory())
+			for (File sub : dir.listFiles())
+				files.addAll(getPaths(sub));
+		else if (dir.getName().endsWith(".java"))
+			files.add(dir);
+		return files;
+	}
 	
 	public static int countLOC(File file, String extension)
 	{

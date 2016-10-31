@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -16,13 +17,20 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTMatcher;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
@@ -30,6 +38,8 @@ import utils.FileIO;
 import utils.JavaASTUtil;
 
 public class EGroumBuilder {
+	
+	static boolean COLLAPSE_ISOMORPHIC_SUBGRAPHS = true, KEEP_TEMPORARY_DATA_NODES = true;
 
 	private String[] classpaths;
 	
@@ -39,6 +49,12 @@ public class EGroumBuilder {
 			for (int i = 0; i < classpaths.length; i++)
 				this.classpaths[i] = classpaths[i];
 		}
+	}
+
+	public ArrayList<EGroumGraph> buildBatch(String path) {
+		buildStandardJars();
+		buildHierarchy(new File(path));
+		return buildBatchGroums(new File(path));
 	}
 
 	public ArrayList<EGroumGraph> build(String path) {
@@ -292,6 +308,44 @@ public class EGroumBuilder {
 		className = className.replace('/', '.'); // Is `/' on all systems, even DOS
 		className = className.substring(className.lastIndexOf('.') + 1);
 		return className;
+	}
+
+	private ArrayList<EGroumGraph> buildBatchGroums(File dir) {
+		ArrayList<File> files = FileIO.getPaths(dir);
+		String[] paths = new String[files.size()];
+		for (int i = 0; i < files.size(); i++) {
+			paths[i] = files.get(i).getAbsolutePath();
+		}
+		HashMap<String, CompilationUnit> cus = new HashMap<>();
+		FileASTRequestor r = new FileASTRequestor() {
+			@Override
+			public void acceptAST(String sourceFilePath, CompilationUnit ast) {
+				cus.put(sourceFilePath, ast);
+			}
+		};
+		@SuppressWarnings("rawtypes")
+		Map options = JavaCore.getOptions();
+		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
+		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_8);
+		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
+		ASTParser parser = ASTParser.newParser(AST.JLS8);
+		parser.setCompilerOptions(options);
+		parser.setEnvironment(
+				classpaths, 
+				new String[]{}, 
+				new String[]{}, 
+				true);
+		parser.setResolveBindings(true);
+		parser.setBindingsRecovery(true);
+		parser.createASTs(paths, null, new String[0], r, null);
+		ArrayList<EGroumGraph> groums = new ArrayList<>();
+		for (String path : cus.keySet()) {
+			CompilationUnit cu = cus.get(path);
+			for (int i = 0 ; i < cu.types().size(); i++)
+				if (cu.types().get(i) instanceof TypeDeclaration)
+					groums.addAll(buildGroums((TypeDeclaration) cu.types().get(i), path, ""));
+		}
+		return groums;
 	}
 
 	private ArrayList<EGroumGraph> buildGroums(File file) {
