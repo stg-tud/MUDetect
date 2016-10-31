@@ -27,6 +27,7 @@ public class Miner {
 	public double maxSingleNodePrevalence = 0.5;
 	private String projectName;
 	public ArrayList<Lattice> lattices = new ArrayList<Lattice>();
+	public ArrayList<Anomaly> anomalies = new ArrayList<>();
 	public String output_path = "output/patterns";
 	
 	public Miner(String projectName) {
@@ -210,6 +211,10 @@ public class Miner {
 					ip.add2Lattice(lattices);
 					pattern.getFragments().removeAll(inextensibles);
 				}
+			} else if (xfreq >= Pattern.minFreq && !inextensibles.isEmpty() /*&& inextensibles.size() <= 2*/){
+				// report anomalies
+				double rareness = 1 - inextensibles.size() * 1.0 / pattern.getFreq();
+				anomalies.add(new Anomaly(rareness, pattern.getFreq(), inextensibles, group));
 			}
 			if (xfreq >= Pattern.minFreq) {
 				Pattern xp = new Pattern(group, xfreq);
@@ -243,6 +248,15 @@ public class Miner {
 			pattern.clear();
 		} else
 			pattern.add2Lattice(lattices);
+	}
+
+	private String toString(HashSet<Fragment> fs) {
+		StringBuilder sb = new StringBuilder();
+		for (Fragment f : fs) {
+			sb.append(f.getNodes());
+			break;
+		}
+		return sb.toString();
 	}
 
 	private boolean isGiant(HashSet<Fragment> xfs, Pattern pattern, String label) {
