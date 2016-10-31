@@ -19,7 +19,7 @@ import utils.FileIO;
 public class TestParser {
 	private static ASTParser parser;
 	private static HashMap<String, ASTNode> asts = new HashMap<>();
-	private static int count = 0;
+	private static int mismatches = 0;
 
 	public static void main(String[] args) {
 		ArrayList<File> files = getPaths(new String[] {"src"});
@@ -47,7 +47,7 @@ public class TestParser {
 
 	private static void parseBatch(ArrayList<File> files) {
 		long start = System.currentTimeMillis();
-		count = 0;
+		mismatches = 0;
 		String[] paths = new String[files.size()];
 		for (int i = 0; i < files.size(); i++) {
 			paths[i] = files.get(i).getAbsolutePath();
@@ -78,9 +78,9 @@ public class TestParser {
 					return false;
 				}
 			}, node)) {
-				count++;
+				mismatches++;
 				//throw new RuntimeException();
-				System.err.println("Not matched!!! " + count);
+				System.err.println("Not matched!!! " + mismatches);
 			}
 		}
 		long end = System.currentTimeMillis();
@@ -89,7 +89,7 @@ public class TestParser {
 
 	public static void parse(ArrayList<File> files) {
 		long start = System.currentTimeMillis();
-		count = 0;
+		mismatches = 0;
 		for (File file : files) {
 			String name = file.getName();
 			String source = FileIO.readStringFromFile(file.getAbsolutePath());
@@ -115,9 +115,9 @@ public class TestParser {
 						return false;
 					}
 				}, node)) {
-					count++;
+					mismatches++;
 					//throw new RuntimeException();
-					System.err.println("Not matched!!! " + count);
+					System.err.println("Not matched!!! " + mismatches);
 				}
 		}
 		long end = System.currentTimeMillis();
