@@ -36,6 +36,12 @@ public class FindCompleteInstancesTest {
     }
 
     @Test
+    public void findsFourNodeChain() throws Exception {
+        assertFindsInstance2(buildAUG().withActionNodes("A", "B", "C", "D")
+                .withDataEdge("A", ORDER, "B").withDataEdge("B", ORDER, "C").withDataEdge("C", ORDER, "D"));
+    }
+
+    @Test
     public void ignoresUnmappableTargetNode() throws Exception {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B")
