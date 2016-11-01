@@ -127,6 +127,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             Fragment extendedFragment = new Fragment(fragment, patternEdge);
             for (InstanceBuilder alternative : fragment.alternatives) {
                 Set<EGroumEdge> candidateTargetEdges = extendedFragment.getCandidateTargetEdges(alternative);
+                boolean extended = false;
                 for (EGroumEdge targetEdge : candidateTargetEdges) {
                     if (match(patternEdge, targetEdge)) {
                         InstanceBuilder extendedAlternative = alternative.copy();
@@ -134,7 +135,11 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                         extendedAlternative.map(targetEdge.getTarget(), patternEdge.getTarget());
                         extendedAlternative.map(targetEdge, patternEdge);
                         extendedFragment.alternatives.add(extendedAlternative);
+                        extended = true;
                     }
+                }
+                if (!extended) {
+                    extendedFragment.alternatives.add(alternative);
                 }
             }
             if (extendedFragment.hasAlternatives()) {

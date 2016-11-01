@@ -70,6 +70,21 @@ public class FindPartialInstancesTest {
     }
 
     @Test
+    public void findsInstanceAndPartialInstance() throws Exception {
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B", "C")
+                .withDataEdge("A", ORDER, "B").withDataEdge("B", ORDER, "C");
+        TestAUGBuilder target = buildAUG().withActionNodes("A", "C").withActionNode("B1", "B").withActionNode("B2", "B")
+                .withDataEdge("A", ORDER, "B1").withDataEdge("A", ORDER, "B2").withDataEdge("B1", ORDER, "C");
+
+        TestInstanceBuilder fullInstance = buildInstance(target, pattern).withNodes("A", "C").withNode("B1", "B")
+                .withEdge("A", "A", ORDER, "B1", "B").withEdge("B1", "B", ORDER, "C", "C");
+        TestInstanceBuilder partialInstance = buildInstance(target, pattern).withNode("A").withNode("B2", "B")
+                .withEdge("A", "A", ORDER, "B2", "B");
+
+        assertFindsInstance2(pattern, target, fullInstance, partialInstance);
+    }
+
+    @Test
     public void findsMissingConditionEquation() throws Exception {
         TestAUGBuilder builder = buildAUG().withActionNode("List.get()");
         AUG expectedInstance = builder.build();
