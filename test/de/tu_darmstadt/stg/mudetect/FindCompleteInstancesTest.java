@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils.hasInstance;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.buildInstance;
 import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.fullInstance;
@@ -21,23 +20,23 @@ import static org.junit.Assert.assertThat;
 public class FindCompleteInstancesTest {
     @Test
     public void findsSingleNodeInstance() throws Exception {
-        assertFindsInstance2(buildAUG().withActionNode("C.m()"));
+        assertFindsInstance(buildAUG().withActionNode("C.m()"));
     }
 
     @Test
     public void findsTwoNodeInstance() throws Exception {
-        assertFindsInstance2(buildAUG().withActionNodes("C.a()", "C.b()").withDataEdge("C.a()", ORDER, "C.b()"));
+        assertFindsInstance(buildAUG().withActionNodes("C.a()", "C.b()").withDataEdge("C.a()", ORDER, "C.b()"));
     }
 
     @Test
     public void findsThreeNodeChain() throws Exception {
-        assertFindsInstance2(buildAUG().withActionNodes("A", "B", "C")
+        assertFindsInstance(buildAUG().withActionNodes("A", "B", "C")
                 .withDataEdge("A", ORDER, "B").withDataEdge("B", ORDER, "C"));
     }
 
     @Test
     public void findsFourNodeChain() throws Exception {
-        assertFindsInstance2(buildAUG().withActionNodes("A", "B", "C", "D")
+        assertFindsInstance(buildAUG().withActionNodes("A", "B", "C", "D")
                 .withDataEdge("A", ORDER, "B").withDataEdge("B", ORDER, "C").withDataEdge("C", ORDER, "D"));
     }
 
@@ -48,7 +47,7 @@ public class FindCompleteInstancesTest {
                 .withDataNode("C").withDataEdge("A", ORDER, "C");
 
         Instance instance = buildInstance(target, pattern).withNodes("A", "B").withEdge("A", ORDER, "B").build();
-        assertFindsInstance2(pattern, target, instance);
+        assertFindsInstance(pattern, target, instance);
     }
 
     @Test
@@ -61,7 +60,7 @@ public class FindCompleteInstancesTest {
                 .withNode("B1", "B").withEdge("A", "A", ORDER, "B1", "B").build();
         Instance instance2 = buildInstance(target, pattern).withNode("A", "A")
                 .withNode("B2", "B").withEdge("A", "A", ORDER, "B2", "B").build();
-        assertFindsInstance2(pattern, target, instance1, instance2);
+        assertFindsInstance(pattern, target, instance1, instance2);
     }
 
     @Test
@@ -142,22 +141,12 @@ public class FindCompleteInstancesTest {
                 .withDataEdge("A.check()", CONDITION, "B2"));
     }
 
-    private void assertFindsInstance(TestAUGBuilder builder) {
-        Pattern pattern = somePattern(builder);
-        AUG target = builder.build();
-
-        List<Instance> instances = new GreedyInstanceFinder().findInstances(target, pattern);
-
-        assertThat(instances, hasSize(1));
-        assertThat(instances, hasInstance(pattern));
+    private void assertFindsInstance(TestAUGBuilder patternAndTargetBuilder) {
+        assertFindsInstance(patternAndTargetBuilder, patternAndTargetBuilder, fullInstance(patternAndTargetBuilder));
     }
 
-    private void assertFindsInstance2(TestAUGBuilder patternAndTargetBuilder) {
-        assertFindsInstance2(patternAndTargetBuilder, patternAndTargetBuilder, fullInstance(patternAndTargetBuilder));
-    }
-
-    private void assertFindsInstance2(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder,
-                                      Instance... expectedInstances) {
+    private void assertFindsInstance(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder,
+                                     Instance... expectedInstances) {
         Pattern pattern = somePattern(patternBuilder);
         AUG target = targetBuilder.build();
 
