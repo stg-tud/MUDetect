@@ -51,7 +51,8 @@ public class Instance {
     }
 
     public boolean isSubInstanceOf(Instance other) {
-        return other.getMappedTargetNodes().containsAll(this.getMappedTargetNodes());
+        return other.getMappedTargetNodes().containsAll(this.getMappedTargetNodes()) &&
+                other.getMappedTargetEdges().containsAll(getMappedTargetEdges());
     }
 
     public int getNodeSize() {

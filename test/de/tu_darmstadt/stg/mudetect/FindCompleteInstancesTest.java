@@ -13,9 +13,11 @@ import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.buildInstan
 import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.fullInstance;
 import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static egroum.EGroumDataEdge.Type.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
+import static utils.CollectionUtils.only;
 
 public class FindCompleteInstancesTest {
     @Test
@@ -141,18 +143,59 @@ public class FindCompleteInstancesTest {
                 .withDataEdge("A.check()", CONDITION, "B2"));
     }
 
+    /**
+     * With the first greedy instance finder we had the problem that with too many alternatives (like when many equal
+     * nodes appear in a pattern/target) the finder would likely pick a wrong mapping between pattern and target nodes,
+     * causing many false positives. This test is derived from an evaluation scenario where this became apparent.
+     */
+    @Test
+    public void issue_unluckyMapping() throws Exception {
+        TestAUGBuilder pattern = buildAUG()
+                .withActionNode("init", "StringBuilder.<init>")
+                .withActionNode("toString", "Object.toString()")
+                .withActionNode("append1", "StringBuilder.append()")
+                .withActionNode("append2", "StringBuilder.append()")
+                .withDataEdge("init", RECEIVER, "append1")
+                .withDataEdge("init", RECEIVER, "append2")
+                .withDataEdge("init", RECEIVER, "toString")
+                .withDataEdge("append1", ORDER, "append2")
+                .withDataEdge("append1", ORDER, "toString")
+                .withDataEdge("append2", ORDER, "toString");
+
+        TestAUGBuilder target = buildAUG()
+                .withActionNode("init", "StringBuilder.<init>")
+                .withActionNode("toString", "Object.toString()")
+                .withActionNode("append1", "StringBuilder.append()")
+                .withActionNode("append2", "StringBuilder.append()")
+                // Adding the same edges in different order to increase the likelihood of picking a wrong mapping.
+                .withDataEdge("append2", ORDER, "toString")
+                .withDataEdge("init", RECEIVER, "append2")
+                .withDataEdge("init", RECEIVER, "toString")
+                .withDataEdge("init", RECEIVER, "append1")
+                .withDataEdge("append1", ORDER, "toString")
+                .withDataEdge("append1", ORDER, "append2");
+
+        List<Instance> instances = findInstances(target, pattern);
+
+        assertThat(only(instances).getEdgeSize(), is(6));
+    }
+
     private void assertFindsInstance(TestAUGBuilder patternAndTargetBuilder) {
         assertFindsInstance(patternAndTargetBuilder, patternAndTargetBuilder, fullInstance(patternAndTargetBuilder));
     }
 
     private void assertFindsInstance(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder,
                                      Instance... expectedInstances) {
-        Pattern pattern = somePattern(patternBuilder);
-        AUG target = targetBuilder.build();
-
-        List<Instance> instances = new AlternativeMappingsInstanceFinder().findInstances(target, pattern);
+        List<Instance> instances = findInstances(patternBuilder, targetBuilder);
 
         assertThat(instances, hasSize(expectedInstances.length));
         assertThat(instances, containsInAnyOrder(expectedInstances));
+    }
+
+    private List<Instance> findInstances(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder) {
+        Pattern pattern = somePattern(patternBuilder);
+        AUG target = targetBuilder.build();
+
+        return new AlternativeMappingsInstanceFinder().findInstances(target, pattern);
     }
 }
