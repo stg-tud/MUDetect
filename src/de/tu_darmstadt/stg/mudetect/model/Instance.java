@@ -50,17 +50,29 @@ public class Instance {
         return targetOverlap.vertexSet();
     }
 
+    public int getNodeSize() {
+        return getMappedTargetNodes().size();
+    }
+
+    private Set<EGroumEdge> getMappedTargetEdges() {
+        return this.targetOverlap.edgeSet();
+    }
+
+    public int getEdgeSize() {
+        return getMappedTargetEdges().size();
+    }
+
     public boolean isSubInstanceOf(Instance other) {
         return other.getMappedTargetNodes().containsAll(this.getMappedTargetNodes()) &&
                 other.getMappedTargetEdges().containsAll(getMappedTargetEdges());
     }
 
-    public int getNodeSize() {
-        return targetOverlap.vertexSet().size();
+    public boolean isSameTargetOverlap(Instance instance) {
+        return this == instance || Objects.equals(targetOverlap, instance.targetOverlap);
     }
 
-    public int getEdgeSize() {
-        return targetOverlap.edgeSet().size();
+    public boolean isSamePatternOverlap(Instance instance) {
+        return this == instance || Objects.equals(patternOverlap, instance.patternOverlap);
     }
 
     @Override
@@ -71,14 +83,6 @@ public class Instance {
         return Objects.equals(patternOverlap, instance.patternOverlap) &&
                 Objects.equals(targetOverlap, instance.targetOverlap) &&
                 Objects.equals(targetNodeByPatternNode, instance.targetNodeByPatternNode);
-    }
-
-    public boolean isSameTargetOverlap(Instance instance) {
-        return this == instance || Objects.equals(targetOverlap, instance.targetOverlap);
-    }
-
-    public boolean isSamePatternOverlap(Instance instance) {
-        return this == instance || Objects.equals(patternOverlap, instance.patternOverlap);
     }
 
     @Override
