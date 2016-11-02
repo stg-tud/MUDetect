@@ -130,6 +130,22 @@ public class FindPartialInstancesTest {
         assertThat(instances, hasSize(1));
     }
 
+    @Test
+    public void considersEdgeDirectionBetweenEqualNodes() throws Exception {
+        TestAUGBuilder pattern = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
+                .withDataEdge("a1", ORDER, "a2").withDataEdge("a1", ORDER, "b");
+        TestAUGBuilder target = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
+                .withDataEdge("a1", ORDER, "a2").withDataEdge("a1", ORDER, "b").withDataEdge("a2", ORDER, "b");
+
+        TestInstanceBuilder instance1 = buildInstance(target, pattern)
+                .withNodes("a1", "a2").withEdge("a1", ORDER, "a2")
+                .withNode("b").withEdge("a1", ORDER, "b");
+        TestInstanceBuilder instance2 = buildInstance(target, pattern)
+                .withNode("a2", "a1").withNode("b").withEdge("a2", "a1", ORDER, "b", "b");
+
+        assertFindsInstance(pattern, target, instance1, instance2);
+    }
+
     private void assertFindsInstance(TestAUGBuilder patternBuilder,
                                      TestAUGBuilder targetBuilder,
                                      TestInstanceBuilder... expectedInstanceBuilder) {
