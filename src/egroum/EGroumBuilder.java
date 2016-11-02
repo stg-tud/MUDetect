@@ -43,6 +43,15 @@ public class EGroumBuilder {
 
 	private String[] classpaths;
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param classpaths
+	 *            if you are to parse a batch of files, do not include the
+	 *            folder of their class files in the class paths because it
+	 *            is redundant and it will slow the parsing down crazily,
+	 *            i.e., hundreds of times for large project such as JDT core.
+	 */
 	public EGroumBuilder(String[] classpaths) {
 		if (classpaths != null) {
 			this.classpaths = new String[classpaths.length];
