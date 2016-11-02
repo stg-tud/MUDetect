@@ -29,7 +29,7 @@ public class MuDetectRunner extends MuBenchRunner {
         run(patternPath,
                 ProvidedPatternsModel::new,
                 targetPath,
-                new NoOverlapInstanceFinder(new GreedyInstanceFinder()),
+                new NoOverlapInstanceFinder(new AlternativeMappingsInstanceFinder()),
                 new EverythingViolationFactory(),
                 new NoRankingStrategy(),
                 output);
@@ -40,7 +40,7 @@ public class MuDetectRunner extends MuBenchRunner {
         run(trainingAndTargetPath,
                 groums -> new MinedPatternsModel(10, 1, groums),
                 trainingAndTargetPath,
-                new GreedyInstanceFinder(new InstanceSizePredicate(0.5)),
+                new AlternativeMappingsInstanceFinder(),
                 new MissingElementViolationFactory(),
                 new WeightRankingStrategy(
                         new AverageWeightFunction(
