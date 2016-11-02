@@ -69,8 +69,16 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             return nextEdge;
         }
 
+        void add(InstanceBuilder alternative) {
+            alternatives.add(alternative);
+        }
+
         boolean hasAlternatives() {
             return !alternatives.isEmpty();
+        }
+
+        Set<InstanceBuilder> getAlternatives() {
+            return alternatives;
         }
 
         Set<EGroumEdge> getCandidateTargetEdges(InstanceBuilder alternative) {
@@ -114,7 +122,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                     }
                     InstanceBuilder alternative = new InstanceBuilder(target, pattern);
                     alternative.map(targetNode, patternNode);
-                    alternatives.get(patternNode).alternatives.add(alternative);
+                    alternatives.get(patternNode).add(alternative);
                 }
             }
         }
@@ -125,7 +133,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         while (fragment.hasExtension()) {
             EGroumEdge patternEdge = fragment.nextPatternExtensionEdge();
             Fragment extendedFragment = new Fragment(fragment, patternEdge);
-            for (InstanceBuilder alternative : fragment.alternatives) {
+            for (InstanceBuilder alternative : fragment.getAlternatives()) {
                 Set<EGroumEdge> candidateTargetEdges = extendedFragment.getCandidateTargetEdges(alternative);
                 boolean extended = false;
                 for (EGroumEdge targetEdge : candidateTargetEdges) {
@@ -134,12 +142,12 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                         extendedAlternative.map(targetEdge.getSource(), patternEdge.getSource());
                         extendedAlternative.map(targetEdge.getTarget(), patternEdge.getTarget());
                         extendedAlternative.map(targetEdge, patternEdge);
-                        extendedFragment.alternatives.add(extendedAlternative);
+                        extendedFragment.add(extendedAlternative);
                         extended = true;
                     }
                 }
                 if (!extended) {
-                    extendedFragment.alternatives.add(alternative);
+                    extendedFragment.add(alternative);
                 }
             }
             if (extendedFragment.hasAlternatives()) {
