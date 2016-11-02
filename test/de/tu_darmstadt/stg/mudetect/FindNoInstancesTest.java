@@ -33,7 +33,7 @@ public class FindNoInstancesTest {
     }
 
     private void assertNoInstance(Pattern pattern, AUG target) {
-        List<Instance> instances = new GreedyInstanceFinder().findInstances(target, pattern);
+        List<Instance> instances = new AlternativeMappingsInstanceFinder().findInstances(target, pattern);
 
         assertThat(instances, is(empty()));
     }
