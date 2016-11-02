@@ -63,7 +63,7 @@ public class BatchParser {
 		parse(files, new String[]{classPath});
 		assertThat(mismatches, is(0));
 		parseBatch(files, new String[]{classPath});
-		assertThat(mismatches, is(0));
+		assertThat(mismatchesInBatch, is(0));
 	}
 
 	private static ArrayList<File> getPaths(String[] roots) {
@@ -86,6 +86,8 @@ public class BatchParser {
 	private void parseBatch(ArrayList<File> files, String[] classPaths) {
 		long start = System.currentTimeMillis();
 		mismatches = 0;
+		mismatchesInBatch = 0;
+		mismatchesInOnline = 0;
 		String[] paths = new String[files.size()];
 		for (int i = 0; i < files.size(); i++) {
 			paths[i] = files.get(i).getAbsolutePath();
