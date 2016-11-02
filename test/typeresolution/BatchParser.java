@@ -48,10 +48,10 @@ public class BatchParser {
 		ArrayList<File> files = getPaths(new String[] {"src"});
 //		String classPath = "D:/Projects/GROUMiner/target/classes";
 		String classPath = "D:/Projects/aug-miner.jar";
-		parse(files, classPath);
-		parse(files, classPath);
+		parse(files, new String[]{classPath});
+		parse(files, new String[]{classPath});
 		assertThat(mismatches, is(0));
-		parseBatch(files, classPath);
+		parseBatch(files, new String[]{classPath});
 		assertThat(mismatches, is(0));
 	}
 
@@ -59,10 +59,10 @@ public class BatchParser {
 	public void testReuseParserJDT() {
 		ArrayList<File> files = getPaths(new String[] {"C:/Users/hoan/.m2/repository/org/eclipse/tycho/org.eclipse.jdt.core/3.11.1.v20150902-1521/org.eclipse.jdt.core-3.11.1.v20150902-1521-sources"});
 		String classPath = "C:/Users/hoan/.m2/repository/org/eclipse/tycho/org.eclipse.jdt.core/3.11.1.v20150902-1521/org.eclipse.jdt.core-3.11.1.v20150902-1521.jar";
-		parse(files, classPath);
-		parse(files, classPath);
+		parse(files, new String[]{classPath});
+		parse(files, new String[]{classPath});
 		assertThat(mismatches, is(0));
-		parseBatch(files, classPath);
+		parseBatch(files, new String[]{classPath});
 		assertThat(mismatches, is(0));
 	}
 
@@ -83,7 +83,7 @@ public class BatchParser {
 		return files;
 	}
 
-	private void parseBatch(ArrayList<File> files, String classPath) {
+	private void parseBatch(ArrayList<File> files, String[] classPaths) {
 		long start = System.currentTimeMillis();
 		mismatches = 0;
 		String[] paths = new String[files.size()];
@@ -97,7 +97,7 @@ public class BatchParser {
 				cus.put(sourceFilePath, ast);
 			}
 		};
-		init(classPath);
+		init(classPaths);
 		parser.createASTs(paths, null, new String[0], r, null);
 		for (String path : cus.keySet()) {
 			ASTNode ast = asts.get(path);
@@ -135,13 +135,13 @@ public class BatchParser {
 		System.out.println("mismatchesInOnline: " + mismatchesInOnline);
 	}
 
-	public void parse(ArrayList<File> files, String classPath) {
+	public void parse(ArrayList<File> files, String[] classPaths) {
 		long start = System.currentTimeMillis();
 		mismatches = 0;
 		for (File file : files) {
 			String name = file.getName();
 			String source = FileIO.readStringFromFile(file.getAbsolutePath());
-			init(classPath);
+			init(classPaths);
 			parser.setSource(source.toCharArray());
 			parser.setUnitName(name);
 			ASTNode node = parser.createAST(null);
@@ -175,7 +175,7 @@ public class BatchParser {
 		System.out.println("Online: " + mismatches + " / " + files.size() + " in " + (end - start) + "ms");
 	}
 
-	public void init(String classPath) {
+	public void init(String[] classPaths) {
 		@SuppressWarnings("rawtypes")
 		Map options = JavaCore.getOptions();
 		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
@@ -184,7 +184,7 @@ public class BatchParser {
 		parser = ASTParser.newParser(AST.JLS8);
 		parser.setCompilerOptions(options);
 		parser.setEnvironment(
-				new String[]{classPath}, 
+				classPaths == null ? new String[]{} : classPaths, 
 				new String[]{}, 
 				new String[]{}, 
 				true);
