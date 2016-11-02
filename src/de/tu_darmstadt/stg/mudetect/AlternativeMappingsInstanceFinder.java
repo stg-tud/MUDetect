@@ -63,7 +63,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         }
 
         boolean hasExtension() {
-            return !patternExtensionEdges.isEmpty();
+            return hasAlternatives() && !patternExtensionEdges.isEmpty();
         }
 
         EGroumEdge nextPatternExtensionEdge() {
@@ -102,14 +102,41 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         public Collection<Instance> getInstances() {
             return alternatives.stream().map(InstanceBuilder::build).collect(Collectors.toSet());
         }
+
+        void removeCoveredAlternatives(Set<EGroumNode> coveredTargetNodes) {
+            Iterator<InstanceBuilder> iterator = alternatives.iterator();
+            while (iterator.hasNext()) {
+                InstanceBuilder alternative = iterator.next();
+                if (coveredTargetNodes.containsAll(alternative.getMappedTargetNodes())) {
+                    iterator.remove();
+                }
+            }
+        }
+
+        Set<EGroumNode> getMappedTargetNodes() {
+            Set<EGroumNode> mappedTargetNodes = new HashSet<>();
+            for (InstanceBuilder alternative : alternatives) {
+                mappedTargetNodes.addAll(alternative.getMappedTargetNodes());
+            }
+            return mappedTargetNodes;
+        }
     }
 
     @Override
     public List<Instance> findInstances(AUG target, Pattern pattern) {
         List<Instance> instances = new ArrayList<>();
 
+        Set<EGroumNode> coveredTargetNodes = new HashSet<>();
         for (Fragment fragment : getSingleNodeFragments(target, pattern)) {
-            instances.addAll(extend(fragment));
+            // When a target node N is mapped in one of the instances found by extending from a pattern node A, then
+            // either this already covers all instances mapping N (in which case we don't need to explore from a mapping
+            // of N anymore) or any other instance includes at least on other target node M that is not mapped in any
+            // instances found by extending from A (in which case the remaining mappings of N will be found when
+            // extending from a mapping of this node M). In any case, exploring from a mapping of N is redundant.
+            fragment.removeCoveredAlternatives(coveredTargetNodes);
+            Fragment extendedFragment = extend(fragment);
+            instances.addAll(extendedFragment.getInstances());
+            coveredTargetNodes.addAll(extendedFragment.getMappedTargetNodes());
         }
 
         removeSubInstances(instances);
@@ -137,7 +164,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         return alternatives.values();
     }
 
-    private Collection<Instance> extend(Fragment fragment) {
+    private Fragment extend(Fragment fragment) {
         while (fragment.hasExtension()) {
             EGroumEdge patternEdge = fragment.nextPatternExtensionEdge();
             Fragment extendedFragment = new Fragment(fragment, patternEdge);
@@ -163,7 +190,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             }
         }
 
-        return fragment.getInstances();
+        return fragment;
     }
 
     private boolean match(EGroumEdge patternEdge, EGroumEdge targetEdge) {

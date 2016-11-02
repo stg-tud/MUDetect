@@ -7,7 +7,9 @@ import egroum.EGroumEdge;
 import egroum.EGroumNode;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 class InstanceBuilder {
     private final AUG target;
@@ -47,6 +49,10 @@ class InstanceBuilder {
 
     public EGroumNode getMappedTargetNode(EGroumNode patternNode) {
         return targetNodeByPatternNode.get(patternNode);
+    }
+
+    public Set<EGroumNode> getMappedTargetNodes() {
+        return new HashSet<>(targetNodeByPatternNode.values());
     }
 
     public void map(EGroumEdge targetEdge, EGroumEdge patternEdge) {
