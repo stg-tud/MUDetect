@@ -17,6 +17,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         private final Set<InstanceBuilder> alternatives = new HashSet<>();
 
         private final EGroumNode extensionPoint;
+        private final boolean isOutgoingExtensionEdge;
 
         private final Set<EGroumNode> exploredPatternNodes = new HashSet<>();
         private final Set<EGroumEdge> exploredPatternEdges = new HashSet<>();
@@ -27,6 +28,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             this.target = target;
             this.pattern = pattern;
             this.extensionPoint = firstPatternNode;
+            this.isOutgoingExtensionEdge = false;
 
             this.exploredPatternNodes.add(firstPatternNode);
 
@@ -39,8 +41,10 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
 
             if (parentFragment.exploredPatternNodes.contains(patternEdge.getSource())) {
                 extensionPoint = patternEdge.getSource();
+                isOutgoingExtensionEdge = true;
             } else if (parentFragment.exploredPatternNodes.contains(patternEdge.getTarget())) {
                 extensionPoint = patternEdge.getTarget();
+                isOutgoingExtensionEdge = false;
             } else {
                 throw new IllegalArgumentException("not a valid extension edge: " + patternEdge);
             }
@@ -84,11 +88,15 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         Set<EGroumEdge> getCandidateTargetEdges(InstanceBuilder alternative) {
             EGroumNode mappedTargetNode = alternative.getMappedTargetNode(extensionPoint);
             if (mappedTargetNode != null) {
-                return target.edgesOf(mappedTargetNode).stream()
+                return getCandidateEdges(mappedTargetNode).stream()
                         .filter(alternative::isUnmappedTargetEdge).collect(Collectors.toSet());
             } else {
                 return Collections.emptySet();
             }
+        }
+
+        private Set<EGroumEdge> getCandidateEdges(EGroumNode targetNode) {
+            return isOutgoingExtensionEdge ? target.outgoingEdgesOf(targetNode) : target.incomingEdgesOf(targetNode);
         }
 
         public Collection<Instance> getInstances() {
