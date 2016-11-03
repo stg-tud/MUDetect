@@ -123,5 +123,5 @@ buildNumber.properties
 
 ### Project Specific ###
 output
-/log.txt
 /aug-improvement
+/log*.txt
