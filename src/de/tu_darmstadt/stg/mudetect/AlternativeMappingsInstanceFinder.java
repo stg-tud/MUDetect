@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class AlternativeMappingsInstanceFinder implements InstanceFinder {
 
-    private static class Fragment {
+    private static class PatternFragment {
         private final AUG target;
         private final Pattern pattern;
         private final Set<InstanceBuilder> alternatives = new HashSet<>();
@@ -24,7 +24,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
 
         private final Set<EGroumEdge> patternExtensionEdges = new HashSet<>();
 
-        private Fragment(AUG target, Pattern pattern, EGroumNode firstPatternNode) {
+        private PatternFragment(AUG target, Pattern pattern, EGroumNode firstPatternNode) {
             this.target = target;
             this.pattern = pattern;
             this.extensionPoint = firstPatternNode;
@@ -35,7 +35,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             this.patternExtensionEdges.addAll(pattern.edgesOf(extensionPoint));
         }
 
-        Fragment(Fragment parentFragment, EGroumEdge patternEdge) {
+        PatternFragment(PatternFragment parentFragment, EGroumEdge patternEdge) {
             this.target = parentFragment.target;
             this.pattern = parentFragment.pattern;
 
@@ -127,14 +127,14 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         List<Instance> instances = new ArrayList<>();
 
         Set<EGroumNode> coveredTargetNodes = new HashSet<>();
-        for (Fragment fragment : getSingleNodeFragments(target, pattern)) {
+        for (PatternFragment fragment : getSingleNodeFragments(target, pattern)) {
             // When a target node N is mapped in one of the instances found by extending from a pattern node A, then
             // either this already covers all instances mapping N (in which case we don't need to explore from a mapping
             // of N anymore) or any other instance includes at least on other target node M that is not mapped in any
             // instances found by extending from A (in which case the remaining mappings of N will be found when
             // extending from a mapping of this node M). In any case, exploring from a mapping of N is redundant.
             fragment.removeCoveredAlternatives(coveredTargetNodes);
-            Fragment extendedFragment = extend(fragment);
+            PatternFragment extendedFragment = extend(fragment);
             instances.addAll(extendedFragment.getInstances());
             coveredTargetNodes.addAll(extendedFragment.getMappedTargetNodes());
         }
@@ -144,16 +144,16 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
     }
 
 
-    private Collection<Fragment> getSingleNodeFragments(AUG target, Pattern pattern) {
+    private Collection<PatternFragment> getSingleNodeFragments(AUG target, Pattern pattern) {
         Map<String, Set<EGroumNode>> patternNodesByLabel = pattern.getMeaningfulActionNodesByLabel();
 
-        Map</* pattern node */ EGroumNode, Fragment> alternatives = new HashMap<>();
+        Map</* pattern node */ EGroumNode, PatternFragment> alternatives = new HashMap<>();
         for (EGroumNode targetNode : target.vertexSet()) {
             String label = targetNode.getLabel();
             if (patternNodesByLabel.containsKey(label)) {
                 for (EGroumNode patternNode : patternNodesByLabel.get(label)) {
                     if (!alternatives.containsKey(patternNode)) {
-                        alternatives.put(patternNode, new Fragment(target, pattern, patternNode));
+                        alternatives.put(patternNode, new PatternFragment(target, pattern, patternNode));
                     }
                     InstanceBuilder alternative = new InstanceBuilder(target, pattern);
                     alternative.map(targetNode, patternNode);
@@ -164,10 +164,10 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         return alternatives.values();
     }
 
-    private Fragment extend(Fragment fragment) {
+    private PatternFragment extend(PatternFragment fragment) {
         while (fragment.hasExtension()) {
             EGroumEdge patternEdge = fragment.nextPatternExtensionEdge();
-            Fragment extendedFragment = new Fragment(fragment, patternEdge);
+            PatternFragment extendedFragment = new PatternFragment(fragment, patternEdge);
             for (InstanceBuilder alternative : fragment.getAlternatives()) {
                 Set<EGroumEdge> candidateTargetEdges = extendedFragment.getCandidateTargetEdges(alternative);
                 boolean extended = false;
