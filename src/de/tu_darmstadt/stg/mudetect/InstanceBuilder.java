@@ -6,10 +6,7 @@ import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import egroum.EGroumEdge;
 import egroum.EGroumNode;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 class InstanceBuilder {
     private final AUG target;
@@ -68,5 +65,29 @@ class InstanceBuilder {
 
     public Instance build() {
         return new Instance(pattern, target, targetNodeByPatternNode, targetEdgeByPatternEdge);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        InstanceBuilder that = (InstanceBuilder) o;
+        return Objects.equals(target, that.target) &&
+                Objects.equals(pattern, that.pattern) &&
+                Objects.equals(targetNodeByPatternNode, that.targetNodeByPatternNode) &&
+                Objects.equals(targetEdgeByPatternEdge, that.targetEdgeByPatternEdge);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(target, pattern, targetNodeByPatternNode, targetEdgeByPatternEdge);
+    }
+
+    @Override
+    public String toString() {
+        return "InstanceBuilder{" +
+                "targetNodeByPatternNode=" + targetNodeByPatternNode +
+                ", targetEdgeByPatternEdge=" + targetEdgeByPatternEdge +
+                '}';
     }
 }
