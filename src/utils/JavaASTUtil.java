@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ArrayType;
+import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -39,7 +40,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.internal.core.dom.NaiveASTFlattener;
 
 public class JavaASTUtil {
-	public static final HashMap<String, String> infixExpressionLables = new HashMap<>();
+	public static final HashMap<String, String> infixExpressionLables = new HashMap<>(), assignmentLabels = new HashMap<>();
 	
 	static {
 		// Arithmetic Operators
@@ -65,6 +66,21 @@ public class JavaASTUtil {
 		infixExpressionLables.put(InfixExpression.Operator.LEFT_SHIFT.toString(), "<b>");
 		infixExpressionLables.put(InfixExpression.Operator.RIGHT_SHIFT_SIGNED.toString(), "<b>");
 		infixExpressionLables.put(InfixExpression.Operator.RIGHT_SHIFT_UNSIGNED.toString(), "<b>");
+
+		assignmentLabels.put(Assignment.Operator.ASSIGN.toString(), "=");
+		// Arithmetic Operators
+		assignmentLabels.put(Assignment.Operator.DIVIDE_ASSIGN.toString(), "<a>");
+		assignmentLabels.put(Assignment.Operator.MINUS_ASSIGN.toString(), "<a>");
+		assignmentLabels.put(Assignment.Operator.PLUS_ASSIGN.toString(), "<a>");
+		assignmentLabels.put(Assignment.Operator.REMAINDER_ASSIGN.toString(), "<a>");
+		assignmentLabels.put(Assignment.Operator.TIMES_ASSIGN.toString(), "<a>");
+		// Bitwise and Bit Shift Operators
+		assignmentLabels.put(Assignment.Operator.BIT_AND_ASSIGN.toString(), "<b>");
+		assignmentLabels.put(Assignment.Operator.BIT_OR_ASSIGN.toString(), "<b>");
+		assignmentLabels.put(Assignment.Operator.BIT_XOR_ASSIGN.toString(), "<b>");
+		assignmentLabels.put(Assignment.Operator.LEFT_SHIFT_ASSIGN.toString(), "<b>");
+		assignmentLabels.put(Assignment.Operator.RIGHT_SHIFT_SIGNED_ASSIGN.toString(), "<b>");
+		assignmentLabels.put(Assignment.Operator.RIGHT_SHIFT_UNSIGNED_ASSIGN.toString(), "<b>");
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -355,5 +371,9 @@ public class JavaASTUtil {
 
 	public static String buildLabel(InfixExpression.Operator operator) {
 		return infixExpressionLables.get(operator.toString());
+	}
+
+	public static String getAssignOperator(Operator operator) {
+		return assignmentLabels.get(operator.toString());
 	}
 }

@@ -126,12 +126,18 @@ public class EGroumGraph implements Serializable {
 			cleanUp();
 			return;
 		}
+		if (EGroumBuilder.COLLAPSE_ISOMORPHIC_SUBGRAPHS)
+			collapseIsomorphicSubgraphs();
 		buildClosure();
 		deleteReferences();
 		deleteAssignmentNodes();
 		deleteUnreachableNodes();
 		deleteControlNodes();
 		cleanUp();
+	}
+
+	private void collapseIsomorphicSubgraphs() {
+		
 	}
 
 	private boolean isTooDense() {
@@ -847,7 +853,7 @@ public class EGroumGraph implements Serializable {
 			EGroumGraph rg = new EGroumGraph(context, new EGroumDataNode(
 					null, ASTNode.NUMBER_LITERAL, "1", "number", "1"));
 			EGroumActionNode op = new EGroumActionNode(control, branch,
-					astNode, astNode.getNodeType(), null, node.dataType, 
+					astNode, astNode.getNodeType(), null, "<a>", 
 					astNode.getOperator().toString().substring(0, 1));
 			pdg.mergeSequentialData(op, Type.PARAMETER);
 			rg.mergeSequentialData(op, Type.PARAMETER);
@@ -855,7 +861,7 @@ public class EGroumGraph implements Serializable {
 		} else
 			pdg.mergeSequentialData(
 					new EGroumActionNode(control, branch, astNode, astNode.getNodeType(),
-							null, node.dataType, astNode.getOperator().toString()),
+							null, astNode.getOperator().toString(), astNode.getOperator().toString()),
 					Type.PARAMETER);
 		if (astNode.getOperator() == PrefixExpression.Operator.INCREMENT
 				|| astNode.getOperator() == PrefixExpression.Operator.DECREMENT) {
@@ -874,7 +880,7 @@ public class EGroumGraph implements Serializable {
 		EGroumGraph rg = new EGroumGraph(context, new EGroumDataNode(
 				null, ASTNode.NUMBER_LITERAL, "1", "number", "1"));
 		EGroumActionNode op = new EGroumActionNode(control, branch,
-				astNode, astNode.getNodeType(), null, node.dataType, astNode.getOperator().toString()
+				astNode, astNode.getNodeType(), null, "<a>", astNode.getOperator().toString()
 						.substring(0, 1));
 		lg.mergeSequentialData(op, Type.PARAMETER);
 		rg.mergeSequentialData(op, Type.PARAMETER);
@@ -1022,13 +1028,8 @@ public class EGroumGraph implements Serializable {
 		EGroumGraph rg = buildArgumentPDG(control, branch,
 				astNode.getRightOperand());
 		String label = JavaASTUtil.buildLabel(astNode.getOperator());
-		String type = "UNKNOWN";
-		if (label.equals("<a>") || label.equals("<b>"))
-			type = "int";
-		else if (label.equals("<r>") || label.equals("<c>"))
-			type = "boolean";
 		EGroumActionNode node = new EGroumActionNode(control, branch,
-				astNode, astNode.getNodeType(), null, type, label);
+				astNode, astNode.getNodeType(), null, label, label);
 		lg.mergeSequentialData(node, Type.PARAMETER);
 		rg.mergeSequentialData(node, Type.PARAMETER);
 		pdg.mergeParallel(lg, rg);
@@ -1437,10 +1438,10 @@ public class EGroumGraph implements Serializable {
 			if (astNode.getOperator() == Assignment.Operator.ASSIGN) {
 				vg = buildArgumentPDG(control, branch, astNode.getRightHandSide());
 			} else {
-				String op = JavaASTUtil.getInfixOperator(astNode.getOperator());
+				String op = JavaASTUtil.getAssignOperator(astNode.getOperator());
 				EGroumGraph g1 = buildPDG(control, branch, astNode.getLeftHandSide());
 				EGroumGraph g2 = buildArgumentPDG(control, branch, astNode.getRightHandSide());
-				EGroumActionNode opNode = new EGroumActionNode(control, branch, null, ASTNode.INFIX_EXPRESSION, null, null, op);
+				EGroumActionNode opNode = new EGroumActionNode(control, branch, null, ASTNode.INFIX_EXPRESSION, null, op, op);
 				g1.mergeSequentialData(opNode, Type.PARAMETER);
 				g2.mergeSequentialData(opNode, Type.PARAMETER);
 				vg = new EGroumGraph(context);
@@ -1695,6 +1696,14 @@ public class EGroumGraph implements Serializable {
 		if (node instanceof EGroumDataNode)
 			return pdg;
 		String type = node.dataType;
+		if (type.equals("<a>") || type.equals("<b>"))
+			type = "int";
+		else if (type.equals("<r>") || type.equals("<c>"))
+			type = "boolean";
+		else if (type.equals(PrefixExpression.Operator.COMPLEMENT) || type.equals(PrefixExpression.Operator.MINUS))
+			type = "int";
+		else if (type.equals(PrefixExpression.Operator.NOT))
+			type = "boolean";
 		if (((Expression) exp).resolveTypeBinding() != null)
 			type = ((Expression) exp).resolveTypeBinding().getTypeDeclaration().getName();
 		EGroumDataNode dummy = new EGroumDataNode(null, ASTNode.SIMPLE_NAME,

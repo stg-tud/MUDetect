@@ -23,8 +23,7 @@ class Test_keep_data {
 //		sb.toString();
 //	}
 	
-	void m(int[] a, DERObject pkcs) {
-	    if (!(pkcs instanceof ASN1Sequence)) {
-	    }
+	void m() {
+		a[0] = a[0] + 1;
 	}
 }
