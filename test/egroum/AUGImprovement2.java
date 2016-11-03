@@ -19,6 +19,11 @@ public class AUGImprovement2 {
     }
 
     @Test
+    public void keepData() throws Exception {
+    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_keep_data.java", null, "aug-improvement");
+    }
+
+    @Test
     public void order() throws Exception {
     	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_order.java", null, "aug-improvement");
     }

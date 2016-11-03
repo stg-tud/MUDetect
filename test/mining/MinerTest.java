@@ -19,6 +19,16 @@ public class MinerTest {
 	public TestName testName = new TestName();
 	
 	@Test
+	public void mineKeepDataNodes() {
+		ArrayList<EGroumGraph> groums = buildGroumsFromFile("test-resources/input/Test_keep_data.java", null);
+		
+		List<Pattern> patterns = mine(groums, null);
+		
+//		assertThat(patterns.size(), is(1));
+		print(patterns.get(0));
+	}
+	
+	@Test
 	public void mineSinglePattern() {
 		ArrayList<EGroumGraph> groums = buildGroumsFromFile("test-resources/input/Test_mine_single.java", null);
 		

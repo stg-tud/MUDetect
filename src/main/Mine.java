@@ -29,7 +29,7 @@ public class Mine {
 //		String path = "test/input/Test_mine.java", name = "";
 		EGroumBuilder gb = new EGroumBuilder(null);
 		Miner miner = new Miner(name);
-		miner.mine(new ArrayList<>(gb.build(path)));
+		miner.mine(new ArrayList<>(gb.buildBatch(path)));
 		ArrayList<Anomaly> anomalies = miner.anomalies;
 		Collections.sort(anomalies, new Comparator<Anomaly>() {
 

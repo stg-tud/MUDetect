@@ -24,6 +24,7 @@ import utils.FileIO;
  * 
  */
 public class Miner {
+	public static boolean EXTEND_SOURCE_DATA_NODES = true;
 	public double maxSingleNodePrevalence = 0.5;
 	private String projectName;
 	public ArrayList<Lattice> lattices = new ArrayList<Lattice>();

@@ -30,7 +30,7 @@ public class EGroumTestUtils {
 		EGroumBuilder gb = new EGroumBuilder(classpaths);
 		inputPath = inputPath + "/" + name;
 		String content = FileIO.readStringFromFile(inputPath);
-		ASTNode ast = JavaASTUtil.parseSource(content);
+		ASTNode ast = JavaASTUtil.parseSource(content, inputPath, name, null);
 		CompilationUnit cu = (CompilationUnit) ast;
 		TypeDeclaration type = (TypeDeclaration) cu.types().get(0);
 		for (MethodDeclaration m : type.getMethods()) {

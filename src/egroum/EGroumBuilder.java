@@ -340,7 +340,7 @@ public class EGroumBuilder {
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setCompilerOptions(options);
 		parser.setEnvironment(
-				classpaths, 
+				classpaths == null ? new String[0] : classpaths,
 				new String[]{}, 
 				new String[]{}, 
 				true);

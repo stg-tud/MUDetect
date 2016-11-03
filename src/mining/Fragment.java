@@ -464,43 +464,47 @@ public class Fragment {
 					}
 				}
 			} else if (node instanceof EGroumDataNode) {
-				boolean hasThrow = false;
-				for (EGroumEdge e : node.getInEdges()) {
-					if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW && nodes.contains(e.getSource())) {
-						add(node, lens);
-						hasThrow = true;
-						break;
-					}
-				}
-				if (!hasThrow) {
-					int count = 0;
-					HashSet<EGroumNode> outs = node.getOutNodes();
-					for (EGroumNode next : outs) {
-						if (nodes.contains(next)) {
-							count++;
-							if (count == 1)
-								break;
+				if (Miner.EXTEND_SOURCE_DATA_NODES)
+					add(node, lens);
+				else {
+					boolean hasThrow = false;
+					for (EGroumEdge e : node.getInEdges()) {
+						if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW && nodes.contains(e.getSource())) {
+							add(node, lens);
+							hasThrow = true;
+							break;
 						}
 					}
-					if (count == 1) {
-						for (EGroumEdge e : node.getInEdges()) {
-							if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW) {
-								add(node, e.getSource(), lens);
-								hasThrow = true;
+					if (!hasThrow) {
+						int count = 0;
+						HashSet<EGroumNode> outs = node.getOutNodes();
+						for (EGroumNode next : outs) {
+							if (nodes.contains(next)) {
+								count++;
+								if (count == 1)
+									break;
 							}
 						}
-						if (!hasThrow) {
-							HashSet<EGroumNode> defs = new HashSet<>();
-							if (node.getAstNodeType() == ASTNode.SIMPLE_NAME)
-								defs.add(null);
-							else
-								for (EGroumEdge e : node.getInEdges())
-									if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.DEFINITION) {
-										defs.add(e.getSource());
-										break;
-									}
-							if (defs.isEmpty())
-								add(node, lens);
+						if (count == 1) {
+							for (EGroumEdge e : node.getInEdges()) {
+								if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW) {
+									add(node, e.getSource(), lens);
+									hasThrow = true;
+								}
+							}
+							if (!hasThrow) {
+								HashSet<EGroumNode> defs = new HashSet<>();
+								if (node.getAstNodeType() == ASTNode.SIMPLE_NAME)
+									defs.add(null);
+								else
+									for (EGroumEdge e : node.getInEdges())
+										if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.DEFINITION) {
+											defs.add(e.getSource());
+											break;
+										}
+								if (defs.isEmpty())
+									add(node, lens);
+							}
 						}
 					}
 				}
