@@ -66,4 +66,12 @@ public class AUG extends DirectedMultigraph<EGroumNode, EGroumEdge> {
         }
         return nodesByLabel;
     }
+
+    @Override
+    public String toString() {
+        return "AUG{" +
+                "location=" + location +
+                ", aug=" + super.toString() +
+                '}';
+    }
 }
