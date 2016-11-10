@@ -130,7 +130,7 @@ public class AUGImprovement {
 
     private void print(String code) {
         System.out.println(name.getMethodName() + "  ################################################");
-        for (EGroumGraph aug : buildGroumsForClass(code, null)) {
+        for (EGroumGraph aug : buildGroumsForClass(code)) {
             DotGraph dotGraph = new DotGraph(aug);
             System.out.println(dotGraph.getGraph());
             dotGraph.toPNG(new File("aug-improvement"), name.getMethodName() + "_" + aug.getName());

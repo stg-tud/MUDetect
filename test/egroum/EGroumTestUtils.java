@@ -14,14 +14,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class EGroumTestUtils {
-	public static EGroumGraph buildGroumForMethod(String code, String[] classpaths) {
+	public static EGroumGraph buildGroumForMethod(String code, String... classpaths) {
 		String classCode = "class C { " + code + "}";
 		ArrayList<EGroumGraph> groums = buildGroumsForClass(classCode, classpaths);
 		assertThat(groums.size(), is(1));
 		return groums.iterator().next();
 	}
 
-	public static ArrayList<EGroumGraph> buildGroumsForClass(String classCode, String[] classpaths) {
+	public static ArrayList<EGroumGraph> buildGroumsForClass(String classCode, String... classpaths) {
 		EGroumBuilder builder = new EGroumBuilder(classpaths);
 		return builder.buildGroums(classCode, "test", "test");
 	}

@@ -21,27 +21,27 @@ public class EGroumBuilderTest {
 
 	@Test
 	public void singleCall() {
-		print(buildGroumForMethod("void m(Object o) { o.hashCode(); }", null));
+		print(buildGroumForMethod("void m(Object o) { o.hashCode(); }"));
 	}
 	
 	@Test
 	public void singleCallAssignResult() {
-		print(buildGroumForMethod("void m(Object o) { int i = o.hashCode(); }", null));
+		print(buildGroumForMethod("void m(Object o) { int i = o.hashCode(); }"));
 	}
 	
 	@Test
 	public void reassignment() {
-		print(buildGroumForMethod("void m(int i) { if (i < 0) { i = -i; m(i); } }", null));
+		print(buildGroumForMethod("void m(int i) { if (i < 0) { i = -i; m(i); } }"));
 	}
 	
 	@Test
 	public void alternativeReassignments() {
-		print(buildGroumForMethod("void m(int i) { if (i < 0)	i = -i;	else i++; m(i); }", null));
+		print(buildGroumForMethod("void m(int i) { if (i < 0)	i = -i;	else i++; m(i); }"));
 	}
 	
 	@Test
 	public void controlChars() {
-		print(buildGroumForMethod("String cc() { return \" \\n \\t \\b \\f \\\\ \\\" \"; }", null));
+		print(buildGroumForMethod("String cc() { return \" \\n \\t \\b \\f \\\\ \\\" \"; }"));
 	}
 	
 	@Test
@@ -52,7 +52,7 @@ public class EGroumBuilderTest {
 				+ "  else break; this.m();"
 				+ "  super.m();"
 				+ "  assert true;"
-				+ "  throw new RuntimeException(); }", null));
+				+ "  throw new RuntimeException(); }"));
 	}
 	
 	@Test
@@ -65,7 +65,7 @@ public class EGroumBuilderTest {
 				"		fis.close();\n" + 
 				"		\n" + 
 				"		return firstByte;\n" + 
-				"	}", null));
+				"	}"));
 	}
 	
 	@Test @Ignore
@@ -141,7 +141,7 @@ public class EGroumBuilderTest {
 				"            return false;\n" + 
 				"        }\n" + 
 				"        return true;\n" + 
-				"    }", null);
+				"    }");
 		
 		GroumValidationUtils.validate(groum);
 	}
@@ -154,7 +154,7 @@ public class EGroumBuilderTest {
 				"    } catch(FileNotFoundException fnfe) {\n" +
 				"      fnfe.printStackTrace();\n" +
 				"    }" +
-				"}", null));
+				"}"));
 	}
 
     @Test
@@ -165,7 +165,7 @@ public class EGroumBuilderTest {
                 "  } finally {\n" +
                 "    m();\n" +
                 "  }\n" +
-                "}", null));
+                "}"));
     }
 
     private void print(EGroumGraph groum) {
