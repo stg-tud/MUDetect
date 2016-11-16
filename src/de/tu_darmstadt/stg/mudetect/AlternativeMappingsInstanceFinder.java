@@ -11,16 +11,68 @@ import java.util.stream.Collectors;
 
 public class AlternativeMappingsInstanceFinder implements InstanceFinder {
 
+    private static class Alternative {
+        final PatternFragment fragment;
+        final List<EGroumNode> targetNodes = new ArrayList<>();
+        final List<EGroumEdge> targetEdges = new ArrayList<>();
+
+        Alternative(PatternFragment fragment, EGroumNode firstTargetNode) {
+            this.fragment = fragment;
+            targetNodes.add(firstTargetNode);
+        }
+
+        private Alternative(PatternFragment fragment) {
+            this.fragment = fragment;
+        }
+
+        Collection<EGroumNode> getMappedTargetNodes() {
+            return targetNodes;
+        }
+
+        EGroumNode getMappedTargetNode(EGroumNode patternNode) {
+            int nodeIndex = fragment.exploredPatternNodes.indexOf(patternNode);
+            // TODO replace null by some null object
+            return nodeIndex >= 0 && nodeIndex < targetNodes.size() ? targetNodes.get(nodeIndex) : null;
+        }
+
+        boolean isUnmappedTargetEdge(EGroumEdge targetEdge) {
+            return !targetEdges.contains(targetEdge);
+        }
+
+        boolean isMapped(EGroumNode targetNode, EGroumNode patternNode) {
+            return getMappedTargetNode(patternNode) == targetNode;
+        }
+
+        boolean isCompatibleMappingExtension(EGroumNode targetNode, EGroumNode patternNode) {
+            return !fragment.exploredPatternNodes.contains(patternNode) && !targetNodes.contains(targetNode);
+        }
+
+        Alternative createExtension(PatternFragment extendedFragment, EGroumEdge targetEdge) {
+            Alternative copy = new Alternative(extendedFragment);
+            copy.targetEdges.addAll(targetEdges);
+            copy.targetEdges.add(targetEdge);
+            copy.targetNodes.addAll(targetNodes);
+            // TODO whether we need to add nodes needs only be computed once when extending the fragment!
+            if (!copy.targetNodes.contains(targetEdge.getSource())) {
+                copy.targetNodes.add(targetEdge.getSource());
+            }
+            if (!copy.targetNodes.contains(targetEdge.getTarget())) {
+                copy.targetNodes.add(targetEdge.getTarget());
+            }
+            return copy;
+        }
+    }
+
     private static class PatternFragment {
         private final AUG target;
         private final Pattern pattern;
-        private final Set<InstanceBuilder> alternatives = new HashSet<>();
+        private final Set<Alternative> alternatives = new HashSet<>();
 
         private final EGroumNode extensionPoint;
         private final boolean isOutgoingExtensionEdge;
 
-        private final Set<EGroumNode> exploredPatternNodes = new HashSet<>();
-        private final Set<EGroumEdge> exploredPatternEdges = new HashSet<>();
+        private final List<EGroumNode> exploredPatternNodes = new ArrayList<>();
+        private final List<EGroumEdge> exploredPatternEdges = new ArrayList<>();
 
         private final Set<EGroumEdge> patternExtensionEdges = new HashSet<>();
 
@@ -39,10 +91,14 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             this.target = parentFragment.target;
             this.pattern = parentFragment.pattern;
 
-            if (parentFragment.exploredPatternNodes.contains(patternEdge.getSource())) {
+            Set<EGroumNode> exploredPatternNodes = new HashSet<>(parentFragment.exploredPatternNodes);
+            boolean sourceExplored = exploredPatternNodes.contains(patternEdge.getSource());
+            boolean targetExplored = exploredPatternNodes.contains(patternEdge.getTarget());
+
+            if (sourceExplored) {
                 extensionPoint = patternEdge.getSource();
                 isOutgoingExtensionEdge = true;
-            } else if (parentFragment.exploredPatternNodes.contains(patternEdge.getTarget())) {
+            } else if (targetExplored) {
                 extensionPoint = patternEdge.getTarget();
                 isOutgoingExtensionEdge = false;
             } else {
@@ -50,8 +106,10 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             }
 
             this.exploredPatternNodes.addAll(parentFragment.exploredPatternNodes);
-            this.exploredPatternNodes.add(patternEdge.getSource());
-            this.exploredPatternNodes.add(patternEdge.getTarget());
+            if (!sourceExplored)
+                this.exploredPatternNodes.add(patternEdge.getSource());
+            if (!targetExplored)
+                this.exploredPatternNodes.add(patternEdge.getTarget());
 
             this.exploredPatternEdges.addAll(parentFragment.exploredPatternEdges);
             this.exploredPatternEdges.add(patternEdge);
@@ -69,11 +127,10 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         EGroumEdge nextPatternExtensionEdge() {
             EGroumEdge nextEdge = patternExtensionEdges.iterator().next();
             patternExtensionEdges.remove(nextEdge);
-            exploredPatternEdges.add(nextEdge);
             return nextEdge;
         }
 
-        void add(InstanceBuilder alternative) {
+        void add(Alternative alternative) {
             alternatives.add(alternative);
         }
 
@@ -81,11 +138,11 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             return !alternatives.isEmpty();
         }
 
-        Set<InstanceBuilder> getAlternatives() {
+        Set<Alternative> getAlternatives() {
             return alternatives;
         }
 
-        Set<EGroumEdge> getCandidateTargetEdges(InstanceBuilder alternative) {
+        Set<EGroumEdge> getCandidateTargetEdges(Alternative alternative) {
             EGroumNode mappedTargetNode = alternative.getMappedTargetNode(extensionPoint);
             if (mappedTargetNode != null) {
                 return getCandidateEdges(mappedTargetNode).stream()
@@ -100,13 +157,25 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         }
 
         public Collection<Instance> getInstances() {
-            return alternatives.stream().map(InstanceBuilder::build).collect(Collectors.toSet());
+            Collection<Instance> instances = new HashSet<>();
+            for (Alternative alternative : alternatives) {
+                Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
+                for (int i = 0; i < exploredPatternNodes.size() && i < alternative.targetNodes.size(); i++) {
+                    targetNodeByPatternNode.put(exploredPatternNodes.get(i), alternative.targetNodes.get(i));
+                }
+                Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge = new HashMap<>();
+                for (int i = 0; i < exploredPatternEdges.size() && i < alternative.targetEdges.size(); i++) {
+                    targetEdgeByPatternEdge.put(exploredPatternEdges.get(i), alternative.targetEdges.get(i));
+                }
+                instances.add(new Instance(pattern, target, targetNodeByPatternNode, targetEdgeByPatternEdge));
+            }
+            return instances;
         }
 
         void removeCoveredAlternatives(Set<EGroumNode> coveredTargetNodes) {
-            Iterator<InstanceBuilder> iterator = alternatives.iterator();
+            Iterator<Alternative> iterator = alternatives.iterator();
             while (iterator.hasNext()) {
-                InstanceBuilder alternative = iterator.next();
+                Alternative alternative = iterator.next();
                 if (coveredTargetNodes.containsAll(alternative.getMappedTargetNodes())) {
                     iterator.remove();
                 }
@@ -115,7 +184,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
 
         Set<EGroumNode> getMappedTargetNodes() {
             Set<EGroumNode> mappedTargetNodes = new HashSet<>();
-            for (InstanceBuilder alternative : alternatives) {
+            for (Alternative alternative : alternatives) {
                 mappedTargetNodes.addAll(alternative.getMappedTargetNodes());
             }
             return mappedTargetNodes;
@@ -155,9 +224,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                     if (!alternatives.containsKey(patternNode)) {
                         alternatives.put(patternNode, new PatternFragment(target, pattern, patternNode));
                     }
-                    InstanceBuilder alternative = new InstanceBuilder(target, pattern);
-                    alternative.map(targetNode, patternNode);
-                    alternatives.get(patternNode).add(alternative);
+                    alternatives.get(patternNode).add(new Alternative(alternatives.get(patternNode), targetNode));
                 }
             }
         }
@@ -168,16 +235,12 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         while (fragment.hasExtension()) {
             EGroumEdge patternEdge = fragment.nextPatternExtensionEdge();
             PatternFragment extendedFragment = new PatternFragment(fragment, patternEdge);
-            for (InstanceBuilder alternative : fragment.getAlternatives()) {
+            for (Alternative alternative : fragment.getAlternatives()) {
                 Set<EGroumEdge> candidateTargetEdges = extendedFragment.getCandidateTargetEdges(alternative);
                 boolean extended = false;
                 for (EGroumEdge targetEdge : candidateTargetEdges) {
                     if (match(patternEdge, targetEdge)) {
-                        InstanceBuilder extendedAlternative = alternative.copy();
-                        extendedAlternative.map(targetEdge.getSource(), patternEdge.getSource());
-                        extendedAlternative.map(targetEdge.getTarget(), patternEdge.getTarget());
-                        extendedAlternative.map(targetEdge, patternEdge);
-                        extendedFragment.add(extendedAlternative);
+                        extendedFragment.add(alternative.createExtension(extendedFragment, targetEdge));
                         extended = true;
                     }
                 }
