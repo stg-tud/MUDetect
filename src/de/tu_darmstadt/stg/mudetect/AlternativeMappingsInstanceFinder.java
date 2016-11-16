@@ -145,15 +145,16 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         Set<EGroumEdge> getCandidateTargetEdges(Alternative alternative) {
             EGroumNode mappedTargetNode = alternative.getMappedTargetNode(extensionPoint);
             if (mappedTargetNode != null) {
-                return getCandidateEdges(mappedTargetNode).stream()
-                        .filter(alternative::isUnmappedTargetEdge).collect(Collectors.toSet());
+                Set<EGroumEdge> candidates = isOutgoingExtensionEdge ?
+                        target.outgoingEdgesOf(mappedTargetNode) : target.incomingEdgesOf(mappedTargetNode);
+                return candidates.stream()
+                        .filter(alternative::isUnmappedTargetEdge)
+                        .collect(Collectors.toSet());
             } else {
                 return Collections.emptySet();
             }
         }
 
-        private Set<EGroumEdge> getCandidateEdges(EGroumNode targetNode) {
-            return isOutgoingExtensionEdge ? target.outgoingEdgesOf(targetNode) : target.incomingEdgesOf(targetNode);
         }
 
         public Collection<Instance> getInstances() {
