@@ -328,6 +328,16 @@ public class Fragment {
 	}*/
 	
 	public void toGraphics(String path, String name) {
+		DotGraph dg = getDotGraph();
+		File dir = new File(path);
+		if (!dir.exists())
+			dir.mkdirs();
+		//name += "_ " + FileIO.getSimpleFileName(EGroumNode.fileNames.get(this.graph.getFileID()));
+		dg.toDotFile(new File(path + "/" + name + ".dot"));
+		dg.toGraphics(path + "/" + name, "png");
+	}
+
+	public DotGraph getDotGraph() {
 		StringBuilder graph = new StringBuilder();
 		DotGraph dg = new DotGraph(graph);
 		graph.append(dg.addStart("" + getId()));
@@ -357,14 +367,9 @@ public class Fragment {
 		}
 
 		graph.append(dg.addEnd());
-		File dir = new File(path);
-		if (!dir.exists())
-			dir.mkdirs();
-		//name += "_ " + FileIO.getSimpleFileName(EGroumNode.fileNames.get(this.graph.getFileID()));
-		dg.toDotFile(new File(path + "/" + name + ".dot"));
-		dg.toGraphics(path + "/" + name, "png");
+		return dg;
 	}
-	
+
 	public void delete() {
 		this.genFragmen = null;
 		this.graph = null;

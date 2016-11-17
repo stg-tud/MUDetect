@@ -134,6 +134,25 @@
 							<goal>single</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>muminer</id>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>de.tu_darmstadt.stg.mubench.MuMinerRunner</mainClass>
+								</manifest>
+							</archive>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<finalName>muminer</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
+						</configuration>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
