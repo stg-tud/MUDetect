@@ -8,6 +8,7 @@ import egroum.EGroumNode;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class AlternativeMappingsInstanceFinder implements InstanceFinder {
 
@@ -30,7 +31,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         }
 
         EGroumNode getMappedTargetNode(EGroumNode patternNode) {
-            int nodeIndex = fragment.exploredPatternNodes.indexOf(patternNode);
+            int nodeIndex = fragment.getPatternNodeIndex(patternNode);
             // TODO replace null by some null object
             return nodeIndex >= 0 && nodeIndex < targetNodes.size() ? targetNodes.get(nodeIndex) : null;
         }
@@ -44,7 +45,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         }
 
         boolean isCompatibleMappingExtension(EGroumNode targetNode, EGroumNode patternNode) {
-            return !fragment.exploredPatternNodes.contains(patternNode) && !targetNodes.contains(targetNode);
+            return fragment.getPatternNodeIndex(patternNode) == -1 && !targetNodes.contains(targetNode);
         }
 
         Alternative createExtension(PatternFragment extendedFragment, EGroumEdge targetEdge) {
@@ -66,10 +67,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
     private static class PatternFragment {
         private final AUG target;
         private final Pattern pattern;
-        private final Set<Alternative> alternatives = new HashSet<>();
-
-        private final EGroumNode extensionPoint;
-        private final boolean isOutgoingExtensionEdge;
+        private final Set<Alternative> alternatives;
 
         private final List<EGroumNode> exploredPatternNodes = new ArrayList<>();
         private final List<EGroumEdge> exploredPatternEdges = new ArrayList<>();
@@ -79,49 +77,21 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         private PatternFragment(AUG target, Pattern pattern, EGroumNode firstPatternNode) {
             this.target = target;
             this.pattern = pattern;
-            this.extensionPoint = firstPatternNode;
-            this.isOutgoingExtensionEdge = false;
+
+            this.alternatives = target.getMeaningfulActionNodes().stream()
+                    .filter(targetNode -> PatternFragment.match(firstPatternNode, targetNode))
+                    .map(targetNode -> new Alternative(this, targetNode)).collect(Collectors.toSet());
 
             this.exploredPatternNodes.add(firstPatternNode);
-
-            this.patternExtensionEdges.addAll(pattern.edgesOf(extensionPoint));
+            this.patternExtensionEdges.addAll(pattern.edgesOf(firstPatternNode));
         }
 
-        PatternFragment(PatternFragment parentFragment, EGroumEdge patternEdge) {
-            this.target = parentFragment.target;
-            this.pattern = parentFragment.pattern;
-
-            Set<EGroumNode> exploredPatternNodes = new HashSet<>(parentFragment.exploredPatternNodes);
-            boolean sourceExplored = exploredPatternNodes.contains(patternEdge.getSource());
-            boolean targetExplored = exploredPatternNodes.contains(patternEdge.getTarget());
-
-            if (sourceExplored) {
-                extensionPoint = patternEdge.getSource();
-                isOutgoingExtensionEdge = true;
-            } else if (targetExplored) {
-                extensionPoint = patternEdge.getTarget();
-                isOutgoingExtensionEdge = false;
-            } else {
-                throw new IllegalArgumentException("not a valid extension edge: " + patternEdge);
-            }
-
-            this.exploredPatternNodes.addAll(parentFragment.exploredPatternNodes);
-            if (!sourceExplored)
-                this.exploredPatternNodes.add(patternEdge.getSource());
-            if (!targetExplored)
-                this.exploredPatternNodes.add(patternEdge.getTarget());
-
-            this.exploredPatternEdges.addAll(parentFragment.exploredPatternEdges);
-            this.exploredPatternEdges.add(patternEdge);
-
-            this.patternExtensionEdges.addAll(pattern.edgesOf(patternEdge.getSource()));
-            this.patternExtensionEdges.addAll(pattern.edgesOf(patternEdge.getTarget()));
-            this.patternExtensionEdges.removeAll(exploredPatternEdges);
-            this.patternExtensionEdges.addAll(parentFragment.patternExtensionEdges);
+        int getPatternNodeIndex(EGroumNode patternNode) {
+            return exploredPatternNodes.indexOf(patternNode);
         }
 
         boolean hasExtension() {
-            return hasAlternatives() && !patternExtensionEdges.isEmpty();
+            return !alternatives.isEmpty() && !patternExtensionEdges.isEmpty();
         }
 
         EGroumEdge nextPatternExtensionEdge() {
@@ -130,31 +100,42 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             return nextEdge;
         }
 
-        void add(Alternative alternative) {
-            alternatives.add(alternative);
-        }
-
-        boolean hasAlternatives() {
-            return !alternatives.isEmpty();
-        }
-
         Set<Alternative> getAlternatives() {
             return alternatives;
         }
 
-        Set<EGroumEdge> getCandidateTargetEdges(Alternative alternative) {
-            EGroumNode mappedTargetNode = alternative.getMappedTargetNode(extensionPoint);
-            if (mappedTargetNode != null) {
-                Set<EGroumEdge> candidates = isOutgoingExtensionEdge ?
-                        target.outgoingEdgesOf(mappedTargetNode) : target.incomingEdgesOf(mappedTargetNode);
-                return candidates.stream()
-                        .filter(alternative::isUnmappedTargetEdge)
-                        .collect(Collectors.toSet());
+        Set<EGroumEdge> getCandidateTargetEdges(Alternative alternative, EGroumEdge patternEdge) {
+            EGroumNode targetSourceNode = alternative.getMappedTargetNode(patternEdge.getSource());
+            EGroumNode targetTargetNode = alternative.getMappedTargetNode(patternEdge.getTarget());
+
+            Stream<EGroumEdge> candidates;
+            if (targetSourceNode != null) {
+                candidates = target.outgoingEdgesOf(targetSourceNode).stream();
+                if (targetTargetNode != null) {
+                    candidates = candidates.filter(edge -> edge.getTarget() == targetTargetNode);
+                }
+            } else if (targetTargetNode != null) {
+                candidates = target.incomingEdgesOf(targetTargetNode).stream();
             } else {
-                return Collections.emptySet();
+                // TODO I'm not sure what to do when extending by an edge whose source and target are not part of this
+                // alternative. For now I say there's no candidate edge to extend this alternative with.
+                candidates = Stream.empty();
             }
+
+            return candidates
+                    .filter(alternative::isUnmappedTargetEdge)
+                    .filter(targetEdge -> match(patternEdge, targetEdge))
+                    .collect(Collectors.toSet());
         }
 
+        private static boolean match(EGroumEdge patternEdge, EGroumEdge targetEdge) {
+            return match(patternEdge.getSource(), targetEdge.getSource())
+                    && patternEdge.getLabel().equals(targetEdge.getLabel())
+                    && match(patternEdge.getTarget(), targetEdge.getTarget());
+        }
+
+        private static boolean match(EGroumNode patternNode, EGroumNode targetNode) {
+            return patternNode.getLabel().equals(targetNode.getLabel());
         }
 
         public Collection<Instance> getInstances() {
@@ -215,56 +196,46 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
 
 
     private Collection<PatternFragment> getSingleNodeFragments(AUG target, Pattern pattern) {
-        Map<String, Set<EGroumNode>> patternNodesByLabel = pattern.getMeaningfulActionNodesByLabel();
-
-        Map</* pattern node */ EGroumNode, PatternFragment> alternatives = new HashMap<>();
-        for (EGroumNode targetNode : target.vertexSet()) {
-            String label = targetNode.getLabel();
-            if (patternNodesByLabel.containsKey(label)) {
-                for (EGroumNode patternNode : patternNodesByLabel.get(label)) {
-                    if (!alternatives.containsKey(patternNode)) {
-                        alternatives.put(patternNode, new PatternFragment(target, pattern, patternNode));
-                    }
-                    alternatives.get(patternNode).add(new Alternative(alternatives.get(patternNode), targetNode));
-                }
-            }
-        }
-        return alternatives.values();
+        return pattern.getMeaningfulActionNodes().stream()
+                .map(patternNode -> new PatternFragment(target, pattern, patternNode)).collect(Collectors.toSet());
     }
 
     private PatternFragment extend(PatternFragment fragment) {
         while (fragment.hasExtension()) {
             EGroumEdge patternEdge = fragment.nextPatternExtensionEdge();
-            PatternFragment extendedFragment = new PatternFragment(fragment, patternEdge);
-            for (Alternative alternative : fragment.getAlternatives()) {
-                Set<EGroumEdge> candidateTargetEdges = extendedFragment.getCandidateTargetEdges(alternative);
+
+            Set<Alternative> currentAlternatives = fragment.getAlternatives();
+            Set<Alternative> newAlternatives = new HashSet<>();
+
+            if (!fragment.exploredPatternNodes.contains(patternEdge.getSource()))
+                fragment.exploredPatternNodes.add(patternEdge.getSource());
+            if (!fragment.exploredPatternNodes.contains(patternEdge.getTarget()))
+                fragment.exploredPatternNodes.add(patternEdge.getTarget());
+
+            fragment.exploredPatternEdges.add(patternEdge);
+
+            fragment.patternExtensionEdges.addAll(fragment.pattern.edgesOf(patternEdge.getSource()));
+            fragment.patternExtensionEdges.addAll(fragment.pattern.edgesOf(patternEdge.getTarget()));
+            fragment.patternExtensionEdges.removeAll(fragment.exploredPatternEdges);
+
+            for (Alternative alternative : currentAlternatives) {
+                Set<EGroumEdge> candidateTargetEdges = fragment.getCandidateTargetEdges(alternative, patternEdge);
                 boolean extended = false;
                 for (EGroumEdge targetEdge : candidateTargetEdges) {
-                    if (match(patternEdge, targetEdge)) {
-                        extendedFragment.add(alternative.createExtension(extendedFragment, targetEdge));
-                        extended = true;
-                    }
+                    newAlternatives.add(alternative.createExtension(fragment, targetEdge));
+                    extended = true;
                 }
                 if (!extended) {
-                    extendedFragment.add(alternative);
+                    newAlternatives.add(alternative);
                 }
             }
-            if (extendedFragment.hasAlternatives()) {
-                fragment = extendedFragment;
+            if (!newAlternatives.isEmpty()) {
+                fragment.alternatives.clear();
+                fragment.alternatives.addAll(newAlternatives);
             }
         }
 
         return fragment;
-    }
-
-    private boolean match(EGroumEdge patternEdge, EGroumEdge targetEdge) {
-        return match(patternEdge.getSource(), targetEdge.getSource())
-                && patternEdge.getLabel().equals(targetEdge.getLabel())
-                && match(patternEdge.getTarget(), targetEdge.getTarget());
-    }
-
-    private boolean match(EGroumNode patternNode, EGroumNode targetNode) {
-        return patternNode.getLabel().equals(targetNode.getLabel());
     }
 
     private void removeSubInstances(List<Instance> instances) {

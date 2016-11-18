@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class AUG extends DirectedMultigraph<EGroumNode, EGroumEdge> {
 
@@ -65,6 +66,10 @@ public class AUG extends DirectedMultigraph<EGroumNode, EGroumEdge> {
             }
         }
         return nodesByLabel;
+    }
+
+    public Set<EGroumNode> getMeaningfulActionNodes() {
+        return vertexSet().stream().filter(EGroumNode::isMeaningfulAction).collect(Collectors.toSet());
     }
 
     @Override
