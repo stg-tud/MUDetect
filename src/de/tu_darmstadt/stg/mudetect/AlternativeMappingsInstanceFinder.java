@@ -123,9 +123,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                 for (Alternative alternative : alternatives) {
                     Set<EGroumEdge> candidateTargetEdges = getCandidateTargetEdges(alternative, patternEdge);
                     for (EGroumEdge targetEdge : candidateTargetEdges) {
-                        if (alternative.isCompatibleExtension(patternEdge, targetEdge)) {
-                            newAlternatives.add(alternative.createExtension(patternEdgeIndex, patternSourceIndex, patternTargetIndex, targetEdge));
-                        }
+                        newAlternatives.add(alternative.createExtension(patternEdgeIndex, patternSourceIndex, patternTargetIndex, targetEdge));
                     }
                 }
                 if (!newAlternatives.isEmpty()) {
@@ -158,6 +156,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             return candidates
                     .filter(alternative::isUnmappedTargetEdge)
                     .filter(targetEdge -> match(patternEdge, targetEdge))
+                    .filter(targetEdge -> alternative.isCompatibleExtension(patternEdge, targetEdge))
                     .collect(Collectors.toSet());
         }
 
