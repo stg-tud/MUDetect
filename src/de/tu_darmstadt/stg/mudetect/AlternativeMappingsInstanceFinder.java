@@ -74,13 +74,12 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         private final List<EGroumNode> exploredPatternNodes = new ArrayList<>();
         private final List<EGroumEdge> exploredPatternEdges = new ArrayList<>();
 
-        private PatternFragment(AUG target, Pattern pattern, EGroumNode firstPatternNode) {
+        private PatternFragment(AUG target, Pattern pattern, EGroumNode firstPatternNode, EGroumNode firstTargetNode) {
             this.target = target;
             this.pattern = pattern;
 
-            this.alternatives = target.getMeaningfulActionNodes().stream()
-                    .filter(targetNode -> match(firstPatternNode, targetNode))
-                    .map(targetNode -> new Alternative(this, targetNode)).collect(Collectors.toSet());
+            this.alternatives = new HashSet<>();
+            this.alternatives.add(new Alternative(this, firstTargetNode));
 
             this.exploredPatternNodes.add(firstPatternNode);
         }
@@ -112,15 +111,10 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                 Set<Alternative> newAlternatives = new HashSet<>();
                 for (Alternative alternative : alternatives) {
                     Set<EGroumEdge> candidateTargetEdges = getCandidateTargetEdges(alternative, patternEdge);
-                    boolean extended = false;
                     for (EGroumEdge targetEdge : candidateTargetEdges) {
                         if (alternative.isCompatibleExtension(patternEdge, targetEdge)) {
                             newAlternatives.add(alternative.createExtension(this, targetEdge));
-                            extended = true;
                         }
-                    }
-                    if (!extended) {
-                        newAlternatives.add(alternative);
                     }
                 }
                 if (!newAlternatives.isEmpty()) {
@@ -225,7 +219,10 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
 
     private Collection<PatternFragment> getSingleNodeFragments(AUG target, Pattern pattern) {
         return pattern.getMeaningfulActionNodes().stream()
-                .map(patternNode -> new PatternFragment(target, pattern, patternNode)).collect(Collectors.toSet());
+                .flatMap(patternNode -> target.getMeaningfulActionNodes().stream()
+                        .filter(targetNode -> PatternFragment.match(patternNode, targetNode))
+                        .map(targetNode -> new PatternFragment(target, pattern, patternNode, targetNode)))
+                .collect(Collectors.toSet());
     }
 
     private void removeSubInstances(List<Instance> instances) {
