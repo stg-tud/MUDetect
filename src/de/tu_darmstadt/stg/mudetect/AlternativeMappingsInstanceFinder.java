@@ -69,6 +69,29 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                 }
             }
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Alternative that = (Alternative) o;
+            return Objects.equals(fragment, that.fragment) &&
+                    Objects.equals(targetNodes, that.targetNodes) &&
+                    Objects.equals(targetEdges, that.targetEdges);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(fragment, targetNodes, targetEdges);
+        }
+
+        @Override
+        public String toString() {
+            return "Alternative{" +
+                    "targetNodes=" + targetNodes +
+                    ", targetEdges=" + targetEdges +
+                    '}';
+        }
     }
 
     private static class PatternFragment {
