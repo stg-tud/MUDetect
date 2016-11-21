@@ -69,6 +69,26 @@ public class FindPartialInstancesTest {
     }
 
     @Test
+    public void mapsTargetNodeOnlyOnce() throws Exception {
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withActionNode("C1", "C").withActionNode("C2", "C")
+                .withDataEdge("A", ORDER, "B")
+                .withDataEdge("A", ORDER, "C1")
+                .withDataEdge("B", ORDER, "C2");
+
+        TestAUGBuilder target = buildAUG().withActionNodes("A", "B", "C")
+                .withDataEdge("A", ORDER, "B")
+                .withDataEdge("A", ORDER, "C")
+                .withDataEdge("B", ORDER, "C");
+
+        TestInstanceBuilder instance1 = buildInstance(target, pattern).withNodes("A", "B").withNode("C", "C1")
+                .withEdge("A", ORDER, "B").withEdge("A", "A", ORDER, "C", "C1");
+        TestInstanceBuilder instance2 = buildInstance(target, pattern).withNodes("A", "B").withNode("C", "C2")
+                .withEdge("A", ORDER, "B").withEdge("B", "B", ORDER, "C", "C2");
+
+        assertFindsInstance(pattern, target, instance1, instance2);
+    }
+
+    @Test
     public void findsInstanceAndPartialInstance() throws Exception {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B", "C")
                 .withDataEdge("A", ORDER, "B").withDataEdge("B", ORDER, "C");

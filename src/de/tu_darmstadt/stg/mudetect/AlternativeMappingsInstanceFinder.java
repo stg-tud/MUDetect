@@ -40,12 +40,14 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             return !targetEdges.contains(targetEdge);
         }
 
-        boolean isMapped(EGroumNode targetNode, EGroumNode patternNode) {
-            return getMappedTargetNode(patternNode) == targetNode;
+        boolean isCompatibleExtension(EGroumEdge patternEdge, EGroumEdge targetEdge) {
+            return isCompatibleExtension(patternEdge.getSource(), targetEdge.getSource()) &&
+                    isCompatibleExtension(patternEdge.getTarget(), targetEdge.getTarget());
         }
 
-        boolean isCompatibleMappingExtension(EGroumNode targetNode, EGroumNode patternNode) {
-            return fragment.getPatternNodeIndex(patternNode) == -1 && !targetNodes.contains(targetNode);
+        boolean isCompatibleExtension(EGroumNode patternNode, EGroumNode targetNode) {
+            EGroumNode mappedTargetNode = getMappedTargetNode(patternNode);
+            return (mappedTargetNode == null && !targetNodes.contains(targetNode)) || mappedTargetNode == targetNode;
         }
 
         Alternative createExtension(PatternFragment extendedFragment, EGroumEdge targetEdge) {
@@ -112,8 +114,10 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                     Set<EGroumEdge> candidateTargetEdges = getCandidateTargetEdges(alternative, patternEdge);
                     boolean extended = false;
                     for (EGroumEdge targetEdge : candidateTargetEdges) {
-                        newAlternatives.add(alternative.createExtension(this, targetEdge));
-                        extended = true;
+                        if (alternative.isCompatibleExtension(patternEdge, targetEdge)) {
+                            newAlternatives.add(alternative.createExtension(this, targetEdge));
+                            extended = true;
+                        }
                     }
                     if (!extended) {
                         newAlternatives.add(alternative);
