@@ -247,14 +247,29 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             // extending from a mapping of this node M). In any case, exploring from a mapping of N is redundant.
             fragment.removeCoveredAlternatives(coveredTargetNodes);
             Collection<Instance> newInstances = fragment.findInstances();
-            instances.addAll(newInstances);
-            coveredTargetNodes.addAll(fragment.getMappedTargetNodes());
+            if (!newInstances.isEmpty()) {
+                Instance newInstance = getCandidate(newInstances);
+                instances.add(newInstance);
+                coveredTargetNodes.addAll(fragment.getMappedTargetNodes());
+            }
         }
 
         removeSubInstances(instances);
         return instances;
     }
 
+    private Instance getCandidate(Collection<Instance> instances) {
+        int maxSize = 0;
+        Instance candidate = null;
+        for (Instance instance : instances) {
+            int size = instance.getNodeSize() + instance.getEdgeSize();
+            if (size > maxSize) {
+                maxSize = size;
+                candidate = instance;
+            }
+        }
+        return candidate;
+    }
 
     private Collection<PatternFragment> getSingleNodeFragments(AUG target, Pattern pattern) {
         return pattern.getMeaningfulActionNodes().stream()
