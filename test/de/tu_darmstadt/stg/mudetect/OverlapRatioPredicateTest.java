@@ -10,12 +10,12 @@ import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.buildInstan
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 
-public class InstanceSizePredicateTest {
+public class OverlapRatioPredicateTest {
     @Test
     public void keepsIfOverlapIsLarge() throws Exception {
         final TestAUGBuilder builder = buildAUG().withActionNodes("a", "b");
         final Instance instance = buildInstance(builder, builder).withNode("a", "a").withNode("b", "b").build();
-        final InstanceSizePredicate filter = new InstanceSizePredicate(0.5);
+        final OverlapRatioPredicate filter = new OverlapRatioPredicate(0.5);
 
         assertTrue(filter.test(instance));
     }
@@ -25,7 +25,7 @@ public class InstanceSizePredicateTest {
         final TestAUGBuilder targetBuilder = buildAUG().withActionNodes("a");
         final TestAUGBuilder patternBuilder = extend(targetBuilder).withActionNodes("b", "c");
         final Instance instance = buildInstance(targetBuilder, patternBuilder).withNode("a", "a").build();
-        final InstanceSizePredicate filter = new InstanceSizePredicate(0.5);
+        final OverlapRatioPredicate filter = new OverlapRatioPredicate(0.5);
 
         assertFalse(filter.test(instance));
     }

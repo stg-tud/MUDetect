@@ -4,10 +4,10 @@ import de.tu_darmstadt.stg.mudetect.model.Instance;
 
 import java.util.function.Predicate;
 
-public class InstanceSizePredicate implements Predicate<Instance> {
+public class OverlapRatioPredicate implements Predicate<Instance> {
     private final double overlapRatioThreshold;
 
-    public InstanceSizePredicate(double overlapRatioThreshold) {
+    public OverlapRatioPredicate(double overlapRatioThreshold) {
         this.overlapRatioThreshold = overlapRatioThreshold;
     }
 
