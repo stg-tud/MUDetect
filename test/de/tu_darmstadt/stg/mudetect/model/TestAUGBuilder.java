@@ -74,6 +74,8 @@ public class TestAUGBuilder {
         if (JavaASTUtil.infixExpressionLables.containsKey(nodeName)) {
             nodeName = JavaASTUtil.infixExpressionLables.get(nodeName);
             nodeType = ASTNode.INFIX_EXPRESSION;
+        } else if (nodeName.equals("return")) {
+            nodeType = ASTNode.RETURN_STATEMENT;
         } else {
             nodeType = ASTNode.METHOD_INVOCATION;
         }
@@ -112,6 +114,11 @@ public class TestAUGBuilder {
 
     public TestAUGBuilder withDataEdge(String sourceId, EGroumDataEdge.Type type, String targetId) {
         edges.add(new EGroumDataEdge(getNode(sourceId), getNode(targetId), type));
+        return this;
+    }
+
+    public TestAUGBuilder withCondEdge(String sourceId, String kind, String targetId) {
+        edges.add(new EGroumDataEdge(getNode(sourceId), getNode(targetId), EGroumDataEdge.Type.CONDITION, kind));
         return this;
     }
 
