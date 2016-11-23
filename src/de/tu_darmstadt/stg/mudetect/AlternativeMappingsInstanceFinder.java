@@ -7,6 +7,7 @@ import egroum.EGroumEdge;
 import egroum.EGroumNode;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -234,6 +235,16 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         }
     }
 
+    private final Predicate<Instance> instancePredicate;
+
+    public AlternativeMappingsInstanceFinder(Predicate<Instance> instancePredicate) {
+        this.instancePredicate = instancePredicate;
+    }
+
+    public AlternativeMappingsInstanceFinder() {
+        this(i -> true);
+    }
+
     @Override
     public List<Instance> findInstances(AUG target, Pattern pattern) {
         List<Instance> instances = new ArrayList<>();
@@ -247,8 +258,8 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             // extending from a mapping of this node M). In any case, exploring from a mapping of N is redundant.
             fragment.removeCoveredAlternatives(coveredTargetNodes);
             Collection<Instance> newInstances = fragment.findInstances();
-            if (!newInstances.isEmpty()) {
-                Instance newInstance = getCandidate(newInstances);
+            Instance newInstance = getCandidate(newInstances);
+            if (newInstance != null) {
                 instances.add(newInstance);
                 coveredTargetNodes.addAll(fragment.getMappedTargetNodes());
             }
@@ -262,10 +273,12 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         int maxSize = 0;
         Instance candidate = null;
         for (Instance instance : instances) {
-            int size = instance.getNodeSize() + instance.getEdgeSize();
-            if (size > maxSize) {
-                maxSize = size;
-                candidate = instance;
+            if (instancePredicate.test(instance)) {
+                int size = instance.getNodeSize() + instance.getEdgeSize();
+                if (size > maxSize) {
+                    maxSize = size;
+                    candidate = instance;
+                }
             }
         }
         return candidate;

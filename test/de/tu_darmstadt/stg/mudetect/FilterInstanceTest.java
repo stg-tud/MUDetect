@@ -34,7 +34,7 @@ public class FilterInstanceTest {
             allowing(instancePredicate).test(with(any(Instance.class))); will(returnValue(true));
         }});
 
-        GreedyInstanceFinder finder = new GreedyInstanceFinder(instancePredicate);
+        InstanceFinder finder = new AlternativeMappingsInstanceFinder(instancePredicate);
         List<Instance> instances = finder.findInstances(target, pattern);
 
         assertThat(instances, is(not(empty())));
@@ -45,13 +45,13 @@ public class FilterInstanceTest {
         AUG target = someAUG();
         Pattern pattern = somePattern();
         @SuppressWarnings("unchecked")
-        Predicate<Instance> instanceFilter = context.mock(Predicate.class);
+        Predicate<Instance> instancePredicate = context.mock(Predicate.class);
 
         context.checking(new Expectations() {{
-            allowing(instanceFilter).test(with(any(Instance.class))); will(returnValue(false));
+            allowing(instancePredicate).test(with(any(Instance.class))); will(returnValue(false));
         }});
 
-        GreedyInstanceFinder finder = new GreedyInstanceFinder(instanceFilter);
+        InstanceFinder finder = new AlternativeMappingsInstanceFinder(instancePredicate);
         List<Instance> instances = finder.findInstances(target, pattern);
 
         assertThat(instances, is(empty()));
