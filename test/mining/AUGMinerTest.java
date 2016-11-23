@@ -25,7 +25,7 @@ public class AUGMinerTest {
                 "  void n(C c) { c.foo(); }" +
                 "}");
 
-        Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = new AUGMiner(2, 1).mine(groums);
+        Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = minePatterns(groums);
 
         assertThat(patterns, contains(isPattern(buildAUG().withActionNode("C.foo()"), 2)));
     }
@@ -37,7 +37,7 @@ public class AUGMinerTest {
                 "  void n(C c) { c.foo(\"literal\"); }" +
                 "}");
 
-        Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = new AUGMiner(2, 1).mine(groums);
+        Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = minePatterns(groums);
 
         AUG patternAUG = buildAUG().withActionNode("C.foo()").withDataNode("String")
                 .withDataEdge("String", Type.PARAMETER, "C.foo()").build();
@@ -51,10 +51,15 @@ public class AUGMinerTest {
                 "  void n(C c) { c.foo(\"l2\"); }" +
                 "}");
 
-        Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = new AUGMiner(2, 1).mine(groums);
+        Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = minePatterns(groums);
 
         Pattern pattern = first(patterns);
         assertThat(pattern.getLiterals(node("String", pattern)), contains("l1", "l2"));
+    }
+
+    private Set<Pattern> minePatterns(List<EGroumGraph> groums) {
+        Configuration config = new Configuration() {{ minPatternSupport = 2; extendSourceDataNodes = false; }};
+        return new AUGMiner(config).mine(groums);
     }
 
     private EGroumNode node(String label, AUG aug) {

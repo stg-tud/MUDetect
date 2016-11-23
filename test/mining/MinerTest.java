@@ -24,7 +24,6 @@ public class MinerTest {
 		
 		List<Pattern> patterns = mine(groums, null);
 		
-//		assertThat(patterns.size(), is(1));
 		print(patterns.get(0));
 	}
 	
@@ -188,19 +187,8 @@ public class MinerTest {
 	}
 
 	private List<Pattern> mine(ArrayList<EGroumGraph> groums, String[] classpaths) {
-		Pattern.minFreq = 2;
-		Pattern.minSize = 1;
-		Pattern.maxSize = 30;
-		Miner miner = new Miner("test");
-		miner.maxSingleNodePrevalence = 100;
-		miner.mine(groums);
-		
-		List<Pattern> patterns = new ArrayList<>();
-		for (int step = Pattern.minSize - 1; miner.lattices.size() > step; step++) {
-			Lattice lattice = miner.lattices.get(step);
-			patterns.addAll(lattice.getPatterns());
-		}
-		return patterns;
+		Miner miner = new Miner("test", new Configuration() {{ minPatternSupport = 2; maxPatternSize = 30; }});
+		return new ArrayList<>(miner.mine(groums));
 	}
 	
 	private void print(Pattern pattern) {

@@ -9,30 +9,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class AUGMiner {
-    public static final int DEFAULT_MAX_PATTERN_SIZE = Integer.MAX_VALUE;
-    public static final int DEFAULT_MAX_PATTERN_SUPPORT = 1000;
+    private final Configuration config;
 
-    private int minPatternSupport;
-    private int maxPatternSupport;
-    private int minPatternSize;
-    private int maxPatternSize;
-
-    private String outputPath = null;
     private PrintStream out = null;
 
-    public AUGMiner(int minPatternSupport, int minPatternSize) {
-        this.minPatternSupport = minPatternSupport;
-        this.maxPatternSupport = DEFAULT_MAX_PATTERN_SUPPORT;
-        this.minPatternSize = minPatternSize;
-        this.maxPatternSize = DEFAULT_MAX_PATTERN_SIZE;
-    }
-
-    public void setMinPatternSize(int minPatternSize) {
-        this.minPatternSize = minPatternSize;
-    }
-
-    public void setOutputPath(String outputPath) {
-        this.outputPath = outputPath;
+    public AUGMiner(Configuration config) {
+        this.config = config;
     }
 
     public void setOut(PrintStream out) {
@@ -57,11 +39,6 @@ public class AUGMiner {
     }
 
     public Set<de.tu_darmstadt.stg.mudetect.model.Pattern> mine(ArrayList<EGroumGraph> groums) {
-        Pattern.minFreq = this.minPatternSupport;
-        Pattern.maxFreq = this.maxPatternSupport;
-        Pattern.minSize = this.minPatternSize;
-        Pattern.maxSize = this.maxPatternSize;
-
         EGroumNode.numOfNodes = 0;
         Fragment.nextFragmentId = 0;
         Fragment.numofFragments = 0;
@@ -71,9 +48,7 @@ public class AUGMiner {
             if (out != null) {
                 System.setOut(out);
             }
-            mining.Miner miner = new mining.Miner("-subgraph-finder-");
-            miner.output_path = this.outputPath;
-            miner.maxSingleNodePrevalence = 100;
+            mining.Miner miner = new mining.Miner("-subgraph-finder-", config);
             return toAUGPatterns(miner.mine(groums));
         } finally {
             System.setOut(originalOut);

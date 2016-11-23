@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import mining.Configuration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -123,19 +124,8 @@ public class MCISGFinderTest {
 	}
 
 	private List<Pattern> mine(ArrayList<EGroumGraph> groums) {
-		Pattern.minFreq = 2;
-		Pattern.minSize = 1;
-		Pattern.maxSize = 30;
-		Miner miner = new Miner("test");
-		miner.maxSingleNodePrevalence = 100;
-		miner.mine(groums);
-		
-		List<Pattern> patterns = new ArrayList<>();
-		for (int step = Pattern.minSize - 1; miner.lattices.size() > step; step++) {
-			Lattice lattice = miner.lattices.get(step);
-			patterns.addAll(lattice.getPatterns());
-		}
-		return patterns;
+		Miner miner = new Miner("test", new Configuration() {{ minPatternSupport = 2; maxPatternSize = 30; }});
+		return new ArrayList<>(miner.mine(groums));
 	}
 
 	private ArrayList<CISGraph> match(HashSet<EGroumGraph> groums) {

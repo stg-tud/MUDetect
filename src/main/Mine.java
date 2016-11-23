@@ -9,6 +9,7 @@ import java.util.Comparator;
 
 import egroum.EGroumBuilder;
 import mining.Anomaly;
+import mining.Configuration;
 import mining.Fragment;
 import mining.Miner;
 import utils.FileIO;
@@ -28,7 +29,7 @@ public class Mine {
 //		String path = "input/Test2.java", name = "";
 //		String path = "test/input/Test_mine.java", name = "";
 		EGroumBuilder gb = new EGroumBuilder(null);
-		Miner miner = new Miner(name);
+		Miner miner = new Miner(name, new Configuration());
 		miner.mine(new ArrayList<>(gb.buildBatch(path)));
 		ArrayList<Anomaly> anomalies = miner.anomalies;
 		Collections.sort(anomalies, new Comparator<Anomaly>() {

@@ -33,7 +33,8 @@ public class Fragment {
 	public static final int maxSize = 20;
 	
 	public static int nextFragmentId = 1, numofFragments = 0;
-	
+	private final Configuration config;
+
 	private int id = -1;
 	private Fragment genFragmen;
 	private ArrayList<EGroumNode> nodes = new ArrayList<>();
@@ -41,13 +42,14 @@ public class Fragment {
 	private HashMap<Integer, Integer> vector = new HashMap<>();
 	private int idSum = 0;
 	
-	private Fragment() {
+	private Fragment(Configuration config) {
+		this.config = config;
 		this.id = nextFragmentId++;
 		numofFragments++;
 	}
 	
-	public Fragment(EGroumNode node) {
-		this();
+	public Fragment(EGroumNode node, Configuration config) {
+		this(config);
 		this.graph = node.getGraph();
 		nodes.add(node);
 		this.idSum = node.getId();
@@ -55,7 +57,7 @@ public class Fragment {
 	}
 	
 	public Fragment(Fragment fragment, ArrayList<EGroumNode> ens) {
-		this();
+		this(fragment.config);
 		this.genFragmen = fragment;
 		this.graph = fragment.graph;
 		this.nodes = new ArrayList<EGroumNode>(fragment.getNodes());
@@ -469,7 +471,7 @@ public class Fragment {
 					}
 				}
 			} else if (node instanceof EGroumDataNode) {
-				if (Miner.EXTEND_SOURCE_DATA_NODES)
+				if (config.extendSourceDataNodes)
 					add(node, lens);
 				else {
 					boolean hasThrow = false;

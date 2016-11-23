@@ -25,14 +25,14 @@ import utils.FileIO;
  */
 public class Miner {
 	public static boolean EXTEND_SOURCE_DATA_NODES = true;
-	public double maxSingleNodePrevalence = 0.5;
 	private String projectName;
+	private final Configuration config;
 	public ArrayList<Lattice> lattices = new ArrayList<Lattice>();
 	public ArrayList<Anomaly> anomalies = new ArrayList<>();
-	public String output_path = "output/patterns";
-	
-	public Miner(String projectName) {
+
+	public Miner(String projectName, Configuration config) {
 		this.projectName = projectName;
+		this.config = config;
 	}
 	
 	public String getProjectName() {
@@ -69,7 +69,7 @@ public class Miner {
 		lattices.add(l);
 		for (String label : new HashSet<String>(nodesOfLabel.keySet())) {
 			HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
-			if (nodes.size() < Pattern.minFreq/* || EGroumNode.isThisMethodCall(label)*/) {
+			if (nodes.size() < config.minPatternSupport/* || EGroumNode.isThisMethodCall(label)*/) {
 				// FIXME
 				for (EGroumNode node : nodes) {
 					boolean isDefAction = false;
@@ -93,55 +93,56 @@ public class Miner {
 			HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
 			HashSet<Fragment> fragments = new HashSet<>();
 			for (EGroumNode node : nodes) {
-				Fragment f = new Fragment(node);
+				Fragment f = new Fragment(node, config);
 				fragments.add(f);
 			}
 			Pattern p = new Pattern(fragments, fragments.size());
 			extend(p);
 		}
 		System.out.println("Done mining.");
-		Lattice.filter(lattices);
+		Lattice.filter(lattices, config.minPatternSize);
 		System.out.println("Done filtering.");
-		
-		if (output_path != null) {
-			report();
-		}
+
+		report();
+
 		return getPatterns();
 	}
 
 	private void report() {
-		File dir = new File(output_path, this.projectName + "-" + (System.currentTimeMillis() / 1000));
-		for (int step = Pattern.minSize; step <= lattices.size(); step++) {
-			Lattice lat = lattices.get(step - 1);
-			int c = 0;
-			for (Pattern p : lat.getPatterns()) {
-				c++;
-				File patternDir = new File(dir.getAbsolutePath() + "/" + step + "/" + c + "_" + p.getId());
-				if (!patternDir.exists())
-					patternDir.mkdirs();
-				Fragment rf = p.getRepresentative();
-				rf.toGraphics(patternDir.getAbsolutePath(), rf.getId() + "");
-				StringBuilder sb = new StringBuilder();
-				for (Fragment f : p.getFragments()) {
-					String fileName = f.getGraph().getFilePath();
-					String name = f.getGraph().getName();
-					sb.append(fileName + "," + name + "\n");
-					/*String[] parts = name.split(",");
-					sb.append("https://github.com/" + projectName + "/commit/"
-							+ parts[0].substring(0, parts[0].indexOf('.')) + "/"
-							+ parts[1]
-							+ "\n");*/
+		if (config.outputPath != null) {
+			File dir = new File(config.outputPath, this.projectName + "-" + (System.currentTimeMillis() / 1000));
+			for (int step = config.minPatternSize; step <= lattices.size(); step++) {
+				Lattice lat = lattices.get(step - 1);
+				int c = 0;
+				for (Pattern p : lat.getPatterns()) {
+					c++;
+					File patternDir = new File(dir.getAbsolutePath() + "/" + step + "/" + c + "_" + p.getId());
+					if (!patternDir.exists())
+						patternDir.mkdirs();
+					Fragment rf = p.getRepresentative();
+					rf.toGraphics(patternDir.getAbsolutePath(), rf.getId() + "");
+					StringBuilder sb = new StringBuilder();
+					for (Fragment f : p.getFragments()) {
+						String fileName = f.getGraph().getFilePath();
+						String name = f.getGraph().getName();
+						sb.append(fileName + "," + name + "\n");
+						/*String[] parts = name.split(",");
+						sb.append("https://github.com/" + projectName + "/commit/"
+								+ parts[0].substring(0, parts[0].indexOf('.')) + "/"
+								+ parts[1]
+								+ "\n");*/
+					}
+					FileIO.writeStringToFile(sb.toString(),
+							patternDir.getAbsolutePath() + "/locations.txt");
 				}
-				FileIO.writeStringToFile(sb.toString(),
-						patternDir.getAbsolutePath() + "/locations.txt");
 			}
+			System.out.println("Done reporting.");
 		}
-		System.out.println("Done reporting.");
 	}
 	
 	private Set<Pattern> getPatterns() {
 		Set<Pattern> patterns = new HashSet<>();
-		for (int step = Pattern.minSize - 1; lattices.size() > step; step++) {
+		for (int step = config.minPatternSize - 1; lattices.size() > step; step++) {
 			Lattice lattice = lattices.get(step);
 			patterns.addAll(lattice.getPatterns());
 		}
@@ -150,11 +151,11 @@ public class Miner {
 
 	private void extend(Pattern pattern) {
 		int patternSize = 0;
-		if (pattern.getSize() >= Pattern.maxSize)
+		if (pattern.getSize() >= config.maxPatternSize)
 			for(EGroumNode node : pattern.getRepresentative().getNodes())
 				if(node.isCoreAction())
 					patternSize++;
-		if(patternSize >= Pattern.maxSize) {
+		if(patternSize >= config.maxPatternSize) {
 			pattern.add2Lattice(lattices);
 			return;
 		}
@@ -172,11 +173,11 @@ public class Miner {
 		}
 		for (String label : new HashSet<String>(labelFragmentExtendableNodes.keySet())) {
 			HashMap<Fragment, HashSet<ArrayList<EGroumNode>>> fens = labelFragmentExtendableNodes.get(label);
-			if (fens.size() < Pattern.minFreq)
+			if (fens.size() < config.minPatternSupport)
 				labelFragmentExtendableNodes.remove(label);
 		}
 		HashSet<Fragment> group = new HashSet<>(), frequentFragments = new HashSet<>();
-		int xfreq = Pattern.minFreq - 1;
+		int xfreq = config.minPatternSupport - 1;
 		boolean extensible = false;
 		for (String label : labelFragmentExtendableNodes.keySet()) {
 			HashMap<Fragment, HashSet<ArrayList<EGroumNode>>> fens = labelFragmentExtendableNodes.get(label);
@@ -205,19 +206,19 @@ public class Miner {
 			for (Fragment xf : frequentFragments) {
 				inextensibles.remove(xf.getGenFragmen());
 			}
-			if (inextensibles.size() >= Pattern.minFreq) {
+			if (inextensibles.size() >= config.minPatternSupport) {
 				int freq = computeFrequency(inextensibles, false);
-				if (freq >= Pattern.minFreq && !Lattice.contains(lattices, inextensibles)) {
+				if (freq >= config.minPatternSupport && !Lattice.contains(lattices, inextensibles)) {
 					Pattern ip = new Pattern(inextensibles, freq);
 					ip.add2Lattice(lattices);
 					pattern.getFragments().removeAll(inextensibles);
 				}
-			} else if (xfreq >= Pattern.minFreq && !inextensibles.isEmpty() /*&& inextensibles.size() <= 2*/){
+			} else if (xfreq >= config.minPatternSupport && !inextensibles.isEmpty() /*&& inextensibles.size() <= 2*/){
 				// report anomalies
 				double rareness = 1 - inextensibles.size() * 1.0 / pattern.getFreq();
 				anomalies.add(new Anomaly(rareness, pattern.getFreq(), inextensibles, group));
 			}
-			if (xfreq >= Pattern.minFreq) {
+			if (xfreq >= config.minPatternSupport) {
 				Pattern xp = new Pattern(group, xfreq);
 				ArrayList<String> labels = new ArrayList<>();
 				Fragment rep = null, xrep = null;
@@ -266,7 +267,7 @@ public class Miner {
 
 	private boolean isGiant(HashSet<Fragment> xfs, Pattern pattern) {
 		return pattern.getSize() > 1 
-				&& (xfs.size() > Pattern.maxFreq || xfs.size() > pattern.getFragments().size() * pattern.getSize() * pattern.getSize());
+				&& (xfs.size() > config.maxPatternSupport || xfs.size() > pattern.getFragments().size() * pattern.getSize() * pattern.getSize());
 	}
 
 	private int mine(HashSet<Fragment> result, HashSet<Fragment> fragments, Pattern pattern, boolean isGiant, HashSet<Fragment> frequentFragments) {
@@ -286,10 +287,10 @@ public class Miner {
 			group(groups, bucket);
 		}
 		HashSet<Fragment> group = new HashSet<>();
-		int xfreq = Pattern.minFreq - 1;
+		int xfreq = config.minPatternSupport - 1;
 		for (HashSet<Fragment> g : groups) {
 			int freq = computeFrequency(g, isGiant && isGiant(g, pattern));
-			if (freq >= Pattern.minFreq)
+			if (freq >= config.minPatternSupport)
 				frequentFragments.addAll(g);
 			if (freq > xfreq) {
 				group = g;
@@ -357,9 +358,9 @@ public class Miner {
 				bucket.remove(g);
 			}
 		}
-		if (fs.size() >= Pattern.minFreq && group.size() >= Pattern.minFreq) {
+		if (fs.size() >= config.minPatternSupport && group.size() >= config.minPatternSupport) {
 			removeDuplicates(group);
-			if (group.size() >= Pattern.minFreq)
+			if (group.size() >= config.minPatternSupport)
 				groups.add(group);
 		}
 	}

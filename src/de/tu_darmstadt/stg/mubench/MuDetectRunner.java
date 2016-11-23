@@ -13,6 +13,7 @@ import de.tu_darmstadt.stg.mudetect.ranking.*;
 import egroum.AUGBuilder;
 import egroum.EGroumBuilder;
 import egroum.EGroumGraph;
+import mining.Configuration;
 
 import java.util.Collection;
 import java.util.List;
@@ -38,7 +39,7 @@ public class MuDetectRunner extends MuBenchRunner {
     @Override
     protected void mineAndDetect(CodePath trainingAndTargetPath, DetectorOutput output) throws Exception {
         run(trainingAndTargetPath,
-                groums -> new MinedPatternsModel(10, 1, groums),
+                groums -> new MinedPatternsModel(new Configuration() {{ minPatternSupport = 10; }}, groums),
                 trainingAndTargetPath,
                 new AlternativeMappingsInstanceFinder(),
                 new MissingElementViolationFactory(),

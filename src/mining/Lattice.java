@@ -44,8 +44,8 @@ public class Lattice {
 		return false;
 	}
 	
-	public static void filter(ArrayList<Lattice> lattices) {
-		for (int size = Pattern.minSize-1; size < lattices.size(); size++) {
+	public static void filter(ArrayList<Lattice> lattices, int minPatternSize) {
+		for (int size = minPatternSize-1; size < lattices.size(); size++) {
 			Lattice l1 = lattices.get(size);
 			for (Pattern p1 : new ArrayList<Pattern>(l1.getPatterns())) {
 				boolean found = false;

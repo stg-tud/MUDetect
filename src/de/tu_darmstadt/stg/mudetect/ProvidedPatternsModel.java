@@ -5,6 +5,7 @@ import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import egroum.EGroumBuilder;
 import egroum.EGroumGraph;
 import mining.AUGMiner;
+import mining.Configuration;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -26,7 +27,7 @@ public class ProvidedPatternsModel implements Model {
      * mine, instead of directly from the {@link EGroumBuilder}.
      */
     private Stream<Pattern> getMiningResultEquivalent(EGroumGraph graph) {
-        return new AUGMiner(1, 1).mine(graph).stream();
+        return new AUGMiner(new Configuration() {{ minPatternSupport = 1; outputPath = null; }}).mine(graph).stream();
     }
 
     @Override
