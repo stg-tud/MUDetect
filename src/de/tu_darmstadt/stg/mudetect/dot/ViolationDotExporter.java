@@ -50,13 +50,19 @@ public class ViolationDotExporter {
     private static AUG getTargetEnvironmentAUG(Instance instance) {
         AUG target = instance.getTarget();
         AUG envAUG = new AUG(target.getLocation().getMethodName(), target.getLocation().getFilePath());
-        Set<EGroumNode> mappedTargetNodes = instance.getMappedTargetNodes();
-        for (EGroumNode mappedTargetNode : mappedTargetNodes) {
+        for (EGroumNode mappedTargetNode : instance.getMappedTargetNodes()) {
             envAUG.addVertex(mappedTargetNode);
             for (EGroumEdge edge : target.edgesOf(mappedTargetNode)) {
                 envAUG.addVertex(edge.getSource());
                 envAUG.addVertex(edge.getTarget());
-                envAUG.addEdge(edge.getSource(), edge.getTarget(), edge);
+            }
+        }
+        Set<EGroumNode> envNodes = envAUG.vertexSet();
+        for (EGroumNode node : envNodes) {
+            for (EGroumEdge edge : target.edgesOf(node)) {
+                if (envNodes.contains(edge.getSource()) && envNodes.contains(edge.getTarget())) {
+                    envAUG.addEdge(edge.getSource(), edge.getTarget(), edge);
+                }
             }
         }
         return envAUG;

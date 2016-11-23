@@ -12,6 +12,7 @@ import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.buildInstan
 import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.fullInstance;
 import static de.tu_darmstadt.stg.mudetect.model.TestViolationBuilder.someViolation;
 import static egroum.EGroumDataEdge.Type.ORDER;
+import static egroum.EGroumDataEdge.Type.PARAMETER;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -28,7 +29,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
     }
 
     @Test
-    public void addSameEdgeOnlyOnce() throws Exception {
+    public void addsSameEdgeOnlyOnce() throws Exception {
         AUG aug = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B").build();
         Instance instance = fullInstance(aug);
 
@@ -71,6 +72,20 @@ public class GenerateTargetEnvironmentDotGraphTest {
 
         assertDotGraphContains(dotGraph, " [ label=\"A\" shape=\"box\" ];");
         assertDotGraphContains(dotGraph, " [ label=\"order\" style=\"dotted\" ];");
+    }
+
+    @Test
+    public void includesEdgesBetweenTargetOnlyNodes() throws Exception {
+        TestAUGBuilder pattern = buildAUG().withActionNode("A");
+        TestAUGBuilder target = buildAUG().withActionNodes("A", "B", "C")
+                .withDataEdge("A", ORDER, "B")
+                .withDataEdge("A", ORDER, "C")
+                .withDataEdge("B", PARAMETER, "C");
+        TestInstanceBuilder instance = buildInstance(target, pattern).withNode("A");
+
+        String dotGraph = toDotGraph(someViolation(instance));
+
+        assertDotGraphContains(dotGraph, "[ label=\"para\" style=\"dotted\" color=\"gray\" fontcolor=\"gray\" ];");
     }
 
     private String toDotGraph(Violation violation) {
