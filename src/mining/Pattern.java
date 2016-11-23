@@ -54,59 +54,35 @@ public class Pattern {
 		this.id = nextID++;
 	}
 
-	/**
-	 * @return the size
-	 */
 	public int getSize() {
 		return size;
 	}
 
-	/**
-	 * @param size the size to set
-	 */
 	public void setSize(int size) {
 		this.size = size;
 	}
 
-	/**
-	 * @return the representative
-	 */
 	public Fragment getRepresentative() {
 		return representative;
 	}
 
-	/**
-	 * @param representative the representative to set
-	 */
 	public void setRepresentative(Fragment representative) {
 		this.representative = representative;
 		//representative.toGraphics("D:/temp/output/patterns/changes", String.valueOf(id));
 	}
 
-	/**
-	 * @return the freq
-	 */
 	public int getFreq() {
 		return freq;
 	}
 
-	/**
-	 * @param freq the freq to set
-	 */
 	public void setFreq(int freq) {
 		this.freq = freq;
 	}
 
-	/**
-	 * @return the genPatterns
-	 */
 	public HashSet<Fragment> getFragments() {
 		return fragments;
 	}
 
-	/**
-	 * @param genPatterns the genPatterns to set
-	 */
 	public void setFragments(HashSet<Fragment> fragments) {
 		this.fragments = fragments;
 	}
