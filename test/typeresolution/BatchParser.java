@@ -19,6 +19,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -35,6 +36,7 @@ import mining.Miner;
 import mining.Pattern;
 import utils.FileIO;
 
+@Ignore("These tests require Windows paths from Hoan's machine.")
 public class BatchParser {
 	private static ASTParser parser;
 	private static HashMap<String, ASTNode> asts = new HashMap<>();
