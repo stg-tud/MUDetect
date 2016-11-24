@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class TestAUGBuilder {
-    private int autoId = 0;
-
     private final Map<String, EGroumNode> nodeMap;
     private final Set<EGroumEdge> edges;
     private final String name;
@@ -40,7 +38,7 @@ public class TestAUGBuilder {
         return new TestAUGBuilder(name);
     }
 
-    public static TestAUGBuilder join(TestAUGBuilder... builder) {
+    private static TestAUGBuilder join(TestAUGBuilder... builder) {
         TestAUGBuilder joinedBuilder = null;
         for (int i = 0; i < builder.length; i++) {
             if (i == 0) {
@@ -101,17 +99,6 @@ public class TestAUGBuilder {
         return this;
     }
 
-    private TestAUGBuilder withNodes(EGroumNode... nodes) {
-        for (EGroumNode node : nodes) {
-            withNode(getNextAutoId(), node);
-        }
-        return this;
-    }
-
-    private String getNextAutoId() {
-        return Integer.toString(autoId++);
-    }
-
     public TestAUGBuilder withDataEdge(String sourceId, EGroumDataEdge.Type type, String targetId) {
         edges.add(new EGroumDataEdge(getNode(sourceId), getNode(targetId), type));
         return this;
@@ -122,14 +109,14 @@ public class TestAUGBuilder {
         return this;
     }
 
-    public EGroumNode getNode(String id) {
+    EGroumNode getNode(String id) {
         if (!nodeMap.containsKey(id)) {
             throw new IllegalArgumentException("A node with id '" + id + "' does not exist.");
         }
         return nodeMap.get(id);
     }
 
-    public EGroumEdge getEdge(String sourceNodeId, EGroumDataEdge.Type type, String targetNodeId) {
+    EGroumEdge getEdge(String sourceNodeId, EGroumDataEdge.Type type, String targetNodeId) {
         for (EGroumEdge edge : edges) {
             if (edge.getSource() == getNode(sourceNodeId) &&
                     edge.getTarget() == getNode(targetNodeId) &&
