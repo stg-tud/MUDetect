@@ -128,8 +128,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
 
             Set<EGroumEdge> patternExtensionEdges = new HashSet<>(pattern.edgesOf(exploredPatternNodes.get(0)));
             while (!patternExtensionEdges.isEmpty()) {
-                EGroumEdge patternEdge = patternExtensionEdges.iterator().next();
-                patternExtensionEdges.remove(patternEdge);
+                EGroumEdge patternEdge = pollEdgeWithLeastAlternatives(patternExtensionEdges);
 
                 int patternSourceIndex = getPatternNodeIndex(patternEdge.getSource());
                 if (patternSourceIndex == -1) {
@@ -161,6 +160,23 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             }
 
             return getInstances();
+        }
+
+        private EGroumEdge pollEdgeWithLeastAlternatives(Set<EGroumEdge> patternExtensionEdges) {
+            int minNumberOfAlternatives = Integer.MAX_VALUE;
+            EGroumEdge bestPatternEdge = null;
+            for (EGroumEdge patternExtensionEdge : patternExtensionEdges) {
+                int numberOfAlternatives = 0;
+                for (Alternative alternative : alternatives) {
+                    numberOfAlternatives += getCandidateTargetEdges(alternative, patternExtensionEdge).size();
+                }
+                if (numberOfAlternatives < minNumberOfAlternatives) {
+                    bestPatternEdge = patternExtensionEdge;
+                    minNumberOfAlternatives = numberOfAlternatives;
+                }
+            }
+            patternExtensionEdges.remove(bestPatternEdge);
+            return bestPatternEdge;
         }
 
         private Set<EGroumEdge> getCandidateTargetEdges(Alternative alternative, EGroumEdge patternEdge) {
