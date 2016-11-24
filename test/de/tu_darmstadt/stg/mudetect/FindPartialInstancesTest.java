@@ -182,6 +182,44 @@ public class FindPartialInstancesTest {
         assertFindsInstance(pattern, target, instance1, instance2);
     }
 
+    /**
+     * Issue: When expanding the pattern, the finder may pick an edge that is not mappable in the target and then
+     * continue extending from that edge's target. Since the edge is not mappable, no edges from its target are and,
+     * thus, the result does not contain correspondents to these edges, even if there is another path in the
+     * target graph that leads to them. To solve this problem, we make the algorithm prioritize mappable edges.
+     */
+    @Test
+    public void prioritzesMappableEdges() throws Exception {
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A") // the algorithm will start extending from this node
+                .withDataNodes("B", "C", "D", "E", "F")
+                .withCondEdge("B", "sel", "A")
+                .withCondEdge("C", "sel", "A")
+                .withCondEdge("D", "sel", "A")
+                .withCondEdge("E", "sel", "A")
+                .withDataEdge("F", ORDER, "A") // this is the edge that makes the connection
+                .withDataEdge("F", ORDER, "B")
+                .withDataEdge("F", ORDER, "C")
+                .withDataEdge("F", ORDER, "D")
+                .withDataEdge("F", ORDER, "E");
+
+        TestAUGBuilder target = buildAUG().withActionNodes("A") // the algorithm will start extending from this node
+                .withDataNodes("B", "C", "D", "E", "F")
+                .withDataEdge("F", ORDER, "A") // this is the edge that makes the connection
+                .withDataEdge("F", ORDER, "B")
+                .withDataEdge("F", ORDER, "C")
+                .withDataEdge("F", ORDER, "D")
+                .withDataEdge("F", ORDER, "E");
+
+        TestInstanceBuilder instance = buildInstance(target, pattern).withNodes("A", "B", "C", "D", "E", "F")
+                .withEdge("F", ORDER, "A")
+                .withEdge("F", ORDER, "B")
+                .withEdge("F", ORDER, "C")
+                .withEdge("F", ORDER, "D")
+                .withEdge("F", ORDER, "E");
+
+        assertFindsInstance(pattern, target, instance);
+    }
+
     private void assertFindsInstance(TestAUGBuilder patternBuilder,
                                      TestAUGBuilder targetBuilder,
                                      TestInstanceBuilder... expectedInstanceBuilder) {

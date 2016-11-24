@@ -80,6 +80,13 @@ public class TestAUGBuilder {
         return withNode(id, new EGroumActionNode(nodeName, nodeType));
     }
 
+    public TestAUGBuilder withDataNodes(String... nodeNames) {
+        for (String nodeName : nodeNames) {
+            withDataNode(nodeName);
+        }
+        return this;
+    }
+
     public TestAUGBuilder withDataNode(String nodeName) {
         if (nodeMap.containsKey(nodeName)) {
             throw new IllegalArgumentException("A node with id '" + nodeName + "' already exists, please specify an explicit node id.");

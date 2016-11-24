@@ -62,11 +62,15 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         }
 
         private static <T> void insertAt(List<T> list, int index, T element) {
-            while (list.size() <= index) {
-                if (list.size() == index) {
-                    list.add(element);
-                } else {
-                    list.add(null);
+            if (list.size() > index) {
+                list.set(index, element);
+            } else {
+                while (list.size() <= index) {
+                    if (list.size() == index) {
+                        list.add(element);
+                    } else {
+                        list.add(null);
+                    }
                 }
             }
         }
@@ -125,6 +129,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             Set<EGroumEdge> patternExtensionEdges = new HashSet<>(pattern.edgesOf(exploredPatternNodes.get(0)));
             while (!patternExtensionEdges.isEmpty()) {
                 EGroumEdge patternEdge = patternExtensionEdges.iterator().next();
+                patternExtensionEdges.remove(patternEdge);
 
                 int patternSourceIndex = getPatternNodeIndex(patternEdge.getSource());
                 if (patternSourceIndex == -1) {
@@ -139,10 +144,6 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                 int patternEdgeIndex = exploredPatternEdges.size();
                 exploredPatternEdges.add(patternEdge);
 
-                patternExtensionEdges.addAll(pattern.edgesOf(patternEdge.getSource()));
-                patternExtensionEdges.addAll(pattern.edgesOf(patternEdge.getTarget()));
-                patternExtensionEdges.removeAll(exploredPatternEdges);
-
                 Set<Alternative> newAlternatives = new HashSet<>();
                 for (Alternative alternative : alternatives) {
                     Set<EGroumEdge> candidateTargetEdges = getCandidateTargetEdges(alternative, patternEdge);
@@ -153,6 +154,9 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                 if (!newAlternatives.isEmpty()) {
                     alternatives.clear();
                     alternatives.addAll(newAlternatives);
+                    patternExtensionEdges.addAll(pattern.edgesOf(patternEdge.getSource()));
+                    patternExtensionEdges.addAll(pattern.edgesOf(patternEdge.getTarget()));
+                    patternExtensionEdges.removeAll(exploredPatternEdges);
                 }
             }
 
