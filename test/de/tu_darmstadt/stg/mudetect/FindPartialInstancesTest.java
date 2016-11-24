@@ -70,40 +70,36 @@ public class FindPartialInstancesTest {
 
     @Test
     public void mapsPatternNodeOnlyOnce() throws Exception {
-        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B", "C")
-                .withDataEdge("A", ORDER, "B")
-                .withDataEdge("A", ORDER, "C")
-                .withDataEdge("B", ORDER, "C");
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B")
+                .withDataEdge("A", PARAMETER, "B")
+                .withCondEdge("A", "sel", "B");
 
-        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withActionNode("C1", "C").withActionNode("C2", "C")
-                .withDataEdge("A", ORDER, "B")
-                .withDataEdge("A", ORDER, "C1")
-                .withDataEdge("B", ORDER, "C2");
+        TestAUGBuilder target = buildAUG().withActionNode("A1", "A").withActionNode("A2", "A").withActionNode("B")
+                .withDataEdge("A1", PARAMETER, "B")
+                .withCondEdge("A2", "sel", "B");
 
-        TestInstanceBuilder instance1 = buildInstance(target, pattern).withNodes("A", "B").withNode("C1", "C")
-                .withEdge("A", ORDER, "B").withEdge("A", "A", ORDER, "C1", "C");
-        TestInstanceBuilder instance2 = buildInstance(target, pattern).withNodes("A", "B").withNode("C2", "C")
-                .withEdge("A", ORDER, "B").withEdge("B", "B", ORDER, "C2", "C");
+        TestInstanceBuilder instance1 = buildInstance(target, pattern).withNode("A1", "A").withNode("B")
+                .withEdge("A1", "A", PARAMETER, "B", "B");
+        TestInstanceBuilder instance2 = buildInstance(target, pattern).withNode("A2", "A").withNode("B")
+                .withEdge("A2", "A", CONDITION, "B", "B");
 
         assertFindsInstance(pattern, target, instance1, instance2);
     }
 
     @Test
     public void mapsTargetNodeOnlyOnce() throws Exception {
-        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withActionNode("C1", "C").withActionNode("C2", "C")
-                .withDataEdge("A", ORDER, "B")
-                .withDataEdge("A", ORDER, "C1")
-                .withDataEdge("B", ORDER, "C2");
+        TestAUGBuilder pattern = buildAUG().withActionNode("A1", "A").withActionNode("A2", "A").withActionNode("B")
+                .withDataEdge("A1", PARAMETER, "B")
+                .withCondEdge("A2", "sel", "B");
 
-        TestAUGBuilder target = buildAUG().withActionNodes("A", "B", "C")
-                .withDataEdge("A", ORDER, "B")
-                .withDataEdge("A", ORDER, "C")
-                .withDataEdge("B", ORDER, "C");
+        TestAUGBuilder target = buildAUG().withActionNodes("A", "B")
+                .withDataEdge("A", PARAMETER, "B")
+                .withCondEdge("A", "sel", "B");
 
-        TestInstanceBuilder instance1 = buildInstance(target, pattern).withNodes("A", "B").withNode("C", "C1")
-                .withEdge("A", ORDER, "B").withEdge("A", "A", ORDER, "C", "C1");
-        TestInstanceBuilder instance2 = buildInstance(target, pattern).withNodes("A", "B").withNode("C", "C2")
-                .withEdge("A", ORDER, "B").withEdge("B", "B", ORDER, "C", "C2");
+        TestInstanceBuilder instance1 = buildInstance(target, pattern).withNode("A", "A1").withNode("B")
+                .withEdge("A", "A1", PARAMETER, "B", "B");
+        TestInstanceBuilder instance2 = buildInstance(target, pattern).withNode("A", "A2").withNode("B")
+                .withEdge("A", "A2", CONDITION, "B", "B");
 
         assertFindsInstance(pattern, target, instance1, instance2);
     }
