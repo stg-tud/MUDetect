@@ -133,11 +133,17 @@ public class TestAUGBuilder {
         for (EGroumEdge edge : edges) {
             if (edge.getSource() == getNode(sourceNodeId) &&
                     edge.getTarget() == getNode(targetNodeId) &&
-                    edge.getLabel().equals(EGroumDataEdge.getLabel(type))) {
+                    hasType(edge, type)) {
                 return edge;
             }
         }
         throw new IllegalArgumentException("no such edge");
+    }
+
+    private boolean hasType(EGroumEdge edge, EGroumDataEdge.Type type) {
+        return edge.getLabel().equals(EGroumDataEdge.getLabel(type)) ||
+                (type == EGroumDataEdge.Type.CONDITION &&
+                        ("sel".equals(edge.getLabel()) || "rep".equals(edge.getLabel())));
     }
 
     public AUG build() {
