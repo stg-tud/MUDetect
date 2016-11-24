@@ -180,6 +180,13 @@ public class FindCompleteInstancesTest {
         assertThat(only(instances).getEdgeSize(), is(6));
     }
 
+    @Test
+    public void handlesMultipleEdgesBetweenTwoNodes() throws Exception {
+        assertFindsInstance(buildAUG().withActionNodes("A", "B")
+                .withDataEdge("A", RECEIVER, "B")
+                .withCondEdge("A", "sel", "B"));
+    }
+
     private void assertFindsInstance(TestAUGBuilder patternAndTargetBuilder) {
         assertFindsInstance(patternAndTargetBuilder, patternAndTargetBuilder, fullInstance(patternAndTargetBuilder));
     }
