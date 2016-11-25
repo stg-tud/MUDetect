@@ -31,6 +31,14 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             return targetNodes.stream().filter(node -> node != null).collect(Collectors.toList());
         }
 
+        int getNodeSize() {
+            return getMappedTargetNodes().size();
+        }
+
+        int getEdgeSize() {
+            return (int) targetEdges.stream().filter(edge -> edge != null).count();
+        }
+
         EGroumNode getMappedTargetNode(EGroumNode patternNode) {
             int nodeIndex = fragment.getPatternNodeIndex(patternNode);
             // TODO replace null by some null object
@@ -73,6 +81,24 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                     }
                 }
             }
+        }
+
+        private Instance toInstance() {
+            Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
+            for (int i = 0; i < fragment.exploredPatternNodes.size() && i < targetNodes.size(); i++) {
+                EGroumNode targetNode = targetNodes.get(i);
+                if (targetNode != null) {
+                    targetNodeByPatternNode.put(fragment.exploredPatternNodes.get(i), targetNode);
+                }
+            }
+            Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge = new HashMap<>();
+            for (int i = 0; i < fragment.exploredPatternEdges.size() && i < targetEdges.size(); i++) {
+                EGroumEdge targetEdge = targetEdges.get(i);
+                if (targetEdge != null) {
+                    targetEdgeByPatternEdge.put(fragment.exploredPatternEdges.get(i), targetEdge);
+                }
+            }
+            return new Instance(fragment.pattern, fragment.target, targetNodeByPatternNode, targetEdgeByPatternEdge);
         }
 
         @Override
@@ -121,9 +147,9 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             return exploredPatternNodes.indexOf(patternNode);
         }
 
-        Collection<Instance> findInstances(int maxNumberOfAlternatives) {
+        Instance findLargestInstance(int maxNumberOfAlternatives) {
             if (alternatives.isEmpty()) {
-                return Collections.emptySet();
+                return null;
             }
 
             Set<EGroumEdge> patternExtensionEdges = new HashSet<>(pattern.edgesOf(exploredPatternNodes.get(0)));
@@ -151,7 +177,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                 }
             }
 
-            return hasTooManyAlternatives(maxNumberOfAlternatives) ? Collections.emptySet() : getInstances();
+            return hasTooManyAlternatives(maxNumberOfAlternatives) ? null : getLargestAlternative().toInstance();
         }
 
         private boolean hasTooManyAlternatives(int maxNumberOfAlternatives) {
@@ -219,26 +245,17 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             return patternSourceIndex;
         }
 
-        private Collection<Instance> getInstances() {
-            Collection<Instance> instances = new HashSet<>();
+        private Alternative getLargestAlternative() {
+            int maxSize = 0;
+            Alternative candidate = null;
             for (Alternative alternative : alternatives) {
-                Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
-                for (int i = 0; i < exploredPatternNodes.size() && i < alternative.targetNodes.size(); i++) {
-                    EGroumNode targetNode = alternative.targetNodes.get(i);
-                    if (targetNode != null) {
-                        targetNodeByPatternNode.put(exploredPatternNodes.get(i), targetNode);
-                    }
+                int size = alternative.getNodeSize() + alternative.getEdgeSize();
+                if (size > maxSize) {
+                    maxSize = size;
+                    candidate = alternative;
                 }
-                Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge = new HashMap<>();
-                for (int i = 0; i < exploredPatternEdges.size() && i < alternative.targetEdges.size(); i++) {
-                    EGroumEdge targetEdge = alternative.targetEdges.get(i);
-                    if (targetEdge != null) {
-                        targetEdgeByPatternEdge.put(exploredPatternEdges.get(i), targetEdge);
-                    }
-                }
-                instances.add(new Instance(pattern, target, targetNodeByPatternNode, targetEdgeByPatternEdge));
             }
-            return instances;
+            return candidate;
         }
 
         void removeCoveredAlternatives(Set<EGroumNode> coveredTargetNodes) {
@@ -280,9 +297,8 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             // instances found by extending from A (in which case the remaining mappings of N will be found when
             // extending from a mapping of this node M). In any case, exploring from a mapping of N is redundant.
             fragment.removeCoveredAlternatives(coveredTargetNodes);
-            Collection<Instance> newInstances = fragment.findInstances(maxNumberOfAlternatives);
-            Instance newInstance = getCandidate(newInstances);
-            if (newInstance != null) {
+            Instance newInstance = fragment.findLargestInstance(maxNumberOfAlternatives);
+            if (newInstance != null && instancePredicate.test(newInstance)) {
                 instances.add(newInstance);
                 coveredTargetNodes.addAll(newInstance.getMappedTargetNodes());
             }
@@ -290,21 +306,6 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
 
         removeSubInstances(instances);
         return instances;
-    }
-
-    private Instance getCandidate(Collection<Instance> instances) {
-        int maxSize = 0;
-        Instance candidate = null;
-        for (Instance instance : instances) {
-            if (instancePredicate.test(instance)) {
-                int size = instance.getNodeSize() + instance.getEdgeSize();
-                if (size > maxSize) {
-                    maxSize = size;
-                    candidate = instance;
-                }
-            }
-        }
-        return candidate;
     }
 
     private Collection<PatternFragment> getSingleNodeFragments(AUG target, Pattern pattern) {
