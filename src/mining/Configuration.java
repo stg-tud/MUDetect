@@ -10,6 +10,11 @@ public class Configuration {
     public boolean extendSourceDataNodes = true;
 
     /**
+     * Whether or not the miner should output log information to System.out.
+     */
+    public boolean disable_system_out = false;
+
+    /**
      * Path to write mined patterns to. <code>null</code> to disable output.
      */
     public String outputPath = "output/patterns";

@@ -39,7 +39,7 @@ public class MuDetectRunner extends MuBenchRunner {
     @Override
     protected void mineAndDetect(CodePath trainingAndTargetPath, DetectorOutput output) throws Exception {
         run(trainingAndTargetPath,
-                groums -> new MinedPatternsModel(new Configuration() {{ minPatternSupport = 10; }}, groums),
+                groums -> new MinedPatternsModel(new Configuration() {{ minPatternSupport = 10; disable_system_out = true; }}, groums),
                 trainingAndTargetPath,
                 new AlternativeMappingsInstanceFinder(new OverlapRatioPredicate(0.5)),
                 new MissingElementViolationFactory(),

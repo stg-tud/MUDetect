@@ -43,6 +43,10 @@ public class AUGMiner {
         Fragment.nextFragmentId = 0;
         Fragment.numofFragments = 0;
 
+        if (config.disable_system_out) {
+            disableOut();
+        }
+
         PrintStream originalOut = System.out;
         try {
             if (out != null) {
