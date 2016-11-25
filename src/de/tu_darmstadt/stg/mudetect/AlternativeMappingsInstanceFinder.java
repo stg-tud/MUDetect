@@ -28,7 +28,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         }
 
         Collection<EGroumNode> getMappedTargetNodes() {
-            return targetNodes;
+            return targetNodes.stream().filter(node -> node != null).collect(Collectors.toList());
         }
 
         EGroumNode getMappedTargetNode(EGroumNode patternNode) {
@@ -250,14 +250,6 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                 }
             }
         }
-
-        Set<EGroumNode> getMappedTargetNodes() {
-            Set<EGroumNode> mappedTargetNodes = new HashSet<>();
-            for (Alternative alternative : alternatives) {
-                mappedTargetNodes.addAll(alternative.getMappedTargetNodes());
-            }
-            return mappedTargetNodes;
-        }
     }
 
     private final Predicate<Instance> instancePredicate;
@@ -292,7 +284,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             Instance newInstance = getCandidate(newInstances);
             if (newInstance != null) {
                 instances.add(newInstance);
-                coveredTargetNodes.addAll(fragment.getMappedTargetNodes());
+                coveredTargetNodes.addAll(newInstance.getMappedTargetNodes());
             }
         }
 
