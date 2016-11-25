@@ -64,22 +64,26 @@ public class MuDetectRunner extends MuBenchRunner {
         long endTrainingLoadTime = System.currentTimeMillis();
         output.addRunInformation("trainingLoadTime", Long.toString(endTrainingLoadTime - startTime));
         output.addRunInformation("numberOfTrainingExamples", Integer.toString(groums.size()));
+        System.out.println("Number of training examples = " + groums.size());
 
         Model model = loadModel.apply(groums);
         long endTrainingTime = System.currentTimeMillis();
         output.addRunInformation("trainingTime", Long.toString(endTrainingTime - endTrainingLoadTime));
         output.addRunInformation("numberOfPatterns", Integer.toString(model.getPatterns().size()));
+        System.out.println("Number of patterns = " + groums.size());
 
         Collection<AUG> targets = buildAUGs(targetPath);
         long endDetectionLoadTime = System.currentTimeMillis();
         output.addRunInformation("detectionLoadTime", Long.toString(endDetectionLoadTime - endTrainingTime));
         output.addRunInformation("numberOfTargets", Integer.toString(targets.size()));
+        System.out.println("Number of targets = " + targets.size());
 
         MuDetect detector = new MuDetect(model, instanceFinder, violationFactory, rankingStrategy);
         List<Violation> violations = detector.findViolations(targets);
         long endDetectionTime = System.currentTimeMillis();
         output.addRunInformation("detectionTime", Long.toString(endDetectionTime - endDetectionLoadTime));
         output.addRunInformation("numberOfViolations", Integer.toString(violations.size()));
+        System.out.println("Number of violations = " + violations.size());
 
         report(violations, output);
         long endReportingTime = System.currentTimeMillis();
