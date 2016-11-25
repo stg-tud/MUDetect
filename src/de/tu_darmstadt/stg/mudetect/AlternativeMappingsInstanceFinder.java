@@ -130,16 +130,8 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             while (!patternExtensionEdges.isEmpty() && !hasTooManyAlternatives(maxNumberOfAlternatives)) {
                 EGroumEdge patternEdge = pollEdgeWithLeastAlternatives(patternExtensionEdges);
 
-                int patternSourceIndex = getPatternNodeIndex(patternEdge.getSource());
-                if (patternSourceIndex == -1) {
-                    patternSourceIndex = exploredPatternNodes.size();
-                    exploredPatternNodes.add(patternEdge.getSource());
-                }
-                int patternTargetIndex = getPatternNodeIndex(patternEdge.getTarget());
-                if (patternTargetIndex == -1) {
-                    patternTargetIndex = exploredPatternNodes.size();
-                    exploredPatternNodes.add(patternEdge.getTarget());
-                }
+                int patternSourceIndex = getOrCreatePatternNodeIndex(patternEdge.getSource());
+                int patternTargetIndex = getOrCreatePatternNodeIndex(patternEdge.getTarget());
                 int patternEdgeIndex = exploredPatternEdges.size();
                 exploredPatternEdges.add(patternEdge);
 
@@ -216,6 +208,15 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
 
         private static boolean match(EGroumNode patternNode, EGroumNode targetNode) {
             return patternNode.getLabel().equals(targetNode.getLabel());
+        }
+
+        private int getOrCreatePatternNodeIndex(EGroumNode source) {
+            int patternSourceIndex = getPatternNodeIndex(source);
+            if (patternSourceIndex == -1) {
+                patternSourceIndex = exploredPatternNodes.size();
+                exploredPatternNodes.add(source);
+            }
+            return patternSourceIndex;
         }
 
         private Collection<Instance> getInstances() {
