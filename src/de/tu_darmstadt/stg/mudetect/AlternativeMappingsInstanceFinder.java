@@ -213,9 +213,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             } else if (targetTargetNode != null) {
                 candidates = target.incomingEdgesOf(targetTargetNode).stream();
             } else {
-                // TODO I'm not sure what to do when extending by an edge whose source and target are not part of this
-                // alternative. For now I say there's no candidate edge to extend this alternative with.
-                candidates = Stream.empty();
+                throw new IllegalStateException("cannot extend with an edge that is detached from the alternative");
             }
 
             return candidates
