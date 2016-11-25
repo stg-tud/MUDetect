@@ -121,13 +121,13 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             return exploredPatternNodes.indexOf(patternNode);
         }
 
-        Collection<Instance> findInstances() {
+        Collection<Instance> findInstances(int maxNumberOfAlternatives) {
             if (alternatives.isEmpty()) {
                 return Collections.emptySet();
             }
 
             Set<EGroumEdge> patternExtensionEdges = new HashSet<>(pattern.edgesOf(exploredPatternNodes.get(0)));
-            while (!patternExtensionEdges.isEmpty()) {
+            while (!patternExtensionEdges.isEmpty() && !hasTooManyAlternatives(maxNumberOfAlternatives)) {
                 EGroumEdge patternEdge = pollEdgeWithLeastAlternatives(patternExtensionEdges);
 
                 int patternSourceIndex = getPatternNodeIndex(patternEdge.getSource());
@@ -159,7 +159,11 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                 }
             }
 
-            return getInstances();
+            return hasTooManyAlternatives(maxNumberOfAlternatives) ? Collections.emptySet() : getInstances();
+        }
+
+        private boolean hasTooManyAlternatives(int maxNumberOfAlternatives) {
+            return alternatives.size() >= maxNumberOfAlternatives;
         }
 
         private EGroumEdge pollEdgeWithLeastAlternatives(Set<EGroumEdge> patternExtensionEdges) {
@@ -257,12 +261,18 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
 
     private final Predicate<Instance> instancePredicate;
 
+    private int maxNumberOfAlternatives = 100000;
+
     public AlternativeMappingsInstanceFinder(Predicate<Instance> instancePredicate) {
         this.instancePredicate = instancePredicate;
     }
 
     public AlternativeMappingsInstanceFinder() {
         this(i -> true);
+    }
+
+    public void setMaxNumberOfAlternatives(int maxNumberOfAlternatives) {
+        this.maxNumberOfAlternatives = maxNumberOfAlternatives;
     }
 
     @Override
@@ -277,7 +287,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             // instances found by extending from A (in which case the remaining mappings of N will be found when
             // extending from a mapping of this node M). In any case, exploring from a mapping of N is redundant.
             fragment.removeCoveredAlternatives(coveredTargetNodes);
-            Collection<Instance> newInstances = fragment.findInstances();
+            Collection<Instance> newInstances = fragment.findInstances(maxNumberOfAlternatives);
             Instance newInstance = getCandidate(newInstances);
             if (newInstance != null) {
                 instances.add(newInstance);
