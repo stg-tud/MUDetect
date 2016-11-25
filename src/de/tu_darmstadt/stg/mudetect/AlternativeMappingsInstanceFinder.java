@@ -41,7 +41,6 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
 
         EGroumNode getMappedTargetNode(EGroumNode patternNode) {
             int nodeIndex = fragment.getPatternNodeIndex(patternNode);
-            // TODO replace null by some null object
             return nodeIndex >= 0 && nodeIndex < targetNodes.size() ? targetNodes.get(nodeIndex) : null;
         }
 
