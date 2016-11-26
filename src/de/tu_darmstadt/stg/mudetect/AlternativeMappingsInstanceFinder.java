@@ -127,7 +127,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
     private static class PatternFragment {
         private final AUG target;
         private final Pattern pattern;
-        private final Set<Alternative> alternatives;
+        private final EGroumNode firstTargetNode;
 
         private final List<EGroumNode> exploredPatternNodes = new ArrayList<>();
         private final List<EGroumEdge> exploredPatternEdges = new ArrayList<>();
@@ -135,9 +135,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         private PatternFragment(AUG target, Pattern pattern, EGroumNode firstPatternNode, EGroumNode firstTargetNode) {
             this.target = target;
             this.pattern = pattern;
-
-            this.alternatives = new HashSet<>();
-            this.alternatives.add(new Alternative(this, firstTargetNode));
+            this.firstTargetNode = firstTargetNode;
 
             this.exploredPatternNodes.add(firstPatternNode);
         }
@@ -146,14 +144,17 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             return exploredPatternNodes.indexOf(patternNode);
         }
 
+        EGroumNode getFirstTargetNode() {
+            return firstTargetNode;
+        }
+
         Instance findLargestInstance(int maxNumberOfAlternatives) {
-            if (alternatives.isEmpty()) {
-                return null;
-            }
+            Set<Alternative> alternatives = new HashSet<>();
+            alternatives.add(new Alternative(this, firstTargetNode));
 
             Set<EGroumEdge> patternExtensionEdges = new HashSet<>(pattern.edgesOf(exploredPatternNodes.get(0)));
-            while (!patternExtensionEdges.isEmpty() && !hasTooManyAlternatives(maxNumberOfAlternatives)) {
-                EGroumEdge patternEdge = pollEdgeWithLeastAlternatives(patternExtensionEdges);
+            while (!patternExtensionEdges.isEmpty() && alternatives.size() < maxNumberOfAlternatives) {
+                EGroumEdge patternEdge = pollEdgeWithLeastAlternatives(patternExtensionEdges, alternatives);
 
                 int patternSourceIndex = getOrCreatePatternNodeIndex(patternEdge.getSource());
                 int patternTargetIndex = getOrCreatePatternNodeIndex(patternEdge.getTarget());
@@ -167,6 +168,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                         newAlternatives.add(alternative.createExtension(patternEdgeIndex, patternSourceIndex, patternTargetIndex, targetEdge));
                     }
                 }
+
                 if (!newAlternatives.isEmpty()) {
                     alternatives.clear();
                     alternatives.addAll(newAlternatives);
@@ -176,14 +178,15 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                 }
             }
 
-            return hasTooManyAlternatives(maxNumberOfAlternatives) ? null : getLargestAlternative().toInstance();
+
+            if (alternatives.size() < maxNumberOfAlternatives)
+                return getLargestAlternative(alternatives).toInstance();
+            else
+                return null;
         }
 
-        private boolean hasTooManyAlternatives(int maxNumberOfAlternatives) {
-            return alternatives.size() >= maxNumberOfAlternatives;
-        }
-
-        private EGroumEdge pollEdgeWithLeastAlternatives(Set<EGroumEdge> patternExtensionEdges) {
+        private EGroumEdge pollEdgeWithLeastAlternatives(Set<EGroumEdge> patternExtensionEdges,
+                                                         Set<Alternative> alternatives) {
             int minNumberOfAlternatives = Integer.MAX_VALUE;
             EGroumEdge bestPatternEdge = null;
             for (EGroumEdge patternExtensionEdge : patternExtensionEdges) {
@@ -242,7 +245,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             return patternSourceIndex;
         }
 
-        private Alternative getLargestAlternative() {
+        private Alternative getLargestAlternative(Set<Alternative> alternatives) {
             int maxSize = 0;
             Alternative candidate = null;
             for (Alternative alternative : alternatives) {
@@ -255,14 +258,8 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             return candidate;
         }
 
-        void removeCoveredAlternatives(Set<EGroumNode> coveredTargetNodes) {
-            Iterator<Alternative> iterator = alternatives.iterator();
-            while (iterator.hasNext()) {
-                Alternative alternative = iterator.next();
-                if (coveredTargetNodes.containsAll(alternative.getMappedTargetNodes())) {
-                    iterator.remove();
-                }
-            }
+        int getNumberOfExploredAlternatives() {
+            return numberOfExploredAlternatives;
         }
     }
 
@@ -293,12 +290,13 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             // of N anymore) or any other instance includes at least on other target node M that is not mapped in any
             // instances found by extending from A (in which case the remaining mappings of N will be found when
             // extending from a mapping of this node M). In any case, exploring from a mapping of N is redundant.
-            fragment.removeCoveredAlternatives(coveredTargetNodes);
+            if (coveredTargetNodes.contains(fragment.getFirstTargetNode())) continue;
             Instance newInstance = fragment.findLargestInstance(maxNumberOfAlternatives);
             if (newInstance != null && instancePredicate.test(newInstance)) {
                 instances.add(newInstance);
                 coveredTargetNodes.addAll(newInstance.getMappedTargetNodes());
             }
+            numberOfExploredAlternatives += fragment.getNumberOfExploredAlternatives();
         }
 
         removeSubInstances(instances);
