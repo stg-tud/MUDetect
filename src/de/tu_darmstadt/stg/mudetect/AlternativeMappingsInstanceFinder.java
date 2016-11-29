@@ -264,6 +264,13 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         int getNumberOfExploredAlternatives() {
             return numberOfExploredAlternatives;
         }
+
+        @Override
+        public String toString() {
+            return "PatternFragment{" +
+                    "firstTargetNode=" + firstTargetNode +
+                    '}';
+        }
     }
 
     public static long numberOfExploredAlternatives = 0;
