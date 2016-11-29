@@ -195,7 +195,7 @@ public class FindPartialInstancesTest {
      * target graph that leads to them. To solve this problem, we make the algorithm prioritize mappable edges.
      */
     @Test
-    public void prioritzesMappableEdges() throws Exception {
+    public void prioritizesMappableEdges() throws Exception {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A") // the algorithm will start extending from this node
                 .withDataNodes("B", "C", "D", "E", "F")
                 .withCondEdge("B", "sel", "A")
