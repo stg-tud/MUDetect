@@ -128,6 +128,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         private final AUG target;
         private final Pattern pattern;
         private final EGroumNode firstTargetNode;
+        private int numberOfExploredAlternatives;
 
         private final List<EGroumNode> exploredPatternNodes = new ArrayList<>();
         private final List<EGroumEdge> exploredPatternEdges = new ArrayList<>();
@@ -149,6 +150,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
         }
 
         Instance findLargestInstance(int maxNumberOfAlternatives) {
+            numberOfExploredAlternatives = 0;
             Set<Alternative> alternatives = new HashSet<>();
             alternatives.add(new Alternative(this, firstTargetNode));
 
@@ -178,6 +180,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                 }
             }
 
+            numberOfExploredAlternatives = alternatives.size();
 
             if (alternatives.size() < maxNumberOfAlternatives)
                 return getLargestAlternative(alternatives).toInstance();
@@ -262,6 +265,8 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             return numberOfExploredAlternatives;
         }
     }
+
+    public static long numberOfExploredAlternatives = 0;
 
     private final Predicate<Instance> instancePredicate;
 

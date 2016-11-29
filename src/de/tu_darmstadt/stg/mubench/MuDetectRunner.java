@@ -84,6 +84,8 @@ public class MuDetectRunner extends MuBenchRunner {
         output.addRunInformation("detectionTime", Long.toString(endDetectionTime - endDetectionLoadTime));
         output.addRunInformation("numberOfViolations", Integer.toString(violations.size()));
         System.out.println("Number of violations = " + violations.size());
+        output.addRunInformation("numberOfExploredAlternatives", Long.toString(AlternativeMappingsInstanceFinder.numberOfExploredAlternatives));
+        System.out.println("Number of explored alternatives = " + AlternativeMappingsInstanceFinder.numberOfExploredAlternatives);
 
         report(violations, output);
         long endReportingTime = System.currentTimeMillis();
