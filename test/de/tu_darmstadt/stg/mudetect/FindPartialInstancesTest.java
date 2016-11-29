@@ -166,6 +166,12 @@ public class FindPartialInstancesTest {
         assertThat(instances, hasSize(1));
     }
 
+    /**
+     * Issue: What we have here is a pattern instance with an additional edge that matches an edge from the pattern. We
+     * expect the detection to find the instance. I'm undecided whether we want it to find a violation consisting only
+     * of the additional edge with its source and target nodes, since I'm yet to see a real scenario where this problem
+     * occurs...
+     */
     @Test
     public void considersEdgeDirectionBetweenEqualNodes() throws Exception {
         TestAUGBuilder pattern = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
