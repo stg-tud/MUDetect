@@ -61,7 +61,7 @@ public class EGroumControlNode extends EGroumNode {
 							new EGroumDataEdge(e1.source, this, ((EGroumDataEdge) e1).type, ((EGroumDataEdge) e1).label);
 					}
 				}
-			} else
+			} else if (this.astNodeType != ASTNode.CATCH_CLAUSE)
 				buildConditionClosure((EGroumDataEdge) e);
 		}
 		doneNodes.add(this);
