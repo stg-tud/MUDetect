@@ -39,7 +39,7 @@ import utils.JavaASTUtil;
 
 public class EGroumBuilder {
 	
-	static boolean COLLAPSE_ISOMORPHIC_SUBGRAPHS = true, KEEP_TEMPORARY_DATA_NODES = true;
+	static boolean COLLAPSE_ISOMORPHIC_SUBGRAPHS = true, KEEP_TEMPORARY_DATA_NODES = true, REMOVE_TEMPORARY_DATA_NODES_INCOMING_TO_CONTROL_NODES = true;
 
 	private String[] classpaths;
 	

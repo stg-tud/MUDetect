@@ -120,6 +120,8 @@ public class EGroumGraph implements Serializable {
 		addDefinitions();
 		if (!EGroumBuilder.KEEP_TEMPORARY_DATA_NODES)
 			deleteTemporaryDataNodes();
+		else if (EGroumBuilder.REMOVE_TEMPORARY_DATA_NODES_INCOMING_TO_CONTROL_NODES)
+			deleteTemporaryDataNodesIncomingToControlNodes();
 		deleteEmptyStatementNodes();
 		if (isTooDense()) {
 			nodes.clear();
@@ -133,6 +135,7 @@ public class EGroumGraph implements Serializable {
 		deleteAssignmentNodes();
 		deleteUnreachableNodes();
 		deleteControlNodes();
+		deleteUnusedDataNodes();
 		cleanUp();
 	}
 
@@ -2115,6 +2118,39 @@ public class EGroumGraph implements Serializable {
 		}
 	}
 
+	private void deleteTemporaryDataNodesIncomingToControlNodes() {
+		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
+			if (node instanceof EGroumControlNode && node.astNodeType != ASTNode.CATCH_CLAUSE) {
+				int i = 0;
+				while (i < node.inEdges.size()) {
+					EGroumEdge e = node.inEdges.get(i);
+					i++;
+					if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.CONDITION) {
+						if (e.source instanceof EGroumDataNode) {
+							ArrayList<EGroumNode> defs = e.source.getDefinitions();
+							for (EGroumNode def : defs) {
+								for (EGroumEdge e1 : def.inEdges) {
+									if (e1 instanceof EGroumDataEdge && ((EGroumDataEdge) e1).type == Type.DEFINITION) {
+										for (EGroumEdge e2 : e1.source.inEdges) {
+											if (e2 instanceof EGroumDataEdge && ((EGroumDataEdge) e2).type == Type.PARAMETER) {
+												if (!node.hasInNode(e2.source))
+													new EGroumDataEdge(e2.source, node, Type.CONDITION, e.label);
+												break;
+											}
+										}
+										break;
+									}
+								}
+							}
+							delete(e.source);
+							i--;
+						}
+					}
+				}
+			}
+		}
+	}
+
 	private void deleteTemporaryDataNodes() {
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
 			if (node.isDefinition()) {
@@ -2256,6 +2292,28 @@ public class EGroumGraph implements Serializable {
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
 			if (node instanceof EGroumEntryNode || node instanceof EGroumControlNode)
 				delete(node);
+	}
+
+	private void deleteUnusedDataNodes() {
+		HashSet<EGroumNode> dels = new HashSet<>();
+		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
+			if (node instanceof EGroumDataNode) {
+				if (node.outEdges.isEmpty()) {
+					LinkedList<EGroumNode> q = new LinkedList<>();
+					q.add(node);
+					while (!q.isEmpty()) {
+						EGroumNode n = q.remove();
+						dels.add(n);
+						for (EGroumEdge e : n.inEdges) {
+							if (!dels.contains(e.source) && e.source instanceof EGroumDataNode && e.source.outEdges.size() == 1)
+								q.add(e.source);
+						}
+					}
+				}
+			}
+		}
+		for (EGroumNode node : dels)
+			delete(node);
 	}
 
 	public void deleteUnreachableNodes() {
