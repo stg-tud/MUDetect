@@ -471,8 +471,28 @@ public class Fragment {
 					}
 				}
 			} else if (node instanceof EGroumDataNode) {
-				if (config.extendSourceDataNodes)
-					add(node, lens);
+				if (config.extendSourceDataNodes) {
+					boolean hasThrow = false;
+					for (EGroumEdge e : node.getInEdges()) {
+						if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.THROW && nodes.contains(e.getSource())) {
+							add(node, lens);
+							hasThrow = true;
+							break;
+						}
+					}
+					if (!hasThrow) {
+						boolean hasOut = false;
+						HashSet<EGroumNode> outs = node.getOutNodes();
+						for (EGroumNode next : outs) {
+							if (nodes.contains(next)) {
+								hasOut = true;
+								break;
+							}
+						}
+						if (hasOut)
+							add(node, lens);
+					}
+				}
 				else {
 					boolean hasThrow = false;
 					for (EGroumEdge e : node.getInEdges()) {
