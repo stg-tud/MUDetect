@@ -1,10 +1,12 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
+import egroum.EGroumDataNode;
 import egroum.EGroumEdge;
 import egroum.EGroumNode;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -52,5 +54,39 @@ public class AUGTestUtils {
 
     private static String getEdgeLabel(EGroumEdge edge) {
         return edge.getSource().getLabel() + "--(" + edge.getLabel() + ")-->" + edge.getTarget().getLabel();
+    }
+
+    public static Matcher<? super AUG> hasNode(Matcher<? super EGroumNode> matcher) {
+        return new BaseMatcher<AUG>() {
+            @Override
+            public boolean matches(Object item) {
+                if (item instanceof AUG) {
+                    Set<EGroumNode> nodes = ((AUG) item).vertexSet();
+                    return Matchers.hasItem(matcher).matches(nodes);
+                }
+                return false;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("an AUG containing ");
+                description.appendDescriptionOf(matcher);
+            }
+        };
+    }
+
+    public static Matcher<? super EGroumNode> dataNodeWithLabel(String label) {
+        return new BaseMatcher<EGroumNode>() {
+            @Override
+            public boolean matches(Object item) {
+                return item instanceof EGroumDataNode && ((EGroumDataNode) item).getLabel().equals(label);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("a data node with label ");
+                description.appendValue(label);
+            }
+        };
     }
 }
