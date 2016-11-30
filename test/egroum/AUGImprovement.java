@@ -29,27 +29,6 @@ public class AUGImprovement {
     }
 
     @Test
-    public void tryWithResources() throws Exception {
-        // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/synthetic/fisexists/synthetic.fisexists/no_findings.php
-        print("import java.io.FileInputStream;" +
-                "class FISExists {" +
-                "  public void misuse(File file) throws IOException {" +
-                "    try (FileInputStream fis = new FileInputStream(file)) {" +
-                "      // do something with fis...\n" +
-                "    }" +
-                "  }" +
-                "" +
-                "  public void pattern(File file) throws IOException {" +
-                "    if (file.exists()) {" +
-                "      try (FileInputStream fis = new FileInputStream(file)) {" +
-                "        // do something with fis...\n" +
-                "      }" +
-                "    }" +
-                "  }" +
-                "}");
-    }
-
-    @Test
     public void linkOutMethodAndAnonymousInstanceMethod() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/grouminer-do/synthetic/callondte/synthetic.callondte/review.php
         print("public class RunOnEDT {" +
