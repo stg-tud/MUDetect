@@ -11,11 +11,6 @@ import static egroum.EGroumTestUtils.buildGroumForMethod;
 
 public class EGroumBuilderTest {
 	@Rule public TestName name = new TestName();
-
-	@Test
-	public void singleCall() {
-		print(buildGroumForMethod("void m(Object o) { o.hashCode(); }"));
-	}
 	
 	@Test
 	public void reassignment() {
