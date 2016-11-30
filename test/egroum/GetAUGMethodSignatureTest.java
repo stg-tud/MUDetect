@@ -6,7 +6,7 @@ import static egroum.EGroumTestUtils.buildGroumForMethod;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class GetGroumMethodNameTest {
+public class GetAUGMethodSignatureTest {
     @Test
     public void simpleMethod() throws Exception {
         EGroumGraph groum = buildGroumForMethod("void m() {}");
