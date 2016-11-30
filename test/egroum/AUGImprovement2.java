@@ -53,6 +53,11 @@ public class AUGImprovement2 {
     }
 
     @Test
+    public void testTry() throws Exception {
+        EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_try.java", null, "aug-improvement");
+    }
+
+    @Test
     public void tryWithResources() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/synthetic/fisexists/synthetic.fisexists/no_findings.php
         EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_try_resources.java", null, "aug-improvement");

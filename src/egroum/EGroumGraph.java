@@ -507,8 +507,7 @@ public class EGroumGraph implements Serializable {
 				return new EGroumGraph(context);
 			pdg = new EGroumGraph(context);
 		}
-		EGroumGraph[] gs = new EGroumGraph[astNode.catchClauses().size() + 1];
-		gs[0] = buildPDG(control, branch, astNode.getBody());
+		EGroumGraph bg = buildPDG(control, branch, astNode.getBody());
 		ArrayList<EGroumActionNode> triedMethods = context.popTry();
 		if (!resourceNames.isEmpty()) {
 			HashMap<String, EGroumActionNode> closeNodes = new HashMap<>();
@@ -523,7 +522,7 @@ public class EGroumGraph implements Serializable {
 			}
 			EGroumGraph cg = new EGroumGraph(context);
 			cg.mergeParallel(cgs);
-			gs[0].mergeSequential(cg);
+			bg.mergeSequential(cg);
 			for (EGroumActionNode m : triedMethods) {
 				ASTNode mn = m.getAstNode();
 				String[] rns = getResourceName(mn, resourceNames);
@@ -537,9 +536,11 @@ public class EGroumGraph implements Serializable {
 				}
 			}
 		}
+		pdg.mergeSequential(bg);
+		EGroumGraph[] gs = new EGroumGraph[astNode.catchClauses().size()];
 		for (int i = 0; i < astNode.catchClauses().size(); i++) {
 			CatchClause cc = (CatchClause) astNode.catchClauses().get(i);
-			gs[i+1] = buildPDG(control, branch, cc, triedMethods);
+			gs[i] = buildPDG(control, branch, cc, triedMethods);
 		}
 		pdg.mergeBranches(gs);
 		if (astNode.getFinally() != null) {
