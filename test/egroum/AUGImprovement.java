@@ -14,21 +14,6 @@ public class AUGImprovement {
     public TestName name = new TestName();
 
     @Test
-    public void condVsTrueFalseEdges() throws Exception {
-        // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/closure/114/closure.1/review.php
-        print("class IsNotType {" +
-                "  public JSType pattern(UnionTypeBuilder builder) {" +
-                "    JSType result = builder.build();" +
-                "    if(!result.isNoType()) {" +
-                "      return result;" +
-                "    } else {" +
-                "      return null; // default value\n" +
-                "    }" +
-                "  }" +
-                "}");
-    }
-
-    @Test
     public void syncEdges() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/synthetic/deadlock/synthetic.deadlock/no_findings.php
         print("public class Synchronized {" +
