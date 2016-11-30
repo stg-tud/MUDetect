@@ -1,14 +1,19 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
+import de.tu_darmstadt.stg.mudetect.dot.AUGDotExporter;
+import de.tu_darmstadt.stg.mudetect.dot.AUGEdgeAttributeProvider;
+import de.tu_darmstadt.stg.mudetect.dot.AUGNodeAttributeProvider;
 import egroum.*;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.jgrapht.graph.AbstractBaseGraph;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.core.AllOf.allOf;
@@ -59,22 +64,7 @@ public class AUGTestUtils {
     }
 
     public static Matcher<? super AUG> hasNode(Matcher<? super EGroumNode> matcher) {
-        return new BaseMatcher<AUG>() {
-            @Override
-            public boolean matches(Object item) {
-                if (item instanceof AUG) {
-                    Set<EGroumNode> nodes = ((AUG) item).vertexSet();
-                    return Matchers.hasItem(matcher).matches(nodes);
-                }
-                return false;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("an AUG containing ");
-                description.appendDescriptionOf(matcher);
-            }
-        };
+        return new AUGElementMatcher<EGroumNode>(AbstractBaseGraph::vertexSet, matcher);
     }
 
     @SafeVarargs
@@ -128,6 +118,11 @@ public class AUGTestUtils {
         return hasEdge(new EdgeMatcher(sourceMatcher, "rep", targetMatcher));
     }
 
+    public static Matcher<? super AUG> hasSynchronizeEdge(Matcher<? super EGroumNode> sourceMatcher,
+                                                     Matcher<? super EGroumNode> targetMatcher) {
+        return hasEdge(new EdgeMatcher(sourceMatcher, "syn", targetMatcher));
+    }
+
     public static Matcher<? super AUG> hasEdge(final Matcher<? super EGroumNode> sourceMatcher,
                                                final EGroumDataEdge.Type edgeType,
                                                final Matcher<? super EGroumNode> targetMatcher) {
@@ -135,23 +130,41 @@ public class AUGTestUtils {
     }
 
     private static Matcher<? super AUG> hasEdge(Matcher<? super EGroumEdge> matcher) {
-        return new BaseMatcher<AUG>() {
-            @Override
-            public boolean matches(Object item) {
-                if (item instanceof AUG) {
-                    Set<EGroumEdge> edges = ((AUG) item).edgeSet();
-                    return Matchers.hasItem(matcher).matches(edges);
-                }
-                return false;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("an AUG containing ");
-                description.appendDescriptionOf(matcher);
-            }
-        };
+        return new AUGElementMatcher<EGroumEdge>(AbstractBaseGraph::edgeSet, matcher);
     }
+
+    private static class AUGElementMatcher<E> extends BaseMatcher<AUG> {
+        private final static AUGDotExporter augDotExporter = new AUGDotExporter(
+                new AUGNodeAttributeProvider(), new AUGEdgeAttributeProvider());
+
+        private final Function<AUG, Set<E>> selector;
+        private final Matcher<? super E> elementMatcher;
+
+        AUGElementMatcher(Function<AUG, Set<E>> selector, Matcher<? super E> elementMatcher) {
+            this.selector = selector;
+            this.elementMatcher = elementMatcher;
+        }
+
+        @Override
+        public boolean matches(Object item) {
+            return item instanceof AUG && Matchers.hasItem(elementMatcher).matches(selector.apply((AUG) item));
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("an AUG containing ");
+            description.appendDescriptionOf(elementMatcher);
+        }
+
+        @Override
+        public void describeMismatch(Object item, Description description) {
+            if (item instanceof AUG) {
+                description.appendText("was AUG: ").appendText(augDotExporter.toDotGraph((AUG) item));
+            } else {
+                super.describeMismatch(item, description);
+            }
+        }
+    };
 
     private static class EdgeMatcher extends BaseMatcher<EGroumEdge> {
         private final Matcher<? super EGroumNode> sourceMatcher;
