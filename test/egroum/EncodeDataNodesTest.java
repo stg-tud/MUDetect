@@ -8,7 +8,7 @@ import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.hasNode;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
-public class AUGDataNodesTest {
+public class EncodeDataNodesTest {
     @Test
     public void addsDataNodeForParameter() throws Exception {
         AUG aug = AUGBuilderTestUtils.buildAUG("void m(Object o) { o.hashCode(); }");

@@ -9,7 +9,7 @@ import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.hasSynchronizeEdge
 import static egroum.AUGBuilderTestUtils.buildAUG;
 import static org.junit.Assert.assertThat;
 
-public class AUGSynchronizeTest {
+public class EncodeSynchronizationTest {
     @Test
     public void addsSynchronizeEdge() throws Exception {
         AUG aug = buildAUG("void m(Object o) {" +

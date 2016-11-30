@@ -9,7 +9,7 @@ import static egroum.EGroumDataEdge.Type.PARAMETER;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
-public class AUGConditionsTest {
+public class EncodeConditionsTest {
     // Predicate condition: if (l.isEmpty())
 
     @Test

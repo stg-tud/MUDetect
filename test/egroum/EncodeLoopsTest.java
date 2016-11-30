@@ -8,7 +8,7 @@ import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.hasRepeatEdge;
 import static egroum.AUGBuilderTestUtils.buildAUG;
 import static org.junit.Assert.assertThat;
 
-public class AUGLoopTest {
+public class EncodeLoopsTest {
     @Test
     public void addsRepeatEdge() throws Exception {
         AUG aug = buildAUG("void m(java.util.Stack s) {" +

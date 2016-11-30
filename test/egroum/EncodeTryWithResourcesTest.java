@@ -9,7 +9,7 @@ import static egroum.EGroumDataEdge.Type.FINALLY;
 import static egroum.EGroumDataEdge.Type.RECEIVER;
 import static org.junit.Assert.assertThat;
 
-public class AUGTryWithResourcesTest {
+public class EncodeTryWithResourcesTest {
     @Test
     public void desugarsTryWithResources() throws Exception {
         AUG aug = buildAUG("void m() throws IOException {" +

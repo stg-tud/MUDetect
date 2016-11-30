@@ -9,7 +9,7 @@ import static egroum.AUGBuilderTestUtils.buildAUG;
 import static egroum.EGroumDataEdge.Type.FINALLY;
 import static org.junit.Assert.assertThat;
 
-public class AUGFinallyTest {
+public class EncodeFinallyTest {
     @Test
     public void finallyEdge() throws Exception {
         AUG aug = buildAUG("void close(java.io.InputStream is) throws IOException {" +

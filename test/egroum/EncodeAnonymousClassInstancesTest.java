@@ -10,7 +10,7 @@ import static egroum.EGroumDataEdge.Type.CONTAINS;
 import static egroum.EGroumDataEdge.Type.PARAMETER;
 import static org.junit.Assert.assertThat;
 
-public class AUGAnonymousClassInstancesTest {
+public class EncodeAnonymousClassInstancesTest {
     private AUG aug;
 
     @Before
