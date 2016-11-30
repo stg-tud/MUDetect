@@ -29,21 +29,6 @@ public class AUGImprovement {
     }
 
     @Test
-    public void finallyEdge() throws Exception {
-        // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-        print("class TryCloseAndEnsureSubsequentClose extends BufferedIndexOutput {" +
-                "  RandomAccessFile file;" +
-                "  public void close() throws IOException {" +
-                "    try {" +
-                "      super.close();" +
-                "    } finally {" +
-                "      file.close();" +
-                "    }" +
-                "  }" +
-                "}");
-    }
-
-    @Test
     public void repeatEdges() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/synthetic/wait-loop/synthetic.wait-loop/review.php
         print("public class WaitLoop {" +
