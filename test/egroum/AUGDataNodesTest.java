@@ -27,6 +27,13 @@ public class AUGDataNodesTest {
         assertThat(aug, hasNode(dataNodeWithLabel("String")));
     }
 
+    @Test
+    public void addsDataNodeForImplicitReference() throws Exception {
+        AUG aug = buildAUG("String m() { return toString(); }");
+
+        assertThat(aug, hasNode(dataNodeWithLabel("String")));
+    }
+
     private Matcher<? super AUG> hasNode(Matcher<? super EGroumNode> matcher) {
         return new BaseMatcher<AUG>() {
             @Override
