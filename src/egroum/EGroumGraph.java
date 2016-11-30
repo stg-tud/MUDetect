@@ -2055,7 +2055,6 @@ public class EGroumGraph implements Serializable {
 						HashSet<EGroumNode> preNodes = new HashSet<>(preNodesOfNode.get(preNode));
 						boolean inDifferentCatches = false;
 						HashSet<EGroumNode> cns = node.getCatchClauses();
-						boolean isCatched = cns.isEmpty();
 						for (EGroumNode cn : cns) {
 							for (EGroumEdge e : cn.inEdges) {
 								if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.CONDITION) {
@@ -2063,8 +2062,7 @@ public class EGroumGraph implements Serializable {
 									if (en == null) continue;
 									for (EGroumEdge e1 : en.inEdges) {
 										if (e1 instanceof EGroumDataEdge && ((EGroumDataEdge) e1).type == Type.THROW) {
-											isCatched = true;
-											if (preNodes.contains(e1.source)) {
+											if (!preNodes.contains(en) && preNodes.contains(e1.source)) {
 												inDifferentCatches = true;
 												break;
 											}
@@ -2079,7 +2077,7 @@ public class EGroumGraph implements Serializable {
 							if (inDifferentCatches)
 								break;
 						}
-						if (isCatched && !inDifferentCatches)
+						if (!inDifferentCatches)
 							new EGroumDataEdge(preNode, node, Type.ORDER);
 					}
 				}
