@@ -123,6 +123,11 @@ public class AUGTestUtils {
         return hasEdge(new EdgeMatcher(sourceMatcher, "sel", targetMatcher));
     }
 
+    public static Matcher<? super AUG> hasRepeatEdge(Matcher<? super EGroumNode> sourceMatcher,
+                                                  Matcher<? super EGroumNode> targetMatcher) {
+        return hasEdge(new EdgeMatcher(sourceMatcher, "rep", targetMatcher));
+    }
+
     public static Matcher<? super AUG> hasEdge(final Matcher<? super EGroumNode> sourceMatcher,
                                                final EGroumDataEdge.Type edgeType,
                                                final Matcher<? super EGroumNode> targetMatcher) {

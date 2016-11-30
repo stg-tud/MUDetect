@@ -29,21 +29,6 @@ public class AUGImprovement {
     }
 
     @Test
-    public void repeatEdges() throws Exception {
-        // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/synthetic/wait-loop/synthetic.wait-loop/review.php
-        print("public class WaitLoop {" +
-                "  public void misuse(Object obj) throws InterruptedException {" +
-                "    synchronized (obj) {" +
-                "      while (obj.checkSomething()) {" +
-                "        obj.wait();" +
-                "      }" +
-                "      // Perform action appropriate to condition\n" +
-                "    }" +
-                "  }" +
-                "}");
-    }
-
-    @Test
     public void syncEdges() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/synthetic/deadlock/synthetic.deadlock/no_findings.php
         print("public class Synchronized {" +
