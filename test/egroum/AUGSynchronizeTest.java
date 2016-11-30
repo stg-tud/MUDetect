@@ -1,0 +1,23 @@
+package egroum;
+
+import de.tu_darmstadt.stg.mudetect.model.AUG;
+import org.junit.Test;
+
+import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.actionNodeWithLabel;
+import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.dataNodeWithLabel;
+import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.hasSynchronizeEdge;
+import static egroum.AUGBuilderTestUtils.buildAUG;
+import static org.junit.Assert.assertThat;
+
+public class AUGSynchronizeTest {
+    @Test
+    public void addsSynchronizeEdge() throws Exception {
+        AUG aug = buildAUG("void m(Object o) {" +
+                "  synchronized (o) {" +
+                "    o.equals();" +
+                "  }" +
+                "}");
+
+        assertThat(aug, hasSynchronizeEdge(dataNodeWithLabel("Object"), actionNodeWithLabel("Object.equals()")));
+    }
+}
