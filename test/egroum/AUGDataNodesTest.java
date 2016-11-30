@@ -20,6 +20,13 @@ public class AUGDataNodesTest {
         assertThat(aug, hasNode(dataNodeWithLabel("Object")));
     }
 
+    @Test
+    public void addsDataNodeForVariable() throws Exception {
+        AUG aug = buildAUG("String m() { String self = toString(); return self; }");
+
+        assertThat(aug, hasNode(dataNodeWithLabel("String")));
+    }
+
     private Matcher<? super AUG> hasNode(Matcher<? super EGroumNode> matcher) {
         return new BaseMatcher<AUG>() {
             @Override
