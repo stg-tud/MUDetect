@@ -1,7 +1,10 @@
 package de.tu_darmstadt.stg.mudetect;
 
+import de.tu_darmstadt.stg.mudetect.dot.AUGDotExporter;
+import de.tu_darmstadt.stg.mudetect.dot.AUGEdgeAttributeProvider;
+import de.tu_darmstadt.stg.mudetect.dot.AUGNodeAttributeProvider;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import egroum.EGroumEdge;
 import egroum.EGroumNode;
@@ -11,7 +14,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class AlternativeMappingsInstanceFinder implements InstanceFinder {
+public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
 
     private static class Alternative {
         final PatternFragment fragment;
@@ -82,7 +85,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             }
         }
 
-        private Instance toInstance() {
+        private Overlap toOverlap() {
             Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
             for (int i = 0; i < fragment.exploredPatternNodes.size() && i < targetNodes.size(); i++) {
                 EGroumNode targetNode = targetNodes.get(i);
@@ -97,7 +100,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                     targetEdgeByPatternEdge.put(fragment.exploredPatternEdges.get(i), targetEdge);
                 }
             }
-            return new Instance(fragment.pattern, fragment.target, targetNodeByPatternNode, targetEdgeByPatternEdge);
+            return new Overlap(fragment.pattern, fragment.target, targetNodeByPatternNode, targetEdgeByPatternEdge);
         }
 
         @Override
@@ -149,7 +152,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             return firstTargetNode;
         }
 
-        Instance findLargestInstance(int maxNumberOfAlternatives) {
+        Overlap findLargestOverlap(int maxNumberOfAlternatives) {
             numberOfExploredAlternatives = 0;
             Set<Alternative> alternatives = new HashSet<>();
             alternatives.add(new Alternative(this, firstTargetNode));
@@ -157,6 +160,7 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
             Set<EGroumEdge> patternExtensionEdges = new HashSet<>(pattern.edgesOf(exploredPatternNodes.get(0)));
             while (!patternExtensionEdges.isEmpty() && alternatives.size() < maxNumberOfAlternatives) {
                 EGroumEdge patternEdge = pollEdgeWithLeastAlternatives(patternExtensionEdges, alternatives);
+                System.out.print("  Extending along " + patternEdge + "...");
 
                 int patternSourceIndex = getOrCreatePatternNodeIndex(patternEdge.getSource());
                 int patternTargetIndex = getOrCreatePatternNodeIndex(patternEdge.getTarget());
@@ -178,12 +182,13 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                     patternExtensionEdges.addAll(pattern.edgesOf(patternEdge.getTarget()));
                     patternExtensionEdges.removeAll(exploredPatternEdges);
                 }
+                System.out.println(" now " + alternatives.size() + " alternatives.");
             }
 
             numberOfExploredAlternatives = alternatives.size();
 
             if (alternatives.size() < maxNumberOfAlternatives)
-                return getLargestAlternative(alternatives).toInstance();
+                return getLargestAlternative(alternatives).toOverlap();
             else
                 return null;
         }
@@ -275,15 +280,15 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
 
     public static long numberOfExploredAlternatives = 0;
 
-    private final Predicate<Instance> instancePredicate;
+    private final Predicate<Overlap> overlapPredicate;
 
     private int maxNumberOfAlternatives = 100000;
 
-    public AlternativeMappingsInstanceFinder(Predicate<Instance> instancePredicate) {
-        this.instancePredicate = instancePredicate;
+    public AlternativeMappingsOverlapsFinder(Predicate<Overlap> overlapPredicate) {
+        this.overlapPredicate = overlapPredicate;
     }
 
-    public AlternativeMappingsInstanceFinder() {
+    public AlternativeMappingsOverlapsFinder() {
         this(i -> true);
     }
 
@@ -292,27 +297,34 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
     }
 
     @Override
-    public List<Instance> findInstances(AUG target, Pattern pattern) {
-        List<Instance> instances = new ArrayList<>();
-
+    public List<Overlap> findOverlaps(AUG target, Pattern pattern) {
+        List<Overlap> overlaps = new ArrayList<>();
         Set<EGroumNode> coveredTargetNodes = new HashSet<>();
-        for (PatternFragment fragment : getSingleNodeFragments(target, pattern)) {
-            // When a target node N is mapped in one of the instances found by extending from a pattern node A, then
-            // either this already covers all instances mapping N (in which case we don't need to explore from a mapping
+        Collection<PatternFragment> singleNodeFragments = getSingleNodeFragments(target, pattern);
+        if (!singleNodeFragments.isEmpty()) {
+            AUGDotExporter exporter = new AUGDotExporter(new AUGNodeAttributeProvider(), new AUGEdgeAttributeProvider());
+            System.out.println("Target: " + exporter.toDotGraph(target));
+            System.out.println("Pattern: " + exporter.toDotGraph(pattern));
+        }
+        for (PatternFragment fragment : singleNodeFragments) {
+            System.out.println("Exploring from " + fragment + "...");
+
+            // When a target node N is mapped in one of the overlaps found by extending from a pattern node A, then
+            // either this already covers all overlaps mapping N (in which case we don't need to explore from a mapping
             // of N anymore) or any other instance includes at least on other target node M that is not mapped in any
-            // instances found by extending from A (in which case the remaining mappings of N will be found when
+            // overlaps found by extending from A (in which case the remaining mappings of N will be found when
             // extending from a mapping of this node M). In any case, exploring from a mapping of N is redundant.
             if (coveredTargetNodes.contains(fragment.getFirstTargetNode())) continue;
-            Instance newInstance = fragment.findLargestInstance(maxNumberOfAlternatives);
-            if (newInstance != null && instancePredicate.test(newInstance)) {
-                instances.add(newInstance);
-                coveredTargetNodes.addAll(newInstance.getMappedTargetNodes());
+            Overlap overlap = fragment.findLargestOverlap(maxNumberOfAlternatives);
+            if (overlap != null && overlapPredicate.test(overlap)) {
+                overlaps.add(overlap);
+                coveredTargetNodes.addAll(overlap.getMappedTargetNodes());
             }
             numberOfExploredAlternatives += fragment.getNumberOfExploredAlternatives();
         }
 
-        removeSubInstances(instances);
-        return instances;
+        removeSubgraphs(overlaps);
+        return overlaps;
     }
 
     private Collection<PatternFragment> getSingleNodeFragments(AUG target, Pattern pattern) {
@@ -323,16 +335,16 @@ public class AlternativeMappingsInstanceFinder implements InstanceFinder {
                 .collect(Collectors.toSet());
     }
 
-    private void removeSubInstances(List<Instance> instances) {
-        for (int i = 0; i < instances.size(); i++) {
-            Instance instance1 = instances.get(i);
-            for (int j = i + 1; j < instances.size(); j++) {
-                Instance instance2 = instances.get(j);
-                if (instance2.isSubInstanceOf(instance1)) {
-                    instances.remove(j);
+    private void removeSubgraphs(List<Overlap> overlaps) {
+        for (int i = 0; i < overlaps.size(); i++) {
+            Overlap overlap1 = overlaps.get(i);
+            for (int j = i + 1; j < overlaps.size(); j++) {
+                Overlap overlap2 = overlaps.get(j);
+                if (overlap2.isSubgraphOf(overlap1)) {
+                    overlaps.remove(j);
                     j--;
-                } else if (instance1.isSubInstanceOf(instance2)) {
-                    instances.remove(i);
+                } else if (overlap1.isSubgraphOf(overlap2)) {
+                    overlaps.remove(i);
                     i--;
                     break;
                 }

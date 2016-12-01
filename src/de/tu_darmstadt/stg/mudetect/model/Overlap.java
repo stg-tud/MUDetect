@@ -6,15 +6,15 @@ import org.jgrapht.graph.DirectedSubgraph;
 
 import java.util.*;
 
-public class Instance {
+public class Overlap {
 
     private final DirectedSubgraph<EGroumNode, EGroumEdge> patternOverlap;
     private final DirectedSubgraph<EGroumNode, EGroumEdge> targetOverlap;
     private final Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
     private final Pattern pattern;
 
-    public Instance(Pattern pattern, AUG target, Map<EGroumNode, EGroumNode> targetNodeByPatternNode,
-                    Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge) {
+    public Overlap(Pattern pattern, AUG target, Map<EGroumNode, EGroumNode> targetNodeByPatternNode,
+                   Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge) {
         this.pattern = pattern;
 
         final Set<EGroumNode> targetNodeSet = new HashSet<>(targetNodeByPatternNode.values());
@@ -62,16 +62,16 @@ public class Instance {
         return getMappedTargetEdges().size();
     }
 
-    public boolean isSubInstanceOf(Instance other) {
+    public boolean isSubgraphOf(Overlap other) {
         return other.getMappedTargetNodes().containsAll(this.getMappedTargetNodes()) &&
                 other.getMappedTargetEdges().containsAll(getMappedTargetEdges());
     }
 
-    public boolean isSameTargetOverlap(Instance instance) {
+    public boolean isSameTargetOverlap(Overlap instance) {
         return this == instance || Objects.equals(targetOverlap, instance.targetOverlap);
     }
 
-    public boolean isSamePatternOverlap(Instance instance) {
+    public boolean isSamePatternOverlap(Overlap instance) {
         return this == instance || Objects.equals(patternOverlap, instance.patternOverlap);
     }
 
@@ -79,7 +79,7 @@ public class Instance {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Instance instance = (Instance) o;
+        Overlap instance = (Overlap) o;
         return Objects.equals(patternOverlap, instance.patternOverlap) &&
                 Objects.equals(targetOverlap, instance.targetOverlap) &&
                 Objects.equals(targetNodeByPatternNode, instance.targetNodeByPatternNode);
@@ -92,7 +92,7 @@ public class Instance {
 
     @Override
     public String toString() {
-        return "Instance{" +
+        return "Overlap{" +
                 "patternOverlap=" + patternOverlap +
                 ", targetOverlap=" + targetOverlap +
                 ", targetNodeByPatternNode=" + targetNodeByPatternNode +

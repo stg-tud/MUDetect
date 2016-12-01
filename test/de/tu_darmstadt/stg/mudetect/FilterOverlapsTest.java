@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
@@ -18,7 +18,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
 
-public class FilterInstanceTest {
+public class FilterOverlapsTest {
 
     @Rule
     public final JUnitRuleMockery context = new JUnitRuleMockery();
@@ -28,16 +28,16 @@ public class FilterInstanceTest {
         AUG target = someAUG();
         Pattern pattern = somePattern();
         @SuppressWarnings("unchecked")
-        Predicate<Instance> instancePredicate = context.mock(Predicate.class);
+        Predicate<Overlap> overlapPredicate = context.mock(Predicate.class);
 
         context.checking(new Expectations() {{
-            allowing(instancePredicate).test(with(any(Instance.class))); will(returnValue(true));
+            allowing(overlapPredicate).test(with(any(Overlap.class))); will(returnValue(true));
         }});
 
-        InstanceFinder finder = new AlternativeMappingsInstanceFinder(instancePredicate);
-        List<Instance> instances = finder.findInstances(target, pattern);
+        OverlapsFinder finder = new AlternativeMappingsOverlapsFinder(overlapPredicate);
+        List<Overlap> overlaps = finder.findOverlaps(target, pattern);
 
-        assertThat(instances, is(not(empty())));
+        assertThat(overlaps, is(not(empty())));
     }
 
     @Test
@@ -45,15 +45,15 @@ public class FilterInstanceTest {
         AUG target = someAUG();
         Pattern pattern = somePattern();
         @SuppressWarnings("unchecked")
-        Predicate<Instance> instancePredicate = context.mock(Predicate.class);
+        Predicate<Overlap> overlapPredicate = context.mock(Predicate.class);
 
         context.checking(new Expectations() {{
-            allowing(instancePredicate).test(with(any(Instance.class))); will(returnValue(false));
+            allowing(overlapPredicate).test(with(any(Overlap.class))); will(returnValue(false));
         }});
 
-        InstanceFinder finder = new AlternativeMappingsInstanceFinder(instancePredicate);
-        List<Instance> instances = finder.findInstances(target, pattern);
+        OverlapsFinder finder = new AlternativeMappingsOverlapsFinder(overlapPredicate);
+        List<Overlap> overlaps = finder.findOverlaps(target, pattern);
 
-        assertThat(instances, is(empty()));
+        assertThat(overlaps, is(empty()));
     }
 }

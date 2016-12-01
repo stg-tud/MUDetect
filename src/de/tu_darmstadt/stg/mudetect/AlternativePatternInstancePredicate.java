@@ -1,12 +1,12 @@
 package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Overlap;
 
 import java.util.Collection;
 
 public class AlternativePatternInstancePredicate {
-    public boolean test(Instance violation, Collection<Instance> instances) {
-        for (Instance instance : instances) {
+    public boolean test(Overlap violation, Collection<Overlap> instances) {
+        for (Overlap instance : instances) {
             if (violation.isSameTargetOverlap(instance)) {
                 return true;
             }

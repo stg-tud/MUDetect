@@ -30,7 +30,7 @@ public class MuDetectRunner extends MuBenchRunner {
         run(patternPath,
                 ProvidedPatternsModel::new,
                 targetPath,
-                new NoOverlapInstanceFinder(new AlternativeMappingsInstanceFinder(new OverlapRatioPredicate(0.5))),
+                new EmptyOverlapsFinder(new AlternativeMappingsOverlapsFinder(new OverlapRatioPredicate(0.5))),
                 new EverythingViolationFactory(),
                 new NoRankingStrategy(),
                 output);
@@ -41,7 +41,7 @@ public class MuDetectRunner extends MuBenchRunner {
         run(trainingAndTargetPath,
                 groums -> new MinedPatternsModel(new Configuration() {{ minPatternSupport = 10; disable_system_out = true; }}, groums),
                 trainingAndTargetPath,
-                new AlternativeMappingsInstanceFinder(new OverlapRatioPredicate(0.5)),
+                new AlternativeMappingsOverlapsFinder(new OverlapRatioPredicate(0.5)),
                 new MissingElementViolationFactory(),
                 new WeightRankingStrategy(
                         new AverageWeightFunction(
@@ -54,7 +54,7 @@ public class MuDetectRunner extends MuBenchRunner {
     private void run(CodePath trainingPath,
                      Function<Collection<EGroumGraph>, Model> loadModel,
                      CodePath targetPath,
-                     InstanceFinder instanceFinder,
+                     OverlapsFinder overlapsFinder,
                      ViolationFactory violationFactory,
                      ViolationRankingStrategy rankingStrategy,
                      DetectorOutput output) {
@@ -78,14 +78,14 @@ public class MuDetectRunner extends MuBenchRunner {
         output.addRunInformation("numberOfTargets", Integer.toString(targets.size()));
         System.out.println("Number of targets = " + targets.size());
 
-        MuDetect detector = new MuDetect(model, instanceFinder, violationFactory, rankingStrategy);
+        MuDetect detector = new MuDetect(model, overlapsFinder, violationFactory, rankingStrategy);
         List<Violation> violations = detector.findViolations(targets);
         long endDetectionTime = System.currentTimeMillis();
         output.addRunInformation("detectionTime", Long.toString(endDetectionTime - endDetectionLoadTime));
         output.addRunInformation("numberOfViolations", Integer.toString(violations.size()));
         System.out.println("Number of violations = " + violations.size());
-        output.addRunInformation("numberOfExploredAlternatives", Long.toString(AlternativeMappingsInstanceFinder.numberOfExploredAlternatives));
-        System.out.println("Number of explored alternatives = " + AlternativeMappingsInstanceFinder.numberOfExploredAlternatives);
+        output.addRunInformation("numberOfExploredAlternatives", Long.toString(AlternativeMappingsOverlapsFinder.numberOfExploredAlternatives));
+        System.out.println("Number of explored alternatives = " + AlternativeMappingsOverlapsFinder.numberOfExploredAlternatives);
 
         report(violations, output);
         long endReportingTime = System.currentTimeMillis();
@@ -110,7 +110,7 @@ public class MuDetectRunner extends MuBenchRunner {
             finding.put("pattern_violation", violationDotExporter.toDotGraph(violation));
             finding.put("target_environment_mapping", violationDotExporter.toTargetEnvironmentDotGraph(violation));
             finding.put("confidence", Float.toString(violation.getConfidence()));
-            finding.put("pattern_support", Integer.toString(violation.getInstance().getPattern().getSupport()));
+            finding.put("pattern_support", Integer.toString(violation.getOverlap().getPattern().getSupport()));
         }
     }
 }

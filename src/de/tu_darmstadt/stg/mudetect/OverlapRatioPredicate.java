@@ -1,10 +1,10 @@
 package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Overlap;
 
 import java.util.function.Predicate;
 
-public class OverlapRatioPredicate implements Predicate<Instance> {
+public class OverlapRatioPredicate implements Predicate<Overlap> {
     private final double overlapRatioThreshold;
 
     public OverlapRatioPredicate(double overlapRatioThreshold) {
@@ -12,7 +12,7 @@ public class OverlapRatioPredicate implements Predicate<Instance> {
     }
 
     @Override
-    public boolean test(Instance instance) {
-        return instance.getNodeSize() / (float) instance.getPattern().getNodeSize() > overlapRatioThreshold;
+    public boolean test(Overlap overlap) {
+        return overlap.getNodeSize() / (float) overlap.getPattern().getNodeSize() > overlapRatioThreshold;
     }
 }

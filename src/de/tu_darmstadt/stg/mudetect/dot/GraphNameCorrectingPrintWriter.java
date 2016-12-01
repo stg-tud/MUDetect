@@ -1,7 +1,5 @@
 package de.tu_darmstadt.stg.mudetect.dot;
 
-import de.tu_darmstadt.stg.mudetect.model.Instance;
-
 import java.io.PrintWriter;
 import java.io.Writer;
 

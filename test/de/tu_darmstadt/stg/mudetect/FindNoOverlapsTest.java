@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import org.junit.Test;
 
@@ -15,26 +15,26 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
-public class FindNoInstancesTest {
+public class FindNoOverlapsTest {
     @Test
     public void ignoresNonOverlappingTarget() throws Exception {
         Pattern pattern = somePattern(buildAUG().withActionNode("F.foo()").build());
         AUG target = buildAUG().withActionNode("B.bar()").build();
 
-        assertNoInstance(pattern, target);
+        assertNoOverlaps(pattern, target);
     }
 
     @Test
-    public void ignoresTrivialOverlap() throws Exception {
+    public void ignoresDateNodeOverlap() throws Exception {
         Pattern pattern = somePattern(buildAUG().withDataNode("Object").build());
         AUG target = buildAUG().withDataNode("Object").build();
 
-        assertNoInstance(pattern, target);
+        assertNoOverlaps(pattern, target);
     }
 
-    private void assertNoInstance(Pattern pattern, AUG target) {
-        List<Instance> instances = new AlternativeMappingsInstanceFinder().findInstances(target, pattern);
+    private void assertNoOverlaps(Pattern pattern, AUG target) {
+        List<Overlap> overlaps = new AlternativeMappingsOverlapsFinder().findOverlaps(target, pattern);
 
-        assertThat(instances, is(empty()));
+        assertThat(overlaps, is(empty()));
     }
 }

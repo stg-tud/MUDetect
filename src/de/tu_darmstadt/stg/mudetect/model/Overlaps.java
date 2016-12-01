@@ -1,44 +1,42 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
-import de.tu_darmstadt.stg.mudetect.ViolationFactory;
-
 import java.util.*;
 import java.util.function.Predicate;
 
 public class Overlaps {
-    private Map<AUG, Set<Instance>> instancesByTarget = new HashMap<>();
-    private Map<Pattern, Set<Instance>> violationsByPattern = new HashMap<>();
-    private Set<Instance> violations = new HashSet<>();
+    private Map<AUG, Set<Overlap>> instancesByTarget = new HashMap<>();
+    private Map<Pattern, Set<Overlap>> violationsByPattern = new HashMap<>();
+    private Set<Overlap> violations = new HashSet<>();
 
-    public Set<Instance> getInstancesInSameTarget(Instance overlap) {
+    public Set<Overlap> getInstancesInSameTarget(Overlap overlap) {
         return instancesByTarget.getOrDefault(overlap.getTarget(), Collections.emptySet());
     }
 
-    public Set<Instance> getViolationsOfSamePattern(Instance violation) {
+    public Set<Overlap> getViolationsOfSamePattern(Overlap violation) {
         return violationsByPattern.get(violation.getPattern());
     }
 
-    public Set<Instance> getViolations() {
+    public Set<Overlap> getViolations() {
         return violations;
     }
 
-    public void addViolation(Instance violation) {
+    public void addViolation(Overlap violation) {
         add(violationsByPattern, violation.getPattern(), violation);
         violations.add(violation);
     }
 
-    public void addInstance(Instance instance) {
+    public void addInstance(Overlap instance) {
         add(instancesByTarget, instance.getTarget(), instance);
     }
 
-    private <T> void add(Map<T, Set<Instance>> map, T key, Instance instance) {
+    private <T> void add(Map<T, Set<Overlap>> map, T key, Overlap instance) {
         if (!map.containsKey(key)) {
             map.put(key, new HashSet<>());
         }
         map.get(key).add(instance);
     }
 
-    public void removeViolationIf(Predicate<Instance> condition) {
+    public void removeViolationIf(Predicate<Overlap> condition) {
         violations.removeIf(condition);
     }
 }

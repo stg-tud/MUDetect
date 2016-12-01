@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.extend;
-import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.buildInstance;
-import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.fullInstance;
+import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
+import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.instance;
 import static de.tu_darmstadt.stg.mudetect.model.TestViolationBuilder.someViolation;
 import static egroum.EGroumDataEdge.Type.ORDER;
 import static egroum.EGroumDataEdge.Type.PARAMETER;
@@ -21,7 +21,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
     @Test
     public void keepsSingleNode() throws Exception {
         AUG aug = buildAUG().withActionNode("A").build();
-        Instance instance = fullInstance(aug);
+        Overlap instance = instance(aug);
 
         String dotGraph = toDotGraph(someViolation(instance));
 
@@ -31,7 +31,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
     @Test
     public void addsSameEdgeOnlyOnce() throws Exception {
         AUG aug = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B").build();
-        Instance instance = fullInstance(aug);
+        Overlap instance = instance(aug);
 
         String dotGraph = toDotGraph(someViolation(instance));
 
@@ -43,7 +43,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
         TestAUGBuilder pattern = buildAUG().withActionNode("A");
         TestAUGBuilder env = extend(pattern).withActionNode("B").withDataEdge("A", ORDER, "B");
         TestAUGBuilder target = extend(env).withActionNode("C").withDataEdge("B", ORDER, "C");
-        TestInstanceBuilder instance = buildInstance(target, pattern).withNode("A", "A");
+        TestOverlapBuilder instance = buildOverlap(target, pattern).withNode("A", "A");
 
         String dotGraph = toDotGraph(someViolation(instance));
 
@@ -54,7 +54,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
     public void graysOutTargetOnlyElements() throws Exception {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A");
         TestAUGBuilder target = extend(pattern).withActionNode("B").withDataEdge("A", ORDER, "B");
-        TestInstanceBuilder instance = buildInstance(target, pattern).withNode("A", "A");
+        TestOverlapBuilder instance = buildOverlap(target, pattern).withNode("A", "A");
 
         String dotGraph = toDotGraph(someViolation(instance));
 
@@ -66,7 +66,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
     public void highlightsMappedElements() throws Exception {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
-        TestInstanceBuilder instance = buildInstance(target, pattern).withNodes("A", "B").withEdge("A", ORDER, "B");
+        TestOverlapBuilder instance = buildOverlap(target, pattern).withNodes("A", "B").withEdge("A", ORDER, "B");
 
         String dotGraph = toDotGraph(someViolation(instance));
 
@@ -81,7 +81,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
                 .withDataEdge("A", ORDER, "B")
                 .withDataEdge("A", ORDER, "C")
                 .withDataEdge("B", PARAMETER, "C");
-        TestInstanceBuilder instance = buildInstance(target, pattern).withNode("A");
+        TestOverlapBuilder instance = buildOverlap(target, pattern).withNode("A");
 
         String dotGraph = toDotGraph(someViolation(instance));
 

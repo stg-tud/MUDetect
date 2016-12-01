@@ -1,10 +1,10 @@
 package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Overlap;
 
 public class EverythingViolationFactory implements ViolationFactory {
     @Override
-    public boolean isViolation(Instance overlap) {
+    public boolean isViolation(Overlap overlap) {
         return true;
     }
 }

@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.stresstests;
 
-import de.tu_darmstadt.stg.mudetect.AlternativeMappingsInstanceFinder;
-import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.AlternativeMappingsOverlapsFinder;
+import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
 
@@ -28,10 +28,10 @@ public class LimitExploredAlternativesTest {
                 .withDataNode("B2", "B").withDataEdge("A", ORDER, "B2")
                 .withDataNode("B3", "B").withDataEdge("A", ORDER, "B3");
 
-        AlternativeMappingsInstanceFinder finder = new AlternativeMappingsInstanceFinder();
+        AlternativeMappingsOverlapsFinder finder = new AlternativeMappingsOverlapsFinder();
         finder.setMaxNumberOfAlternatives(2);
-        List<Instance> instances = finder.findInstances(target.build(), somePattern(pattern));
+        List<Overlap> overlaps = finder.findOverlaps(target.build(), somePattern(pattern));
 
-        assertThat(instances, is(empty()));
+        assertThat(overlaps, is(empty()));
     }
 }
