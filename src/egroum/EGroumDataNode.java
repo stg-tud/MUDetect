@@ -11,7 +11,10 @@ public class EGroumDataNode extends EGroumNode {
 	
 	public EGroumDataNode(ASTNode astNode, int nodeType, String key, String dataType, String dataName) {
 		super(astNode, nodeType, key);
-		this.dataType = dataType;
+		if (dataType.endsWith(")") || dataType.endsWith(">"))
+			this.dataType = "UNKNOWN";
+		else
+			this.dataType = dataType;
 		this.dataName = dataName;
 	}
 	
