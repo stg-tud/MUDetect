@@ -62,6 +62,18 @@ public class Overlap {
         return getMappedTargetEdges().size();
     }
 
+    public Set<EGroumNode> getMissingNodes() {
+        Set<EGroumNode> patternNodes = new HashSet<>(getPattern().vertexSet());
+        patternNodes.removeAll(patternOverlap.vertexSet());
+        return patternNodes;
+    }
+
+    public Set<EGroumEdge> getMissingEdges() {
+        Set<EGroumEdge> patternEdges = new HashSet<>(getPattern().edgeSet());
+        patternEdges.removeAll(patternOverlap.edgeSet());
+        return patternEdges;
+    }
+
     public boolean isSubgraphOf(Overlap other) {
         return other.getMappedTargetNodes().containsAll(this.getMappedTargetNodes()) &&
                 other.getMappedTargetEdges().containsAll(getMappedTargetEdges());
