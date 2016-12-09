@@ -11,25 +11,25 @@ import java.util.Set;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 
-public class TestInstanceBuilder {
+public class TestOverlapBuilder {
 
-    public static Instance someInstance() {
-        return fullInstance(someAUG());
+    public static Overlap someOverlap() {
+        return instance(someAUG());
     }
 
-    public static Instance emptyInstance(Pattern pattern) {
-        return emptyInstance(pattern, pattern);
+    public static Overlap emptyOverlap(Pattern pattern) {
+        return emptyOverlap(pattern, pattern);
     }
 
-    public static Instance emptyInstance(AUG aug) {
-        return emptyInstance(somePattern(aug), aug);
+    public static Overlap emptyOverlap(AUG aug) {
+        return emptyOverlap(somePattern(aug), aug);
     }
 
-    public static Instance fullInstance(AUG aug) {
-        return someInstance(aug, aug.vertexSet(), aug.edgeSet());
+    public static Overlap instance(AUG aug) {
+        return someOverlap(aug, aug.vertexSet(), aug.edgeSet());
     }
 
-    public static Instance someInstance(AUG pattern, Set<EGroumNode> vertexSubset, Set<EGroumEdge> edgeSubset) {
+    public static Overlap someOverlap(AUG pattern, Set<EGroumNode> vertexSubset, Set<EGroumEdge> edgeSubset) {
         Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
         for (EGroumNode node : vertexSubset) {
             targetNodeByPatternNode.put(node, node);
@@ -38,27 +38,27 @@ public class TestInstanceBuilder {
         for (EGroumEdge edge : edgeSubset) {
             targetEdgeByPatternEdge.put(edge, edge);
         }
-        return new Instance(somePattern(pattern), pattern, targetNodeByPatternNode, targetEdgeByPatternEdge);
+        return new Overlap(somePattern(pattern), pattern, targetNodeByPatternNode, targetEdgeByPatternEdge);
     }
 
-    public static Instance emptyInstance(Pattern pattern, AUG target) {
-        return new Instance(pattern, target, new HashMap<>(), new HashMap<>());
+    public static Overlap emptyOverlap(Pattern pattern, AUG target) {
+        return new Overlap(pattern, target, new HashMap<>(), new HashMap<>());
     }
 
-    public static Instance someInstance(Pattern pattern, AUG target) {
-        return emptyInstance(pattern, target);
+    public static Overlap someOverlap(Pattern pattern, AUG target) {
+        return emptyOverlap(pattern, target);
     }
 
-    public static TestInstanceBuilder buildInstance(TestAUGBuilder targetAUGBuilder, TestAUGBuilder patternAUGBuilder) {
-        return new TestInstanceBuilder(targetAUGBuilder, patternAUGBuilder);
+    public static TestOverlapBuilder buildOverlap(TestAUGBuilder targetAUGBuilder, TestAUGBuilder patternAUGBuilder) {
+        return new TestOverlapBuilder(targetAUGBuilder, patternAUGBuilder);
     }
 
-    public static TestInstanceBuilder buildInstance(TestAUGBuilder targetAndPatternAUGBuilder) {
-        return buildInstance(targetAndPatternAUGBuilder, targetAndPatternAUGBuilder);
+    public static TestOverlapBuilder buildOverlap(TestAUGBuilder targetAndPatternAUGBuilder) {
+        return buildOverlap(targetAndPatternAUGBuilder, targetAndPatternAUGBuilder);
     }
 
-    public static Instance fullInstance(TestAUGBuilder targetAndPatternAUGBuilder) {
-        return fullInstance(targetAndPatternAUGBuilder.build());
+    public static Overlap instance(TestAUGBuilder targetAndPatternAUGBuilder) {
+        return instance(targetAndPatternAUGBuilder.build());
     }
 
     private final TestAUGBuilder targetAUGBuilder;
@@ -66,23 +66,23 @@ public class TestInstanceBuilder {
     private final Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
     private final Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge = new HashMap<>();
 
-    private TestInstanceBuilder(TestAUGBuilder targetAUGBuilder, TestAUGBuilder patternAUGBuilder) {
+    private TestOverlapBuilder(TestAUGBuilder targetAUGBuilder, TestAUGBuilder patternAUGBuilder) {
         this.targetAUGBuilder = targetAUGBuilder;
         this.patternAUGBuilder = patternAUGBuilder;
     }
 
-    public TestInstanceBuilder withNode(String targetAndPatternNodeId) {
+    public TestOverlapBuilder withNode(String targetAndPatternNodeId) {
         return withNode(targetAndPatternNodeId, targetAndPatternNodeId);
     }
 
-    public TestInstanceBuilder withNodes(String... targetAndPatternNodeIds) {
+    public TestOverlapBuilder withNodes(String... targetAndPatternNodeIds) {
         for (String targetAndPatternNodeId : targetAndPatternNodeIds) {
             withNode(targetAndPatternNodeId);
         }
         return this;
     }
 
-    public TestInstanceBuilder withNode(String targetNodeId, String patternNodeId) {
+    public TestOverlapBuilder withNode(String targetNodeId, String patternNodeId) {
         EGroumNode targetNode = targetAUGBuilder.getNode(targetNodeId);
         if (targetNodeByPatternNode.containsValue(targetNode)) {
             throw new IllegalArgumentException("Target node '" + targetNodeId + "' is already mapped.");
@@ -95,19 +95,19 @@ public class TestInstanceBuilder {
         return this;
     }
 
-    public TestInstanceBuilder withEdge(String targetSourceNodeId, String patternSourceNodeId, EGroumDataEdge.Type type, String targetTargetNodeId, String patternTargetNodeId) {
+    public TestOverlapBuilder withEdge(String targetSourceNodeId, String patternSourceNodeId, EGroumDataEdge.Type type, String targetTargetNodeId, String patternTargetNodeId) {
         targetEdgeByPatternEdge.put(
                 patternAUGBuilder.getEdge(patternSourceNodeId, type, patternTargetNodeId),
                 targetAUGBuilder.getEdge(targetSourceNodeId, type, targetTargetNodeId));
         return this;
     }
 
-    public TestInstanceBuilder withEdge(String targetAndPatternSourceNodeId, EGroumDataEdge.Type type, String targetAndPatternTargetNodeId) {
+    public TestOverlapBuilder withEdge(String targetAndPatternSourceNodeId, EGroumDataEdge.Type type, String targetAndPatternTargetNodeId) {
         return withEdge(targetAndPatternSourceNodeId, targetAndPatternSourceNodeId, type, targetAndPatternTargetNodeId, targetAndPatternTargetNodeId);
     }
 
-    public Instance build() {
-        return new Instance(
+    public Overlap build() {
+        return new Overlap(
                 somePattern(patternAUGBuilder), targetAUGBuilder.build(),
                 targetNodeByPatternNode, targetEdgeByPatternEdge);
     }

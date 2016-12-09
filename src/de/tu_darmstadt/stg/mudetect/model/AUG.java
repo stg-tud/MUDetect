@@ -32,6 +32,10 @@ public class AUG extends DirectedMultigraph<EGroumNode, EGroumEdge> {
         return edgeSet().size();
     }
 
+    public int getSize() {
+        return getNodeSize() + getEdgeSize();
+    }
+
     public Map<String, Set<EGroumEdge>> getInEdgesByType(EGroumNode node) {
         return getEdgesByType(node, edge -> getEdgeTarget(edge) == node);
     }

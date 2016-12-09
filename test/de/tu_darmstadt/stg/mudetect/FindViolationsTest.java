@@ -7,24 +7,22 @@ import org.junit.Test;
 import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.buildInstance;
+import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static egroum.EGroumDataEdge.Type.*;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static utils.CollectionUtils.only;
 
-public class FindPartialInstancesTest {
+public class FindViolationsTest {
     @Test
     public void findsMissingNode() throws Exception {
         TestAUGBuilder target = buildAUG().withActionNode("C.m()");
         TestAUGBuilder pattern = buildAUG().withActionNode("C.m()")
                 .withActionNode("C.n()").withDataEdge("C.m()", ORDER, "C.n()");
 
-        TestInstanceBuilder instance = buildInstance(target, pattern).withNode("C.m()");
-        assertFindsInstance(pattern, target, instance);
+        TestOverlapBuilder violation = buildOverlap(target, pattern).withNode("C.m()");
+        assertFindsViolation(pattern, target, violation);
     }
 
     @Test
@@ -32,8 +30,8 @@ public class FindPartialInstancesTest {
         TestAUGBuilder pattern = buildAUG().withActionNode("A").withActionNode("B").withDataEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNode("A").withActionNode("C").withDataEdge("A", ORDER, "C");
 
-        TestInstanceBuilder instance = buildInstance(target, pattern).withNode("A");
-        assertFindsInstance(pattern, target, instance);
+        TestOverlapBuilder violation = buildOverlap(target, pattern).withNode("A");
+        assertFindsViolation(pattern, target, violation);
     }
 
     @Test
@@ -41,9 +39,9 @@ public class FindPartialInstancesTest {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", PARAMETER, "B");
 
-        TestInstanceBuilder instance1 = buildInstance(target, pattern).withNode("A");
-        TestInstanceBuilder instance2 = buildInstance(target, pattern).withNode("B");
-        assertFindsInstance(pattern, target, instance1, instance2);
+        TestOverlapBuilder violation1 = buildOverlap(target, pattern).withNode("A");
+        TestOverlapBuilder violation2 = buildOverlap(target, pattern).withNode("B");
+        assertFindsViolation(pattern, target, violation1, violation2);
     }
 
     @Test
@@ -51,9 +49,9 @@ public class FindPartialInstancesTest {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("B", ORDER, "A");
 
-        TestInstanceBuilder instance1 = buildInstance(target, pattern).withNode("A");
-        TestInstanceBuilder instance2 = buildInstance(target, pattern).withNode("B");
-        assertFindsInstance(pattern, target, instance1, instance2);
+        TestOverlapBuilder violation1 = buildOverlap(target, pattern).withNode("A");
+        TestOverlapBuilder violation2 = buildOverlap(target, pattern).withNode("B");
+        assertFindsViolation(pattern, target, violation1, violation2);
     }
 
     @Test
@@ -63,9 +61,9 @@ public class FindPartialInstancesTest {
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
 
         // TODO check why this doesn't work when using findInstance(TestAUGBuilder, TestAUGBuilder)
-        List<Instance> instances = new AlternativeMappingsInstanceFinder().findInstances(target.build(), somePattern(pattern));
+        List<Overlap> overlaps = new AlternativeMappingsOverlapsFinder().findOverlaps(target.build(), somePattern(pattern));
 
-        assertThat(only(instances).getNodeSize(), is(2));
+        assertThat(only(overlaps).getNodeSize(), is(2));
     }
 
     @Test
@@ -78,12 +76,12 @@ public class FindPartialInstancesTest {
                 .withDataEdge("A1", PARAMETER, "B")
                 .withCondEdge("A2", "sel", "B");
 
-        TestInstanceBuilder instance1 = buildInstance(target, pattern).withNode("A1", "A").withNode("B")
+        TestOverlapBuilder violation1 = buildOverlap(target, pattern).withNode("A1", "A").withNode("B")
                 .withEdge("A1", "A", PARAMETER, "B", "B");
-        TestInstanceBuilder instance2 = buildInstance(target, pattern).withNode("A2", "A").withNode("B")
+        TestOverlapBuilder violation2 = buildOverlap(target, pattern).withNode("A2", "A").withNode("B")
                 .withEdge("A2", "A", CONDITION, "B", "B");
 
-        assertFindsInstance(pattern, target, instance1, instance2);
+        assertFindsViolation(pattern, target, violation1, violation2);
     }
 
     @Test
@@ -96,12 +94,12 @@ public class FindPartialInstancesTest {
                 .withDataEdge("A", PARAMETER, "B")
                 .withCondEdge("A", "sel", "B");
 
-        TestInstanceBuilder instance1 = buildInstance(target, pattern).withNode("A", "A1").withNode("B")
+        TestOverlapBuilder violation1 = buildOverlap(target, pattern).withNode("A", "A1").withNode("B")
                 .withEdge("A", "A1", PARAMETER, "B", "B");
-        TestInstanceBuilder instance2 = buildInstance(target, pattern).withNode("A", "A2").withNode("B")
+        TestOverlapBuilder violation2 = buildOverlap(target, pattern).withNode("A", "A2").withNode("B")
                 .withEdge("A", "A2", CONDITION, "B", "B");
 
-        assertFindsInstance(pattern, target, instance1, instance2);
+        assertFindsViolation(pattern, target, violation1, violation2);
     }
 
     @Test
@@ -111,12 +109,12 @@ public class FindPartialInstancesTest {
         TestAUGBuilder target = buildAUG().withActionNodes("A", "C").withActionNode("B1", "B").withActionNode("B2", "B")
                 .withDataEdge("A", ORDER, "B1").withDataEdge("A", ORDER, "B2").withDataEdge("B1", ORDER, "C");
 
-        TestInstanceBuilder fullInstance = buildInstance(target, pattern).withNodes("A", "C").withNode("B1", "B")
+        TestOverlapBuilder instance = buildOverlap(target, pattern).withNodes("A", "C").withNode("B1", "B")
                 .withEdge("A", "A", ORDER, "B1", "B").withEdge("B1", "B", ORDER, "C", "C");
-        TestInstanceBuilder partialInstance = buildInstance(target, pattern).withNode("A").withNode("B2", "B")
+        TestOverlapBuilder violation = buildOverlap(target, pattern).withNode("A").withNode("B2", "B")
                 .withEdge("A", "A", ORDER, "B2", "B");
 
-        assertFindsInstance(pattern, target, fullInstance, partialInstance);
+        assertFindsViolation(pattern, target, instance, violation);
     }
 
     @Test @Ignore("discuss whether we want to include or exclude conditions this way")
@@ -131,9 +129,9 @@ public class FindPartialInstancesTest {
                 .withDataEdge("int", PARAMETER, ">")
                 .withDataEdge(">", CONDITION, "List.get()");
 
-        TestInstanceBuilder instance = buildInstance(target, pattern).withNode("List.get()");
+        TestOverlapBuilder violation = buildOverlap(target, pattern).withNode("List.get()");
 
-        assertFindsInstance(pattern, target, instance);
+        assertFindsViolation(pattern, target, violation);
     }
 
     @Test @Ignore("discuss whether we want to include or exclude conditions this way")
@@ -148,10 +146,10 @@ public class FindPartialInstancesTest {
                 .withDataEdge("int", PARAMETER, ">")
                 .withDataEdge("C.foo()", PARAMETER, ">");
 
-        TestInstanceBuilder instance = buildInstance(target, pattern)
+        TestOverlapBuilder violation = buildOverlap(target, pattern)
                 .withNodes("A.size()", "int").withEdge("A.size()", DEFINITION, "int");
 
-        assertFindsInstance(pattern, target, instance);
+        assertFindsViolation(pattern, target, violation);
     }
 
     @Test @Ignore("We currently find two. I scheduled a discussion about a general rule to filter the 'false' one.")
@@ -161,9 +159,9 @@ public class FindPartialInstancesTest {
         TestAUGBuilder target = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
                 .withDataEdge("a1", ORDER, "a2").withDataEdge("a1", ORDER, "b").withDataEdge("a2", ORDER, "b");
 
-        List<Instance> instances = findInstances(pattern, target);
+        List<Overlap> overlaps = findOverlaps(pattern, target);
 
-        assertThat(instances, hasSize(1));
+        assertThat(overlaps, hasSize(1));
     }
 
     /**
@@ -179,13 +177,13 @@ public class FindPartialInstancesTest {
         TestAUGBuilder target = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
                 .withDataEdge("a1", ORDER, "a2").withDataEdge("a1", ORDER, "b").withDataEdge("a2", ORDER, "b");
 
-        TestInstanceBuilder instance1 = buildInstance(target, pattern)
+        TestOverlapBuilder instance = buildOverlap(target, pattern)
                 .withNodes("a1", "a2").withEdge("a1", ORDER, "a2")
                 .withNode("b").withEdge("a1", ORDER, "b");
-        TestInstanceBuilder instance2 = buildInstance(target, pattern)
+        TestOverlapBuilder violation = buildOverlap(target, pattern)
                 .withNode("a2", "a1").withNode("b").withEdge("a2", "a1", ORDER, "b", "b");
 
-        assertFindsInstance(pattern, target, instance1, instance2);
+        assertFindsViolation(pattern, target, instance, violation);
     }
 
     /**
@@ -216,34 +214,34 @@ public class FindPartialInstancesTest {
                 .withDataEdge("F", ORDER, "D")
                 .withDataEdge("F", ORDER, "E");
 
-        TestInstanceBuilder instance = buildInstance(target, pattern).withNodes("A", "B", "C", "D", "E", "F")
+        TestOverlapBuilder violation = buildOverlap(target, pattern).withNodes("A", "B", "C", "D", "E", "F")
                 .withEdge("F", ORDER, "A")
                 .withEdge("F", ORDER, "B")
                 .withEdge("F", ORDER, "C")
                 .withEdge("F", ORDER, "D")
                 .withEdge("F", ORDER, "E");
 
-        assertFindsInstance(pattern, target, instance);
+        assertFindsViolation(pattern, target, violation);
     }
 
-    private void assertFindsInstance(TestAUGBuilder patternBuilder,
-                                     TestAUGBuilder targetBuilder,
-                                     TestInstanceBuilder... expectedInstanceBuilder) {
-        List<Instance> instances = findInstances(patternBuilder, targetBuilder);
+    private void assertFindsViolation(TestAUGBuilder patternBuilder,
+                                      TestAUGBuilder targetBuilder,
+                                      TestOverlapBuilder... expectedOverlapBuilders) {
+        List<Overlap> overlaps = findOverlaps(patternBuilder, targetBuilder);
 
-        assertThat(instances, hasSize(expectedInstanceBuilder.length));
-        Instance[] expectedInstances = new Instance[expectedInstanceBuilder.length];
-        for (int i = 0; i < expectedInstanceBuilder.length; i++) {
-            expectedInstances[i] = expectedInstanceBuilder[i].build();
+        assertThat(overlaps, hasSize(expectedOverlapBuilders.length));
+        Overlap[] expectedOverlaps = new Overlap[expectedOverlapBuilders.length];
+        for (int i = 0; i < expectedOverlapBuilders.length; i++) {
+            expectedOverlaps[i] = expectedOverlapBuilders[i].build();
         }
 
-        assertThat(instances, containsInAnyOrder(expectedInstances));
+        assertThat(overlaps, containsInAnyOrder(expectedOverlaps));
     }
 
-    private List<Instance> findInstances(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder) {
+    private List<Overlap> findOverlaps(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder) {
         AUG target = targetBuilder.build();
         Pattern pattern = somePattern(patternBuilder.build());
 
-        return new AlternativeMappingsInstanceFinder().findInstances(target, pattern);
+        return new AlternativeMappingsOverlapsFinder().findOverlaps(target, pattern);
     }
 }

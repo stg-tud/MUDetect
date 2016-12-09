@@ -1,25 +1,23 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
-import de.tu_darmstadt.stg.mudetect.dot.ViolationDotExporter;
-
 import java.util.Objects;
 
 public class Violation implements Comparable<Violation> {
 
-    private final Instance instance;
+    private final Overlap overlap;
     private float confidence;
 
-    public Violation(Instance overlap, float confidence) {
-        this.instance = overlap;
+    public Violation(Overlap overlap, float confidence) {
+        this.overlap = overlap;
         this.confidence = confidence;
     }
 
-    public Instance getInstance() {
-        return instance;
+    public Overlap getOverlap() {
+        return overlap;
     }
 
     public Location getLocation() {
-        return instance.getLocation();
+        return overlap.getLocation();
     }
 
     public float getConfidence() {
@@ -37,18 +35,18 @@ public class Violation implements Comparable<Violation> {
         if (o == null || getClass() != o.getClass()) return false;
         Violation violation = (Violation) o;
         return Float.compare(violation.confidence, confidence) == 0 &&
-                Objects.equals(instance, violation.instance);
+                Objects.equals(overlap, violation.overlap);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(instance, confidence);
+        return Objects.hash(overlap, confidence);
     }
 
     @Override
     public String toString() {
         return "Violation{" +
-                "instance=" + instance +
+                "overlap=" + overlap +
                 ", confidence=" + confidence +
                 '}';
     }

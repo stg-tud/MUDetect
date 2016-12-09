@@ -1,8 +1,7 @@
 package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.mudetect.model.Instance;
-import de.tu_darmstadt.stg.mudetect.model.Violation;
+import de.tu_darmstadt.stg.mudetect.model.Overlap;
 
 public interface ViolationFactory {
-    boolean isViolation(Instance overlap);
+    boolean isViolation(Overlap overlap);
 }

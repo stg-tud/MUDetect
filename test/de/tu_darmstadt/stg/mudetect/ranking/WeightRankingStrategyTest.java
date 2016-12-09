@@ -2,7 +2,7 @@ package de.tu_darmstadt.stg.mudetect.ranking;
 
 import de.tu_darmstadt.stg.mudetect.Model;
 import de.tu_darmstadt.stg.mudetect.ViolationRankingStrategy;
-import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.Overlaps;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import org.jmock.Expectations;
@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.someInstance;
+import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.someOverlap;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
@@ -23,8 +23,8 @@ public class WeightRankingStrategyTest {
 
     @Test
     public void ranksViolations() throws Exception {
-        Instance violation1 = someInstance();
-        Instance violation2 = someInstance();
+        Overlap violation1 = someOverlap();
+        Overlap violation2 = someOverlap();
 
         Overlaps overlaps = new Overlaps();
         overlaps.addViolation(violation1);
@@ -46,8 +46,8 @@ public class WeightRankingStrategyTest {
 
     @Test
     public void ranksViolationsWithSameConfidenceInAnyOrder() throws Exception {
-        Instance violation1 = someInstance();
-        Instance violation2 = someInstance();
+        Overlap violation1 = someOverlap();
+        Overlap violation2 = someOverlap();
 
         Overlaps overlaps = new Overlaps();
         overlaps.addViolation(violation1);

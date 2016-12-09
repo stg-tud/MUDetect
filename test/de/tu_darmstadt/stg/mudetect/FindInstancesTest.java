@@ -1,16 +1,13 @@
 package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Instance;
-import de.tu_darmstadt.stg.mudetect.model.Pattern;
-import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
+import de.tu_darmstadt.stg.mudetect.model.*;
 import org.junit.Test;
 
 import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.buildInstance;
-import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.fullInstance;
+import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
+import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.instance;
 import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static egroum.EGroumDataEdge.Type.*;
 import static org.hamcrest.CoreMatchers.is;
@@ -19,7 +16,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static utils.CollectionUtils.only;
 
-public class FindCompleteInstancesTest {
+public class FindInstancesTest {
     @Test
     public void findsSingleNodeInstance() throws Exception {
         assertFindsInstance(buildAUG().withActionNode("C.m()"));
@@ -48,7 +45,7 @@ public class FindCompleteInstancesTest {
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B")
                 .withDataNode("C").withDataEdge("A", ORDER, "C");
 
-        Instance instance = buildInstance(target, pattern).withNodes("A", "B").withEdge("A", ORDER, "B").build();
+        Overlap instance = buildOverlap(target, pattern).withNodes("A", "B").withEdge("A", ORDER, "B").build();
         assertFindsInstance(pattern, target, instance);
     }
 
@@ -58,9 +55,9 @@ public class FindCompleteInstancesTest {
         TestAUGBuilder target = buildAUG().withActionNode("A").withActionNode("B1", "B").withActionNode("B2", "B")
                 .withDataEdge("A", ORDER, "B1").withDataEdge("A", ORDER, "B2");
 
-        Instance instance1 = buildInstance(target, pattern).withNode("A", "A")
+        Overlap instance1 = buildOverlap(target, pattern).withNode("A", "A")
                 .withNode("B1", "B").withEdge("A", "A", ORDER, "B1", "B").build();
-        Instance instance2 = buildInstance(target, pattern).withNode("A", "A")
+        Overlap instance2 = buildOverlap(target, pattern).withNode("A", "A")
                 .withNode("B2", "B").withEdge("A", "A", ORDER, "B2", "B").build();
         assertFindsInstance(pattern, target, instance1, instance2);
     }
@@ -175,9 +172,9 @@ public class FindCompleteInstancesTest {
                 .withDataEdge("append1", ORDER, "toString")
                 .withDataEdge("append1", ORDER, "append2");
 
-        List<Instance> instances = findInstances(target, pattern);
+        List<Overlap> overlaps = findOverlaps(target, pattern);
 
-        assertThat(only(instances).getEdgeSize(), is(6));
+        assertThat(only(overlaps).getEdgeSize(), is(6));
     }
 
     @Test
@@ -188,21 +185,21 @@ public class FindCompleteInstancesTest {
     }
 
     private void assertFindsInstance(TestAUGBuilder patternAndTargetBuilder) {
-        assertFindsInstance(patternAndTargetBuilder, patternAndTargetBuilder, fullInstance(patternAndTargetBuilder));
+        assertFindsInstance(patternAndTargetBuilder, patternAndTargetBuilder, instance(patternAndTargetBuilder));
     }
 
     private void assertFindsInstance(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder,
-                                     Instance... expectedInstances) {
-        List<Instance> instances = findInstances(patternBuilder, targetBuilder);
+                                     Overlap... expectedInstances) {
+        List<Overlap> overlaps = findOverlaps(patternBuilder, targetBuilder);
 
-        assertThat(instances, hasSize(expectedInstances.length));
-        assertThat(instances, containsInAnyOrder(expectedInstances));
+        assertThat(overlaps, hasSize(expectedInstances.length));
+        assertThat(overlaps, containsInAnyOrder(expectedInstances));
     }
 
-    private List<Instance> findInstances(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder) {
+    private List<Overlap> findOverlaps(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder) {
         Pattern pattern = somePattern(patternBuilder);
         AUG target = targetBuilder.build();
 
-        return new AlternativeMappingsInstanceFinder().findInstances(target, pattern);
+        return new AlternativeMappingsOverlapsFinder().findOverlaps(target, pattern);
     }
 }

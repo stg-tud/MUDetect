@@ -1,14 +1,14 @@
 package de.tu_darmstadt.stg.mudetect.ranking;
 
 import de.tu_darmstadt.stg.mudetect.Model;
-import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.Overlaps;
 
 public class ViolationSupportWeightFunction implements ViolationWeightFunction {
     @Override
-    public float getWeight(Instance violation, Overlaps overlaps, Model model) {
+    public float getWeight(Overlap violation, Overlaps overlaps, Model model) {
         float numberOfEqualViolations = 0;
-        for (Instance otherViolation : overlaps.getViolationsOfSamePattern(violation)) {
+        for (Overlap otherViolation : overlaps.getViolationsOfSamePattern(violation)) {
             // two overlaps are equal, if they violate the same aPatternBuilder in the same way,
             // i.e., if the aPatternBuilder overlap is the same.
             if (violation.isSamePatternOverlap(otherViolation)) {

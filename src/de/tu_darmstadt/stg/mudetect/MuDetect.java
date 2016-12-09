@@ -7,17 +7,17 @@ import java.util.*;
 public class MuDetect {
 
     private final Model model;
-    private final InstanceFinder instanceFinder;
+    private final OverlapsFinder overlapsFinder;
     private final ViolationFactory violationFactory;
     private final ViolationRankingStrategy rankingStrategy;
     private final AlternativePatternInstancePredicate alternativePatternInstancePredicate;
 
     public MuDetect(Model model,
-                    InstanceFinder instanceFinder,
+                    OverlapsFinder overlapsFinder,
                     ViolationFactory violationFactory,
                     ViolationRankingStrategy rankingStrategy) {
         this.model = model;
-        this.instanceFinder = instanceFinder;
+        this.overlapsFinder = overlapsFinder;
         this.violationFactory = violationFactory;
         this.rankingStrategy = rankingStrategy;
         // TODO find a testing strategy for this filtering
@@ -34,7 +34,7 @@ public class MuDetect {
         Overlaps overlaps = new Overlaps();
         for (AUG target : targets) {
             for (Pattern pattern : patterns) {
-                for (Instance overlap : instanceFinder.findInstances(target, pattern)) {
+                for (Overlap overlap : overlapsFinder.findOverlaps(target, pattern)) {
                     if (violationFactory.isViolation(overlap)) {
                         overlaps.addViolation(overlap);
                     } else {
@@ -46,8 +46,8 @@ public class MuDetect {
         return overlaps;
     }
 
-    private boolean isAlternativePatternInstance(Instance violation, Overlaps overlaps) {
-        Set<Instance> instancesInViolationTarget = overlaps.getInstancesInSameTarget(violation);
+    private boolean isAlternativePatternInstance(Overlap violation, Overlaps overlaps) {
+        Set<Overlap> instancesInViolationTarget = overlaps.getInstancesInSameTarget(violation);
         return alternativePatternInstancePredicate.test(violation, instancesInViolationTarget);
     }
 }

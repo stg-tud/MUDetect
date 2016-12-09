@@ -2,7 +2,7 @@ package de.tu_darmstadt.stg.mudetect.ranking;
 
 import de.tu_darmstadt.stg.mudetect.Model;
 import de.tu_darmstadt.stg.mudetect.ViolationRankingStrategy;
-import de.tu_darmstadt.stg.mudetect.model.Instance;
+import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.Overlaps;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 
@@ -21,7 +21,7 @@ public class WeightRankingStrategy implements ViolationRankingStrategy {
     @Override
     public List<Violation> rankViolations(Overlaps overlaps, Model model) {
         PriorityQueue<Violation> violations = new PriorityQueue<>(Comparator.reverseOrder());
-        for (Instance violation : overlaps.getViolations()) {
+        for (Overlap violation : overlaps.getViolations()) {
             float confidence = weightFunction.getWeight(violation, overlaps, model);
             violations.add(new Violation(violation, confidence));
         }

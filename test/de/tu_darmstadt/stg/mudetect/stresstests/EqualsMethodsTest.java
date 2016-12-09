@@ -1,26 +1,16 @@
 package de.tu_darmstadt.stg.mudetect.stresstests;
 
-import de.tu_darmstadt.stg.mudetect.AlternativeMappingsInstanceFinder;
-import de.tu_darmstadt.stg.mudetect.dot.AUGDotExporter;
-import de.tu_darmstadt.stg.mudetect.dot.AUGEdgeAttributeProvider;
-import de.tu_darmstadt.stg.mudetect.dot.AUGNodeAttributeProvider;
+import de.tu_darmstadt.stg.mudetect.AlternativeMappingsOverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Instance;
 import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import egroum.EGroumDataEdge;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.List;
-
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.model.TestInstanceBuilder.fullInstance;
 import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static egroum.AUGBuilder.toAUG;
 import static egroum.EGroumTestUtils.buildGroumsForClass;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 
 public class EqualsMethodsTest {
     @Test(timeout = 60000)
@@ -104,6 +94,6 @@ public class EqualsMethodsTest {
                 .withDataEdge("eq", EGroumDataEdge.Type.DEFINITION, "b8");
         Pattern pattern = somePattern(patternAUG);
 
-        new AlternativeMappingsInstanceFinder().findInstances(target, pattern);
+        new AlternativeMappingsOverlapsFinder().findOverlaps(target, pattern);
     }
 }
