@@ -118,6 +118,8 @@ public class EGroumGraph implements Serializable {
 		adjustControlEdges();
 		context.removeScope();
 		addDefinitions();
+		if (EGroumBuilder.REMOVE_CONDITIONAL_OPERATORS)
+			deleteConditionalOperators();
 		if (!EGroumBuilder.KEEP_TEMPORARY_DATA_NODES)
 			deleteTemporaryDataNodes();
 		else if (EGroumBuilder.REMOVE_TEMPORARY_DATA_NODES_INCOMING_TO_CONTROL_NODES)
@@ -145,8 +147,25 @@ public class EGroumGraph implements Serializable {
 
 	private boolean isTooDense() {
 		for (EGroumNode node : nodes)
-			if (node instanceof EGroumDataNode && node.outEdges.size() > MAX_BRANCHES)
-				return true;
+			if (node instanceof EGroumDataNode) {
+				if (node.outEdges.size() > MAX_BRANCHES)
+					return true;
+				if (node.outEdges.size() < 10)
+					continue;
+				HashMap<String, Integer> nodeCount = new HashMap<>();
+				int max = 0;
+				for (EGroumEdge e : node.outEdges) {
+					String label = e.target.getLabel();
+					int count = 1;
+					if (nodeCount.containsKey(label))
+						count += nodeCount.get(label);
+					nodeCount.put(label, count);
+					if (count > max)
+						max = count;
+				}
+				if (max >= 10)
+					return true;
+			}
 		return false;
 	}
 
@@ -862,11 +881,14 @@ public class EGroumGraph implements Serializable {
 			pdg.mergeSequentialData(op, Type.PARAMETER);
 			rg.mergeSequentialData(op, Type.PARAMETER);
 			pdg.mergeParallel(rg);
-		} else
+		} else {
+			if (EGroumBuilder.REMOVE_UNARY_OPERATORS)
+				return pdg;
 			pdg.mergeSequentialData(
 					new EGroumActionNode(control, branch, astNode, astNode.getNodeType(),
 							null, astNode.getOperator().toString(), astNode.getOperator().toString()),
 					Type.PARAMETER);
+		}
 		if (astNode.getOperator() == PrefixExpression.Operator.INCREMENT
 				|| astNode.getOperator() == PrefixExpression.Operator.DECREMENT) {
 			pdg.mergeSequentialData(new EGroumActionNode(control, branch,
@@ -2113,6 +2135,39 @@ public class EGroumGraph implements Serializable {
 				}
 				else
 					i++;
+			}
+		}
+	}
+
+	private void deleteConditionalOperators() {
+		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
+			if (node.astNodeType == ASTNode.INFIX_EXPRESSION && node.getLabel().equals("<c>")) {
+				HashSet<EGroumNode> delNodes = new HashSet<>();
+				for (EGroumEdge e1 : node.outEdges) {
+					if (e1.target.isAssignment() && e1 instanceof EGroumDataEdge && ((EGroumDataEdge) e1).type == Type.PARAMETER) {
+						for (EGroumEdge e2 : e1.target.outEdges) {
+							if (e2 instanceof EGroumDataEdge && ((EGroumDataEdge) e2).type == Type.DEFINITION) {
+								for (EGroumEdge e3 : e2.target.outEdges) {
+									if (e3 instanceof EGroumDataEdge && ((EGroumDataEdge) e3).type == Type.REFERENCE) {
+										for (EGroumEdge e4 : e3.target.outEdges) {
+											for (EGroumEdge e : node.inEdges)
+												if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.PARAMETER)
+													new EGroumDataEdge(e.source, e4.target, ((EGroumDataEdge) e4).type, e4.label);
+										}
+										delNodes.add(e3.target);
+									}
+								}
+								delNodes.add(e2.target);
+								break;
+							}
+						}
+						delNodes.add(e1.target);
+						break;
+					}
+				}
+				delNodes.add(node);
+				for (EGroumNode dn : delNodes)
+					delete(dn);
 			}
 		}
 	}
