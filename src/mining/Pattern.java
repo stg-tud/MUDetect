@@ -17,6 +17,7 @@ public class Pattern {
 	private Fragment representative;
 	private int freq = 0;
 	private HashSet<Fragment> fragments = new HashSet<Fragment>();
+	protected Pattern subPattern;
 	
 	public Pattern(HashSet<Fragment> group, int freq) {
 		fragments = group;

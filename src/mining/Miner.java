@@ -206,10 +206,12 @@ public class Miner {
 			for (Fragment xf : frequentFragments) {
 				inextensibles.remove(xf.getGenFragmen());
 			}
+			Pattern ip = null;
 			if (inextensibles.size() >= config.minPatternSupport) {
 				int freq = computeFrequency(inextensibles, false);
 				if (freq >= config.minPatternSupport && !Lattice.contains(lattices, inextensibles)) {
-					Pattern ip = new Pattern(inextensibles, freq);
+					ip = new Pattern(inextensibles, freq);
+					ip.subPattern = pattern.subPattern;
 					ip.add2Lattice(lattices);
 					pattern.getFragments().removeAll(inextensibles);
 				}
@@ -244,6 +246,10 @@ public class Miner {
 							+ " fragments: " + Fragment.numofFragments 
 							+ " next fragment: " + Fragment.nextFragmentId);
 				}
+				if (ip == null)
+					xp.subPattern = pattern.subPattern;
+				else
+					xp.subPattern = ip;
 				extend(xp);
 				System.out.println("}");
 			}
