@@ -33,15 +33,18 @@ public class EncodeConditionsTest {
         AUG aug = buildAUG("void m(java.util.List l) { if (!l.isEmpty()) l.get(0); }");
 
         assertThat(aug, hasNode(actionNodeWithLabel("Collection.isEmpty()")));
-        assertThat(aug, hasNode(actionNodeWithLabel("!")));
-        assertThat(aug, hasEdge(actionNodeWithLabel("Collection.isEmpty()"), PARAMETER, actionNodeWithLabel("!")));
+        if (!EGroumBuilder.REMOVE_UNARY_OPERATORS)
+        	assertThat(aug, hasNode(actionNodeWithLabel("!")));
+        if (!EGroumBuilder.REMOVE_UNARY_OPERATORS)
+        	assertThat(aug, hasEdge(actionNodeWithLabel("Collection.isEmpty()"), PARAMETER, actionNodeWithLabel("!")));
     }
 
     @Test
     public void addsSelEdgeFromNegationOperatorToGuardedAction() throws Exception {
         AUG aug = buildAUG("void m(java.util.List l) { if (!l.isEmpty()) l.get(0); }");
 
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("!"), actionNodeWithLabel("List.get()")));
+        if (!EGroumBuilder.REMOVE_UNARY_OPERATORS)
+        	assertThat(aug, hasSelEdge(actionNodeWithLabel("!"), actionNodeWithLabel("List.get()")));
     }
 
     @Test
