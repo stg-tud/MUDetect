@@ -155,13 +155,20 @@ public class EGroumGraph implements Serializable {
 				HashMap<String, Integer> nodeCount = new HashMap<>();
 				int max = 0;
 				for (EGroumEdge e : node.outEdges) {
-					String label = e.target.getLabel();
-					int count = 1;
-					if (nodeCount.containsKey(label))
-						count += nodeCount.get(label);
-					nodeCount.put(label, count);
-					if (count > max)
-						max = count;
+					ArrayList<String> labels = new ArrayList<>();
+					if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.REFERENCE)
+						for (EGroumEdge e1 : e.target.outEdges)
+							labels.add(e1.toString());
+					else
+						labels.add(e.toString());
+					for (String label : labels) {
+						int count = 1;
+						if (nodeCount.containsKey(label))
+							count += nodeCount.get(label);
+						nodeCount.put(label, count);
+						if (count > max)
+							max = count;
+					}
 				}
 				if (max >= 10)
 					return true;
