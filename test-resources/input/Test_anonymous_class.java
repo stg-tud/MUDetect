@@ -7,6 +7,14 @@ import javax.swing.SwingUtilities;
 
 class Test_anonymous_class {
 
+	void m1() {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				new Object();
+			}
+		});
+	}
+
 	public static void pattern(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {

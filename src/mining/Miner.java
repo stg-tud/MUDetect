@@ -258,15 +258,6 @@ public class Miner {
 			pattern.add2Lattice(lattices);
 	}
 
-	private String toString(HashSet<Fragment> fs) {
-		StringBuilder sb = new StringBuilder();
-		for (Fragment f : fs) {
-			sb.append(f.getNodes());
-			break;
-		}
-		return sb.toString();
-	}
-
 	private boolean isGiant(HashSet<Fragment> xfs, Pattern pattern, String label) {
 		return /*(EGroumNode.isMethod(label) || EGroumNode.isLiteral(label)) && */isGiant(xfs, pattern);
 	}

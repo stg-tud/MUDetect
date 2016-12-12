@@ -66,7 +66,6 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
-
 import egroum.EGroumDataEdge.Type;
 import graphics.DotGraph;
 import mcs.MCSFragment;
@@ -1738,8 +1737,13 @@ public class EGroumGraph implements Serializable {
 			type = "int";
 		else if (type.equals(PrefixExpression.Operator.NOT))
 			type = "boolean";
-		if (((Expression) exp).resolveTypeBinding() != null)
-			type = ((Expression) exp).resolveTypeBinding().getTypeDeclaration().getName();
+		if (((Expression) exp).resolveTypeBinding() != null) {
+			ITypeBinding itb = ((Expression) exp).resolveTypeBinding().getTypeDeclaration();
+			if (itb.isAnonymous())
+				type = JavaASTUtil.getSimpleType(((ClassInstanceCreation) exp).getType());
+			else
+				type = itb.getName();
+		}
 		EGroumDataNode dummy = new EGroumDataNode(null, ASTNode.SIMPLE_NAME,
 				EGroumNode.PREFIX_DUMMY + exp.getStartPosition() + "_"
 						+ exp.getLength(), type, EGroumNode.PREFIX_DUMMY, false, true);
