@@ -97,12 +97,9 @@ public class FindViolationsTest {
                 .withDataEdge("A", PARAMETER, "B")
                 .withCondEdge("A", "sel", "B");
 
-        TestOverlapBuilder violation1 = buildOverlap(target, pattern).withNode("A", "A1").withNode("B")
-                .withEdge("A", "A1", PARAMETER, "B", "B");
-        TestOverlapBuilder violation2 = buildOverlap(target, pattern).withNode("A", "A2").withNode("B")
-                .withEdge("A", "A2", CONDITION, "B", "B");
+        List<Overlap> overlaps = findOverlaps(pattern, target);
 
-        assertFindsOverlaps(pattern, target, violation1, violation2);
+        assertThat(only(overlaps).getNodeSize(), is(2));
     }
 
     @Test
@@ -183,10 +180,8 @@ public class FindViolationsTest {
         TestOverlapBuilder instance = buildOverlap(target, pattern)
                 .withNodes("a1", "a2").withEdge("a1", ORDER, "a2")
                 .withNode("b").withEdge("a1", ORDER, "b");
-        TestOverlapBuilder violation = buildOverlap(target, pattern)
-                .withNode("a2", "a1").withNode("b").withEdge("a2", "a1", ORDER, "b", "b");
 
-        assertFindsOverlaps(pattern, target, instance, violation);
+        assertFindsOverlaps(pattern, target, instance);
     }
 
     /**

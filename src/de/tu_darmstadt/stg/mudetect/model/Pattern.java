@@ -4,13 +4,14 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import egroum.EGroumNode;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Pattern extends AUG {
     private final int support;
     private final Map<EGroumNode, Multiset<String>> literals;
+
+    private List<EGroumNode> meaningfulActionNodesByUniquenesCache = null;
 
     public Pattern(int support) {
         super("pattern", "model");
@@ -20,6 +21,18 @@ public class Pattern extends AUG {
 
     public int getSupport() {
         return support;
+    }
+
+    public List<EGroumNode> getMeaningfulActionNodesByUniqueness() {
+        if (meaningfulActionNodesByUniquenesCache == null) {
+            Set<EGroumNode> meaningfulActionNodes = getMeaningfulActionNodes();
+            Map<String, List<EGroumNode>> actionNodesByLabel = meaningfulActionNodes.stream()
+                    .collect(Collectors.groupingBy(EGroumNode::getLabel));
+            meaningfulActionNodesByUniquenesCache = meaningfulActionNodes.stream()
+                    .sorted(Comparator.comparing(node -> actionNodesByLabel.get(node.getLabel()).size()))
+                    .collect(Collectors.toList());
+        }
+        return meaningfulActionNodesByUniquenesCache;
     }
 
     @Override

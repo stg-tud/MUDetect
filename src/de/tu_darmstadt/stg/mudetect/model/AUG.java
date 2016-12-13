@@ -11,6 +11,8 @@ public class AUG extends DirectedMultigraph<EGroumNode, EGroumEdge> {
 
     private final Location location;
 
+    private Set<EGroumNode> meaningfullActionNodesCache = null;
+
     public AUG(String name, String filePath) {
         super(EGroumEdge.class);
         this.location = new Location(filePath, name);
@@ -33,7 +35,11 @@ public class AUG extends DirectedMultigraph<EGroumNode, EGroumEdge> {
     }
 
     public Set<EGroumNode> getMeaningfulActionNodes() {
-        return vertexSet().stream().filter(EGroumNode::isMeaningfulAction).collect(Collectors.toSet());
+        if (meaningfullActionNodesCache == null) {
+            meaningfullActionNodesCache = vertexSet().stream()
+                    .filter(EGroumNode::isMeaningfulAction).collect(Collectors.toSet());
+        }
+        return meaningfullActionNodesCache;
     }
 
     @Override

@@ -328,11 +328,11 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
     }
 
     private Collection<PatternFragment> getSingleNodeFragments(AUG target, Pattern pattern) {
-        return pattern.getMeaningfulActionNodes().stream()
+        return pattern.getMeaningfulActionNodesByUniqueness().stream()
                 .flatMap(patternNode -> target.getMeaningfulActionNodes().stream()
                         .filter(targetNode -> PatternFragment.match(patternNode, targetNode))
                         .map(targetNode -> new PatternFragment(target, pattern, patternNode, targetNode)))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     private void removeSubgraphs(List<Overlap> overlaps) {
