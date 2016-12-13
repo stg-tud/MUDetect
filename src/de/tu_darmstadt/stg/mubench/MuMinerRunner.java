@@ -5,6 +5,7 @@ import de.tu_darmstadt.stg.mubench.cli.DetectorFinding;
 import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
 import de.tu_darmstadt.stg.mubench.cli.MuBenchRunner;
 import egroum.AUGBuilder;
+import egroum.AUGConfiguration;
 import egroum.EGroumBuilder;
 import egroum.EGroumGraph;
 import mining.*;
@@ -26,7 +27,8 @@ public class MuMinerRunner extends MuBenchRunner {
 
     @Override
     protected void mineAndDetect(CodePath trainAndTargetPath, DetectorOutput output) throws Exception {
-        ArrayList<EGroumGraph> groums = new EGroumBuilder().buildBatch(trainAndTargetPath.srcPath, null);
+        EGroumBuilder builder = new EGroumBuilder(new AUGConfiguration());
+        ArrayList<EGroumGraph> groums = builder.buildBatch(trainAndTargetPath.srcPath, null);
         Miner miner = new Miner("-project-name-", new Configuration() {{ minPatternSupport = 10; }});
         miner.mine(groums);
         Queue<Anomaly> anomalies = new PriorityQueue<>((a1, a2) -> -Double.compare(a1.getScore(), a2.getScore()));

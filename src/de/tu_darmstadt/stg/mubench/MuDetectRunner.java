@@ -11,6 +11,7 @@ import de.tu_darmstadt.stg.mudetect.model.Location;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import de.tu_darmstadt.stg.mudetect.ranking.*;
 import egroum.AUGBuilder;
+import egroum.AUGConfiguration;
 import egroum.EGroumBuilder;
 import egroum.EGroumGraph;
 import mining.Configuration;
@@ -27,7 +28,8 @@ public class MuDetectRunner extends MuBenchRunner {
 
     @Override
     protected void detectOnly(CodePath patternPath, CodePath targetPath, DetectorOutput output) throws Exception {
-        run(patternPath,
+        run(new AUGConfiguration(),
+                patternPath,
                 ProvidedPatternsModel::new,
                 targetPath,
                 new EmptyOverlapsFinder(new AlternativeMappingsOverlapsFinder(new OverlapRatioPredicate(0.5))),
@@ -38,7 +40,8 @@ public class MuDetectRunner extends MuBenchRunner {
 
     @Override
     protected void mineAndDetect(CodePath trainingAndTargetPath, DetectorOutput output) throws Exception {
-        run(trainingAndTargetPath,
+        run(new AUGConfiguration(),
+                trainingAndTargetPath,
                 groums -> new MinedPatternsModel(new Configuration() {{ minPatternSupport = 10; disable_system_out = true; }}, groums),
                 trainingAndTargetPath,
                 new AlternativeMappingsOverlapsFinder(new OverlapRatioPredicate(0.5)),
@@ -51,7 +54,8 @@ public class MuDetectRunner extends MuBenchRunner {
                 output);
     }
 
-    private void run(CodePath trainingPath,
+    private void run(AUGConfiguration configuration,
+                     CodePath trainingPath,
                      Function<Collection<EGroumGraph>, Model> loadModel,
                      CodePath targetPath,
                      OverlapsFinder overlapsFinder,
@@ -60,7 +64,7 @@ public class MuDetectRunner extends MuBenchRunner {
                      DetectorOutput output) {
 
         long startTime = System.currentTimeMillis();
-        Collection<EGroumGraph> groums = buildGroums(trainingPath);
+        Collection<EGroumGraph> groums = buildGroums(trainingPath, configuration);
         long endTrainingLoadTime = System.currentTimeMillis();
         output.addRunInformation("trainingLoadTime", Long.toString(endTrainingLoadTime - startTime));
         output.addRunInformation("numberOfTrainingExamples", Integer.toString(groums.size()));
@@ -72,7 +76,7 @@ public class MuDetectRunner extends MuBenchRunner {
         output.addRunInformation("numberOfPatterns", Integer.toString(model.getPatterns().size()));
         System.out.println("Number of patterns = " + groums.size());
 
-        Collection<AUG> targets = buildAUGs(targetPath);
+        Collection<AUG> targets = buildAUGs(targetPath, configuration);
         long endDetectionLoadTime = System.currentTimeMillis();
         output.addRunInformation("detectionLoadTime", Long.toString(endDetectionLoadTime - endTrainingTime));
         output.addRunInformation("numberOfTargets", Integer.toString(targets.size()));
@@ -92,12 +96,12 @@ public class MuDetectRunner extends MuBenchRunner {
         output.addRunInformation("reportingTime", Long.toString(endReportingTime - endDetectionTime));
     }
 
-    private Collection<EGroumGraph> buildGroums(CodePath path) {
-        return new EGroumBuilder().buildBatch(path.srcPath, null);
+    private Collection<EGroumGraph> buildGroums(CodePath path, AUGConfiguration configuration) {
+        return new EGroumBuilder(configuration).buildBatch(path.srcPath, null);
     }
 
-    private Collection<AUG> buildAUGs(CodePath path) {
-        return new AUGBuilder().build(path.srcPath, null);
+    private Collection<AUG> buildAUGs(CodePath path, AUGConfiguration configuration) {
+        return new AUGBuilder(configuration).build(path.srcPath, null);
     }
 
     private void report(List<Violation> violations, DetectorOutput output) {

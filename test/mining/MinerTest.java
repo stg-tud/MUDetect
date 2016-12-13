@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.*;
 
+import egroum.AUGConfiguration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -183,11 +184,11 @@ public class MinerTest {
 	}
 	
 	private ArrayList<EGroumGraph> buildGroumsFromFile(String path, String[] classpaths) {
-		return new EGroumBuilder().build(path, classpaths);
+		return new EGroumBuilder(new AUGConfiguration()).build(path, classpaths);
 	}
 
 	private ArrayList<EGroumGraph> buildGroums(String[] sourceCodes, String[] classpaths) {
-		EGroumBuilder builder = new EGroumBuilder();
+		EGroumBuilder builder = new EGroumBuilder(new AUGConfiguration());
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		for (String sourceCode : sourceCodes) {
 			groums.addAll(builder.buildGroums(sourceCode, "", "", classpaths));

@@ -8,15 +8,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import egroum.*;
 import mining.Configuration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 
-import egroum.EGroumBuilder;
-import egroum.EGroumEdge;
-import egroum.EGroumGraph;
-import egroum.EGroumNode;
 import mcs.CISGraph;
 import mcs.MCISFinder;
 import mcs.MCSFragment;
@@ -111,11 +108,11 @@ public class MCISGFinderTest {
 	
 	@SuppressWarnings("unused")
 	private ArrayList<EGroumGraph> buildGroumsFromFile(String path) {
-		return new EGroumBuilder().build(path, new String[]{});
+		return new EGroumBuilder(new AUGConfiguration()).build(path, new String[]{});
 	}
 
 	private ArrayList<EGroumGraph> buildGroums(String... sourceCodes) {
-		EGroumBuilder builder = new EGroumBuilder();
+		EGroumBuilder builder = new EGroumBuilder(new AUGConfiguration());
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		for (String sourceCode : sourceCodes) {
 			groums.addAll(builder.buildGroums(sourceCode, "", "", null));

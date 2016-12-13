@@ -1,5 +1,6 @@
 package tests;
 
+import egroum.AUGConfiguration;
 import egroum.EGroumBuilder;
 
 public class TestBuildJars {
@@ -14,7 +15,7 @@ public class TestBuildJars {
 	}
 	
 	public static void main(String[] args) {
-		EGroumBuilder b = new EGroumBuilder();
+		EGroumBuilder b = new EGroumBuilder(new AUGConfiguration());
 		b.build("", new String[]{});
 	}
 

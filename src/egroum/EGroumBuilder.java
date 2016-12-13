@@ -35,12 +35,11 @@ import utils.FileIO;
 import utils.JavaASTUtil;
 
 public class EGroumBuilder {
-	
-	static boolean COLLAPSE_ISOMORPHIC_SUBGRAPHS = true; 
-	static boolean KEEP_TEMPORARY_DATA_NODES = true;
-	static boolean REMOVE_TEMPORARY_DATA_NODES_INCOMING_TO_CONTROL_NODES = true;
-	static boolean REMOVE_UNARY_OPERATORS = true;
-	static boolean REMOVE_CONDITIONAL_OPERATORS = true;
+    private final AUGConfiguration configuration;
+
+    public EGroumBuilder(AUGConfiguration configuration) {
+        this.configuration = configuration;
+    }
 
 	/**
 	 * @param classpaths
@@ -393,7 +392,7 @@ public class EGroumBuilder {
 	EGroumGraph buildGroum(MethodDeclaration method, String filepath, String name) {
 		String sig = JavaASTUtil.buildSignature(method);
 		System.out.println(filepath + " " + name + sig);
-		EGroumGraph g = new EGroumGraph(method, new EGroumBuildingContext(false));
+		EGroumGraph g = new EGroumGraph(method, new EGroumBuildingContext(false), configuration);
 		g.setFilePath(filepath);
 		g.setName(name + sig);
 		return g;

@@ -26,34 +26,6 @@ public class EncodeConditionsTest {
         assertThat(aug, hasSelEdge(actionNodeWithLabel("Collection.isEmpty()"), actionNodeWithLabel("List.get()")));
     }
 
-    // Negated-predicate condition: if (!l.isEmpty())
-
-    @Test
-    public void addsNodeForConditionNegatedPredicate() throws Exception {
-        AUG aug = buildAUG("void m(java.util.List l) { if (!l.isEmpty()) l.get(0); }");
-
-        assertThat(aug, hasNode(actionNodeWithLabel("Collection.isEmpty()")));
-        if (!EGroumBuilder.REMOVE_UNARY_OPERATORS)
-        	assertThat(aug, hasNode(actionNodeWithLabel("!")));
-        if (!EGroumBuilder.REMOVE_UNARY_OPERATORS)
-        	assertThat(aug, hasEdge(actionNodeWithLabel("Collection.isEmpty()"), PARAMETER, actionNodeWithLabel("!")));
-    }
-
-    @Test
-    public void addsSelEdgeFromNegationOperatorToGuardedAction() throws Exception {
-        AUG aug = buildAUG("void m(java.util.List l) { if (!l.isEmpty()) l.get(0); }");
-
-        if (!EGroumBuilder.REMOVE_UNARY_OPERATORS)
-        	assertThat(aug, hasSelEdge(actionNodeWithLabel("!"), actionNodeWithLabel("List.get()")));
-    }
-
-    @Test
-    public void addsSelEdgeFromNegatedPredicteToGuardedAction() throws Exception {
-        AUG aug = buildAUG("void m(java.util.List l) { if (!l.isEmpty()) l.get(0); }");
-
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("Collection.isEmpty()"), actionNodeWithLabel("List.get()")));
-    }
-
     // State relation condition: if (l.size() > 42)
 
     @Test

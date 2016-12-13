@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import egroum.AUGConfiguration;
 import egroum.EGroumBuilder;
 import mining.Anomaly;
 import mining.Configuration;
@@ -28,7 +29,7 @@ public class Mine {
 		String path = "T:/repos/itext/5090/original-src", name = "itext";
 //		String path = "input/Test2.java", name = "";
 //		String path = "test/input/Test_mine.java", name = "";
-		EGroumBuilder gb = new EGroumBuilder();
+		EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration());
 		Miner miner = new Miner(name, new Configuration());
 		miner.mine(new ArrayList<>(gb.buildBatch(path, null)));
 		ArrayList<Anomaly> anomalies = miner.anomalies;
