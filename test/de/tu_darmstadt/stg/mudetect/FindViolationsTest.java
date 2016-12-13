@@ -3,7 +3,6 @@ package de.tu_darmstadt.stg.mudetect;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -117,7 +116,7 @@ public class FindViolationsTest {
         assertFindsOverlaps(pattern, target, instance, violation);
     }
 
-    @Test @Ignore("We currently find two. I scheduled a discussion about a general rule to filter the 'false' one.")
+    @Test
     public void findsOnlyOneInstance() throws Exception {
         TestAUGBuilder pattern = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
                 .withDataEdge("a1", ORDER, "a2").withDataEdge("a1", ORDER, "b").withDataEdge("b", ORDER, "a2");
