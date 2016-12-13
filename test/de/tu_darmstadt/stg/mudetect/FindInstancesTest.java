@@ -1,18 +1,19 @@
 package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.mudetect.model.*;
+import de.tu_darmstadt.stg.mudetect.model.Overlap;
+import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
+import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
 import org.junit.Test;
 
 import java.util.List;
 
+import static de.tu_darmstadt.stg.mudetect.OverlapsFinderTestUtils.assertFindsOverlaps;
+import static de.tu_darmstadt.stg.mudetect.OverlapsFinderTestUtils.findOverlaps;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.instance;
-import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static egroum.EGroumDataEdge.Type.*;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static utils.CollectionUtils.only;
 
@@ -45,8 +46,9 @@ public class FindInstancesTest {
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B")
                 .withDataNode("C").withDataEdge("A", ORDER, "C");
 
-        Overlap instance = buildOverlap(target, pattern).withNodes("A", "B").withEdge("A", ORDER, "B").build();
-        assertFindsInstance(pattern, target, instance);
+        TestOverlapBuilder instance = buildOverlap(target, pattern).withNodes("A", "B").withEdge("A", ORDER, "B");
+
+        assertFindsOverlaps(pattern, target, instance);
     }
 
     @Test
@@ -55,11 +57,11 @@ public class FindInstancesTest {
         TestAUGBuilder target = buildAUG().withActionNode("A").withActionNode("B1", "B").withActionNode("B2", "B")
                 .withDataEdge("A", ORDER, "B1").withDataEdge("A", ORDER, "B2");
 
-        Overlap instance1 = buildOverlap(target, pattern).withNode("A", "A")
-                .withNode("B1", "B").withEdge("A", "A", ORDER, "B1", "B").build();
-        Overlap instance2 = buildOverlap(target, pattern).withNode("A", "A")
-                .withNode("B2", "B").withEdge("A", "A", ORDER, "B2", "B").build();
-        assertFindsInstance(pattern, target, instance1, instance2);
+        TestOverlapBuilder instance1 = buildOverlap(target, pattern).withNode("A", "A")
+                .withNode("B1", "B").withEdge("A", "A", ORDER, "B1", "B");
+        TestOverlapBuilder instance2 = buildOverlap(target, pattern).withNode("A", "A")
+                .withNode("B2", "B").withEdge("A", "A", ORDER, "B2", "B");
+        assertFindsOverlaps(pattern, target, instance1, instance2);
     }
 
     @Test
@@ -185,21 +187,6 @@ public class FindInstancesTest {
     }
 
     private void assertFindsInstance(TestAUGBuilder patternAndTargetBuilder) {
-        assertFindsInstance(patternAndTargetBuilder, patternAndTargetBuilder, instance(patternAndTargetBuilder));
-    }
-
-    private void assertFindsInstance(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder,
-                                     Overlap... expectedInstances) {
-        List<Overlap> overlaps = findOverlaps(patternBuilder, targetBuilder);
-
-        assertThat(overlaps, hasSize(expectedInstances.length));
-        assertThat(overlaps, containsInAnyOrder(expectedInstances));
-    }
-
-    private List<Overlap> findOverlaps(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder) {
-        Pattern pattern = somePattern(patternBuilder);
-        AUG target = targetBuilder.build();
-
-        return new AlternativeMappingsOverlapsFinder().findOverlaps(target, pattern);
+        assertFindsOverlaps(patternAndTargetBuilder, patternAndTargetBuilder, instance(patternAndTargetBuilder));
     }
 }

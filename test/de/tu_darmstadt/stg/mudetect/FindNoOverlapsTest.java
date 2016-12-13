@@ -1,40 +1,33 @@
 package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.model.Pattern;
+import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
 
-import java.util.List;
-
+import static de.tu_darmstadt.stg.mudetect.OverlapsFinderTestUtils.findOverlaps;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 public class FindNoOverlapsTest {
     @Test
     public void ignoresNonOverlappingTarget() throws Exception {
-        Pattern pattern = somePattern(buildAUG().withActionNode("F.foo()").build());
-        AUG target = buildAUG().withActionNode("B.bar()").build();
+        TestAUGBuilder pattern = buildAUG().withActionNode("F.foo()");
+        TestAUGBuilder target = buildAUG().withActionNode("B.bar()");
 
-        assertNoOverlaps(pattern, target);
+        assertNoOverlap(pattern, target);
     }
 
     @Test
     public void ignoresDateNodeOverlap() throws Exception {
-        Pattern pattern = somePattern(buildAUG().withDataNode("Object").build());
-        AUG target = buildAUG().withDataNode("Object").build();
+        TestAUGBuilder pattern = buildAUG().withDataNode("Object");
+        TestAUGBuilder target = buildAUG().withDataNode("Object");
 
-        assertNoOverlaps(pattern, target);
+        assertNoOverlap(pattern, target);
     }
 
-    private void assertNoOverlaps(Pattern pattern, AUG target) {
-        List<Overlap> overlaps = new AlternativeMappingsOverlapsFinder().findOverlaps(target, pattern);
-
-        assertThat(overlaps, is(empty()));
+    private void assertNoOverlap(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder) {
+        assertThat(findOverlaps(patternBuilder, targetBuilder), is(empty()));
     }
+
 }
