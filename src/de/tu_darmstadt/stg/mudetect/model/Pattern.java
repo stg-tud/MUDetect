@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Pattern extends AUG {
-    private int support;
+    private final int support;
     private final Map<EGroumNode, Multiset<String>> literals;
 
     public Pattern(int support) {
