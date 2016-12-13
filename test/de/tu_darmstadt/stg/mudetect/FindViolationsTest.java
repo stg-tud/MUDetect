@@ -117,41 +117,6 @@ public class FindViolationsTest {
         assertFindsOverlaps(pattern, target, instance, violation);
     }
 
-    @Test @Ignore("discuss whether we want to include or exclude conditions this way")
-    public void findsMissingConditionEquation() throws Exception {
-        TestAUGBuilder pattern = buildAUG().withActionNodes("List.get()", "List.size()", ">").withDataNode("int")
-                .withDataEdge("List.size()", PARAMETER, ">")
-                .withDataEdge("int", PARAMETER, ">")
-                .withDataEdge(">", CONDITION, "List.get()");
-
-        TestAUGBuilder target = buildAUG().withActionNodes("List.get()", "A.foo()", ">").withDataNode("int")
-                .withDataEdge("A.foo()", PARAMETER, ">")
-                .withDataEdge("int", PARAMETER, ">")
-                .withDataEdge(">", CONDITION, "List.get()");
-
-        TestOverlapBuilder violation = buildOverlap(target, pattern).withNode("List.get()");
-
-        assertFindsOverlaps(pattern, target, violation);
-    }
-
-    @Test @Ignore("discuss whether we want to include or exclude conditions this way")
-    public void excludesConditionWithPrimitiveOverlap() throws Exception {
-        TestAUGBuilder pattern = buildAUG().withActionNodes("A.size()", "B.size()", ">").withDataNode("int")
-                .withDataEdge("A.size()", DEFINITION, "int")
-                .withDataEdge("int", PARAMETER, ">")
-                .withDataEdge("B.size()", PARAMETER, ">");
-
-        TestAUGBuilder target = buildAUG().withActionNodes("A.size()", "C.foo()", ">").withDataNode("int")
-                .withDataEdge("A.size()", DEFINITION, "int")
-                .withDataEdge("int", PARAMETER, ">")
-                .withDataEdge("C.foo()", PARAMETER, ">");
-
-        TestOverlapBuilder violation = buildOverlap(target, pattern)
-                .withNodes("A.size()", "int").withEdge("A.size()", DEFINITION, "int");
-
-        assertFindsOverlaps(pattern, target, violation);
-    }
-
     @Test @Ignore("We currently find two. I scheduled a discussion about a general rule to filter the 'false' one.")
     public void findsOnlyOneInstance() throws Exception {
         TestAUGBuilder pattern = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
