@@ -22,15 +22,15 @@ public class EGroumTestUtils {
 	}
 
 	public static ArrayList<EGroumGraph> buildGroumsForClass(String classCode, String... classpaths) {
-		EGroumBuilder builder = new EGroumBuilder(classpaths);
-		return builder.buildGroums(classCode, "test", "test");
+		EGroumBuilder builder = new EGroumBuilder();
+		return builder.buildGroums(classCode, "test", "test", classpaths);
 	}
 
 	public static void buildAndPrintGroumsForFile(String inputPath, String name, String[] classpaths, String outputPath) {
-		EGroumBuilder gb = new EGroumBuilder(classpaths);
+		EGroumBuilder gb = new EGroumBuilder();
 		inputPath = inputPath + "/" + name;
 		String content = FileIO.readStringFromFile(inputPath);
-		ASTNode ast = JavaASTUtil.parseSource(content, inputPath, name, null);
+		ASTNode ast = JavaASTUtil.parseSource(content, inputPath, name, classpaths);
 		CompilationUnit cu = (CompilationUnit) ast;
 		TypeDeclaration type = (TypeDeclaration) cu.types().get(0);
 		for (MethodDeclaration m : type.getMethods()) {

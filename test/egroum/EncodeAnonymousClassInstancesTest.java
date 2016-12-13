@@ -44,6 +44,5 @@ public class EncodeAnonymousClassInstancesTest {
     public void addsContainsEdges() throws Exception {
         assertThat(aug, hasEdge(dataNodeWithLabel("Runnable"), CONTAINS, dataNodeWithLabel("Runnable.run()")));
         assertThat(aug, hasEdge(dataNodeWithLabel("Runnable.run()"), CONTAINS, actionNodeWithLabel("Object.<init>")));
-
     }
 }

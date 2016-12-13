@@ -42,35 +42,30 @@ public class EGroumBuilder {
 	static boolean REMOVE_UNARY_OPERATORS = true;
 	static boolean REMOVE_CONDITIONAL_OPERATORS = true;
 
-	private String[] classpaths;
-	
 	/**
-	 * Constructor
-	 * 
 	 * @param classpaths
 	 *            if you are to parse a batch of files, do not include the
 	 *            folder of their class files in the class paths because it
 	 *            is redundant and it will slow the parsing down crazily,
 	 *            i.e., hundreds of times for large project such as JDT core.
 	 */
-	public EGroumBuilder(String[] classpaths) {
-		if (classpaths != null) {
-			this.classpaths = new String[classpaths.length];
-			for (int i = 0; i < classpaths.length; i++)
-				this.classpaths[i] = classpaths[i];
-		}
-	}
-
-	public ArrayList<EGroumGraph> buildBatch(String path) {
+	public ArrayList<EGroumGraph> buildBatch(String path, String[] classpaths) {
 		buildStandardJars();
 		buildHierarchy(new File(path));
-		return buildBatchGroums(new File(path));
+		return buildBatchGroums(new File(path), classpaths);
 	}
 
-	public ArrayList<EGroumGraph> build(String path) {
+	/**
+	 * @param classpaths
+	 *            if you are to parse a batch of files, do not include the
+	 *            folder of their class files in the class paths because it
+	 *            is redundant and it will slow the parsing down crazily,
+	 *            i.e., hundreds of times for large project such as JDT core.
+	 */
+	public ArrayList<EGroumGraph> build(String path, String[] classpaths) {
 		buildStandardJars();
 		buildHierarchy(new File(path));
-		return buildGroums(new File(path));
+		return buildGroums(new File(path), classpaths);
 	}
 
 	private void buildStandardJars() {
@@ -320,7 +315,7 @@ public class EGroumBuilder {
 		return className;
 	}
 
-	private ArrayList<EGroumGraph> buildBatchGroums(File dir) {
+	private ArrayList<EGroumGraph> buildBatchGroums(File dir, String[] classpaths) {
 		ArrayList<File> files = FileIO.getPaths(dir);
 		String[] paths = new String[files.size()];
 		for (int i = 0; i < files.size(); i++) {
@@ -358,19 +353,26 @@ public class EGroumBuilder {
 		return groums;
 	}
 
-	private ArrayList<EGroumGraph> buildGroums(File file) {
+	private ArrayList<EGroumGraph> buildGroums(File file, String[] classpaths) {
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		if (file.isDirectory()) {
 			for (File sub : file.listFiles())
-				groums.addAll(buildGroums(sub));
+				groums.addAll(buildGroums(sub, classpaths));
 		} else if (file.isFile() && file.getName().endsWith(".java")) {
 			String sourceCode = FileIO.readStringFromFile(file.getAbsolutePath());
-			groums.addAll(buildGroums(sourceCode, file.getAbsolutePath(), file.getName()));
+			groums.addAll(buildGroums(sourceCode, file.getAbsolutePath(), file.getName(), classpaths));
 		}
 		return groums;
 	}
 
-	public ArrayList<EGroumGraph> buildGroums(String sourceCode, String path, String name) {
+	/**
+	 * @param classpaths
+	 *            if you are to parse a batch of files, do not include the
+	 *            folder of their class files in the class paths because it
+	 *            is redundant and it will slow the parsing down crazily,
+	 *            i.e., hundreds of times for large project such as JDT core.
+	 */
+	public ArrayList<EGroumGraph> buildGroums(String sourceCode, String path, String name, String[] classpaths) {
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(sourceCode, path, name, classpaths);
 		for (int i = 0 ; i < cu.types().size(); i++)
@@ -388,7 +390,7 @@ public class EGroumBuilder {
 		return groums;
 	}
 
-	public EGroumGraph buildGroum(MethodDeclaration method, String filepath, String name) {
+	EGroumGraph buildGroum(MethodDeclaration method, String filepath, String name) {
 		String sig = JavaASTUtil.buildSignature(method);
 		System.out.println(filepath + " " + name + sig);
 		EGroumGraph g = new EGroumGraph(method, new EGroumBuildingContext(false));

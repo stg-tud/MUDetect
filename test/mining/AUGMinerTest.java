@@ -4,6 +4,7 @@ import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import egroum.EGroumGraph;
 import egroum.EGroumNode;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -55,6 +56,32 @@ public class AUGMinerTest {
 
         Pattern pattern = first(patterns);
         assertThat(pattern.getLiterals(node("String", pattern)), contains("l1", "l2"));
+    }
+
+    @Test @Ignore("miner currently does not produce a data node in this example")
+    public void includesDataTypeInLiterals() throws Exception {
+        List<EGroumGraph> groums = buildGroumsForClass("class A {" +
+                "  void m(C c, String s) { c.foo(s); }" +
+                "  void n(C c) { c.foo(\"literal\"); }" +
+                "}");
+
+        Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = minePatterns(groums);
+
+        Pattern pattern = first(patterns);
+        assertThat(pattern.getLiterals(node("String", pattern)), contains("literal", "String"));
+    }
+
+    @Test @Ignore("miner currently does not produce a data node for variables at all")
+    public void includesVariableNodeOccurrencesInLiterals() throws Exception {
+        List<EGroumGraph> groums = buildGroumsForClass("class A {" +
+                "  void m(C c, String s) { c.foo(s); }" +
+                "  void n(C c, String s) { c.foo(s); }" +
+                "}");
+
+        Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = minePatterns(groums);
+
+        Pattern pattern = first(patterns);
+        assertThat(pattern.getLiterals(node("String", pattern)), contains("String", "String"));
     }
 
     private Set<Pattern> minePatterns(List<EGroumGraph> groums) {

@@ -111,14 +111,14 @@ public class MCISGFinderTest {
 	
 	@SuppressWarnings("unused")
 	private ArrayList<EGroumGraph> buildGroumsFromFile(String path) {
-		return new EGroumBuilder(new String[]{}).build(path);
+		return new EGroumBuilder().build(path, new String[]{});
 	}
 
 	private ArrayList<EGroumGraph> buildGroums(String... sourceCodes) {
-		EGroumBuilder builder = new EGroumBuilder(new String[]{});
+		EGroumBuilder builder = new EGroumBuilder();
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		for (String sourceCode : sourceCodes) {
-			groums.addAll(builder.buildGroums(sourceCode, "", ""));
+			groums.addAll(builder.buildGroums(sourceCode, "", "", null));
 		}
 		return groums;
 	}

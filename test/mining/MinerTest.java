@@ -183,14 +183,14 @@ public class MinerTest {
 	}
 	
 	private ArrayList<EGroumGraph> buildGroumsFromFile(String path, String[] classpaths) {
-		return new EGroumBuilder(classpaths).build(path);
+		return new EGroumBuilder().build(path, classpaths);
 	}
 
 	private ArrayList<EGroumGraph> buildGroums(String[] sourceCodes, String[] classpaths) {
-		EGroumBuilder builder = new EGroumBuilder(classpaths);
+		EGroumBuilder builder = new EGroumBuilder();
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		for (String sourceCode : sourceCodes) {
-			groums.addAll(builder.buildGroums(sourceCode, "", ""));
+			groums.addAll(builder.buildGroums(sourceCode, "", "", classpaths));
 		}
 		return groums;
 	}

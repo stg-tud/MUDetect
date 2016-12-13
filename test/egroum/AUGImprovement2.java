@@ -1,8 +1,14 @@
 package egroum;
 
+import graphics.DotGraph;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import utils.JavaASTUtil;
 
 public class AUGImprovement2 {
     @Rule
@@ -82,5 +88,26 @@ public class AUGImprovement2 {
     @Test
     public void dataNode() throws Exception {
         EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_data_node.java", null, "aug-improvement");
+    }
+
+    @Test
+    public void conditions() throws Exception {
+        printGroum("void m(java.util.List l) { if (l.isEmpty()) l.get(); }");
+        printGroum("void m(java.util.List l) { boolean b = l.isEmpty(); if (b) l.get(); }");
+        printGroum("void m(java.util.List l) { boolean b = l.isEmpty(); if (b) l.get(); if (b) l.clear(); }");
+        printGroum("void m(java.util.List l) { if (l.isEmpty() && l.size() > 5) l.get(); }");
+        printGroum("void m(java.util.List l) { if (!l.isEmpty()) l.get(); }");
+    }
+
+    @Test
+    public void negation() throws Exception {
+        printGroum("void m(java.util.List l) { if (!(l.isEmpty())) l.get(); }");
+        printGroum("void m(java.util.List l) { if (!(l.isEmpty())) {} else { l.get(); } }");
+    }
+
+    private void printGroum(String code) {
+        EGroumGraph aug = EGroumTestUtils.buildGroumForMethod(code);
+        String s = new DotGraph(aug).getGraph();
+        System.out.println(s);
     }
 }

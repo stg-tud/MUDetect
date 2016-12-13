@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class AUGBuilder {
-	public Collection<AUG> build(String sourcePath, String[] classPath) {
-        return new EGroumBuilder(classPath).buildBatch(sourcePath).stream()
+	public Collection<AUG> build(String sourcePath, String[] classpaths) {
+        return new EGroumBuilder().buildBatch(sourcePath, classpaths).stream()
                 .map(AUGBuilder::toAUG).collect(Collectors.toSet());
     }
 
