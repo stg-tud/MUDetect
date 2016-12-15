@@ -46,7 +46,21 @@ public class TestOverlapBuilder {
     }
 
     public static Overlap someOverlap(Pattern pattern, AUG target) {
-        return emptyOverlap(pattern, target);
+        HashMap<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
+        Set<EGroumNode> patternNodes = pattern.vertexSet();
+        if (patternNodes.isEmpty()) {
+            throw new IllegalArgumentException("need at least one pattern node to build some overlap");
+        }
+        Set<EGroumNode> targetNodes = target.vertexSet();
+        if (targetNodes.isEmpty()) {
+            throw new IllegalArgumentException("need at least one target node to build some overlap");
+        }
+        targetNodeByPatternNode.put(patternNodes.iterator().next(), targetNodes.iterator().next());
+        return new Overlap(pattern, target, targetNodeByPatternNode, new HashMap<>());
+    }
+
+    public static Overlap someOverlap(TestAUGBuilder patternAUGBuilder, TestAUGBuilder targetAUGBuilder) {
+        return someOverlap(somePattern(patternAUGBuilder), targetAUGBuilder.build());
     }
 
     public static TestOverlapBuilder buildOverlap(TestAUGBuilder targetAUGBuilder, TestAUGBuilder patternAUGBuilder) {
