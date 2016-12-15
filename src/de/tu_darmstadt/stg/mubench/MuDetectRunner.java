@@ -76,6 +76,8 @@ public class MuDetectRunner extends MuBenchRunner {
         output.addRunInformation("trainingTime", Long.toString(endTrainingTime - endTrainingLoadTime));
         output.addRunInformation("numberOfPatterns", Integer.toString(model.getPatterns().size()));
         System.out.println("Number of patterns = " + model.getPatterns().size());
+        output.addRunInformation("maxPatternSupport", Integer.toString(model.getMaxPatternSupport()));
+        System.out.println("Maximum pattern support = " + model.getMaxPatternSupport());
 
         Collection<AUG> targets = buildAUGs(targetPath, configuration);
         long endDetectionLoadTime = System.currentTimeMillis();
