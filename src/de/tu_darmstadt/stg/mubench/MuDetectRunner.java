@@ -75,7 +75,7 @@ public class MuDetectRunner extends MuBenchRunner {
         long endTrainingTime = System.currentTimeMillis();
         output.addRunInformation("trainingTime", Long.toString(endTrainingTime - endTrainingLoadTime));
         output.addRunInformation("numberOfPatterns", Integer.toString(model.getPatterns().size()));
-        System.out.println("Number of patterns = " + groums.size());
+        System.out.println("Number of patterns = " + model.getPatterns().size());
 
         Collection<AUG> targets = buildAUGs(targetPath, configuration);
         long endDetectionLoadTime = System.currentTimeMillis();
