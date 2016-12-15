@@ -5,11 +5,13 @@ import java.util.Objects;
 public class Violation implements Comparable<Violation> {
 
     private final Overlap overlap;
-    private float confidence;
+    private final float confidence;
+    private final String confidenceString;
 
-    public Violation(Overlap overlap, float confidence) {
+    public Violation(Overlap overlap, float confidence, String confidenceString) {
         this.overlap = overlap;
         this.confidence = confidence;
+        this.confidenceString = confidenceString;
     }
 
     public Overlap getOverlap() {
@@ -22,6 +24,10 @@ public class Violation implements Comparable<Violation> {
 
     public float getConfidence() {
         return confidence;
+    }
+
+    public String getConfidenceString() {
+        return confidenceString;
     }
 
     @Override

@@ -6,6 +6,6 @@ public class TestViolationBuilder {
     }
 
     public static Violation someViolation(Overlap violation) {
-        return new Violation(violation, 1f);
+        return new Violation(violation, 1f, "constant rank");
     }
 }

@@ -41,7 +41,9 @@ public class WeightRankingStrategyTest {
         ViolationRankingStrategy strategy = new WeightRankingStrategy(weightFunction);
         final List<Violation> violations = strategy.rankViolations(overlaps, model);
 
-        assertThat(violations, contains(new Violation(violation2, 0.7f), new Violation(violation1, 0.5f)));
+        assertThat(violations, contains(
+                new Violation(violation2, 0.7f, "constant rank"),
+                new Violation(violation1, 0.5f, "constant rank")));
     }
 
     @Test
@@ -64,7 +66,9 @@ public class WeightRankingStrategyTest {
         ViolationRankingStrategy strategy = new WeightRankingStrategy(weightFunction);
         final List<Violation> violations = strategy.rankViolations(overlaps, model);
 
-        assertThat(violations, containsInAnyOrder(new Violation(violation2, 1f), new Violation(violation1, 1f)));
+        assertThat(violations, containsInAnyOrder(
+                new Violation(violation2, 1f, "constant rank"),
+                new Violation(violation1, 1f, "constant rank")));
     }
 
 

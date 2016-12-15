@@ -118,6 +118,7 @@ public class MuDetectRunner extends MuBenchRunner {
             finding.put("target_environment_mapping", violationDotExporter.toTargetEnvironmentDotGraph(violation));
             finding.put("confidence", Float.toString(violation.getConfidence()));
             finding.put("pattern_support", Integer.toString(violation.getOverlap().getPattern().getSupport()));
+            finding.put("confidence_string", violation.getConfidenceString());
         }
     }
 }

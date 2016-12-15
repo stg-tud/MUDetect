@@ -19,4 +19,14 @@ public class AverageWeightFunction implements ViolationWeightFunction {
         }
         return weight / strategies.length;
     }
+
+    public String toString(Overlap violation, Overlaps overlaps, Model model) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("(");
+        for (ViolationWeightFunction strategy : strategies) {
+            stringBuilder.append("(").append(strategy.toString(violation, overlaps, model)).append(")");
+        }
+        stringBuilder.append(") / ").append(strategies.length);
+        return stringBuilder.toString();
+    }
 }

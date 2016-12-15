@@ -13,7 +13,7 @@ public class NoRankingStrategy implements ViolationRankingStrategy {
     @Override
     public List<Violation> rankViolations(Overlaps overlaps, Model model) {
         return overlaps.getViolations().stream()
-                .map(violation -> new Violation(violation, 1f))
+                .map(violation -> new Violation(violation, 1f, "no ranking"))
                 .collect(Collectors.toList());
     }
 }

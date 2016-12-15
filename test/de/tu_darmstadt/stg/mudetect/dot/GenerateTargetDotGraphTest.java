@@ -18,7 +18,7 @@ public class GenerateTargetDotGraphTest {
     public void includesTargetOnlyNode() throws Exception {
         Pattern pattern = somePattern(buildAUG());
         AUG target = buildAUG().withActionNode(":action:").build();
-        Violation violation = new Violation(emptyOverlap(pattern, target), 1);
+        Violation violation = new Violation(emptyOverlap(pattern, target), 1, "constant rank");
 
         assertTargetDotGraphContains(violation,
                 " [ label=\":action:\" shape=\"box\" color=\"gray\" fontcolor=\"gray\" ];");
@@ -28,7 +28,7 @@ public class GenerateTargetDotGraphTest {
     public void includesTargetOnlyEdge() throws Exception {
         Pattern pattern = somePattern(buildAUG());
         AUG target = buildAUG(":G:").withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
-        Violation violation = new Violation(emptyOverlap(pattern, target), 1);
+        Violation violation = new Violation(emptyOverlap(pattern, target), 1, "constant rank");
 
         assertTargetDotGraphContains(violation,
                 " [ label=\"order\" style=\"dotted\" color=\"gray\" fontcolor=\"gray\" ];");
@@ -37,7 +37,7 @@ public class GenerateTargetDotGraphTest {
     @Test
     public void includesMappedElements() throws Exception {
         AUG aug = buildAUG(":G:").withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
-        Violation violation = new Violation(instance(aug), 1);
+        Violation violation = new Violation(instance(aug), 1, "constant rank");
 
         assertTargetDotGraphContains(violation, " [ label=\":b:\" shape=\"box\" ");
         assertTargetDotGraphContains(violation, " [ label=\"order\" style=\"dotted\" ");

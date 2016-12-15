@@ -9,4 +9,9 @@ public class PatternSupportWeightFunction implements ViolationWeightFunction {
     public float getWeight(Overlap violation, Overlaps overlaps, Model model) {
         return violation.getPattern().getSupport() / (float) model.getMaxPatternSupport();
     }
+
+    @Override
+    public String toString(Overlap violation, Overlaps overlaps, Model model) {
+        return String.format("pattern support = %d / %d", violation.getPattern().getSupport(), model.getMaxPatternSupport());
+    }
 }

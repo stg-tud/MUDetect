@@ -39,7 +39,7 @@ public class MuDetectTest {
         final AUG target = someAUG();
         final Collection<AUG> targets = singletonList(target);
         final Overlap overlap = someOverlap(pattern, target);
-        final Violation violation = new Violation(overlap, 1);
+        final Violation violation = new Violation(overlap, 1, "constant rank");
         final ViolationRankingStrategy rankingStrategy = new NoRankingStrategy();
 
         context.checking(new Expectations() {{

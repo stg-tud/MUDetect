@@ -17,7 +17,7 @@ public class GenerateViolationDotGraphTest {
     @Test
     public void includesNodeLabel() throws Exception {
         AUG aug = buildAUG(":G:").withActionNode(":action:").build();
-        Violation violation = new Violation(instance(aug), 1);
+        Violation violation = new Violation(instance(aug), 1, "constant rank");
 
         assertDotGraphContains(violation, " [ label=\":action:\" shape=\"box\" ");
     }
@@ -25,7 +25,7 @@ public class GenerateViolationDotGraphTest {
     @Test
     public void includesEdgeLabel() throws Exception {
         AUG aug = buildAUG(":G:").withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
-        Violation violation = new Violation(instance(aug), 1);
+        Violation violation = new Violation(instance(aug), 1, "constant rank");
 
         assertDotGraphContains(violation, " [ label=\"order\" style=\"dotted\" ");
     }
@@ -33,7 +33,7 @@ public class GenerateViolationDotGraphTest {
     @Test
     public void includesMissingNode() throws Exception {
         AUG aug = buildAUG().withActionNode(":action:").build();
-        Violation violation = new Violation(emptyOverlap(aug), 1);
+        Violation violation = new Violation(emptyOverlap(aug), 1, "constant rank");
 
         assertDotGraphContains(violation, "1 [ label=\":action:\" shape=\"box\" color=\"red\" fontcolor=\"red\" ];");
     }
@@ -41,7 +41,7 @@ public class GenerateViolationDotGraphTest {
     @Test
     public void includesMissingEdge() throws Exception {
         AUG aug = buildAUG().withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
-        Violation violation = new Violation(someOverlap(aug, aug.vertexSet(), new HashSet<>()), 1);
+        Violation violation = new Violation(someOverlap(aug, aug.vertexSet(), new HashSet<>()), 1, "constant rank");
 
         assertDotGraphContains(violation, " [ label=\"order\" style=\"dotted\" color=\"red\" fontcolor=\"red\" ];");
     }
@@ -49,7 +49,7 @@ public class GenerateViolationDotGraphTest {
     @Test
     public void rendersDataNodeAsEllipse() throws Exception {
         final AUG aug = buildAUG().withDataNode("D").build();
-        final Violation violation = new Violation(instance(aug), 1);
+        final Violation violation = new Violation(instance(aug), 1, "constant rank");
 
         assertDotGraphContains(violation, "[ label=\"D\" shape=\"ellipse\" ");
     }

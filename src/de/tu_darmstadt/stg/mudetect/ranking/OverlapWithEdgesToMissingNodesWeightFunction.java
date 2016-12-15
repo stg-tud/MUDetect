@@ -16,6 +16,12 @@ public class OverlapWithEdgesToMissingNodesWeightFunction implements ViolationWe
         return 1 - (getNumberOfMissingElementsWithoutEdgesToMissingNodes(violation) / (float) pattern.getSize());
     }
 
+    @Override
+    public String toString(Overlap violation, Overlaps overlaps, Model model) {
+        Pattern pattern = violation.getPattern();
+        return String.format("overlap = 1 - (%d / %d)", getNumberOfMissingElementsWithoutEdgesToMissingNodes(violation), pattern.getSize());
+    }
+
     private int getNumberOfMissingElementsWithoutEdgesToMissingNodes(Overlap violation) {
         Set<EGroumNode> missingNodes = violation.getMissingNodes();
         Set<EGroumEdge> missingEdges = violation.getMissingEdges();
@@ -27,5 +33,4 @@ public class OverlapWithEdgesToMissingNodesWeightFunction implements ViolationWe
         }
         return numberOfMissingElementsWithoutEdgesToMissingNodes;
     }
-
 }
