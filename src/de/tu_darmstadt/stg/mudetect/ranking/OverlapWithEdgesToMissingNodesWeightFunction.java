@@ -17,7 +17,7 @@ public class OverlapWithEdgesToMissingNodesWeightFunction implements ViolationWe
     }
 
     @Override
-    public String toString(Overlap violation, Overlaps overlaps, Model model) {
+    public String getFormula(Overlap violation, Overlaps overlaps, Model model) {
         Pattern pattern = violation.getPattern();
         return String.format("overlap = 1 - (%d / %d)", getNumberOfMissingElementsWithoutEdgesToMissingNodes(violation), pattern.getSize());
     }

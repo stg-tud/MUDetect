@@ -16,7 +16,7 @@ public class AverageWeightFunctionTest {
         Overlap instance = someOverlap();
         Overlaps overlaps = new Overlaps();
         Model model = () -> asSet(instance.getPattern());
-        ViolationWeightFunction weightFunction = new AverageWeightFunction((v, os, m) -> 42f);
+        ViolationWeightFunction weightFunction = new AverageWeightFunction(w((v, os, m) -> 42f));
 
         float weight = weightFunction.getWeight(instance, overlaps, model);
 
@@ -29,11 +29,30 @@ public class AverageWeightFunctionTest {
         Overlaps overlaps = new Overlaps();
         Model model = () -> asSet(instance.getPattern());
         ViolationWeightFunction weightFunction = new AverageWeightFunction(
-                (v, os, m) -> 2f,
-                (v, os, m) -> 4f);
+                w((v, os, m) -> 2f),
+                w((v, os, m) -> 4f));
 
         float weight = weightFunction.getWeight(instance, overlaps, model);
 
         assertThat(weight, is(3f));
+    }
+
+    private static ViolationWeightFunction w(Function<Overlap, Overlaps, Model, Float> weight) {
+        return new ViolationWeightFunction() {
+            @Override
+            public float getWeight(Overlap violation, Overlaps overlaps, Model model) {
+                return weight.apply(violation, overlaps, model);
+            }
+
+            @Override
+            public String getFormula(Overlap violation, Overlaps overlaps, Model model) {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
+
+    @FunctionalInterface
+    interface Function<A, B, C, R> {
+        public R apply(A a, B b, C c);
     }
 }

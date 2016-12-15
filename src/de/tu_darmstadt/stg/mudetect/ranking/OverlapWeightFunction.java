@@ -14,7 +14,7 @@ public class OverlapWeightFunction implements ViolationWeightFunction {
         return violationSize / (float) patternSize;
     }
 
-    public String toString(Overlap violation, Overlaps overlaps, Model model) {
+    public String getFormula(Overlap violation, Overlaps overlaps, Model model) {
         int violationSize = violation.getNodeSize() + violation.getEdgeSize();
         Pattern pattern = violation.getPattern();
         int patternSize = pattern.getNodeSize() + pattern.getEdgeSize();

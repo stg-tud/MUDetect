@@ -13,7 +13,7 @@ public class PatternSameSizeSupportWeightFunction implements ViolationWeightFunc
     }
 
     @Override
-    public String toString(Overlap violation, Overlaps overlaps, Model model) {
+    public String getFormula(Overlap violation, Overlaps overlaps, Model model) {
         Pattern pattern = violation.getPattern();
         return String.format("pattern support = %d / %d", pattern.getSupport(), model.getMaxPatternSupport(pattern.getNodeSize()));
     }

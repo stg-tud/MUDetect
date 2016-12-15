@@ -7,5 +7,5 @@ import de.tu_darmstadt.stg.mudetect.model.Overlaps;
 public interface ViolationWeightFunction {
     float getWeight(Overlap violation, Overlaps overlaps, Model model);
 
-    String toString(Overlap violation, Overlaps overlaps, Model model);
+    String getFormula(Overlap violation, Overlaps overlaps, Model model);
 }
