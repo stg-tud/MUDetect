@@ -26,7 +26,7 @@ public class FilterOverlapsTest {
     @Test
     public void keepsInstance() throws Exception {
         AUG target = someAUG();
-        Pattern pattern = somePattern();
+        Pattern pattern = somePattern(target);
         @SuppressWarnings("unchecked")
         Predicate<Overlap> overlapPredicate = context.mock(Predicate.class);
 
@@ -43,7 +43,7 @@ public class FilterOverlapsTest {
     @Test
     public void filtersInstance() throws Exception {
         AUG target = someAUG();
-        Pattern pattern = somePattern();
+        Pattern pattern = somePattern(target);
         @SuppressWarnings("unchecked")
         Predicate<Overlap> overlapPredicate = context.mock(Predicate.class);
 

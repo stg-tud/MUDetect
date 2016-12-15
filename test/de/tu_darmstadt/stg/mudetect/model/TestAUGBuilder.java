@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class TestAUGBuilder {
+    private static int randomAUGCount = 0;
+
     private final Map<String, EGroumNode> nodeMap;
     private final Set<EGroumEdge> edges;
     private final String name;
@@ -27,7 +29,7 @@ public class TestAUGBuilder {
     }
 
     public static AUG someAUG() {
-        return buildAUG().withActionNode(":dummy:").build();
+        return buildAUG().withActionNode(":dummy:" + (++randomAUGCount)).build();
     }
 
     public static TestAUGBuilder buildAUG() {
