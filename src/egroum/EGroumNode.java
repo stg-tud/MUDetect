@@ -274,6 +274,28 @@ public abstract class EGroumNode {
 		return defs;
 	}
 
+	public ArrayList<EGroumNode> getInitActions() {
+		ArrayList<EGroumNode> initActions = new ArrayList<>();
+		ArrayList<EGroumNode> defs = getDefinitions();
+		for (EGroumNode def : defs) {
+			for (EGroumEdge e1 : def.inEdges) {
+				if (e1 instanceof EGroumDataEdge && ((EGroumDataEdge) e1).type == Type.DEFINITION) {
+					for (EGroumEdge e2 : e1.source.inEdges) {
+						if (e2 instanceof EGroumDataEdge && ((EGroumDataEdge) e2).type == Type.PARAMETER) {
+							if (e2.source instanceof EGroumActionNode)
+								initActions.add(e2.source);
+							else
+								initActions.addAll(e2.source.getInitActions());
+							break;
+						}
+					}
+					break;
+				}
+			}
+		}
+		return initActions;
+	}
+
 	public HashSet<EGroumNode> getCatchClauses() {
 		HashSet<EGroumNode> ccs = new HashSet<>();
 		for (EGroumEdge e : inEdges) {

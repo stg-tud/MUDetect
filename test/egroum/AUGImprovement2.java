@@ -1,18 +1,19 @@
 package egroum;
 
 import graphics.DotGraph;
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-import utils.JavaASTUtil;
 
 public class AUGImprovement2 {
     @Rule
     public TestName name = new TestName();
+
+    @Test
+    public void foreach() throws Exception {
+        // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
+    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_foreach.java", null, "aug-improvement");
+    }
 
     @Test
     public void removeConditionalOps() throws Exception {

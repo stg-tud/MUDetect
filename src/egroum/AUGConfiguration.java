@@ -40,4 +40,9 @@ public class AUGConfiguration {
      * combined.
      */
     public boolean encodeConditionalOperators = false;
+    
+    /**
+     * 
+     */
+    public boolean groum = true;
 }

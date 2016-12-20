@@ -139,6 +139,10 @@ public class EGroumGraph implements Serializable {
 		deleteUnreachableNodes();
 		deleteControlNodes();
 		deleteUnusedDataNodes();
+		if (configuration.groum) {
+			deleteDataNodes();
+			deleteNonCoreActionNodes();
+		}
 		cleanUp();
 	}
 
@@ -2202,21 +2206,10 @@ public class EGroumGraph implements Serializable {
 					i++;
 					if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.CONDITION) {
 						if (e.source instanceof EGroumDataNode) {
-							ArrayList<EGroumNode> defs = e.source.getDefinitions();
-							for (EGroumNode def : defs) {
-								for (EGroumEdge e1 : def.inEdges) {
-									if (e1 instanceof EGroumDataEdge && ((EGroumDataEdge) e1).type == Type.DEFINITION) {
-										for (EGroumEdge e2 : e1.source.inEdges) {
-											if (e2 instanceof EGroumDataEdge && ((EGroumDataEdge) e2).type == Type.PARAMETER) {
-												if (!node.hasInNode(e2.source))
-													new EGroumDataEdge(e2.source, node, Type.CONDITION, e.label);
-												break;
-											}
-										}
-										break;
-									}
-								}
-							}
+							ArrayList<EGroumNode> inits = e.source.getInitActions();
+							for (EGroumNode init : inits)
+								if (!node.hasInNode(init))
+									new EGroumDataEdge(init, node, Type.CONDITION, e.label);
 							delete(e.source);
 							i--;
 						}
@@ -2361,6 +2354,18 @@ public class EGroumGraph implements Serializable {
 		clearDefStore();
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
 			node.astNode = null;
+	}
+
+	private void deleteNonCoreActionNodes() {
+		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
+			if (node.astNodeType != ASTNode.METHOD_INVOCATION)
+				delete(node);
+	}
+
+	private void deleteDataNodes() {
+		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
+			if (node instanceof EGroumDataNode)
+				delete(node);
 	}
 
 	public void deleteControlNodes() {
