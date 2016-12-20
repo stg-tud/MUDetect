@@ -44,5 +44,5 @@ public class AUGConfiguration {
     /**
      * 
      */
-    public boolean groum = true;
+    public boolean groum = false;
 }
