@@ -19,7 +19,7 @@ class Test_keep_data {
 
 	public void after(String s) {
 		StringBuffer sb = new StringBuffer();
-		sb.append(s);
+		sb.append(s.length());
 		sb.toString();
 	}
 	
