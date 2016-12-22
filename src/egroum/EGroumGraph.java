@@ -2077,6 +2077,9 @@ public class EGroumGraph implements Serializable {
 		for (EGroumNode node : nodes)
 			if (!doneNodes.contains(node))
 				node.buildDataClosure(doneNodes);
+		for (EGroumNode node : nodes)
+			if (node instanceof EGroumControlNode && node.astNodeType != ASTNode.CATCH_CLAUSE && node.astNodeType != ASTNode.SYNCHRONIZED_STATEMENT)
+				((EGroumControlNode) node).buildConditionClosure();
 		buildSequentialClosure();
 		doneNodes.clear();
 		pruneTemporaryDataDependence();

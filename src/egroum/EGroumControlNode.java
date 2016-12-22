@@ -61,26 +61,29 @@ public class EGroumControlNode extends EGroumNode {
 							new EGroumDataEdge(e1.source, this, ((EGroumDataEdge) e1).type, ((EGroumDataEdge) e1).label);
 					}
 				}
-			} else if (this.astNodeType != ASTNode.CATCH_CLAUSE)
-				buildConditionClosure((EGroumDataEdge) e);
+			}
 		}
 		doneNodes.add(this);
 	}
 
-	private void buildConditionClosure(EGroumDataEdge edge) {
-		if (edge.type != Type.CONDITION)
-			return;
+	void buildConditionClosure() {
 		HashSet<EGroumNode> conditionNodes = new HashSet<>();
-		LinkedList<EGroumNode> nodes = new LinkedList<>();
-		nodes.add(edge.source);
-		while (!nodes.isEmpty()) {
-			EGroumNode node = nodes.removeFirst();
-			conditionNodes.add(node);
-			for (EGroumEdge e : node.inEdges) {
-				if (e instanceof EGroumDataEdge && !conditionNodes.contains(e.source)) {
-					EGroumDataEdge de = (EGroumDataEdge) e;
-					if (de.type == Type.PARAMETER || de.type == Type.QUALIFIER || de.type == Type.RECEIVER)
-						nodes.add(de.source);
+		for (EGroumEdge edge : inEdges) {
+			if (!(edge instanceof EGroumDataEdge))
+				continue; 
+			if (((EGroumDataEdge) edge).type != Type.CONDITION)
+				continue;
+			LinkedList<EGroumNode> nodes = new LinkedList<>();
+			nodes.add(edge.source);
+			while (!nodes.isEmpty()) {
+				EGroumNode node = nodes.removeFirst();
+				conditionNodes.add(node);
+				for (EGroumEdge e : node.inEdges) {
+					if (e instanceof EGroumDataEdge && !conditionNodes.contains(e.source)) {
+						EGroumDataEdge de = (EGroumDataEdge) e;
+						if (de.type == Type.PARAMETER || de.type == Type.QUALIFIER || de.type == Type.RECEIVER)
+							nodes.add(de.source);
+					}
 				}
 			}
 		}
