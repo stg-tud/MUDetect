@@ -581,7 +581,11 @@ public class EGroumGraph implements Serializable {
 			CatchClause cc = (CatchClause) astNode.catchClauses().get(i);
 			gs[i] = buildPDG(control, branch, cc, triedMethods);
 		}
+		HashSet<EGroumNode> sinks = new HashSet<>(pdg.statementSinks);
 		pdg.mergeBranches(gs);
+		for (EGroumNode sink : sinks)
+			if (sink.outEdges.isEmpty())
+				pdg.statementSinks.add(sink);
 		if (astNode.getFinally() != null) {
 			EGroumControlNode fn = new EGroumControlNode(control, branch, astNode.getFinally(), astNode.getFinally().getNodeType());
 			EGroumGraph fg = new EGroumGraph(context, fn, configuration);
