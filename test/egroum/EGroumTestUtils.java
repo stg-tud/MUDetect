@@ -36,7 +36,27 @@ public class EGroumTestUtils {
 	}
 
 	public static void buildAndPrintGroumsForFile(String inputPath, String name, String[] classpaths, String outputPath) {
-		EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration());
+		EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration(){{groum = true;}});
+		inputPath = inputPath + "/" + name;
+		String content = FileIO.readStringFromFile(inputPath);
+		ASTNode ast = JavaASTUtil.parseSource(content, inputPath, name, classpaths);
+		CompilationUnit cu = (CompilationUnit) ast;
+		TypeDeclaration type = (TypeDeclaration) cu.types().get(0);
+		for (MethodDeclaration m : type.getMethods()) {
+			EGroumGraph g = gb.buildGroum(m, inputPath, type.getName().getIdentifier() + ".");
+			String s = m.toString();
+			s = s.replace("\n", "\\l");
+			s = s.replace("\t", "    ");
+			s = s.replace("\"", "\\\"");
+			s += "\\l";
+			s = "0 [label=\"" + s + "\"" + " shape=box style=dotted]";
+//			System.out.println(s);
+			g.toGraphics(s, outputPath);
+		}
+	}
+
+	public static void buildAndPrintGroumsForFile(String inputPath, String name, String[] classpaths, String outputPath, AUGConfiguration config) {
+		EGroumBuilder gb = new EGroumBuilder(config);
 		inputPath = inputPath + "/" + name;
 		String content = FileIO.readStringFromFile(inputPath);
 		ASTNode ast = JavaASTUtil.parseSource(content, inputPath, name, classpaths);

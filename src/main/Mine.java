@@ -29,7 +29,7 @@ public class Mine {
 		String path = "T:/repos/itext/5090/original-src", name = "itext";
 //		String path = "input/Test2.java", name = "";
 //		String path = "test/input/Test_mine.java", name = "";
-		EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration());
+		EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration(){{groum = true;}});
 		Miner miner = new Miner(name, new Configuration());
 		miner.mine(new ArrayList<>(gb.buildBatch(path, null)));
 		ArrayList<Anomaly> anomalies = miner.anomalies;
