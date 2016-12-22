@@ -412,9 +412,12 @@ public abstract class EGroumNode {
 					if (!doneNodes.contains(e.source))
 						e.source.buildDataClosure(doneNodes);
 					for (EGroumEdge e1 : e.source.inEdges) {
-						if (e1 instanceof EGroumDataEdge && e1.source.isCoreAction() && ((EGroumDataEdge) e1).type == Type.PARAMETER)
-							if (!this.hasInEdge(e1))
-								new EGroumDataEdge(e1.source, this, de.type, de.label);
+						if (e1 instanceof EGroumDataEdge) {
+							Type type = ((EGroumDataEdge) e1).type;
+							if (e1.source.isCoreAction() && (type == Type.PARAMETER || type == Type.RECEIVER))
+								if (!this.hasInEdge(e1))
+									new EGroumDataEdge(e1.source, this, de.type, de.label);
+						}
 					}
 					continue;
 				}
@@ -429,9 +432,13 @@ public abstract class EGroumNode {
 						if (e1 instanceof EGroumDataEdge && ((EGroumDataEdge) e1).type == Type.DEFINITION) {
 							if (!doneNodes.contains(e1.source))
 								e1.source.buildDataClosure(doneNodes);
-							for (EGroumEdge e2 : e1.source.inEdges)
-								if (!e2.source.isLiteral() && e2 instanceof EGroumDataEdge && ((EGroumDataEdge) e2).getType() == Type.PARAMETER && !this.hasInEdge(e2))
-									new EGroumDataEdge(e2.source, this, de.type, de.label);
+							for (EGroumEdge e2 : e1.source.inEdges) {
+								if (e2 instanceof EGroumDataEdge) {
+									Type type = ((EGroumDataEdge) e2).type;
+									if (!e2.source.isLiteral() && (type == Type.PARAMETER || type == Type.RECEIVER) && !this.hasInEdge(e2))
+										new EGroumDataEdge(e2.source, this, de.type, de.label);
+								}
+							}
 							break;
 						}
 					}
