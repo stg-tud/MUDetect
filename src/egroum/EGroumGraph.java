@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.ArrayAccess;
 import org.eclipse.jdt.core.dom.ArrayCreation;
@@ -50,6 +51,7 @@ import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.StringLiteral;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperFieldAccess;
@@ -93,6 +95,8 @@ public class EGroumGraph implements Serializable {
 	
 	public EGroumGraph(MethodDeclaration md, EGroumBuildingContext context, AUGConfiguration configuration) {
 		this(context, configuration);
+		if (isTooSmall(md))
+			return;
 		context.addScope();
 		context.setMethod(md);
 		entryNode = new EGroumEntryNode(md, ASTNode.METHOD_DECLARATION, "START");
@@ -142,8 +146,23 @@ public class EGroumGraph implements Serializable {
 		if (configuration.groum) {
 			deleteDataNodes();
 			deleteNonCoreActionNodes();
+			renameEdges();
 		}
 		cleanUp();
+	}
+	
+	private int count = 0;
+	private boolean isTooSmall(MethodDeclaration md) {
+		md.accept(new ASTVisitor(false) {
+			@Override
+			public boolean preVisit2(ASTNode node) {
+				if (node instanceof Statement) {
+					count++;
+				}
+				return true;
+			}
+		});
+		return count < configuration.minStatements;
 	}
 
 	private void collapseIsomorphicSubgraphs() {
@@ -550,17 +569,17 @@ public class EGroumGraph implements Serializable {
 		ArrayList<EGroumActionNode> triedMethods = context.popTry();
 		if (!resourceNames.isEmpty()) {
 			HashMap<String, EGroumActionNode> closeNodes = new HashMap<>();
-			EGroumGraph[] cgs = new EGroumGraph[resourceNames.size()];
+			EGroumGraph[] rgs = new EGroumGraph[resourceNames.size()];
 			int i = 0;
 			for (String rn : resourceNames) {
 				EGroumGraph g = buildPDG(control, branch, astNode.getAST().newSimpleName(rn));
 				EGroumActionNode close = new EGroumActionNode(control, branch, null, ASTNode.METHOD_INVOCATION, null, "AutoCloseable.close()", "close");
 				g.mergeSequentialData(close, Type.RECEIVER);
 				closeNodes.put(rn, close);
-				cgs[i++] = g;
+				rgs[i++] = g;
 			}
 			EGroumGraph cg = new EGroumGraph(context, configuration);
-			cg.mergeParallel(cgs);
+			cg.mergeParallel(rgs);
 			bg.mergeSequential(cg);
 			for (EGroumActionNode m : triedMethods) {
 				ASTNode mn = m.getAstNode();
@@ -587,6 +606,7 @@ public class EGroumGraph implements Serializable {
 			if (sink.outEdges.isEmpty())
 				pdg.statementSinks.add(sink);
 		if (astNode.getFinally() != null) {
+			// TODO append finally block to all possible throw points
 			EGroumControlNode fn = new EGroumControlNode(control, branch, astNode.getFinally(), astNode.getFinally().getNodeType());
 			EGroumGraph fg = new EGroumGraph(context, fn, configuration);
 			fg.mergeSequential(buildPDG(fn, "", astNode.getFinally()));
@@ -882,9 +902,13 @@ public class EGroumGraph implements Serializable {
 				return new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS, node.key + "." + name,
 						type + "." + name, astNode.getFullyQualifiedName(), true, false), configuration);
 			}
+		if (astNode.resolveTypeBinding() != null)
+			type = astNode.resolveTypeBinding().getTypeDeclaration().getName();
+		else
+			type = type + "." + name;
 		pdg.mergeSequentialData(
 				new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, node.key + "." + name,
-						type + "." + name, astNode.getFullyQualifiedName(), true, false),
+						type, astNode.getFullyQualifiedName(), true, false),
 				Type.QUALIFIER);
 		return pdg;
 	}
@@ -2361,6 +2385,16 @@ public class EGroumGraph implements Serializable {
 		clearDefStore();
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
 			node.astNode = null;
+	}
+
+	private void renameEdges() {
+		for (EGroumNode node : nodes) {
+			for (EGroumEdge e : node.inEdges) {
+				EGroumDataEdge de = (EGroumDataEdge) e;
+				if (de.type != Type.CONDITION)
+					de.type = Type.ORDER;
+			}
+		}
 	}
 
 	private void deleteNonCoreActionNodes() {

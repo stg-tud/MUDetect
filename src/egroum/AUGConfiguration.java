@@ -45,4 +45,9 @@ public class AUGConfiguration {
      * 
      */
     public boolean groum = false;
+    
+    /**
+     * Threshold for the minimum number of statements in a method to build AUG
+     */
+    public int minStatements = 3;
 }
