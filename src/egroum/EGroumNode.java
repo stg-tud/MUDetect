@@ -375,6 +375,8 @@ public abstract class EGroumNode {
 	}
 
 	public boolean isCoreAction() {
+		if (this instanceof EGroumActionNode && ((EGroumActionNode) this).name.startsWith("get"))
+			return false;
 		return isCoreAction(astNodeType);
 	}
 
