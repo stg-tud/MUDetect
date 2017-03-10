@@ -138,6 +138,7 @@ public class EGroumGraph implements Serializable {
 		if (configuration.collapseIsomorphicSubgraphs)
 			collapseIsomorphicSubgraphs();
 		buildClosure();
+		removeThisMembers();
 		deleteReferences();
 		deleteAssignmentNodes();
 		deleteUnreachableNodes();
@@ -150,7 +151,7 @@ public class EGroumGraph implements Serializable {
 		}
 		cleanUp();
 	}
-	
+
 	private int count = 0;
 	private boolean isTooSmall(MethodDeclaration md) {
 		md.accept(new ASTVisitor(false) {
@@ -2224,6 +2225,21 @@ public class EGroumGraph implements Serializable {
 				delNodes.add(node);
 				for (EGroumNode dn : delNodes)
 					delete(dn);
+			}
+		}
+	}
+	
+	private void removeThisMembers() {
+		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
+			if (node instanceof EGroumDataNode) {
+				String name = ((EGroumDataNode) node).dataName;
+				if (name.equals("this") || name.equals("super")) {
+					for (EGroumEdge e : new HashSet<EGroumEdge>(node.outEdges)) {
+						if (e instanceof EGroumDataEdge && (((EGroumDataEdge) e).type == Type.QUALIFIER || ((EGroumDataEdge) e).type == Type.RECEIVER)) {
+							delete(e.target);
+						}
+					}
+				}
 			}
 		}
 	}
