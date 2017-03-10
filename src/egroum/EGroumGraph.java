@@ -728,13 +728,39 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			SuperMethodInvocation astNode) {
-		EGroumGraph[] pgs = new EGroumGraph[astNode.arguments().size()];
+		EGroumGraph[] pgs = new EGroumGraph[astNode.arguments().size() + 1];
+		String type = context.getSuperType();
+		HashSet<String> exceptions = null;
+		if (astNode.resolveMethodBinding() != null) {
+			IMethodBinding mb = astNode.resolveMethodBinding().getMethodDeclaration();
+			String sig = JavaASTUtil.buildSignature(mb);
+			ITypeBinding tb = getBase(mb.getDeclaringClass().getTypeDeclaration(), mb, sig);
+			type = tb.getName();
+			exceptions = new HashSet<>();
+			for (ITypeBinding etb : mb.getExceptionTypes())
+				exceptions.add(etb.getName());
+		}
+		if (exceptions == null)
+			exceptions = EGroumBuildingContext.getExceptions(type, astNode.getName().getIdentifier() + "(" + astNode.arguments().size() + ")");
+		pgs[0] = new EGroumGraph(context, new EGroumDataNode(
+				null, ASTNode.THIS_EXPRESSION, "this",
+				type, "super"), configuration);
 		for (int i = 0; i < astNode.arguments().size(); i++)
-			pgs[i] = buildArgumentPDG(control, branch,
+			pgs[i+1] = buildArgumentPDG(control, branch,
 					(Expression) astNode.arguments().get(i));
-		EGroumGraph pdg = new EGroumGraph(context, configuration);
-		if (pgs.length > 0)
+		EGroumActionNode node = new EGroumActionNode(control, branch,
+				astNode, astNode.getNodeType(), null, type + "." + astNode.getName().getIdentifier() + "()", 
+				astNode.getName().getIdentifier(), exceptions);
+		context.addMethodTry(node);
+		EGroumGraph pdg = null;
+		pgs[0].mergeSequentialData(node, Type.RECEIVER);
+		if (pgs.length > 0) {
+			for (int i = 1; i < pgs.length; i++)
+				pgs[i].mergeSequentialData(node, Type.PARAMETER);
+			pdg = new EGroumGraph(context, configuration);
 			pdg.mergeParallel(pgs);
+		} else
+			pdg = new EGroumGraph(context, node, configuration);
 		// skip astNode.getQualifier()
 		return pdg;
 	}
@@ -746,9 +772,29 @@ public class EGroumGraph implements Serializable {
 			pgs[i] = buildArgumentPDG(control, branch,
 					(Expression) astNode.arguments().get(i));
 		}
-		EGroumGraph pdg = new EGroumGraph(context, configuration);
-		if (pgs.length > 0)
+		String type = context.getSuperType();
+		HashSet<String> exceptions = null;
+		if (astNode.resolveConstructorBinding() != null) {
+			IMethodBinding mb = astNode.resolveConstructorBinding();
+			String sig = JavaASTUtil.buildSignature(mb);
+			ITypeBinding tb = getBase(mb.getDeclaringClass().getTypeDeclaration(), mb, sig);
+			type = tb.getName();
+			exceptions = new HashSet<>();
+			for (ITypeBinding etb : mb.getExceptionTypes())
+				exceptions.add(etb.getName());
+		}
+		if (exceptions == null)
+			exceptions = EGroumBuildingContext.getExceptions(type, "<init>" + "(" + astNode.arguments().size() + ")");
+		EGroumActionNode node = new EGroumActionNode(control, branch,
+				astNode, astNode.getNodeType(), null, type + "()", "<init>", exceptions);
+		EGroumGraph pdg = null;
+		if (pgs.length > 0) {
+			for (EGroumGraph pg : pgs)
+				pg.mergeSequentialData(node, Type.PARAMETER);
+			pdg = new EGroumGraph(context, configuration);
 			pdg.mergeParallel(pgs);
+		} else
+			pdg = new EGroumGraph(context, node, configuration);
 		// skip astNode.getExpression()
 		return pdg;
 	}
@@ -963,7 +1009,9 @@ public class EGroumGraph implements Serializable {
 			pgs[0] = buildArgumentPDG(control, branch,
 					astNode.getExpression());
 		else
-			return new EGroumGraph(context, configuration);
+			pgs[0] = new EGroumGraph(context, new EGroumDataNode(
+					null, ASTNode.THIS_EXPRESSION, "this",
+					context.getType(), "this"), configuration);
 		for (int i = 0; i < astNode.arguments().size(); i++)
 			pgs[i + 1] = buildArgumentPDG(control, branch,
 					(Expression) astNode.arguments().get(i));
@@ -1224,9 +1272,29 @@ public class EGroumGraph implements Serializable {
 					(Expression) astNode.arguments().get(i));
 			numOfParameters++;
 		}
-		EGroumGraph pdg = new EGroumGraph(context, configuration);
-		if (pgs.length > 0)
+		String type = context.getType();
+		HashSet<String> exceptions = null;
+		if (astNode.resolveConstructorBinding() != null) {
+			IMethodBinding mb = astNode.resolveConstructorBinding();
+			String sig = JavaASTUtil.buildSignature(mb);
+			ITypeBinding tb = getBase(mb.getDeclaringClass().getTypeDeclaration(), mb, sig);
+			type = tb.getName();
+			exceptions = new HashSet<>();
+			for (ITypeBinding etb : mb.getExceptionTypes())
+				exceptions.add(etb.getName());
+		}
+		if (exceptions == null)
+			exceptions = EGroumBuildingContext.getExceptions(type, "<init>" + "(" + astNode.arguments().size() + ")");
+		EGroumActionNode node = new EGroumActionNode(control, branch,
+				astNode, astNode.getNodeType(), null, type + "()", "<init>", exceptions);
+		EGroumGraph pdg = null;
+		if (pgs.length > 0) {
+			for (EGroumGraph pg : pgs)
+				pg.mergeSequentialData(node, Type.PARAMETER);
+			pdg = new EGroumGraph(context, configuration);
 			pdg.mergeParallel(pgs);
+		} else
+			pdg = new EGroumGraph(context, node, configuration);
 		return pdg;
 	}
 
@@ -1746,7 +1814,28 @@ public class EGroumGraph implements Serializable {
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			FieldAccess astNode) {
 		if (astNode.getExpression() instanceof ThisExpression) {
-			return new EGroumGraph(context, configuration);
+			String name = astNode.getName().getIdentifier();
+			String type = null;
+			if (astNode.resolveTypeBinding() != null)
+				type = astNode.resolveTypeBinding().getTypeDeclaration().getName();
+			if (type == null)
+				type = context.getFieldType(astNode.getName());
+			if (type != null) {
+				EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
+						null, ASTNode.THIS_EXPRESSION, "this",
+						context.getType(), "this"), configuration);
+				pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME,
+						"this." + name, type, name, true,
+						false), Type.QUALIFIER);
+				return pdg;
+			}
+			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
+					null, ASTNode.THIS_EXPRESSION, "this",
+					context.getType(), "this"), configuration);
+			pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME,
+					"this." + name, "UNKNOWN", name, true,
+					false), Type.QUALIFIER);
+			return pdg;
 		} else {
 			EGroumGraph pdg = buildArgumentPDG(control, branch,
 					astNode.getExpression());
@@ -1764,12 +1853,39 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			SuperFieldAccess astNode) {
-		return new EGroumGraph(context, configuration);
+		String name = astNode.getName().getIdentifier();
+		String type = null;
+		if (astNode.resolveTypeBinding() != null)
+			type = astNode.resolveTypeBinding().getTypeDeclaration().getName();
+		if (type == null)
+			type = context.getFieldType(astNode.getName());
+		if (type != null) {
+			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
+					null, ASTNode.THIS_EXPRESSION, "this",
+					context.getSuperType(), "super"), configuration);
+			pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME,
+					"this." + name, type, name, true,
+					false), Type.QUALIFIER);
+			return pdg;
+		}
+		EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
+				null, ASTNode.THIS_EXPRESSION, "this", context.getSuperType(), "super"), configuration);
+		pdg.mergeSequentialData(
+				new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, astNode.toString(),
+						context.getSuperType() + "." + astNode.getName().getIdentifier(),
+						astNode.getName().getIdentifier(), true, false), Type.QUALIFIER);
+		return pdg;
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			ThisExpression astNode) {
-		return new EGroumGraph(context, configuration);
+		String type = context.getType();
+		if (astNode.resolveTypeBinding() != null)
+			type = astNode.resolveTypeBinding().getTypeDeclaration().getName();
+		EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
+				astNode, astNode.getNodeType(), "this", type,
+				"this"), configuration);
+		return pdg;
 	}
 
 	private void mergeSequential(EGroumGraph pdg) {
