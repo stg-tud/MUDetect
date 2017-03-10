@@ -145,7 +145,7 @@ public class MinerTest {
 		List<Pattern> patterns = mine(groums, null);
 
 		print(patterns);
-		assertThat(patterns.size(), is(2));
+		assertThat(patterns.size(), is(1));
 	}
 	
 	@Test
