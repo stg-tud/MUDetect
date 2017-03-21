@@ -54,7 +54,7 @@ public class Overlap {
         return getMappedTargetNodes().size();
     }
 
-    private Set<EGroumEdge> getMappedTargetEdges() {
+    public Set<EGroumEdge> getMappedTargetEdges() {
         return this.targetOverlap.edgeSet();
     }
 

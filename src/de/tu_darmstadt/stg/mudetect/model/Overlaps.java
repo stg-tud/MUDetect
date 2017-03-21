@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 public class Overlaps {
     private Map<AUG, Set<Overlap>> instancesByTarget = new HashMap<>();
     private Map<Pattern, Set<Overlap>> violationsByPattern = new HashMap<>();
+    private Map<AUG, Set<Overlap>> violationsByTarget = new HashMap<>();
     private Set<Overlap> violations = new HashSet<>();
 
     public Set<Overlap> getInstancesInSameTarget(Overlap overlap) {
@@ -16,12 +17,17 @@ public class Overlaps {
         return violationsByPattern.get(violation.getPattern());
     }
 
+    public Set<Overlap> getViolationsInSameTarget(Overlap overlap) {
+        return violationsByTarget.get(overlap.getTarget());
+    }
+
     public Set<Overlap> getViolations() {
         return violations;
     }
 
     public void addViolation(Overlap violation) {
         add(violationsByPattern, violation.getPattern(), violation);
+        add(violationsByTarget, violation.getTarget(), violation);
         violations.add(violation);
     }
 

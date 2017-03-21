@@ -1,6 +1,8 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.*;
+import egroum.EGroumEdge;
+import egroum.EGroumNode;
 
 import java.util.*;
 
@@ -27,7 +29,27 @@ public class MuDetect {
     public List<Violation> findViolations(Collection<AUG> targets) {
         final Overlaps overlaps = findOverlaps(targets, model.getPatterns());
         overlaps.removeViolationIf(violation -> isAlternativePatternInstance(violation, overlaps));
-        return rankingStrategy.rankViolations(overlaps, model);
+        List<Violation> violations = rankingStrategy.rankViolations(overlaps, model);
+        filterAlternativeViolations(violations);
+        return violations;
+    }
+
+    private void filterAlternativeViolations(List<Violation> violations) {
+        Set<EGroumNode> missingNodes = new HashSet<>();
+        Set<EGroumEdge> missingEdges = new HashSet<>();
+        Iterator<Violation> iterator = violations.iterator();
+        while (iterator.hasNext()) {
+            Overlap violation = iterator.next().getOverlap();
+            Set<EGroumNode> mappedTargetNodes = violation.getMappedTargetNodes();
+            Set<EGroumEdge> mappedTargetEdges = violation.getMappedTargetEdges();
+            if (mappedTargetNodes.stream().anyMatch(missingNodes::contains) ||
+                    mappedTargetEdges.stream().anyMatch(missingEdges::contains)) {
+                iterator.remove();
+            } else {
+                missingNodes.addAll(mappedTargetNodes);
+                missingEdges.addAll(mappedTargetEdges);
+            }
+        }
     }
 
     private Overlaps findOverlaps(Collection<AUG> targets, Set<Pattern> patterns) {
