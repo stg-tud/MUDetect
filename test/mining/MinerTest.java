@@ -212,7 +212,7 @@ public class MinerTest {
 			assertThat(set.size(), is(pattern.getRepresentative().getNodes().size()));
 			EGroumGraph g = new EGroumGraph(pattern.getRepresentative());
 			System.err.println(" - " + g);
-			g.toGraphics("T:/temp");
+			g.toGraphics("temp");
 		}
 	}
 }
