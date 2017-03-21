@@ -194,10 +194,8 @@ public class Miner {
 			int freq = mine(g, xfs, pattern, isGiant, frequentFragments);
 			if (freq > xfreq) {
 				extensible = true;
-				if (!Lattice.contains(lattices, g)) {
-					group = g;
-					xfreq = freq;
-				}
+				group = g;
+				xfreq = freq;
 			}
 		}
 		System.out.println("Done trying all labels");
@@ -289,7 +287,7 @@ public class Miner {
 			int freq = computeFrequency(g, isGiant && isGiant(g, pattern));
 			if (freq >= config.minPatternSupport)
 				frequentFragments.addAll(g);
-			if (freq > xfreq) {
+			if (freq > xfreq && !Lattice.contains(lattices, g)) {
 				group = g;
 				xfreq = freq;
 			}
