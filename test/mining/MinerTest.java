@@ -1,6 +1,8 @@
 package mining;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.util.*;
@@ -180,9 +182,29 @@ public class MinerTest {
 		List<Pattern> patterns = mine(groums, null);
 		
 		print(patterns);
-		assertThat(patterns.size(), is(2));
+		assertThat(patterns, hasSize(2));
 	}
-	
+
+	@Test
+	public void mineAlternativeChecks() throws Exception {
+		String firstHasNext = "class C { void m(Collection c) { Iterator i = c.iterator(); if (i.hasNext()) i.next(); } }";
+		String firstIsEmpty = "class C { void n(Collection c) { if (!c.isEmpty()) { Iterator i = c.iterator(); i.next(); } } }";
+		ArrayList<EGroumGraph> augs = buildGroums(new String[]{firstHasNext, firstHasNext, firstIsEmpty, firstIsEmpty}, null);
+		List<Pattern> patterns = mine(augs, null);
+
+		assertThat(patterns, hasSize(2));
+	}
+
+	@Test
+	public void mineAlternativeCond() throws Exception {
+		String iteratorIf = "class C { void m(Iterator i) { if (i.hasNext()) { i.next(); } } }";
+		String iteratorWhile = "class C { void n(Iterator i) { while (i.hasNext()) { i.next(); } } }";
+		ArrayList<EGroumGraph> augs = buildGroums(new String[]{iteratorIf, iteratorIf, iteratorWhile, iteratorWhile}, null);
+		List<Pattern> patterns = mine(augs, null);
+
+		assertThat(patterns, hasSize(2));
+	}
+
 	private ArrayList<EGroumGraph> buildGroumsFromFile(String path, String[] classpaths) {
 		return new EGroumBuilder(new AUGConfiguration()).build(path, classpaths);
 	}
