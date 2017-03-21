@@ -196,7 +196,8 @@ public class Miner {
 				extensible = true;
 				group = g;
 				xfreq = freq;
-			}
+			} else if (freq == -1)
+				extensible = true;
 		}
 		System.out.println("Done trying all labels");
 		if (extensible) {
@@ -283,16 +284,22 @@ public class Miner {
 		}
 		HashSet<Fragment> group = new HashSet<>();
 		int xfreq = config.minPatternSupport - 1;
+		boolean extensible = false;
 		for (HashSet<Fragment> g : groups) {
 			int freq = computeFrequency(g, isGiant && isGiant(g, pattern));
 			if (freq >= config.minPatternSupport)
 				frequentFragments.addAll(g);
-			if (freq > xfreq && !Lattice.contains(lattices, g)) {
-				group = g;
-				xfreq = freq;
+			if (freq > xfreq) {
+				extensible = true;
+				if (!Lattice.contains(lattices, g)) {
+					group = g;
+					xfreq = freq;
+				}
 			}
 		}
 		result.addAll(group);
+		if (extensible && xfreq < config.minPatternSupport)
+			return -1;
 		return xfreq;
 	}
 

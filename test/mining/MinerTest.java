@@ -192,7 +192,7 @@ public class MinerTest {
 		ArrayList<EGroumGraph> augs = buildGroums(new String[]{firstHasNext, firstHasNext, firstIsEmpty, firstIsEmpty}, null);
 		List<Pattern> patterns = mine(augs, null);
 
-		assertThat(patterns, hasSize(3));
+		assertThat(patterns, hasSize(2));
 	}
 
 	@Test
