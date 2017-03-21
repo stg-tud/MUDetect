@@ -96,6 +96,7 @@ public class AUGImprovement2 {
         printGroum("void m(java.util.List l) { if (l.isEmpty()) l.get(); }");
         printGroum("void m(java.util.List l) { boolean b = l.isEmpty(); if (b) l.get(); }");
         printGroum("void m(java.util.List l) { boolean b = l.isEmpty(); if (b) l.get(); if (b) l.clear(); }");
+        printGroum("void m(java.util.List l) { boolean b = l.isEmpty(); if (b) { l.get(); l.clear(); } }");
         printGroum("void m(java.util.List l) { if (l.isEmpty() && l.size() > 5) l.get(); }");
         printGroum("void m(java.util.List l) { if (!l.isEmpty()) l.get(); }");
     }
