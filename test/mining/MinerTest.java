@@ -199,9 +199,14 @@ public class MinerTest {
 	public void mineAlternativeCond() throws Exception {
 		String iteratorIf = "class C { void m(Iterator i) { if (i.hasNext()) { i.next(); } } }";
 		String iteratorWhile = "class C { void n(Iterator i) { while (i.hasNext()) { i.next(); } } }";
-		ArrayList<EGroumGraph> augs = buildGroums(new String[]{iteratorIf, iteratorIf, iteratorWhile, iteratorWhile}, null);
+		ArrayList<EGroumGraph> augs = buildGroums(new String[]{iteratorIf, iteratorIf, iteratorIf, iteratorWhile, iteratorWhile}, null);
+		for (EGroumGraph aug : augs)
+			System.out.println(aug);
 		List<Pattern> patterns = mine(augs, null);
-
+		
+		System.out.println(patterns.size());
+		for (Pattern p : patterns)
+			System.out.println(p.getRepresentative().getNodes());
 		assertThat(patterns, hasSize(2));
 	}
 
