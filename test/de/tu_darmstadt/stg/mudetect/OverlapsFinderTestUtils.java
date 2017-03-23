@@ -1,10 +1,11 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.*;
+import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
+import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;

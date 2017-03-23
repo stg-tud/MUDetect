@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.model.Pattern;
+import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 
 public class MissingElementViolationFactory implements ViolationFactory {
     @Override

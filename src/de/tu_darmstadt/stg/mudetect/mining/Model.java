@@ -1,6 +1,4 @@
-package de.tu_darmstadt.stg.mudetect;
-
-import de.tu_darmstadt.stg.mudetect.model.Pattern;
+package de.tu_darmstadt.stg.mudetect.mining;
 
 import java.util.Set;
 

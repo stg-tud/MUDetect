@@ -2,7 +2,7 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.model.Pattern;
+import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import de.tu_darmstadt.stg.mudetect.ranking.PatternSupportWeightFunction;
 import de.tu_darmstadt.stg.mudetect.ranking.WeightRankingStrategy;
@@ -12,7 +12,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
-import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
+import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static egroum.AUGBuilderTestUtils.buildAUG;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;

@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mudetect.model;
 
 import egroum.EGroumEdge;
 import egroum.EGroumNode;
+import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import org.jgrapht.graph.DirectedSubgraph;
 
 import java.util.*;

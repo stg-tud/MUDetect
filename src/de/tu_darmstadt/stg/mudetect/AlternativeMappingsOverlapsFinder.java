@@ -5,7 +5,7 @@ import de.tu_darmstadt.stg.mudetect.dot.AUGEdgeAttributeProvider;
 import de.tu_darmstadt.stg.mudetect.dot.AUGNodeAttributeProvider;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.model.Pattern;
+import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import egroum.EGroumEdge;
 import egroum.EGroumNode;
 

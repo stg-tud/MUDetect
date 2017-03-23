@@ -1,5 +1,7 @@
-package de.tu_darmstadt.stg.mudetect.model;
+package de.tu_darmstadt.stg.mudetect.mining;
 
+import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import egroum.EGroumEdge;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;

@@ -2,13 +2,13 @@ package de.tu_darmstadt.stg.mudetect.stresstests;
 
 import de.tu_darmstadt.stg.mudetect.AlternativeMappingsOverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Pattern;
+import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import egroum.EGroumDataEdge;
 import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
+import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static egroum.AUGBuilder.toAUG;
 import static egroum.EGroumTestUtils.buildGroumsForClass;
 

@@ -3,6 +3,7 @@ package de.tu_darmstadt.stg.mudetect.model;
 import egroum.EGroumDataEdge;
 import egroum.EGroumEdge;
 import egroum.EGroumNode;
+import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.Set;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.builderFrom;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
-import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
+import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 
 public class TestOverlapBuilder {
 

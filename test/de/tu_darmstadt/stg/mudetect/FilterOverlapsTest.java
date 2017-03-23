@@ -2,7 +2,7 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.model.Pattern;
+import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Rule;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
-import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
+import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.empty;

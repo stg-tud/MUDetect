@@ -1,14 +1,14 @@
 package de.tu_darmstadt.stg.mudetect.dot;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Pattern;
+import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.emptyOverlap;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.instance;
-import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
+import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static egroum.EGroumDataEdge.Type.ORDER;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;

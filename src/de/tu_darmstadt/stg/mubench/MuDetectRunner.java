@@ -15,6 +15,9 @@ import egroum.AUGConfiguration;
 import egroum.EGroumBuilder;
 import egroum.EGroumGraph;
 import mining.Configuration;
+import de.tu_darmstadt.stg.mudetect.mining.MinedPatternsModel;
+import de.tu_darmstadt.stg.mudetect.mining.Model;
+import de.tu_darmstadt.stg.mudetect.mining.ProvidedPatternsModel;
 
 import java.util.Collection;
 import java.util.List;

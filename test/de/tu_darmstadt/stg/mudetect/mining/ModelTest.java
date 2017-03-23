@@ -1,14 +1,9 @@
-package de.tu_darmstadt.stg.mudetect;
+package de.tu_darmstadt.stg.mudetect.mining;
 
-import de.tu_darmstadt.stg.mudetect.model.Pattern;
-import de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
+import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static utils.SetUtils.asSet;

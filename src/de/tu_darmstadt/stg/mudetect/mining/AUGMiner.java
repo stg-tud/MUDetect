@@ -1,6 +1,8 @@
-package mining;
+package de.tu_darmstadt.stg.mudetect.mining;
 
 import egroum.*;
+import mining.Configuration;
+import mining.Fragment;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -28,17 +30,17 @@ public class AUGMiner {
         });
     }
 
-    public Set<de.tu_darmstadt.stg.mudetect.model.Pattern> mine(EGroumGraph... groums) {
+    public Set<de.tu_darmstadt.stg.mudetect.mining.Pattern> mine(EGroumGraph... groums) {
         ArrayList<EGroumGraph> groumList = new ArrayList<>();
         Collections.addAll(groumList, groums);
         return mine(groumList);
     }
 
-    public Set<de.tu_darmstadt.stg.mudetect.model.Pattern> mine(Collection<EGroumGraph> groums) {
+    public Set<de.tu_darmstadt.stg.mudetect.mining.Pattern> mine(Collection<EGroumGraph> groums) {
         return mine(new ArrayList<>(groums));
     }
 
-    public Set<de.tu_darmstadt.stg.mudetect.model.Pattern> mine(ArrayList<EGroumGraph> groums) {
+    public Set<de.tu_darmstadt.stg.mudetect.mining.Pattern> mine(ArrayList<EGroumGraph> groums) {
         EGroumNode.numOfNodes = 0;
         Fragment.nextFragmentId = 0;
         Fragment.numofFragments = 0;
@@ -59,13 +61,13 @@ public class AUGMiner {
         }
     }
 
-    private static Set<de.tu_darmstadt.stg.mudetect.model.Pattern> toAUGPatterns(Set<Pattern> patterns) {
+    private static Set<de.tu_darmstadt.stg.mudetect.mining.Pattern> toAUGPatterns(Set<mining.Pattern> patterns) {
         return patterns.stream().map(AUGMiner::toAUGPattern).collect(Collectors.toSet());
     }
 
-    private static de.tu_darmstadt.stg.mudetect.model.Pattern toAUGPattern(Pattern pattern) {
-        de.tu_darmstadt.stg.mudetect.model.Pattern augPattern =
-                new de.tu_darmstadt.stg.mudetect.model.Pattern(pattern.getFreq());
+    private static de.tu_darmstadt.stg.mudetect.mining.Pattern toAUGPattern(mining.Pattern pattern) {
+        de.tu_darmstadt.stg.mudetect.mining.Pattern augPattern =
+                new de.tu_darmstadt.stg.mudetect.mining.Pattern(pattern.getFreq());
 
         Fragment f = pattern.getRepresentative();
         List<EGroumNode> nodes = f.getNodes();

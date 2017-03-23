@@ -1,11 +1,13 @@
-package de.tu_darmstadt.stg.mudetect.model;
+package de.tu_darmstadt.stg.mudetect.mining;
 
+import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.isEqual;
-import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
+import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 
 public class PatternTestUtils {
     public static Matcher<Pattern> isPattern(TestAUGBuilder builder, int support) {

@@ -1,10 +1,8 @@
-package de.tu_darmstadt.stg.mudetect;
+package de.tu_darmstadt.stg.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import egroum.EGroumBuilder;
 import egroum.EGroumGraph;
-import mining.AUGMiner;
 import mining.Configuration;
 
 import java.util.Collection;

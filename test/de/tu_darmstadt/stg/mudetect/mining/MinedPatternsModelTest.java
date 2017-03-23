@@ -1,4 +1,4 @@
-package de.tu_darmstadt.stg.mudetect;
+package de.tu_darmstadt.stg.mudetect.mining;
 
 import egroum.EGroumGraph;
 import mining.Configuration;

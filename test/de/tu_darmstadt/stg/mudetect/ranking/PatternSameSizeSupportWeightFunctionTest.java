@@ -1,15 +1,15 @@
 package de.tu_darmstadt.stg.mudetect.ranking;
 
-import de.tu_darmstadt.stg.mudetect.Model;
+import de.tu_darmstadt.stg.mudetect.mining.Model;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.model.Pattern;
+import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
-import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
+import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static utils.SetUtils.asSet;

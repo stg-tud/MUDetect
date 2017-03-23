@@ -2,9 +2,10 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.model.Pattern;
+import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import de.tu_darmstadt.stg.mudetect.ranking.NoRankingStrategy;
+import de.tu_darmstadt.stg.mudetect.mining.Model;
 import org.jmock.Expectations;
 import org.jmock.auto.Mock;
 import org.jmock.integration.junit4.JUnitRuleMockery;
@@ -17,7 +18,7 @@ import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.someOverlap;
-import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
+import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;

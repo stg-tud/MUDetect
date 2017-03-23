@@ -1,7 +1,8 @@
-package de.tu_darmstadt.stg.mudetect.model;
+package de.tu_darmstadt.stg.mudetect.mining;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import de.tu_darmstadt.stg.mudetect.model.AUG;
 import egroum.EGroumNode;
 
 import java.util.*;

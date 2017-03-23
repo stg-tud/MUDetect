@@ -1,19 +1,17 @@
-package mining;
+package de.tu_darmstadt.stg.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import egroum.EGroumGraph;
 import egroum.EGroumNode;
-import org.junit.Ignore;
+import mining.Configuration;
 import org.junit.Test;
 
 import java.util.List;
 import java.util.Set;
 
-import static de.tu_darmstadt.stg.mudetect.model.PatternTestUtils.isPattern;
+import static de.tu_darmstadt.stg.mudetect.mining.PatternTestUtils.isPattern;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
-import static egroum.EGroumDataEdge.Type;
 import static egroum.EGroumDataEdge.Type.*;
 import static egroum.EGroumTestUtils.buildGroumsForClass;
 import static org.hamcrest.Matchers.contains;
@@ -29,7 +27,7 @@ public class AUGMinerTest {
                 "  void n(C c) { c.foo(); }" +
                 "}");
 
-        Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = minePatterns(groums);
+        Set<Pattern> patterns = minePatterns(groums);
 
         TestAUGBuilder pattern = buildAUG().withDataNode("C").withActionNode("C.foo()")
                 .withDataEdge("C", RECEIVER, "C.foo()");
@@ -43,7 +41,7 @@ public class AUGMinerTest {
                 "  void n(C c) { c.foo(\"literal\"); }" +
                 "}");
 
-        Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = minePatterns(groums);
+        Set<Pattern> patterns = minePatterns(groums);
 
         TestAUGBuilder pattern = buildAUG().withActionNode("C.foo()").withDataNodes("C", "String")
                 .withDataEdge("C", RECEIVER, "C.foo()")
@@ -58,7 +56,7 @@ public class AUGMinerTest {
                 "  void n(C c) { c.foo(\"l2\"); }" +
                 "}");
 
-        Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = minePatterns(groums);
+        Set<Pattern> patterns = minePatterns(groums);
 
         Pattern pattern = first(patterns);
         assertThat(pattern.getLiterals(node("String", pattern)), contains("l1", "l2"));
@@ -71,7 +69,7 @@ public class AUGMinerTest {
                 "  void n(C c) { c.foo(\"literal\"); }" +
                 "}");
 
-        Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = minePatterns(groums);
+        Set<Pattern> patterns = minePatterns(groums);
 
         Pattern pattern = first(patterns);
         assertThat(pattern.getLiterals(node("String", pattern)), containsInAnyOrder("literal", "s"));
@@ -84,7 +82,7 @@ public class AUGMinerTest {
                 "  void n(C c, String s) { c.foo(s); }" +
                 "}");
 
-        Set<de.tu_darmstadt.stg.mudetect.model.Pattern> patterns = minePatterns(groums);
+        Set<Pattern> patterns = minePatterns(groums);
 
         Pattern pattern = first(patterns);
         assertThat(pattern.getLiterals(node("String", pattern)), contains("s", "s"));

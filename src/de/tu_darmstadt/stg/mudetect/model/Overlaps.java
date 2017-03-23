@@ -1,5 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
+import de.tu_darmstadt.stg.mudetect.mining.Pattern;
+
 import java.util.*;
 import java.util.function.Predicate;
 
