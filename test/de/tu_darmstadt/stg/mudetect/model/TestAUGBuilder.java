@@ -55,6 +55,15 @@ public class TestAUGBuilder {
 
     public static TestAUGBuilder extend(TestAUGBuilder... baseBuilder) {return new TestAUGBuilder(join(baseBuilder)); }
 
+    static TestAUGBuilder builderFrom(AUG aug) {
+        TestAUGBuilder builder = new TestAUGBuilder(aug.getLocation().getMethodName());
+        for (EGroumNode node : aug.vertexSet()) {
+            builder.withNode(node.getLabel(), node);
+        }
+        builder.edges.addAll(aug.edgeSet());
+        return builder;
+    }
+
     public TestAUGBuilder withActionNodes(String... nodeNames) {
         for (String nodeName : nodeNames) {
             withActionNode(nodeName);

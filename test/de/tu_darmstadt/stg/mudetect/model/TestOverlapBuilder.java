@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.builderFrom;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestPatternBuilder.somePattern;
 
@@ -69,6 +70,10 @@ public class TestOverlapBuilder {
 
     public static TestOverlapBuilder buildOverlap(TestAUGBuilder targetAndPatternAUGBuilder) {
         return buildOverlap(targetAndPatternAUGBuilder, targetAndPatternAUGBuilder);
+    }
+
+    public static TestOverlapBuilder buildOverlap(Pattern pattern, AUG target) {
+        return buildOverlap(builderFrom(target), builderFrom(pattern));
     }
 
     public static Overlap instance(TestAUGBuilder targetAndPatternAUGBuilder) {
