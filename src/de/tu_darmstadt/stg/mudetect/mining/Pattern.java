@@ -59,14 +59,14 @@ public class Pattern extends AUG {
                 '}';
     }
 
-    public void addLiteral(EGroumNode node, String literal) {
+    void addLiteral(EGroumNode node, String literal) {
         if (!literals.containsKey(node)) {
             literals.put(node, HashMultiset.create());
         }
         literals.get(node).add(literal);
     }
 
-    public Multiset<String> getLiterals(EGroumNode node) {
+    Multiset<String> getLiterals(EGroumNode node) {
         return literals.getOrDefault(node, HashMultiset.create());
     }
 }

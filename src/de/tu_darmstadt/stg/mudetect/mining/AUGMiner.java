@@ -10,12 +10,12 @@ import java.io.PrintStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class AUGMiner {
+class AUGMiner {
     private final Configuration config;
 
     private PrintStream out = null;
 
-    public AUGMiner(Configuration config) {
+    AUGMiner(Configuration config) {
         this.config = config;
     }
 
@@ -23,7 +23,7 @@ public class AUGMiner {
         this.out = out;
     }
 
-    public void disableOut() {
+    private void disableOut() {
         this.out = new PrintStream(new OutputStream() {
             @Override
             public void write(int arg0) throws IOException {}
