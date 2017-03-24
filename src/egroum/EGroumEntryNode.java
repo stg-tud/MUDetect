@@ -24,7 +24,12 @@ public class EGroumEntryNode extends EGroumNode {
 	public boolean isDefinition() {
 		return false;
 	}
-	
+
+	@Override
+	public boolean isAPI() {
+		return false;
+	}
+
 	@Override
 	public String toString() {
 		return getLabel();

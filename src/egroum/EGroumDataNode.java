@@ -94,6 +94,22 @@ public class EGroumDataNode extends EGroumNode {
 	}
 
 	@Override
+	public boolean isAPI() {
+		String label = getLabel();
+		switch (label) {
+			case "int":
+			case "long":
+			case "float":
+			case "double":
+			case "short":
+			case "boolean":
+				return false;
+			default:
+				return !label.endsWith("[]");
+		}
+	}
+
+	@Override
 	public EGroumNode getQualifier() {
 		for (EGroumEdge e : inEdges)
 			if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.QUALIFIER)

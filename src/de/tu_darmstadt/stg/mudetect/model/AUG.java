@@ -1,9 +1,13 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
+import egroum.EGroumDataNode;
 import egroum.EGroumEdge;
+import egroum.EGroumGraph;
 import egroum.EGroumNode;
 import org.jgrapht.graph.DirectedMultigraph;
+import org.jgrapht.graph.ParanoidGraph;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,6 +44,10 @@ public class AUG extends DirectedMultigraph<EGroumNode, EGroumEdge> {
                     .filter(EGroumNode::isMeaningfulAction).collect(Collectors.toSet());
         }
         return meaningfullActionNodesCache;
+    }
+
+    public Set<String> getAPIs() {
+        return vertexSet().stream().filter(EGroumNode::isAPI).map(EGroumNode::getLabel).collect(Collectors.toSet());
     }
 
     @Override

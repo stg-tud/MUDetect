@@ -124,6 +124,8 @@ public abstract class EGroumNode {
 		return JavaASTUtil.isLiteral(astNodeType);
 	}
 
+	abstract public boolean isAPI();
+
 	public void delete() {
 		for (EGroumEdge e : inEdges) {
 			e.source.outEdges.remove(e);

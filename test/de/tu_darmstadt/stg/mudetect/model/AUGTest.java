@@ -9,6 +9,8 @@ import org.junit.Test;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static egroum.EGroumDataEdge.Type.ORDER;
 import static egroum.EGroumDataEdge.Type.PARAMETER;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
 public class AUGTest {
@@ -21,6 +23,13 @@ public class AUGTest {
 
         assertThat(aug, containsEdge(builder.getEdge("A", ORDER, "B")));
         assertThat(aug, containsEdge(builder.getEdge("A", PARAMETER, "B")));
+    }
+
+    @Test
+    public void collectsAPIs() throws Exception {
+        AUG aug = buildAUG().withDataNodes("API1", "API2", "int").withActionNode("noAPI").build();
+
+        assertThat(aug.getAPIs(), containsInAnyOrder("API1", "API2"));
     }
 
     private Matcher<AUG> containsEdge(EGroumEdge edge) {
