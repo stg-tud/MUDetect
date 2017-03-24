@@ -21,7 +21,7 @@ public class APIWiseModelTest {
                 buildGroumForMethod("void n(Object o) { o.hashCode(); }"));
         APIWiseModel model = new APIWiseModel(new Configuration() {{ minPatternSupport = 1; }}, groums);
 
-        assertThat(model.getPatternAPIs(), contains("Iterator", "Object"));
+        assertThat(model.getPatternAPIs(), containsInAnyOrder("Iterator", "Object"));
     }
 
     @Test
