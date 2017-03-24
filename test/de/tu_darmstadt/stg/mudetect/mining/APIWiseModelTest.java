@@ -21,7 +21,7 @@ public class APIWiseModelTest {
                 buildGroumForMethod("void n(Object o) { o.hashCode(); }"));
         APIWiseModel model = new APIWiseModel(new Configuration() {{ minPatternSupport = 1; }}, groums);
 
-        assertThat(model.getAPIs(), contains("Iterator", "Object"));
+        assertThat(model.getPatternAPIs(), contains("Iterator", "Object"));
     }
 
     @Test
@@ -29,7 +29,7 @@ public class APIWiseModelTest {
         Collection<EGroumGraph> groums = asSet(buildGroumForMethod("void m(Object o) { o.equals(5); }"));
         APIWiseModel model = new APIWiseModel(new Configuration() {{ minPatternSupport = 1; }}, groums);
 
-        assertThat(model.getAPIs(), not(hasItem("int")));
+        assertThat(model.getPatternAPIs(), not(hasItem("int")));
     }
 
     @Test
@@ -37,6 +37,6 @@ public class APIWiseModelTest {
         Set<EGroumGraph> groums = asSet(buildGroumForMethod("void m(Object o) { o.hashCode(); }"));
         APIWiseModel model = new APIWiseModel(new Configuration() {{ minPatternSupport = 2; }}, groums);
 
-        assertThat(model.getAPIs(), not(hasItem("Object")));
+        assertThat(model.getPatternAPIs(), not(hasItem("Object")));
     }
 }

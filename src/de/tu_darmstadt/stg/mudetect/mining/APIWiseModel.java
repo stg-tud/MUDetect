@@ -14,7 +14,7 @@ class APIWiseModel {
         apiToPatternMapping = getAPItoPatternMapping(patterns);
     }
 
-    public Set<String> getAPIs() {
+    public Set<String> getPatternAPIs() {
         return apiToPatternMapping.keySet();
     }
 
