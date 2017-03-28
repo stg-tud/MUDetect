@@ -7,6 +7,7 @@ import de.tu_darmstadt.stg.mudetect.mining.Model;
 import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MuDetect {
 
@@ -37,19 +38,17 @@ public class MuDetect {
     }
 
     private void filterAlternativeViolations(List<Violation> violations) {
-        Set<EGroumNode> missingNodes = new HashSet<>();
-        Set<EGroumEdge> missingEdges = new HashSet<>();
+        Set<EGroumNode> converedNodes = new HashSet<>();
         Iterator<Violation> iterator = violations.iterator();
         while (iterator.hasNext()) {
             Overlap violation = iterator.next().getOverlap();
-            Set<EGroumNode> mappedTargetNodes = violation.getMappedTargetNodes();
-            Set<EGroumEdge> mappedTargetEdges = violation.getMappedTargetEdges();
-            if (mappedTargetNodes.stream().anyMatch(missingNodes::contains) ||
-                    mappedTargetEdges.stream().anyMatch(missingEdges::contains)) {
+            Set<EGroumNode> mappedTargetNodes = violation.getMappedTargetNodes().stream()
+                    .filter(node -> node.getLabel().endsWith("<init>") || node.getLabel().endsWith("()"))
+                    .collect(Collectors.toSet());
+            if (mappedTargetNodes.stream().anyMatch(converedNodes::contains)) {
                 iterator.remove();
             } else {
-                missingNodes.addAll(mappedTargetNodes);
-                missingEdges.addAll(mappedTargetEdges);
+                converedNodes.addAll(mappedTargetNodes);
             }
         }
     }
