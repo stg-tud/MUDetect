@@ -69,7 +69,7 @@ public class Miner {
 		lattices.add(l);
 		for (String label : new HashSet<String>(nodesOfLabel.keySet())) {
 			HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
-			if (nodes.size() < config.minPatternSupport/* || EGroumNode.isThisMethodCall(label)*/) {
+			if (nodes.size() < config.minPatternSupport) {
 				// FIXME
 				for (EGroumNode node : nodes) {
 					boolean isDefAction = false;
@@ -84,10 +84,9 @@ public class Miner {
 						node.getGraph().delete(node);
 				}
 				nodesOfLabel.remove(label);
-			} else if (!coreLabels.contains(label))
+			}
+			if (!coreLabels.contains(label))
 				nodesOfLabel.remove(label);
-			/*else if (nodes.size() > groums.size() * maxSingleNodePrevalence)
-				nodesOfLabel.remove(label);*/
 		}
 		for (String label : nodesOfLabel.keySet()) {
 			HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
