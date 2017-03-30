@@ -27,6 +27,8 @@ import org.eclipse.jdt.core.dom.PostfixExpression;
 import org.eclipse.jdt.core.dom.PrefixExpression;
 import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.QualifiedType;
+import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TagElement;
 import org.eclipse.jdt.core.dom.Type;
@@ -239,7 +241,12 @@ public class JavaASTUtil {
 			QualifiedType t = (QualifiedType) type;
 			return t.getName().getIdentifier();
 		} else if (type.isSimpleType()) {
-			String pt = type.toString();
+			SimpleType st = (SimpleType) type;
+			String pt = st.getName().getFullyQualifiedName();
+			if (st.getName() instanceof QualifiedName)
+				pt = getSimpleName(st.getName());
+			if (pt.isEmpty())
+				pt = st.getName().getFullyQualifiedName();
 			/*if (pt.equals("Byte") || pt.equals("Short") || pt.equals("Integer") || pt.equals("Long") 
 					|| pt.equals("Float") || pt.equals("Double"))
 				return "number";*/
@@ -297,10 +304,19 @@ public class JavaASTUtil {
 	}
 
 	public static String getSimpleName(Name name) {
-		if (name.isSimpleName())
-			return name.toString();
+		if (name.isSimpleName()) {
+			SimpleName sn = (SimpleName) name;
+			if (Character.isUpperCase(sn.getIdentifier().charAt(0)))
+				return sn.getIdentifier();
+			return "";
+		}
 		QualifiedName qn = (QualifiedName) name;
-		return qn.getName().getIdentifier();
+		if (Character.isUpperCase(qn.getFullyQualifiedName().charAt(0)))
+			return qn.getFullyQualifiedName();
+		String sqn = getSimpleName(qn.getQualifier());
+		if (sqn.isEmpty())
+			return getSimpleName(qn.getName());
+		return sqn + "." + qn.getName().getIdentifier();
 	}
 
 	public static String getInfixOperator(Operator operator) {
