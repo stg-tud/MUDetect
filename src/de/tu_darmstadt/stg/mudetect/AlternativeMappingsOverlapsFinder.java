@@ -288,10 +288,6 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
         this.overlapPredicate = overlapPredicate;
     }
 
-    public AlternativeMappingsOverlapsFinder() {
-        this(i -> true);
-    }
-
     public void setMaxNumberOfAlternatives(int maxNumberOfAlternatives) {
         this.maxNumberOfAlternatives = maxNumberOfAlternatives;
     }

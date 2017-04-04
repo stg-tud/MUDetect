@@ -26,7 +26,7 @@ public class AlternativePatternsIntegrationTest {
         Pattern patternB = buildPattern("void b(Iterator i) { while (i.hasNext()) { i.remove(); } }", 2);
         AUG target = buildAUG("void v(Iterator i) { i.hasNext(); }");
         MuDetect detector = new MuDetect(() -> asSet(patternA, patternB),
-                new AlternativeMappingsOverlapsFinder(),
+                new AlternativeMappingsOverlapsFinder(i -> true),
                 new MissingElementViolationFactory(),
                 new WeightRankingStrategy(new PatternSupportWeightFunction()));
 
