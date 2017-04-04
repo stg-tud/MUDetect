@@ -3,6 +3,8 @@ package de.tu_darmstadt.stg.mudetect;
 import de.tu_darmstadt.stg.mudetect.dot.AUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.dot.AUGEdgeAttributeProvider;
 import de.tu_darmstadt.stg.mudetect.dot.AUGNodeAttributeProvider;
+import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
+import de.tu_darmstadt.stg.mudetect.matcher.NodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.mining.Pattern;
@@ -10,6 +12,7 @@ import egroum.EGroumEdge;
 import egroum.EGroumNode;
 
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -152,14 +155,14 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
             return firstTargetNode;
         }
 
-        Overlap findLargestOverlap(int maxNumberOfAlternatives) {
+        Overlap findLargestOverlap(int maxNumberOfAlternatives, BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {
             numberOfExploredAlternatives = 0;
             Set<Alternative> alternatives = new HashSet<>();
             alternatives.add(new Alternative(this, firstTargetNode));
 
             Set<EGroumEdge> patternExtensionEdges = new HashSet<>(pattern.edgesOf(exploredPatternNodes.get(0)));
             while (!patternExtensionEdges.isEmpty() && alternatives.size() < maxNumberOfAlternatives) {
-                EGroumEdge patternEdge = pollEdgeWithLeastAlternatives(patternExtensionEdges, alternatives);
+                EGroumEdge patternEdge = pollEdgeWithLeastAlternatives(patternExtensionEdges, alternatives, edgeMatcher);
                 System.out.print("  Extending along " + patternEdge + "...");
 
                 int patternSourceIndex = getOrCreatePatternNodeIndex(patternEdge.getSource());
@@ -169,7 +172,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
 
                 Set<Alternative> newAlternatives = new HashSet<>();
                 for (Alternative alternative : alternatives) {
-                    Set<EGroumEdge> candidateTargetEdges = getCandidateTargetEdges(alternative, patternEdge);
+                    Set<EGroumEdge> candidateTargetEdges = getCandidateTargetEdges(alternative, patternEdge, edgeMatcher);
                     for (EGroumEdge targetEdge : candidateTargetEdges) {
                         newAlternatives.add(alternative.createExtension(patternEdgeIndex, patternSourceIndex, patternTargetIndex, targetEdge));
                     }
@@ -194,13 +197,14 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
         }
 
         private EGroumEdge pollEdgeWithLeastAlternatives(Set<EGroumEdge> patternExtensionEdges,
-                                                         Set<Alternative> alternatives) {
+                                                         Set<Alternative> alternatives,
+                                                         BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {
             int minNumberOfAlternatives = Integer.MAX_VALUE;
             EGroumEdge bestPatternEdge = null;
             for (EGroumEdge patternExtensionEdge : patternExtensionEdges) {
                 int numberOfAlternatives = 0;
                 for (Alternative alternative : alternatives) {
-                    numberOfAlternatives += getCandidateTargetEdges(alternative, patternExtensionEdge).size();
+                    numberOfAlternatives += getCandidateTargetEdges(alternative, patternExtensionEdge, edgeMatcher).size();
                 }
                 if (numberOfAlternatives < minNumberOfAlternatives) {
                     bestPatternEdge = patternExtensionEdge;
@@ -211,7 +215,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
             return bestPatternEdge;
         }
 
-        private Set<EGroumEdge> getCandidateTargetEdges(Alternative alternative, EGroumEdge patternEdge) {
+        private Set<EGroumEdge> getCandidateTargetEdges(Alternative alternative, EGroumEdge patternEdge, BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {
             EGroumNode targetSourceNode = alternative.getMappedTargetNode(patternEdge.getSource());
             EGroumNode targetTargetNode = alternative.getMappedTargetNode(patternEdge.getTarget());
 
@@ -229,19 +233,9 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
 
             return candidates
                     .filter(alternative::isUnmappedTargetEdge)
-                    .filter(targetEdge -> match(patternEdge, targetEdge))
+                    .filter(targetEdge -> edgeMatcher.test(patternEdge, targetEdge))
                     .filter(targetEdge -> alternative.isCompatibleExtension(patternEdge, targetEdge))
                     .collect(Collectors.toSet());
-        }
-
-        private static boolean match(EGroumEdge patternEdge, EGroumEdge targetEdge) {
-            return match(patternEdge.getSource(), targetEdge.getSource())
-                    && patternEdge.getLabel().equals(targetEdge.getLabel())
-                    && match(patternEdge.getTarget(), targetEdge.getTarget());
-        }
-
-        private static boolean match(EGroumNode patternNode, EGroumNode targetNode) {
-            return patternNode.getLabel().equals(targetNode.getLabel());
         }
 
         private int getOrCreatePatternNodeIndex(EGroumNode source) {
@@ -281,11 +275,14 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
     public static long numberOfExploredAlternatives = 0;
 
     private final Predicate<Overlap> overlapPredicate;
+    private final List<NodeMatcher> nodeMatchers;
 
     private int maxNumberOfAlternatives = 100000;
 
-    public AlternativeMappingsOverlapsFinder(Predicate<Overlap> overlapPredicate) {
+    public AlternativeMappingsOverlapsFinder(Predicate<Overlap> overlapPredicate, NodeMatcher... nodeMatchers) {
         this.overlapPredicate = overlapPredicate;
+        this.nodeMatchers = new ArrayList<>(Arrays.asList(nodeMatchers));
+        this.nodeMatchers.add(new EquallyLabelledNodeMatcher());
     }
 
     public void setMaxNumberOfAlternatives(int maxNumberOfAlternatives) {
@@ -311,7 +308,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
             // overlaps found by extending from A (in which case the remaining mappings of N will be found when
             // extending from a mapping of this node M). In any case, exploring from a mapping of N is redundant.
             if (coveredTargetNodes.contains(fragment.getFirstTargetNode())) continue;
-            Overlap overlap = fragment.findLargestOverlap(maxNumberOfAlternatives);
+            Overlap overlap = fragment.findLargestOverlap(maxNumberOfAlternatives, this::match);
             if (overlap != null && overlapPredicate.test(overlap)) {
                 overlaps.add(overlap);
                 coveredTargetNodes.addAll(overlap.getMappedTargetNodes());
@@ -326,9 +323,19 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
     private Collection<PatternFragment> getSingleNodeFragments(AUG target, Pattern pattern) {
         return pattern.getMeaningfulActionNodesByUniqueness().stream()
                 .flatMap(patternNode -> target.getMeaningfulActionNodes().stream()
-                        .filter(targetNode -> PatternFragment.match(patternNode, targetNode))
+                        .filter(targetNode -> match(patternNode, targetNode))
                         .map(targetNode -> new PatternFragment(target, pattern, patternNode, targetNode)))
                 .collect(Collectors.toList());
+    }
+
+    private boolean match(EGroumEdge targetEdge, EGroumEdge patternEdge) {
+        return match(patternEdge.getSource(), targetEdge.getSource())
+                && patternEdge.getLabel().equals(targetEdge.getLabel())
+                && match(patternEdge.getTarget(), targetEdge.getTarget());
+    }
+
+    private boolean match(EGroumNode targetNode, EGroumNode patternNode) {
+        return nodeMatchers.stream().anyMatch(matcher -> matcher.test(targetNode, patternNode));
     }
 
     private void removeSubgraphs(List<Overlap> overlaps) {
