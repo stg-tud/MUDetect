@@ -6,10 +6,12 @@ import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
 import de.tu_darmstadt.stg.mubench.cli.MuBenchRunner;
 import de.tu_darmstadt.stg.mudetect.*;
 import de.tu_darmstadt.stg.mudetect.dot.ViolationDotExporter;
+import de.tu_darmstadt.stg.mudetect.matcher.SubtypeNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Location;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import de.tu_darmstadt.stg.mudetect.ranking.*;
+import de.tu_darmstadt.stg.mudetect.typehierarchy.TypeHierarchyBuilder;
 import egroum.AUGBuilder;
 import egroum.AUGConfiguration;
 import egroum.EGroumBuilder;
@@ -51,7 +53,11 @@ public class MuDetectRunner extends MuBenchRunner {
                     outputPath = getPatternOutputPath();
                 }}, groums),
                 trainingAndTargetPath,
-                new AlternativeMappingsOverlapsFinder(new OverlapRatioPredicate(0.5)),
+                new AlternativeMappingsOverlapsFinder(
+                        new OverlapRatioPredicate(0.5),
+                        new SubtypeNodeMatcher(new TypeHierarchyBuilder().build(new String[] {
+                                TypeHierarchyBuilder.RT_JAR_PATH
+                        }))),
                 new MissingElementViolationFactory(),
                 new WeightRankingStrategy(
                         new AverageWeightFunction(
