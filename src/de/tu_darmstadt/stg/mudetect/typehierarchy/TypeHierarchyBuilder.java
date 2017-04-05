@@ -30,8 +30,10 @@ public class TypeHierarchyBuilder {
                 JarEntry entry = entries.nextElement();
                 if (entry.getName().endsWith(".class")) {
                     try {
-                        ClassParser parser = new ClassParser(jarPath, entry.getName());
-                        addHierarchy(hierarchy, parser.parse());
+                        JavaClass jc = new ClassParser(jarPath, entry.getName()).parse();
+                        if (!isAnonymous(jc)) {
+                            addHierarchy(hierarchy, jc);
+                        }
                     } catch (IOException | ClassNotFoundException | ClassFormatException e) {
                         System.err.println("Error in parsing class file: " + entry.getName());
                         System.err.println(e.getMessage());
@@ -44,6 +46,10 @@ public class TypeHierarchyBuilder {
             System.err.println(e.getMessage());
             e.printStackTrace(System.err);
         }
+    }
+
+    private boolean isAnonymous(JavaClass jc) {
+        return getSimpleClassName(jc).matches("^[0-9]+$");
     }
 
     private String addHierarchy(TypeHierarchy hierarchy, JavaClass jc) throws ClassNotFoundException {
