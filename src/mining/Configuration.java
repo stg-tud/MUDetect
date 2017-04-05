@@ -12,7 +12,7 @@ public class Configuration {
     /**
      * Whether or not the miner should output log information to System.out.
      */
-    public boolean disable_system_out = false;
+    public boolean disableSystemOut = false;
 
     /**
      * Path to write mined patterns to. <code>null</code> to disable output.

@@ -47,7 +47,7 @@ public class MuDetectRunner extends MuBenchRunner {
                 trainingAndTargetPath,
                 groums -> new MinedPatternsModel(new Configuration() {{
                     minPatternSupport = 10;
-                    disable_system_out = true;
+                    disableSystemOut = true;
                     outputPath = getPatternOutputPath();
                 }}, groums),
                 trainingAndTargetPath,
