@@ -54,16 +54,14 @@ public class TypeHierarchyBuilder {
 
     private String addHierarchy(TypeHierarchy hierarchy, JavaClass jc) throws ClassNotFoundException {
         String type = getSimpleClassName(jc);
-        Set<String> supertypes = new HashSet<>();
-        for (JavaClass ji : jc.getInterfaces()) {
+        for (JavaClass ji : jc.getAllInterfaces()) {
             if (ji != jc) {
-                supertypes.add(addHierarchy(hierarchy, ji));
+                hierarchy.addSupertype(type, addHierarchy(hierarchy, ji));
             }
         }
         for (JavaClass js : jc.getSuperClasses()) {
-            supertypes.add(addHierarchy(hierarchy, js));
+            hierarchy.addSupertype(type, addHierarchy(hierarchy, js));
         }
-        hierarchy.addSupertypes(type, supertypes);
         return type;
     }
 

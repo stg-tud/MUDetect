@@ -42,29 +42,9 @@ public class TypeHierarchyTest {
     }
 
     @Test
-    public void transitiveSupertypes() throws Exception {
-        TypeHierarchy hierarchy = new TypeHierarchy();
-
-        hierarchy.addSupertype("A", "S1");
-        hierarchy.addSupertype("S1", "S2");
-
-        assertTrue(hierarchy.isA("A", "S2"));
-    }
-
-    @Test
     public void reflexive() throws Exception {
         TypeHierarchy hierarchy = new TypeHierarchy();
 
         assertTrue(hierarchy.isA("A", "A"));
-    }
-
-    @Test
-    public void preventsSimpleRecursion() throws Exception {
-        TypeHierarchy hierarchy = new TypeHierarchy();
-
-        hierarchy.addSupertype("A", "Object");
-        hierarchy.addSupertype("Object", "Object");
-
-        hierarchy.isA("A", "B");
     }
 }

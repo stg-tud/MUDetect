@@ -6,19 +6,17 @@ public class TypeHierarchy {
     private Map<String, Set<String>> supertypesByType = new HashMap<>();
 
     protected TypeHierarchy() {
-        addSupertype("byte", "short");
-        addSupertype("short", "int");
-        addSupertype("int", "long");
-        addSupertype("long", "float");
+        addSupertypes("byte", Arrays.asList("short", "int", "long", "float", "double"));
+        addSupertypes("short", Arrays.asList("int", "long", "float", "double"));
+        addSupertypes("int", Arrays.asList("long", "float", "double"));
+        addSupertypes("long", Arrays.asList("float", "double"));
         addSupertype("float", "double");
-        addSupertype("String", "CharSequence");
     }
 
     public boolean isA(String type, String supertype) {
         Set<String> supertypes = getSupertypes(type);
         return type.equals(supertype) ||
-                supertypes.contains(supertype) ||
-                supertypes.stream().anyMatch(intermediate -> isA(intermediate, supertype));
+                supertypes.contains(supertype);
     }
 
     private Set<String> getSupertypes(String type) {
