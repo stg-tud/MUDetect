@@ -1,5 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
+import de.tu_darmstadt.stg.mudetect.model.Location;
 import egroum.*;
 import mining.Configuration;
 import mining.Fragment;
@@ -90,7 +91,15 @@ class AUGMiner {
                     augPattern.addEdge(e.getSource(), e.getTarget(), e);
             }
         }
+        for (Fragment example : pattern.getFragments()) {
+            augPattern.addExampleLocation(getLocation(example));
+        }
 
         return augPattern;
+    }
+
+    private static Location getLocation(Fragment example) {
+        EGroumGraph graph = example.getGraph();
+        return new Location(graph.getFilePath(), AUGBuilder.getMethodSignature(graph));
     }
 }

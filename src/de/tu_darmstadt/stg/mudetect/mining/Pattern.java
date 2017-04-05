@@ -3,6 +3,7 @@ package de.tu_darmstadt.stg.mudetect.mining;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.model.Location;
 import egroum.EGroumNode;
 
 import java.util.*;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 public class Pattern extends AUG {
     private final int support;
     private final Map<EGroumNode, Multiset<String>> literals;
+    private final Set<Location> exampleLocations;
 
     private List<EGroumNode> meaningfulActionNodesByUniquenesCache = null;
 
@@ -18,6 +20,7 @@ public class Pattern extends AUG {
         super("pattern", "model");
         this.support = support;
         this.literals = new HashMap<>();
+        this.exampleLocations = new HashSet<>();
     }
 
     public int getSupport() {
@@ -34,6 +37,14 @@ public class Pattern extends AUG {
                     .collect(Collectors.toList());
         }
         return meaningfulActionNodesByUniquenesCache;
+    }
+
+    public void addExampleLocation(Location location) {
+        exampleLocations.add(location);
+    }
+
+    public Set<Location> getExampleLocations() {
+        return exampleLocations;
     }
 
     @Override

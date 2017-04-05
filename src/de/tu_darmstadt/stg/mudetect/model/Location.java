@@ -16,4 +16,9 @@ public class Location {
     public String getMethodName() {
         return methodName;
     }
+
+    @Override
+    public String toString() {
+        return "Location: " + filePath + "#" + methodName;
+    }
 }
