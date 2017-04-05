@@ -12,15 +12,14 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class TypeHierarchyBuilder {
-    public TypeHierarchy build() {
-        TypeHierarchy hierarchy = new TypeHierarchy();
-        addJDKHierarchy(hierarchy);
-        return hierarchy;
-    }
+    public static final String RT_JAR_PATH = System.getProperty("java.home") + "/lib/rt.jar";
 
-    private void addJDKHierarchy(TypeHierarchy hierarchy) {
-        String rtJar = System.getProperty("java.home") + "/lib/rt.jar";
-        addJarHierarchy(hierarchy, new File(rtJar));
+    public TypeHierarchy build(String[] classPath) {
+        TypeHierarchy hierarchy = new TypeHierarchy();
+        for (String jar : classPath) {
+            addJarHierarchy(hierarchy, new File(jar));
+        }
+        return hierarchy;
     }
 
     private void addJarHierarchy(TypeHierarchy hierarchy, File jar) {
