@@ -29,7 +29,7 @@ public class TypeHierarchyBuilder {
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
-                if (entry.getName().startsWith("java") && entry.getName().endsWith(".class")) {
+                if (entry.getName().endsWith(".class")) {
                     try {
                         ClassParser parser = new ClassParser(jarPath, entry.getName());
                         addHierarchy(hierarchy, parser.parse());
