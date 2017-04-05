@@ -45,7 +45,11 @@ public class MuDetectRunner extends MuBenchRunner {
     protected void mineAndDetect(CodePath trainingAndTargetPath, DetectorOutput output) throws Exception {
         run(new AUGConfiguration(),
                 trainingAndTargetPath,
-                groums -> new MinedPatternsModel(new Configuration() {{ minPatternSupport = 10; disable_system_out = true; }}, groums),
+                groums -> new MinedPatternsModel(new Configuration() {{
+                    minPatternSupport = 10;
+                    disable_system_out = true;
+                    outputPath = getPatternOutputPath();
+                }}, groums),
                 trainingAndTargetPath,
                 new AlternativeMappingsOverlapsFinder(new OverlapRatioPredicate(0.5)),
                 new MissingElementViolationFactory(),
@@ -56,6 +60,13 @@ public class MuDetectRunner extends MuBenchRunner {
                                 new ViolationSupportWeightFunction(),
                                 new OverlapWithEdgesToMissingNodesWeightFunction())),
                 output);
+    }
+
+    /**
+     * Start run with --java-options Dmudetect.mining.outputpath="/path/to/write/patterns/to"
+     */
+    private static String getPatternOutputPath() {
+        return System.getProperty("mudetect.mining.outputpath");
     }
 
     private void run(AUGConfiguration configuration,
