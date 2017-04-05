@@ -1,4 +1,4 @@
-package de.tu_darmstadt.stg.mudetect.model;
+package de.tu_darmstadt.stg.mudetect.typehierarchy;
 
 import org.junit.Test;
 

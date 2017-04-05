@@ -1,6 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.matcher;
 
-import de.tu_darmstadt.stg.mudetect.model.TypeHierarchy;
+import de.tu_darmstadt.stg.mudetect.typehierarchy.TypeHierarchy;
 import egroum.EGroumNode;
 
 public class SubtypeNodeMatcher implements NodeMatcher {

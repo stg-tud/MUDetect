@@ -1,6 +1,5 @@
 package de.tu_darmstadt.stg.mudetect.typehierarchy;
 
-import de.tu_darmstadt.stg.mudetect.model.TypeHierarchy;
 import org.junit.Ignore;
 import org.junit.Test;
 

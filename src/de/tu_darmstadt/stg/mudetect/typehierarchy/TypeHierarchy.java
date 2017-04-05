@@ -1,11 +1,11 @@
-package de.tu_darmstadt.stg.mudetect.model;
+package de.tu_darmstadt.stg.mudetect.typehierarchy;
 
 import java.util.*;
 
 public class TypeHierarchy {
     private Map<String, Set<String>> supertypesByType = new HashMap<>();
 
-    public TypeHierarchy() {
+    protected TypeHierarchy() {
         addSupertype("byte", "short");
         addSupertype("short", "int");
         addSupertype("int", "long");
@@ -27,14 +27,14 @@ public class TypeHierarchy {
         }
     }
 
-    public void addSupertype(String type, String supertype) {
+    protected void addSupertype(String type, String supertype) {
         if (!supertypesByType.containsKey(type)) {
             supertypesByType.put(type, new HashSet<>());
         }
         supertypesByType.get(type).add(supertype);
     }
 
-    public void addSupertypes(String type, Iterable<String> supertypes) {
+    void addSupertypes(String type, Iterable<String> supertypes) {
         for (String supertype : supertypes) {
             addSupertype(type, supertype);
         }

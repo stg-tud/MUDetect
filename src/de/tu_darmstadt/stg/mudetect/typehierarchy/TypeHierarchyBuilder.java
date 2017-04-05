@@ -1,6 +1,5 @@
 package de.tu_darmstadt.stg.mudetect.typehierarchy;
 
-import de.tu_darmstadt.stg.mudetect.model.TypeHierarchy;
 import org.apache.bcel.classfile.*;
 
 import java.io.File;

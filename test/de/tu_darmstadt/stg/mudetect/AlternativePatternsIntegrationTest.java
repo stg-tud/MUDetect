@@ -4,7 +4,7 @@ import de.tu_darmstadt.stg.mudetect.matcher.SubtypeNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.mining.Pattern;
-import de.tu_darmstadt.stg.mudetect.model.TypeHierarchy;
+import de.tu_darmstadt.stg.mudetect.typehierarchy.TypeHierarchy;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import de.tu_darmstadt.stg.mudetect.ranking.NoRankingStrategy;
 import de.tu_darmstadt.stg.mudetect.ranking.PatternSupportWeightFunction;
@@ -48,8 +48,7 @@ public class AlternativePatternsIntegrationTest {
     public void matchesSubtypes() throws Exception {
         Pattern pattern = buildPattern("void p(Object o) { o.hashCode(); }", 2);
         AUG target = buildAUG("void t(Integer i) { i.hashCode(); }");
-        TypeHierarchy typeHierarchy = new TypeHierarchy();
-        typeHierarchy.addSupertype("Integer", "Object");
+        TypeHierarchy typeHierarchy = new TypeHierarchy() {{ addSupertype("Integer", "Object"); }};
         MuDetect detector = new MuDetect(() -> asSet(pattern),
                 new AlternativeMappingsOverlapsFinder(o -> true, new SubtypeNodeMatcher(typeHierarchy)),
                 new MissingElementViolationFactory(),
