@@ -16,7 +16,9 @@ public class TypeHierarchy {
 
     public boolean isA(String type, String supertype) {
         Set<String> supertypes = getSupertypes(type);
-        return supertypes.contains(supertype) || supertypes.stream().anyMatch(intermediate -> isA(intermediate, supertype));
+        return type.equals(supertype) ||
+                supertypes.contains(supertype) ||
+                supertypes.stream().anyMatch(intermediate -> isA(intermediate, supertype));
     }
 
     private Set<String> getSupertypes(String type) {
@@ -31,7 +33,9 @@ public class TypeHierarchy {
         if (!supertypesByType.containsKey(type)) {
             supertypesByType.put(type, new HashSet<>());
         }
-        supertypesByType.get(type).add(supertype);
+        if (!type.equals(supertype)) {
+            supertypesByType.get(type).add(supertype);
+        }
     }
 
     void addSupertypes(String type, Iterable<String> supertypes) {

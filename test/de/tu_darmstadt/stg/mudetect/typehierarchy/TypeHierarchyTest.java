@@ -50,4 +50,21 @@ public class TypeHierarchyTest {
 
         assertTrue(hierarchy.isA("A", "S2"));
     }
+
+    @Test
+    public void reflexive() throws Exception {
+        TypeHierarchy hierarchy = new TypeHierarchy();
+
+        assertTrue(hierarchy.isA("A", "A"));
+    }
+
+    @Test
+    public void preventsSimpleRecursion() throws Exception {
+        TypeHierarchy hierarchy = new TypeHierarchy();
+
+        hierarchy.addSupertype("A", "Object");
+        hierarchy.addSupertype("Object", "Object");
+
+        hierarchy.isA("A", "B");
+    }
 }
