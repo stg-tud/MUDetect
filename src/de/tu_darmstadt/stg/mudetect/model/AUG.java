@@ -1,13 +1,9 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
-import egroum.EGroumDataNode;
 import egroum.EGroumEdge;
-import egroum.EGroumGraph;
 import egroum.EGroumNode;
 import org.jgrapht.graph.DirectedMultigraph;
-import org.jgrapht.graph.ParanoidGraph;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
