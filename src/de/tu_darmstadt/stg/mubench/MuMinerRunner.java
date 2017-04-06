@@ -1,9 +1,6 @@
 package de.tu_darmstadt.stg.mubench;
 
-import de.tu_darmstadt.stg.mubench.cli.CodePath;
-import de.tu_darmstadt.stg.mubench.cli.DetectorFinding;
-import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
-import de.tu_darmstadt.stg.mubench.cli.MuBenchRunner;
+import de.tu_darmstadt.stg.mubench.cli.*;
 import egroum.AUGBuilder;
 import egroum.AUGConfiguration;
 import egroum.EGroumBuilder;
@@ -21,14 +18,14 @@ public class MuMinerRunner extends MuBenchRunner {
     }
 
     @Override
-    protected void detectOnly(CodePath codePath, CodePath codePath1, DetectorOutput detectorOutput) throws Exception {
+    protected void detectOnly(DetectorArgs args, DetectorOutput detectorOutput) throws Exception {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected void mineAndDetect(CodePath trainAndTargetPath, DetectorOutput output) throws Exception {
+    protected void mineAndDetect(DetectorArgs args, DetectorOutput output) throws Exception {
         EGroumBuilder builder = new EGroumBuilder(new AUGConfiguration());
-        ArrayList<EGroumGraph> groums = builder.buildBatch(trainAndTargetPath.srcPath, null);
+        ArrayList<EGroumGraph> groums = builder.buildBatch(args.getTargetPath().srcPath, null);
         Miner miner = new Miner("-project-name-", new Configuration() {{ minPatternSupport = 10; }});
         miner.mine(groums);
         Queue<Anomaly> anomalies = new PriorityQueue<>((a1, a2) -> -Double.compare(a1.getScore(), a2.getScore()));

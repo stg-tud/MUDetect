@@ -1,9 +1,6 @@
 package de.tu_darmstadt.stg.mubench;
 
-import de.tu_darmstadt.stg.mubench.cli.CodePath;
-import de.tu_darmstadt.stg.mubench.cli.DetectorFinding;
-import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
-import de.tu_darmstadt.stg.mubench.cli.MuBenchRunner;
+import de.tu_darmstadt.stg.mubench.cli.*;
 import de.tu_darmstadt.stg.mudetect.*;
 import de.tu_darmstadt.stg.mudetect.dot.ViolationDotExporter;
 import de.tu_darmstadt.stg.mudetect.matcher.SubtypeNodeMatcher;
@@ -33,11 +30,11 @@ public class MuDetectRunner extends MuBenchRunner {
     }
 
     @Override
-    protected void detectOnly(CodePath patternPath, CodePath targetPath, DetectorOutput output) throws Exception {
+    protected void detectOnly(DetectorArgs args, DetectorOutput output) throws Exception {
         run(new AUGConfiguration(),
-                patternPath,
+                args.getPatternPath(),
                 ProvidedPatternsModel::new,
-                targetPath,
+                args.getTargetPath(),
                 new EmptyOverlapsFinder(new AlternativeMappingsOverlapsFinder(new OverlapRatioPredicate(0.5))),
                 new EverythingViolationFactory(),
                 new NoRankingStrategy(),
@@ -45,15 +42,17 @@ public class MuDetectRunner extends MuBenchRunner {
     }
 
     @Override
-    protected void mineAndDetect(CodePath trainingAndTargetPath, DetectorOutput output) throws Exception {
+    protected void mineAndDetect(DetectorArgs args, DetectorOutput output) throws Exception {
+
+
         run(new AUGConfiguration(),
-                trainingAndTargetPath,
+                args.getTargetPath(),
                 groums -> new MinedPatternsModel(new Configuration() {{
                     minPatternSupport = 10;
                     disableSystemOut = true;
                     outputPath = getPatternOutputPath();
                 }}, groums),
-                trainingAndTargetPath,
+                args.getTargetPath(),
                 new AlternativeMappingsOverlapsFinder(
                         new OverlapRatioPredicate(0.5),
                         new SubtypeNodeMatcher(new TypeHierarchyBuilder().build(new String[] {
