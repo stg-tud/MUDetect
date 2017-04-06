@@ -14,7 +14,7 @@ public class AUGBuilder {
 
 	public Collection<AUG> build(String sourcePath, String[] classpaths) {
         return new EGroumBuilder(configuration).buildBatch(sourcePath, classpaths).stream()
-                .map(AUGBuilder::toAUG).collect(Collectors.toSet());
+                .map(AUGBuilder::toAUG).collect(Collectors.toList());
     }
 
     public static AUG toAUG(EGroumGraph groum) {
