@@ -42,6 +42,13 @@ public class AUGConfiguration {
     public boolean encodeConditionalOperators = false;
     
     /**
+     * The level to go for removing the members, methods and fields, of this object
+     * 0 - No removal
+     * 1 - Remove immediate members
+     * 2 - Remove immediate members and their members
+     */
+    public int removeImplementationCode = 0;
+    /**
      * 
      */
     public boolean groum = false;

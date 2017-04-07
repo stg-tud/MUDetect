@@ -32,8 +32,10 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.ForStatement;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.Initializer;
@@ -138,7 +140,8 @@ public class EGroumGraph implements Serializable {
 		if (configuration.collapseIsomorphicSubgraphs)
 			collapseIsomorphicSubgraphs();
 		buildClosure();
-		removeThisMembers();
+		if (configuration.removeImplementationCode > 0)
+			removeThisMembers();
 		deleteReferences();
 		deleteAssignmentNodes();
 		deleteUnreachableNodes();
@@ -825,6 +828,12 @@ public class EGroumGraph implements Serializable {
 		String name = astNode.getIdentifier();
 		String type = null;
 		if (astNode.resolveTypeBinding() != null) {
+			// TODO figure out if is constant and, if yes, value 
+//			IBinding b = astNode.resolveBinding();
+//			if (b instanceof IVariableBinding) {
+//				IVariableBinding vb = (IVariableBinding) b;
+//				vb.getConstantValue();
+//			}
 			type = astNode.resolveTypeBinding().getTypeDeclaration().getName();
 		}
 		String[] info = context.getLocalVariableInfo(name);
@@ -887,6 +896,7 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			QualifiedName astNode) {
+		// TODO figure out if is constant and, if yes, value
 		EGroumGraph pdg = buildArgumentPDG(control, branch, astNode.getQualifier());
 		EGroumDataNode node = pdg.getOnlyDataOut();
 		String type = node.dataType;
@@ -1814,6 +1824,7 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			FieldAccess astNode) {
+		// TODO figure out if is constant and, if yes, value
 		if (astNode.getExpression() instanceof ThisExpression) {
 			String name = astNode.getName().getIdentifier();
 			String type = null;
@@ -1854,6 +1865,7 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			SuperFieldAccess astNode) {
+		// TODO figure out if is constant and, if yes, value
 		String name = astNode.getName().getIdentifier();
 		String type = null;
 		if (astNode.resolveTypeBinding() != null)
@@ -2234,9 +2246,17 @@ public class EGroumGraph implements Serializable {
 			if (node instanceof EGroumDataNode) {
 				String name = ((EGroumDataNode) node).dataName;
 				if (name.equals("this") || name.equals("super")) {
-					for (EGroumEdge e : new HashSet<EGroumEdge>(node.outEdges)) {
-						if (e instanceof EGroumDataEdge && (((EGroumDataEdge) e).type == Type.QUALIFIER || ((EGroumDataEdge) e).type == Type.RECEIVER)) {
-							delete(e.target);
+					for (EGroumEdge e1 : new HashSet<EGroumEdge>(node.outEdges)) {
+						if (e1 instanceof EGroumDataEdge && (((EGroumDataEdge) e1).type == Type.QUALIFIER || ((EGroumDataEdge) e1).type == Type.RECEIVER)) {
+							if (configuration.removeImplementationCode > 1) {
+								if (e1.target instanceof EGroumDataNode) {
+									for (EGroumEdge e2 : new HashSet<EGroumEdge>(e1.target.outEdges)) {
+										if (e2 instanceof EGroumDataEdge && (((EGroumDataEdge) e2).type == Type.QUALIFIER || ((EGroumDataEdge) e2).type == Type.RECEIVER))
+											delete(e2.target);
+									}
+								}
+							}
+							delete(e1.target);
 						}
 					}
 				}
