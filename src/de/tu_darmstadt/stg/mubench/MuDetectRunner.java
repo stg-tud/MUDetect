@@ -35,6 +35,7 @@ public class MuDetectRunner extends MuBenchRunner {
                 args.getPatternPath(),
                 ProvidedPatternsModel::new,
                 args.getTargetPath(),
+                args.getDependencyClassPath(),
                 new EmptyOverlapsFinder(new AlternativeMappingsOverlapsFinder(new OverlapRatioPredicate(0.5))),
                 new EverythingViolationFactory(),
                 new NoRankingStrategy(),
@@ -53,6 +54,7 @@ public class MuDetectRunner extends MuBenchRunner {
                     outputPath = getPatternOutputPath();
                 }}, groums),
                 args.getTargetPath(),
+                args.getDependencyClassPath(),
                 new AlternativeMappingsOverlapsFinder(
                         new OverlapRatioPredicate(0.5),
                         new SubtypeNodeMatcher(new TypeHierarchyBuilder().build(new String[] {
@@ -79,13 +81,14 @@ public class MuDetectRunner extends MuBenchRunner {
                      CodePath trainingPath,
                      Function<Collection<EGroumGraph>, Model> loadModel,
                      CodePath targetPath,
+                     String[] dependenciesClassPath,
                      OverlapsFinder overlapsFinder,
                      ViolationFactory violationFactory,
                      ViolationRankingStrategy rankingStrategy,
                      DetectorOutput output) {
 
         long startTime = System.currentTimeMillis();
-        Collection<EGroumGraph> groums = buildGroums(trainingPath, configuration);
+        Collection<EGroumGraph> groums = buildGroums(trainingPath, dependenciesClassPath, configuration);
         long endTrainingLoadTime = System.currentTimeMillis();
         output.addRunInformation("trainingLoadTime", Long.toString(endTrainingLoadTime - startTime));
         output.addRunInformation("numberOfTrainingExamples", Integer.toString(groums.size()));
@@ -99,7 +102,7 @@ public class MuDetectRunner extends MuBenchRunner {
         output.addRunInformation("maxPatternSupport", Integer.toString(model.getMaxPatternSupport()));
         System.out.println("Maximum pattern support = " + model.getMaxPatternSupport());
 
-        Collection<AUG> targets = buildAUGs(targetPath, configuration);
+        Collection<AUG> targets = buildAUGs(targetPath, dependenciesClassPath, configuration);
         long endDetectionLoadTime = System.currentTimeMillis();
         output.addRunInformation("detectionLoadTime", Long.toString(endDetectionLoadTime - endTrainingTime));
         output.addRunInformation("numberOfTargets", Integer.toString(targets.size()));
@@ -119,12 +122,12 @@ public class MuDetectRunner extends MuBenchRunner {
         output.addRunInformation("reportingTime", Long.toString(endReportingTime - endDetectionTime));
     }
 
-    private Collection<EGroumGraph> buildGroums(CodePath path, AUGConfiguration configuration) {
-        return new EGroumBuilder(configuration).buildBatch(path.srcPath, null);
+    private Collection<EGroumGraph> buildGroums(CodePath path, String[] dependenciesClassPath, AUGConfiguration configuration) {
+        return new EGroumBuilder(configuration).buildBatch(path.srcPath, dependenciesClassPath);
     }
 
-    private Collection<AUG> buildAUGs(CodePath path, AUGConfiguration configuration) {
-        return new AUGBuilder(configuration).build(path.srcPath, null);
+    private Collection<AUG> buildAUGs(CodePath path, String[] dependenciesClassPath, AUGConfiguration configuration) {
+        return new AUGBuilder(configuration).build(path.srcPath, dependenciesClassPath);
     }
 
     private void report(List<Violation> violations, DetectorOutput output) {
