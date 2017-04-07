@@ -11,7 +11,7 @@ import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Location;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import de.tu_darmstadt.stg.mudetect.ranking.*;
-import de.tu_darmstadt.stg.mudetect.typehierarchy.TypeHierarchyBuilder;
+import de.tu_darmstadt.stg.mudetect.typehierarchy.TargetSrcTypeHierarchy;
 import egroum.AUGBuilder;
 import egroum.AUGConfiguration;
 import egroum.EGroumBuilder;
@@ -44,8 +44,6 @@ public class MuDetectRunner extends MuBenchRunner {
 
     @Override
     protected void mineAndDetect(DetectorArgs args, DetectorOutput output) throws Exception {
-
-
         run(new AUGConfiguration(),
                 args.getTargetPath(),
                 groums -> new MinedPatternsModel(new Configuration() {{
@@ -57,9 +55,9 @@ public class MuDetectRunner extends MuBenchRunner {
                 args.getDependencyClassPath(),
                 new AlternativeMappingsOverlapsFinder(
                         new OverlapRatioPredicate(0.5),
-                        new SubtypeNodeMatcher(new TypeHierarchyBuilder().build(new String[] {
-                                TypeHierarchyBuilder.RT_JAR_PATH
-                        }))),
+                        new SubtypeNodeMatcher(TargetSrcTypeHierarchy.build(
+                                args.getTargetPath().srcPath,
+                                args.getDependencyClassPath()))),
                 new MissingElementViolationFactory(),
                 new WeightRankingStrategy(
                         new AverageWeightFunction(
