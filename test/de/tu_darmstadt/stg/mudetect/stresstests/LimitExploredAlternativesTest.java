@@ -28,7 +28,7 @@ public class LimitExploredAlternativesTest {
                 .withDataNode("B2", "B").withDataEdge("A", ORDER, "B2")
                 .withDataNode("B3", "B").withDataEdge("A", ORDER, "B3");
 
-        AlternativeMappingsOverlapsFinder finder = new AlternativeMappingsOverlapsFinder(o -> true);
+        AlternativeMappingsOverlapsFinder finder = new AlternativeMappingsOverlapsFinder();
         finder.setMaxNumberOfAlternatives(2);
         List<Overlap> overlaps = finder.findOverlaps(target.build(), somePattern(pattern));
 

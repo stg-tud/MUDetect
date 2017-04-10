@@ -94,6 +94,6 @@ public class EqualsMethodsTest {
                 .withDataEdge("eq", EGroumDataEdge.Type.DEFINITION, "b8");
         Pattern pattern = somePattern(patternAUG);
 
-        new AlternativeMappingsOverlapsFinder(o -> true).findOverlaps(target, pattern);
+        new AlternativeMappingsOverlapsFinder().findOverlaps(target, pattern);
     }
 }

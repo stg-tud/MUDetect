@@ -31,7 +31,7 @@ public class AlternativePatternsIntegrationTest {
         Pattern patternB = buildPattern("void b(Iterator i) { while (i.hasNext()) { i.remove(); } }", 2);
         AUG target = buildAUG("void v(Iterator i) { i.hasNext(); }");
         MuDetect detector = new MuDetect(() -> asSet(patternA, patternB),
-                new AlternativeMappingsOverlapsFinder(i -> true),
+                new AlternativeMappingsOverlapsFinder(),
                 new MissingElementViolationFactory(),
                 new WeightRankingStrategy(new PatternSupportWeightFunction()));
 
@@ -50,7 +50,7 @@ public class AlternativePatternsIntegrationTest {
         AUG target = buildAUG("void t(Integer i) { i.hashCode(); }");
         TypeHierarchy typeHierarchy = new TypeHierarchy() {{ addSupertype("Integer", "Object"); }};
         MuDetect detector = new MuDetect(() -> asSet(pattern),
-                new AlternativeMappingsOverlapsFinder(o -> true, new SubtypeNodeMatcher(typeHierarchy)),
+                new AlternativeMappingsOverlapsFinder(new SubtypeNodeMatcher(typeHierarchy)),
                 new MissingElementViolationFactory(),
                 new NoRankingStrategy());
 

@@ -274,13 +274,11 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
 
     public static long numberOfExploredAlternatives = 0;
 
-    private final Predicate<Overlap> overlapPredicate;
     private final List<NodeMatcher> nodeMatchers;
 
     private int maxNumberOfAlternatives = 100000;
 
-    public AlternativeMappingsOverlapsFinder(Predicate<Overlap> overlapPredicate, NodeMatcher... nodeMatchers) {
-        this.overlapPredicate = overlapPredicate;
+    public AlternativeMappingsOverlapsFinder(NodeMatcher... nodeMatchers) {
         this.nodeMatchers = new ArrayList<>(Arrays.asList(nodeMatchers));
         this.nodeMatchers.add(new EquallyLabelledNodeMatcher());
     }
@@ -309,7 +307,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
             // extending from a mapping of this node M). In any case, exploring from a mapping of N is redundant.
             if (coveredTargetNodes.contains(fragment.getFirstTargetNode())) continue;
             Overlap overlap = fragment.findLargestOverlap(maxNumberOfAlternatives, this::match);
-            if (overlap != null && overlapPredicate.test(overlap)) {
+            if (overlap != null) {
                 overlaps.add(overlap);
                 coveredTargetNodes.addAll(overlap.getMappedTargetNodes());
             }

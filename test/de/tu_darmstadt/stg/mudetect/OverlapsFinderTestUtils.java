@@ -15,7 +15,7 @@ class OverlapsFinderTestUtils {
         AUG target = targetBuilder.build();
         Pattern pattern = somePattern(patternBuilder);
 
-        return new AlternativeMappingsOverlapsFinder(i -> true).findOverlaps(target, pattern);
+        return new AlternativeMappingsOverlapsFinder().findOverlaps(target, pattern);
     }
 
     static void assertFindsOverlaps(TestAUGBuilder patternBuilder,
