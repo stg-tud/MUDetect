@@ -10,6 +10,7 @@ import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.extend;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.instance;
+import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.someOverlap;
 import static de.tu_darmstadt.stg.mudetect.model.TestViolationBuilder.someViolation;
 import static egroum.EGroumDataEdge.Type.ORDER;
 import static egroum.EGroumDataEdge.Type.PARAMETER;
@@ -86,6 +87,18 @@ public class GenerateTargetEnvironmentDotGraphTest {
         String dotGraph = toDotGraph(someViolation(instance));
 
         assertDotGraphContains(dotGraph, "[ label=\"para\" style=\"dotted\" color=\"gray\" fontcolor=\"gray\" ];");
+    }
+
+    /**
+     * The rendering of environment graphs can take ages, since they may get large. Therefore, we limit the number of
+     * iterations performed in graph layouting, since it doesn't make much of a difference for graphs of this size
+     * anyways.
+     */
+    @Test
+    public void setsNSLimitAttribute() throws Exception {
+        String dotGraph = toDotGraph(someViolation(someOverlap()));
+
+        assertDotGraphContains(dotGraph, "nslimit=10000;");
     }
 
     private String toDotGraph(Violation violation) {

@@ -6,6 +6,8 @@ import de.tu_darmstadt.stg.mudetect.model.Violation;
 import egroum.EGroumEdge;
 import egroum.EGroumNode;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class ViolationDotExporter {
@@ -26,14 +28,14 @@ public class ViolationDotExporter {
     public String toTargetDotGraph(Violation violation) {
         Overlap overlap = violation.getOverlap();
         AUG target = overlap.getTarget();
-        return toTargetDotGraph(overlap, target);
+        return toTargetDotGraph(overlap, target, new HashMap<>());
     }
 
-    private String toTargetDotGraph(Overlap instance, AUG target) {
+    private String toTargetDotGraph(Overlap instance, AUG target, Map<String, String> graphAttributes) {
         return new AUGDotExporter(
                 new ViolationNodeAttributeProvider(instance, "gray"),
                 new ViolationEdgeAttributeProvider(instance, "gray"))
-                .toDotGraph(target);
+                .toDotGraph(target, graphAttributes);
     }
 
     /**
@@ -44,7 +46,7 @@ public class ViolationDotExporter {
     public String toTargetEnvironmentDotGraph(Violation violation) {
         Overlap overlap = violation.getOverlap();
         AUG targetEnvironment = getTargetEnvironmentAUG(overlap);
-        return toTargetDotGraph(overlap, targetEnvironment);
+        return toTargetDotGraph(overlap, targetEnvironment, new HashMap<String, String>() {{ put("nslimit", "10000"); }});
     }
 
     private static AUG getTargetEnvironmentAUG(Overlap overlap) {
