@@ -139,7 +139,9 @@ public class MuDetectRunner extends MuBenchRunner {
             finding.put("confidence", Float.toString(violation.getConfidence()));
             finding.put("pattern_support", Integer.toString(violation.getOverlap().getPattern().getSupport()));
             finding.put("confidence_string", violation.getConfidenceString());
-            finding.put("pattern_examples", violation.getOverlap().getPattern().getExampleLocations().stream().map(Object::toString).distinct().limit(5).collect(Collectors.toSet()));
+            finding.put("pattern_examples", violation.getOverlap().getPattern().getExampleLocations().stream()
+                    .map(Object::toString).map(loc -> loc.split("checkouts/")[1]).distinct().limit(5)
+                    .collect(Collectors.toSet()));
         }
     }
 }
