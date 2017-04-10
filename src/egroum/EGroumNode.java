@@ -17,14 +17,14 @@ public abstract class EGroumNode {
 		/*invocationTypes.add(ASTNode.ARRAY_ACCESS);
 		invocationTypes.add(ASTNode.ARRAY_CREATION);
 		invocationTypes.add(ASTNode.ARRAY_INITIALIZER);*/
-		invocationTypes.add(ASTNode.ASSERT_STATEMENT);
-		invocationTypes.add(ASTNode.ASSIGNMENT);
+//		invocationTypes.add(ASTNode.ASSERT_STATEMENT);
+//		invocationTypes.add(ASTNode.ASSIGNMENT);
 		invocationTypes.add(ASTNode.BREAK_STATEMENT);
-		invocationTypes.add(ASTNode.CAST_EXPRESSION);
+//		invocationTypes.add(ASTNode.CAST_EXPRESSION);
 		invocationTypes.add(ASTNode.CLASS_INSTANCE_CREATION);
 		invocationTypes.add(ASTNode.CONSTRUCTOR_INVOCATION);
 		invocationTypes.add(ASTNode.CONTINUE_STATEMENT);
-		invocationTypes.add(ASTNode.INSTANCEOF_EXPRESSION);
+//		invocationTypes.add(ASTNode.INSTANCEOF_EXPRESSION);
 		invocationTypes.add(ASTNode.METHOD_INVOCATION);
 		invocationTypes.add(ASTNode.RETURN_STATEMENT);
 		invocationTypes.add(ASTNode.SUPER_CONSTRUCTOR_INVOCATION);
