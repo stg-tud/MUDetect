@@ -125,3 +125,4 @@ buildNumber.properties
 output
 /aug-improvement
 /log*.txt
+/temp/

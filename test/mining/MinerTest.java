@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
 import java.util.*;
 
 import egroum.AUGConfiguration;
@@ -119,6 +120,7 @@ public class MinerTest {
 	@Test
 	public void jackrabbit1() {
 		String targetSource = "public class ItemManager {\n" + 
+				"    private SessionImpl session;" + 
 				"    private boolean canRead(ItemData data, Path path) throws AccessDeniedException, RepositoryException {\n" + 
 				"        if (data.getState().getStatus() == ItemState.STATUS_NEW && !data.getDefinition().isProtected()) {\n" + 
 				"            return true;\n" + 
@@ -126,6 +128,7 @@ public class MinerTest {
 				"            return (path == null) ? canRead(data.getId()) : session.getAccessManager().canRead(path);\n" + 
 				"        }\n" + 
 				"    }\n" + 
+				"  private boolean canRead(ItemId id) { return true; }\n" + 
 				"}";
 		String patternSource = "class CheckStateNotNull {\n" + 
 			"  boolean canRead(ItemData data, Path path, SessionImpl session) throws AccessDeniedException, RepositoryException {\n" + 
@@ -143,7 +146,9 @@ public class MinerTest {
 			"  private boolean canRead(ItemId id) { return true; }\n" + 
 			"}";
 		ArrayList<EGroumGraph> groums = buildGroums(new String[]{targetSource, patternSource}, null);
-
+		for (EGroumGraph g : groums)
+			g.toGraphics("temp");
+		
 		List<Pattern> patterns = mine(groums, null);
 
 		print(patterns);
@@ -153,6 +158,7 @@ public class MinerTest {
 	@Test
 	public void acmath_1() {
 		String targetSource = "class SubLine {\n" + 
+				"    private Line line;" +
 				"    public Vector3D intersection(final SubLine subLine, final boolean includeEndPoints) {\n" + 
 				"        // compute the intersection on infinite line\n" + 
 				"        Vector3D v1D = line.intersection(subLine.line);\n" + 
@@ -224,7 +230,7 @@ public class MinerTest {
 	}
 
 	private List<Pattern> mine(ArrayList<EGroumGraph> groums, String[] classpaths) {
-		Miner miner = new Miner("test", new Configuration() {{ minPatternSupport = 2; maxPatternSize = 30; }});
+		Miner miner = new Miner("test", new Configuration() {{ minPatternSupport = 2; maxPatternSize = 300; }});
 		return new ArrayList<>(miner.mine(groums));
 	}
 	
@@ -239,7 +245,9 @@ public class MinerTest {
 			assertThat(set.size(), is(pattern.getRepresentative().getNodes().size()));
 			EGroumGraph g = new EGroumGraph(pattern.getRepresentative());
 			System.err.println(" - " + g);
-			g.toGraphics("temp");
+			File dir = new File("temp/" + pattern.getId() + "/");
+			dir.mkdirs();
+			g.toGraphics(dir.getAbsolutePath());
 		}
 	}
 }
