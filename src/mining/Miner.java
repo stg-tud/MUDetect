@@ -55,12 +55,7 @@ public class Miner {
 					nodes = new HashSet<EGroumNode>();
 				nodes.add(node);
 				nodesOfLabel.put(label, nodes);
-				if (node.isCoreAction()
-						&& node.getAstNodeType() != ASTNode.ASSERT_STATEMENT
-						&& node.getAstNodeType() != ASTNode.BREAK_STATEMENT
-						&& node.getAstNodeType() != ASTNode.CONTINUE_STATEMENT
-						&& node.getAstNodeType() != ASTNode.RETURN_STATEMENT
-						&& node.getAstNodeType() != ASTNode.THROW_STATEMENT)
+				if (node.getAstNodeType() == ASTNode.METHOD_INVOCATION)
 					coreLabels.add(label);
 			}
 		}
@@ -70,7 +65,6 @@ public class Miner {
 		for (String label : new HashSet<String>(nodesOfLabel.keySet())) {
 			HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
 			if (nodes.size() < config.minPatternSupport) {
-				// FIXME
 				for (EGroumNode node : nodes) {
 					boolean isDefAction = false;
 					if (node instanceof EGroumActionNode) {
