@@ -55,7 +55,7 @@ public class Miner {
 					nodes = new HashSet<EGroumNode>();
 				nodes.add(node);
 				nodesOfLabel.put(label, nodes);
-				if (node.getAstNodeType() == ASTNode.METHOD_INVOCATION)
+				if (node.getAstNodeType() == ASTNode.METHOD_INVOCATION && node.isCoreAction())
 					coreLabels.add(label);
 			}
 		}
