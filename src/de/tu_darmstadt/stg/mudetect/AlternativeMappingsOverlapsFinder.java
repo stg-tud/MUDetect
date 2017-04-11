@@ -3,7 +3,6 @@ package de.tu_darmstadt.stg.mudetect;
 import de.tu_darmstadt.stg.mudetect.dot.AUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.dot.AUGEdgeAttributeProvider;
 import de.tu_darmstadt.stg.mudetect.dot.AUGNodeAttributeProvider;
-import de.tu_darmstadt.stg.mudetect.matcher.NodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.mining.Pattern;
@@ -12,64 +11,67 @@ import egroum.EGroumNode;
 
 import java.util.*;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
 
     private static class Alternative {
-        final PatternFragment fragment;
-        final List<EGroumNode> targetNodes = new ArrayList<>();
-        final List<EGroumEdge> targetEdges = new ArrayList<>();
+        final TargetFragment fragment;
+        final List<EGroumNode> patternNodes = new ArrayList<>();
+        final List<EGroumEdge> patternEdges = new ArrayList<>();
 
-        Alternative(PatternFragment fragment, EGroumNode firstTargetNode) {
+        Alternative(TargetFragment fragment, EGroumNode firstPatternNode) {
             this.fragment = fragment;
-            targetNodes.add(firstTargetNode);
+            patternNodes.add(firstPatternNode);
         }
 
-        private Alternative(PatternFragment fragment) {
+        private Alternative(TargetFragment fragment) {
             this.fragment = fragment;
         }
 
-        Collection<EGroumNode> getMappedTargetNodes() {
-            return targetNodes.stream().filter(node -> node != null).collect(Collectors.toList());
+        Collection<EGroumNode> getMappedPatternNodes() {
+            return patternNodes.stream().filter(node -> node != null).collect(Collectors.toList());
         }
 
         int getNodeSize() {
-            return getMappedTargetNodes().size();
+            return getMappedPatternNodes().size();
         }
 
         int getEdgeSize() {
-            return (int) targetEdges.stream().filter(edge -> edge != null).count();
+            return (int) patternEdges.stream().filter(edge -> edge != null).count();
         }
 
-        EGroumNode getMappedTargetNode(EGroumNode patternNode) {
-            int nodeIndex = fragment.getPatternNodeIndex(patternNode);
-            return 0 <= nodeIndex && nodeIndex < targetNodes.size() ? targetNodes.get(nodeIndex) : null;
+        int getSize() {
+            return getNodeSize() + getEdgeSize();
         }
 
-        boolean isUnmappedTargetEdge(EGroumEdge targetEdge) {
-            return !targetEdges.contains(targetEdge);
+        EGroumNode getMappedPatternNode(EGroumNode targetNode) {
+            int nodeIndex = fragment.getTargetNodeIndex(targetNode);
+            return 0 <= nodeIndex && nodeIndex < patternNodes.size() ? patternNodes.get(nodeIndex) : null;
         }
 
-        boolean isCompatibleExtension(EGroumEdge patternEdge, EGroumEdge targetEdge) {
-            return isCompatibleExtension(patternEdge.getSource(), targetEdge.getSource()) &&
-                    isCompatibleExtension(patternEdge.getTarget(), targetEdge.getTarget());
+        boolean isUnmappedPatternEdge(EGroumEdge patternEdge) {
+            return !patternEdges.contains(patternEdge);
         }
 
-        boolean isCompatibleExtension(EGroumNode patternNode, EGroumNode targetNode) {
-            EGroumNode mappedTargetNode = getMappedTargetNode(patternNode);
-            return (mappedTargetNode == null && !targetNodes.contains(targetNode)) || mappedTargetNode == targetNode;
+        boolean isCompatibleExtension(EGroumEdge targetEdge, EGroumEdge patternEdge) {
+            return isCompatibleExtension(targetEdge.getSource(), patternEdge.getSource()) &&
+                    isCompatibleExtension(targetEdge.getTarget(), patternEdge.getTarget());
         }
 
-        Alternative createExtension(int patternEdgeIndex, int patternSourceIndex, int patternTargetIndex, EGroumEdge targetEdge) {
+        boolean isCompatibleExtension(EGroumNode targetNode, EGroumNode patternNode) {
+            EGroumNode mappedPatternNode = getMappedPatternNode(targetNode);
+            return (mappedPatternNode == null && !patternNodes.contains(patternNode)) || mappedPatternNode == patternNode;
+        }
+
+        Alternative createExtension(int targetEdgeIndex, int targetSourceIndex, int targetTargetIndex, EGroumEdge patternEdge) {
             Alternative copy = new Alternative(fragment);
-            copy.targetEdges.addAll(targetEdges);
-            insertAt(copy.targetEdges, patternEdgeIndex, targetEdge);
-            copy.targetNodes.addAll(targetNodes);
-            insertAt(copy.targetNodes, patternSourceIndex, targetEdge.getSource());
-            insertAt(copy.targetNodes, patternTargetIndex, targetEdge.getTarget());
+            copy.patternEdges.addAll(patternEdges);
+            insertAt(copy.patternEdges, targetEdgeIndex, patternEdge);
+            copy.patternNodes.addAll(patternNodes);
+            insertAt(copy.patternNodes, targetSourceIndex, patternEdge.getSource());
+            insertAt(copy.patternNodes, targetTargetIndex, patternEdge.getTarget());
             return copy;
         }
 
@@ -89,17 +91,17 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
 
         private Overlap toOverlap() {
             Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
-            for (int i = 0; i < fragment.exploredPatternNodes.size() && i < targetNodes.size(); i++) {
-                EGroumNode targetNode = targetNodes.get(i);
-                if (targetNode != null) {
-                    targetNodeByPatternNode.put(fragment.exploredPatternNodes.get(i), targetNode);
+            for (int i = 0; i < fragment.exploredTargetNodes.size() && i < patternNodes.size(); i++) {
+                EGroumNode patternNode = patternNodes.get(i);
+                if (patternNode != null) {
+                    targetNodeByPatternNode.put(patternNode, fragment.exploredTargetNodes.get(i));
                 }
             }
             Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge = new HashMap<>();
-            for (int i = 0; i < fragment.exploredPatternEdges.size() && i < targetEdges.size(); i++) {
-                EGroumEdge targetEdge = targetEdges.get(i);
-                if (targetEdge != null) {
-                    targetEdgeByPatternEdge.put(fragment.exploredPatternEdges.get(i), targetEdge);
+            for (int i = 0; i < fragment.exploredTargetEdges.size() && i < patternEdges.size(); i++) {
+                EGroumEdge patternEdge = patternEdges.get(i);
+                if (patternEdge != null) {
+                    targetEdgeByPatternEdge.put(patternEdge, fragment.exploredTargetEdges.get(i));
                 }
             }
             return new Overlap(fragment.pattern, fragment.target, targetNodeByPatternNode, targetEdgeByPatternEdge);
@@ -111,162 +113,152 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
             if (o == null || getClass() != o.getClass()) return false;
             Alternative that = (Alternative) o;
             return Objects.equals(fragment, that.fragment) &&
-                    Objects.equals(targetNodes, that.targetNodes) &&
-                    Objects.equals(targetEdges, that.targetEdges);
+                    Objects.equals(patternNodes, that.patternNodes) &&
+                    Objects.equals(patternEdges, that.patternEdges);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(fragment, targetNodes, targetEdges);
+            return Objects.hash(fragment, patternNodes, patternEdges);
         }
 
         @Override
         public String toString() {
             return "Alternative{" +
-                    "targetNodes=" + targetNodes +
-                    ", targetEdges=" + targetEdges +
+                    "patternNodes=" + patternNodes +
+                    ", patternEdges=" + patternEdges +
                     '}';
         }
     }
 
-    private static class PatternFragment {
+    private static class TargetFragment {
         private final AUG target;
         private final Pattern pattern;
-        private final EGroumNode firstTargetNode;
-        private int numberOfExploredAlternatives;
 
-        private final List<EGroumNode> exploredPatternNodes = new ArrayList<>();
-        private final List<EGroumEdge> exploredPatternEdges = new ArrayList<>();
+        private final List<EGroumNode> exploredTargetNodes = new ArrayList<>();
+        private final List<EGroumEdge> exploredTargetEdges = new ArrayList<>();
 
-        private PatternFragment(AUG target, Pattern pattern, EGroumNode firstPatternNode, EGroumNode firstTargetNode) {
+        private TargetFragment(AUG target, Pattern pattern, EGroumNode firstTargetNode) {
             this.target = target;
             this.pattern = pattern;
-            this.firstTargetNode = firstTargetNode;
-
-            this.exploredPatternNodes.add(firstPatternNode);
-        }
-
-        int getPatternNodeIndex(EGroumNode patternNode) {
-            return exploredPatternNodes.indexOf(patternNode);
+            this.exploredTargetNodes.add(firstTargetNode);
         }
 
         EGroumNode getFirstTargetNode() {
-            return firstTargetNode;
+            return this.exploredTargetNodes.get(0);
         }
 
-        Overlap findLargestOverlap(int maxNumberOfAlternatives, BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {
-            numberOfExploredAlternatives = 0;
-            Set<Alternative> alternatives = new HashSet<>();
-            alternatives.add(new Alternative(this, firstTargetNode));
+        int getTargetNodeIndex(EGroumNode targetNode) {
+            return exploredTargetNodes.indexOf(targetNode);
+        }
 
-            Set<EGroumEdge> patternExtensionEdges = new HashSet<>(pattern.edgesOf(exploredPatternNodes.get(0)));
-            while (!patternExtensionEdges.isEmpty() && alternatives.size() < maxNumberOfAlternatives) {
-                EGroumEdge patternEdge = pollEdgeWithLeastAlternatives(patternExtensionEdges, alternatives, edgeMatcher);
-                System.out.print("  Extending along " + patternEdge + "...");
+        Set<Overlap> findLargestOverlaps(int maxNumberOfAlternatives,
+                                         BiPredicate<EGroumNode, EGroumNode> nodeMatcher,
+                                         BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {
+            EGroumNode targetStartNode = getFirstTargetNode();
 
-                int patternSourceIndex = getOrCreatePatternNodeIndex(patternEdge.getSource());
-                int patternTargetIndex = getOrCreatePatternNodeIndex(patternEdge.getTarget());
-                int patternEdgeIndex = exploredPatternEdges.size();
-                exploredPatternEdges.add(patternEdge);
+            Set<Alternative> alternatives = pattern.vertexSet().stream()
+                    .filter(patternNode -> nodeMatcher.test(targetStartNode, patternNode))
+                    .map(patternNode -> new Alternative(this, patternNode)).collect(Collectors.toSet());
+
+            Set<EGroumEdge> targetExtensionEdges = new HashSet<>(target.edgesOf(targetStartNode));
+            while (!targetExtensionEdges.isEmpty() && alternatives.size() <= maxNumberOfAlternatives) {
+                EGroumEdge targetEdge = pollEdgeWithLeastAlternatives(targetExtensionEdges, alternatives, edgeMatcher);
+                System.out.print("  Extending along " + targetEdge + "...");
+
+                int targetSourceIndex = getOrCreateTargetNodeIndex(targetEdge.getSource());
+                int targetTargetIndex = getOrCreateTargetNodeIndex(targetEdge.getTarget());
+                int targetEdgeIndex = exploredTargetEdges.size();
+                exploredTargetEdges.add(targetEdge);
 
                 Set<Alternative> newAlternatives = new HashSet<>();
                 for (Alternative alternative : alternatives) {
-                    Set<EGroumEdge> candidateTargetEdges = getCandidateTargetEdges(alternative, patternEdge, edgeMatcher);
-                    for (EGroumEdge targetEdge : candidateTargetEdges) {
-                        newAlternatives.add(alternative.createExtension(patternEdgeIndex, patternSourceIndex, patternTargetIndex, targetEdge));
+                    Set<EGroumEdge> candidatePatternEdges = getCandidatePatternEdges(alternative, targetEdge, edgeMatcher);
+                    for (EGroumEdge patternEdge : candidatePatternEdges) {
+                        newAlternatives.add(alternative.createExtension(targetEdgeIndex, targetSourceIndex, targetTargetIndex, patternEdge));
                     }
                 }
 
                 if (!newAlternatives.isEmpty()) {
                     alternatives.clear();
                     alternatives.addAll(newAlternatives);
-                    patternExtensionEdges.addAll(pattern.edgesOf(patternEdge.getSource()));
-                    patternExtensionEdges.addAll(pattern.edgesOf(patternEdge.getTarget()));
-                    patternExtensionEdges.removeAll(exploredPatternEdges);
+                    targetExtensionEdges.addAll(target.edgesOf(targetEdge.getSource()));
+                    targetExtensionEdges.addAll(target.edgesOf(targetEdge.getTarget()));
+                    targetExtensionEdges.removeAll(exploredTargetEdges);
                 }
                 System.out.println(" now " + alternatives.size() + " alternatives.");
             }
 
-            numberOfExploredAlternatives = alternatives.size();
+            AlternativeMappingsOverlapsFinder.numberOfExploredAlternatives += alternatives.size();
 
-            if (alternatives.size() < maxNumberOfAlternatives)
-                return getLargestAlternative(alternatives).toOverlap();
-            else
-                return null;
+            if (alternatives.size() > maxNumberOfAlternatives) {
+                alternatives.clear();
+            }
+
+            return getLargestOverlaps(alternatives);
         }
 
-        private EGroumEdge pollEdgeWithLeastAlternatives(Set<EGroumEdge> patternExtensionEdges,
+        private EGroumEdge pollEdgeWithLeastAlternatives(Set<EGroumEdge> targetExtensionEdges,
                                                          Set<Alternative> alternatives,
                                                          BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {
             int minNumberOfAlternatives = Integer.MAX_VALUE;
-            EGroumEdge bestPatternEdge = null;
-            for (EGroumEdge patternExtensionEdge : patternExtensionEdges) {
+            EGroumEdge bestTargetEdge = null;
+            for (EGroumEdge targetExtensionEdge : targetExtensionEdges) {
                 int numberOfAlternatives = 0;
                 for (Alternative alternative : alternatives) {
-                    numberOfAlternatives += getCandidateTargetEdges(alternative, patternExtensionEdge, edgeMatcher).size();
+                    numberOfAlternatives += getCandidatePatternEdges(alternative, targetExtensionEdge, edgeMatcher).size();
                 }
                 if (numberOfAlternatives < minNumberOfAlternatives) {
-                    bestPatternEdge = patternExtensionEdge;
+                    bestTargetEdge = targetExtensionEdge;
                     minNumberOfAlternatives = numberOfAlternatives;
                 }
             }
-            patternExtensionEdges.remove(bestPatternEdge);
-            return bestPatternEdge;
+            targetExtensionEdges.remove(bestTargetEdge);
+            return bestTargetEdge;
         }
 
-        private Set<EGroumEdge> getCandidateTargetEdges(Alternative alternative, EGroumEdge patternEdge, BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {
-            EGroumNode targetSourceNode = alternative.getMappedTargetNode(patternEdge.getSource());
-            EGroumNode targetTargetNode = alternative.getMappedTargetNode(patternEdge.getTarget());
+        private Set<EGroumEdge> getCandidatePatternEdges(Alternative alternative, EGroumEdge targetEdge, BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {
+            EGroumNode patternSourceNode = alternative.getMappedPatternNode(targetEdge.getSource());
+            EGroumNode patternTargetNode = alternative.getMappedPatternNode(targetEdge.getTarget());
 
             Stream<EGroumEdge> candidates;
-            if (targetSourceNode != null) {
-                candidates = target.outgoingEdgesOf(targetSourceNode).stream();
-                if (targetTargetNode != null) {
-                    candidates = candidates.filter(edge -> edge.getTarget() == targetTargetNode);
+            if (patternSourceNode != null) {
+                candidates = pattern.outgoingEdgesOf(patternSourceNode).stream();
+                if (patternTargetNode != null) {
+                    candidates = candidates.filter(edge -> edge.getTarget() == patternTargetNode);
                 }
-            } else if (targetTargetNode != null) {
-                candidates = target.incomingEdgesOf(targetTargetNode).stream();
+            } else if (patternTargetNode != null) {
+                candidates = pattern.incomingEdgesOf(patternTargetNode).stream();
             } else {
                 throw new IllegalStateException("cannot extend with an edge that is detached from the alternative");
             }
 
             return candidates
-                    .filter(alternative::isUnmappedTargetEdge)
-                    .filter(targetEdge -> edgeMatcher.test(targetEdge, patternEdge))
-                    .filter(targetEdge -> alternative.isCompatibleExtension(patternEdge, targetEdge))
+                    .filter(alternative::isUnmappedPatternEdge)
+                    .filter(patternEdge -> edgeMatcher.test(targetEdge, patternEdge))
+                    .filter(patternEdge -> alternative.isCompatibleExtension(targetEdge, patternEdge))
                     .collect(Collectors.toSet());
         }
 
-        private int getOrCreatePatternNodeIndex(EGroumNode source) {
-            int patternSourceIndex = getPatternNodeIndex(source);
-            if (patternSourceIndex == -1) {
-                patternSourceIndex = exploredPatternNodes.size();
-                exploredPatternNodes.add(source);
+        private int getOrCreateTargetNodeIndex(EGroumNode source) {
+            int targetSourceIndex = getTargetNodeIndex(source);
+            if (targetSourceIndex == -1) {
+                targetSourceIndex = exploredTargetNodes.size();
+                exploredTargetNodes.add(source);
             }
-            return patternSourceIndex;
+            return targetSourceIndex;
         }
 
-        private Alternative getLargestAlternative(Set<Alternative> alternatives) {
-            int maxSize = 0;
-            Alternative candidate = null;
-            for (Alternative alternative : alternatives) {
-                int size = alternative.getNodeSize() + alternative.getEdgeSize();
-                if (size > maxSize) {
-                    maxSize = size;
-                    candidate = alternative;
-                }
-            }
-            return candidate;
-        }
-
-        int getNumberOfExploredAlternatives() {
-            return numberOfExploredAlternatives;
+        private Set<Overlap> getLargestOverlaps(Set<Alternative> alternatives) {
+            int maxSize = alternatives.stream().mapToInt(Alternative::getSize).max().orElse(0);
+            return alternatives.stream().filter(alt -> alt.getSize() == maxSize)
+                    .map(Alternative::toOverlap).collect(Collectors.toSet());
         }
 
         @Override
         public String toString() {
-            return "PatternFragment{" +
-                    "firstTargetNode=" + firstTargetNode +
+            return "TargetFragment{" +
+                    "firstTargetNode=" + getFirstTargetNode() +
                     '}';
         }
     }
@@ -289,39 +281,32 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
     public List<Overlap> findOverlaps(AUG target, Pattern pattern) {
         List<Overlap> overlaps = new ArrayList<>();
         Set<EGroumNode> coveredTargetNodes = new HashSet<>();
-        Collection<PatternFragment> singleNodeFragments = getSingleNodeFragments(target, pattern);
+        Collection<TargetFragment> singleNodeFragments = getSingleNodeFragments(target, pattern);
         if (!singleNodeFragments.isEmpty()) {
             AUGDotExporter exporter = new AUGDotExporter(new AUGNodeAttributeProvider(), new AUGEdgeAttributeProvider());
             System.out.println("Target: " + exporter.toDotGraph(target));
             System.out.println("Pattern: " + exporter.toDotGraph(pattern));
         }
-        for (PatternFragment fragment : singleNodeFragments) {
-            System.out.println("Exploring from " + fragment + "...");
-
-            // When a target node N is mapped in one of the overlaps found by extending from a pattern node A, then
-            // either this already covers all overlaps mapping N (in which case we don't need to explore from a mapping
-            // of N anymore) or any other instance includes at least on other target node M that is not mapped in any
-            // overlaps found by extending from A (in which case the remaining mappings of N will be found when
-            // extending from a mapping of this node M). In any case, exploring from a mapping of N is redundant.
+        for (TargetFragment fragment : singleNodeFragments) {
+            // Our goal is to find for every mappable target node at least one overlap that maps the target node. Hence,
+            // if we found one before, there's no need to start from this node again.
             if (coveredTargetNodes.contains(fragment.getFirstTargetNode())) continue;
-            Overlap overlap = fragment.findLargestOverlap(maxNumberOfAlternatives, this::match);
-            if (overlap != null) {
+
+            System.out.println("Exploring from " + fragment + "...");
+            Set<Overlap> newOverlaps = fragment.findLargestOverlaps(maxNumberOfAlternatives, nodeMatcher, this::match);
+            for (Overlap overlap : newOverlaps) {
                 overlaps.add(overlap);
                 coveredTargetNodes.addAll(overlap.getMappedTargetNodes());
             }
-            numberOfExploredAlternatives += fragment.getNumberOfExploredAlternatives();
         }
 
         removeSubgraphs(overlaps);
         return overlaps;
     }
 
-    private Collection<PatternFragment> getSingleNodeFragments(AUG target, Pattern pattern) {
-        return pattern.getMeaningfulActionNodesByUniqueness().stream()
-                .flatMap(patternNode -> target.getMeaningfulActionNodes().stream()
-                        .filter(targetNode -> nodeMatcher.test(targetNode, patternNode))
-                        .map(targetNode -> new PatternFragment(target, pattern, patternNode, targetNode)))
-                .collect(Collectors.toList());
+    private Collection<TargetFragment> getSingleNodeFragments(AUG target, Pattern pattern) {
+        return target.getMeaningfulActionNodes().stream()
+                .map(targetNode -> new TargetFragment(target, pattern, targetNode)).collect(Collectors.toSet());
     }
 
     private boolean match(EGroumEdge targetEdge, EGroumEdge patternEdge) {
@@ -335,11 +320,11 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
             Overlap overlap1 = overlaps.get(i);
             for (int j = i + 1; j < overlaps.size(); j++) {
                 Overlap overlap2 = overlaps.get(j);
-                if (overlap2.isSubgraphOf(overlap1)) {
-                    overlaps.remove(j);
+                if (overlap1.coversAllTargetNodesCoveredBy(overlap2)) {
+                    overlaps.remove(j); // remove overlap2
                     j--;
-                } else if (overlap1.isSubgraphOf(overlap2)) {
-                    overlaps.remove(i);
+                } else if (overlap2.coversAllTargetNodesCoveredBy(overlap1)) {
+                    overlaps.remove(i); // remove overlap1
                     i--;
                     break;
                 }

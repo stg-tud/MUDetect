@@ -116,26 +116,34 @@ public class FindViolationsTest {
         assertFindsOverlaps(pattern, target, instance, violation);
     }
 
+    /**
+     * Issue: The pattern expects three calls <code>a(); b(); a();</code>, but the target is
+     * <code>a(); a(); b();</code>. There's one overlap that matches all calls, but misses the edge from b() to a() and
+     * a second overlap that matches the <code>a(); b();</code> suffix from the target to the prefix of the pattern. We
+     * currently report only the larger overlap, since it covers all nodes covered by the smaller one and better
+     * explains the actual problem (the reversed call order).
+     */
     @Test
-    public void findsOnlyOneInstance() throws Exception {
+    public void findsBothPartialOverlaps() throws Exception {
         TestAUGBuilder pattern = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
                 .withDataEdge("a1", ORDER, "a2").withDataEdge("a1", ORDER, "b").withDataEdge("b", ORDER, "a2");
         TestAUGBuilder target = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
                 .withDataEdge("a1", ORDER, "a2").withDataEdge("a1", ORDER, "b").withDataEdge("a2", ORDER, "b");
 
-        List<Overlap> overlaps = findOverlaps(pattern, target);
+        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("a1", "a2", "b")
+                .withEdge("a1", ORDER, "a2").withEdge("a1", ORDER, "b");
 
-        assertThat(overlaps, hasSize(1));
+        assertFindsOverlaps(pattern, target, overlap);
     }
 
     /**
-     * Issue: What we have here is a pattern instance with an additional edge that matches an edge from the pattern. We
-     * expect the detection to find the instance. I'm undecided whether we want it to find a violation consisting only
-     * of the additional edge with its source and target nodes, since I'm yet to see a real scenario where this problem
-     * occurs...
+     * Issue: The pattern expects three calls <code>a(); a(); b();</code> where the two last calls may occur in
+     * arbitrary order, i.e., there's no edge between them. In the target, the calls occur in a fixed order, i.e., there
+     * is an edge between them, which happens to correspond to an edge in the pattern. We don't want
+     * <code>a(); b();</code> this to be reported as a partial instance, since it's really not.
      */
     @Test
-    public void considersEdgeDirectionBetweenEqualNodes() throws Exception {
+    public void filtersAdditionalOrderEdgeBetweenNodesFromAnInstance() throws Exception {
         TestAUGBuilder pattern = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
                 .withDataEdge("a1", ORDER, "a2").withDataEdge("a1", ORDER, "b");
         TestAUGBuilder target = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")

@@ -11,6 +11,7 @@ import java.util.List;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static egroum.EGroumDataEdge.Type.ORDER;
+import static egroum.EGroumDataEdge.Type.PARAMETER;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -23,11 +24,11 @@ import static org.junit.Assert.assertThat;
 public class LimitExploredAlternativesTest {
     @Test
     public void skipIfTooMany() throws Exception {
-        TestAUGBuilder pattern = buildAUG().withActionNodes("A").withDataNode("B").withDataEdge("A", ORDER, "B");
-        TestAUGBuilder target = buildAUG().withActionNode("A")
-                .withDataNode("B1", "B").withDataEdge("A", ORDER, "B1")
-                .withDataNode("B2", "B").withDataEdge("A", ORDER, "B2")
-                .withDataNode("B3", "B").withDataEdge("A", ORDER, "B3");
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A")
+                .withDataNode("B1", "B").withDataEdge("B1", PARAMETER, "A")
+                .withDataNode("B2", "B").withDataEdge("B2", PARAMETER, "A")
+                .withDataNode("B3", "B").withDataEdge("B3", PARAMETER, "A");
+        TestAUGBuilder target = buildAUG().withActionNode("A").withDataNode("B").withDataEdge("B", PARAMETER, "A");
 
         AlternativeMappingsOverlapsFinder finder = new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher());
         finder.setMaxNumberOfAlternatives(2);
