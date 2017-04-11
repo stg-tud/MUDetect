@@ -3,6 +3,7 @@ package de.tu_darmstadt.stg.mubench;
 import de.tu_darmstadt.stg.mubench.cli.*;
 import de.tu_darmstadt.stg.mudetect.*;
 import de.tu_darmstadt.stg.mudetect.dot.ViolationDotExporter;
+import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.matcher.SubtypeNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.mining.MinedPatternsModel;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
@@ -36,7 +37,7 @@ public class MuDetectRunner extends MuBenchRunner {
                 ProvidedPatternsModel::new,
                 args.getTargetPath(),
                 args.getDependencyClassPath(),
-                new EmptyOverlapsFinder(new AlternativeMappingsOverlapsFinder()),
+                new EmptyOverlapsFinder(new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher())),
                 new EverythingViolationFactory(),
                 new NoRankingStrategy(),
                 output);
@@ -56,7 +57,7 @@ public class MuDetectRunner extends MuBenchRunner {
                 new AlternativeMappingsOverlapsFinder(
                         new SubtypeNodeMatcher(TargetSrcTypeHierarchy.build(
                                 args.getTargetPath().srcPath,
-                                args.getDependencyClassPath()))),
+                                args.getDependencyClassPath())).or(new EquallyLabelledNodeMatcher())),
                 new MissingElementViolationFactory(),
                 new WeightRankingStrategy(
                         new AverageWeightFunction(

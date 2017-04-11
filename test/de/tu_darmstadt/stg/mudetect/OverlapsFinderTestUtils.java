@@ -1,5 +1,6 @@
 package de.tu_darmstadt.stg.mudetect;
 
+import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.*;
 import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 
@@ -15,7 +16,7 @@ class OverlapsFinderTestUtils {
         AUG target = targetBuilder.build();
         Pattern pattern = somePattern(patternBuilder);
 
-        return new AlternativeMappingsOverlapsFinder().findOverlaps(target, pattern);
+        return new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher()).findOverlaps(target, pattern);
     }
 
     static void assertFindsOverlaps(TestAUGBuilder patternBuilder,

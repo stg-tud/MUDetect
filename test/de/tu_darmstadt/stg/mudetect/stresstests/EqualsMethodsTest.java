@@ -1,6 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.stresstests;
 
 import de.tu_darmstadt.stg.mudetect.AlternativeMappingsOverlapsFinder;
+import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
@@ -94,6 +95,6 @@ public class EqualsMethodsTest {
                 .withDataEdge("eq", EGroumDataEdge.Type.DEFINITION, "b8");
         Pattern pattern = somePattern(patternAUG);
 
-        new AlternativeMappingsOverlapsFinder().findOverlaps(target, pattern);
+        new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher()).findOverlaps(target, pattern);
     }
 }

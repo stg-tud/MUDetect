@@ -3,7 +3,6 @@ package de.tu_darmstadt.stg.mudetect;
 import de.tu_darmstadt.stg.mudetect.dot.AUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.dot.AUGEdgeAttributeProvider;
 import de.tu_darmstadt.stg.mudetect.dot.AUGNodeAttributeProvider;
-import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.matcher.NodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
@@ -233,7 +232,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
 
             return candidates
                     .filter(alternative::isUnmappedTargetEdge)
-                    .filter(targetEdge -> edgeMatcher.test(patternEdge, targetEdge))
+                    .filter(targetEdge -> edgeMatcher.test(targetEdge, patternEdge))
                     .filter(targetEdge -> alternative.isCompatibleExtension(patternEdge, targetEdge))
                     .collect(Collectors.toSet());
         }
@@ -274,13 +273,12 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
 
     public static long numberOfExploredAlternatives = 0;
 
-    private final List<NodeMatcher> nodeMatchers;
+    private final BiPredicate<EGroumNode, EGroumNode> nodeMatcher;
 
     private int maxNumberOfAlternatives = 100000;
 
-    public AlternativeMappingsOverlapsFinder(NodeMatcher... nodeMatchers) {
-        this.nodeMatchers = new ArrayList<>(Arrays.asList(nodeMatchers));
-        this.nodeMatchers.add(new EquallyLabelledNodeMatcher());
+    public AlternativeMappingsOverlapsFinder(BiPredicate<EGroumNode, EGroumNode> nodeMatcher) {
+        this.nodeMatcher = nodeMatcher;
     }
 
     public void setMaxNumberOfAlternatives(int maxNumberOfAlternatives) {
@@ -321,19 +319,15 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
     private Collection<PatternFragment> getSingleNodeFragments(AUG target, Pattern pattern) {
         return pattern.getMeaningfulActionNodesByUniqueness().stream()
                 .flatMap(patternNode -> target.getMeaningfulActionNodes().stream()
-                        .filter(targetNode -> match(patternNode, targetNode))
+                        .filter(targetNode -> nodeMatcher.test(targetNode, patternNode))
                         .map(targetNode -> new PatternFragment(target, pattern, patternNode, targetNode)))
                 .collect(Collectors.toList());
     }
 
     private boolean match(EGroumEdge targetEdge, EGroumEdge patternEdge) {
-        return match(patternEdge.getSource(), targetEdge.getSource())
-                && patternEdge.getLabel().equals(targetEdge.getLabel())
-                && match(patternEdge.getTarget(), targetEdge.getTarget());
-    }
-
-    private boolean match(EGroumNode targetNode, EGroumNode patternNode) {
-        return nodeMatchers.stream().anyMatch(matcher -> matcher.test(targetNode, patternNode));
+        return nodeMatcher.test(targetEdge.getSource(), patternEdge.getSource())
+                && targetEdge.getLabel().equals(patternEdge.getLabel())
+                && nodeMatcher.test(targetEdge.getTarget(), patternEdge.getTarget());
     }
 
     private void removeSubgraphs(List<Overlap> overlaps) {

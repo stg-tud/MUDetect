@@ -1,6 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.stresstests;
 
 import de.tu_darmstadt.stg.mudetect.AlternativeMappingsOverlapsFinder;
+import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
@@ -28,7 +29,7 @@ public class LimitExploredAlternativesTest {
                 .withDataNode("B2", "B").withDataEdge("A", ORDER, "B2")
                 .withDataNode("B3", "B").withDataEdge("A", ORDER, "B3");
 
-        AlternativeMappingsOverlapsFinder finder = new AlternativeMappingsOverlapsFinder();
+        AlternativeMappingsOverlapsFinder finder = new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher());
         finder.setMaxNumberOfAlternatives(2);
         List<Overlap> overlaps = finder.findOverlaps(target.build(), somePattern(pattern));
 
