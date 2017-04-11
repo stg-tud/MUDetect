@@ -31,7 +31,7 @@ public class MuDetectRunner extends MuBenchRunner {
 
     @Override
     protected void detectOnly(DetectorArgs args, DetectorOutput output) throws Exception {
-        run(new AUGConfiguration(),
+        run(getAUGConfiguration(),
                 args.getPatternPath(),
                 ProvidedPatternsModel::new,
                 args.getTargetPath(),
@@ -44,7 +44,7 @@ public class MuDetectRunner extends MuBenchRunner {
 
     @Override
     protected void mineAndDetect(DetectorArgs args, DetectorOutput output) throws Exception {
-        run(new AUGConfiguration(),
+        run(getAUGConfiguration(),
                 args.getTargetPath(),
                 groums -> new MinedPatternsModel(new Configuration() {{
                     minPatternSupport = 10;
@@ -65,6 +65,19 @@ public class MuDetectRunner extends MuBenchRunner {
                                 new ViolationSupportWeightFunction(),
                                 new OverlapWithEdgesToMissingNodesWeightFunction())),
                 output);
+    }
+
+    private static AUGConfiguration getAUGConfiguration() {
+        return new AUGConfiguration() {{
+            collapseIsomorphicSubgraphs = true;
+            collapseTemporaryDataNodes = false;
+            collapseTemporaryDataNodesIncomingToControlNodes = true;
+            encodeUnaryOperators = false;
+            encodeConditionalOperators = false;
+            removeImplementationCode = 2;
+            groum = false;
+            minStatements = 0;
+        }};
     }
 
     /**
