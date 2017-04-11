@@ -12,7 +12,7 @@ public class SubtypeNodeMatcher implements NodeMatcher {
     }
 
     @Override
-    public boolean test(EGroumNode node1, EGroumNode node2) {
-        return typeHierarchy.isA(node1.getLabel(), node2.getLabel());
+    public boolean test(EGroumNode targetNode, EGroumNode patternNode) {
+        return typeHierarchy.isA(targetNode.getLabel(), patternNode.getLabel());
     }
 }
