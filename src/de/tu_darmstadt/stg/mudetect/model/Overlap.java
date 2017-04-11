@@ -77,7 +77,7 @@ public class Overlap {
 
     public boolean isSubgraphOf(Overlap other) {
         return other.getMappedTargetNodes().containsAll(this.getMappedTargetNodes()) &&
-                other.getMappedTargetEdges().containsAll(getMappedTargetEdges());
+                other.getMappedTargetEdges().containsAll(this.getMappedTargetEdges());
     }
 
     public boolean isSameTargetOverlap(Overlap instance) {
