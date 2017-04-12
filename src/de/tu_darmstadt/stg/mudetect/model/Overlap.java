@@ -63,6 +63,8 @@ public class Overlap {
         return getMappedTargetEdges().size();
     }
 
+    public int getSize() { return getNodeSize() + getEdgeSize(); }
+
     public Set<EGroumNode> getMissingNodes() {
         Set<EGroumNode> patternNodes = new HashSet<>(getPattern().vertexSet());
         patternNodes.removeAll(patternOverlap.vertexSet());
