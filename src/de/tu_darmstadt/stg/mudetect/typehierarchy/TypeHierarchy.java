@@ -6,6 +6,7 @@ public class TypeHierarchy {
     private Map<String, Set<String>> supertypesByType = new HashMap<>();
 
     protected TypeHierarchy() {
+        addSupertypes("char", Arrays.asList("byte", "short", "int", "long", "float", "double"));
         addSupertypes("byte", Arrays.asList("short", "int", "long", "float", "double"));
         addSupertypes("short", Arrays.asList("int", "long", "float", "double"));
         addSupertypes("int", Arrays.asList("long", "float", "double"));
