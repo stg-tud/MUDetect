@@ -10,6 +10,12 @@ public class AUGImprovement2 {
     public TestName name = new TestName();
 
     @Test
+    public void operators() throws Exception {
+        // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
+    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_operators.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    }
+
+    @Test
     public void qualifiedType() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
     	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_qualifiedType.java", null, "aug-improvement", new AUGConfiguration(){{groum = false;}});

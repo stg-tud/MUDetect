@@ -1781,9 +1781,23 @@ public class EGroumGraph implements Serializable {
 		if (node instanceof EGroumDataNode)
 			return pdg;
 		String type = node.dataType;
-		if (type.equals("<a>") || type.equals("<b>"))
+		if (type.equals("<a>")) {
 			type = "int";
-		else if (type.equals("<r>") || type.equals("<c>"))
+			for (EGroumEdge e : node.inEdges) {
+				if (e.source instanceof EGroumDataNode && e.source.dataType.equals("String")) {
+					type = "String";
+					break;
+				}
+			}
+		} else if (type.equals("<b>")) {
+			type = "int";
+			for (EGroumEdge e : node.inEdges) {
+				if (e.source instanceof EGroumDataNode && e.source.dataType.equals("boolean")) {
+					type = "boolean";
+					break;
+				}
+			}
+		} else if (type.equals("<r>") || type.equals("<c>"))
 			type = "boolean";
 		else if (type.equals(PrefixExpression.Operator.COMPLEMENT) || type.equals(PrefixExpression.Operator.MINUS))
 			type = "int";
