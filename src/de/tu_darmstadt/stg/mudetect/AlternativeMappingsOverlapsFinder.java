@@ -155,16 +155,19 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
         Set<Overlap> findLargestOverlaps(int maxNumberOfAlternatives,
                                          BiPredicate<EGroumNode, EGroumNode> nodeMatcher,
                                          BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {
-            EGroumNode targetStartNode = getFirstTargetNode();
 
-            Set<Alternative> alternatives = pattern.vertexSet().stream()
-                    .filter(patternNode -> nodeMatcher.test(targetStartNode, patternNode))
-                    .map(patternNode -> new Alternative(this, patternNode)).collect(Collectors.toSet());
+            Set<Alternative> alternatives = getAlternatives(getFirstTargetNode(), nodeMatcher);
 
-            Set<EGroumEdge> targetExtensionEdges = new HashSet<>(target.edgesOf(targetStartNode));
+            if (alternatives.isEmpty()) {
+                return Collections.emptySet();
+            }
+
+            Set<EGroumEdge> targetExtensionEdges = new HashSet<>(target.edgesOf(getFirstTargetNode()));
             while (!targetExtensionEdges.isEmpty() && alternatives.size() <= maxNumberOfAlternatives) {
                 EGroumEdge targetEdge = pollEdgeWithLeastAlternatives(targetExtensionEdges, alternatives, edgeMatcher);
                 System.out.print("  Extending along " + targetEdge + "...");
+
+                if (targetEdge == null) break;
 
                 int targetSourceIndex = getOrCreateTargetNodeIndex(targetEdge.getSource());
                 int targetTargetIndex = getOrCreateTargetNodeIndex(targetEdge.getTarget());
@@ -198,44 +201,33 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
             return getLargestOverlaps(alternatives);
         }
 
+        private Set<Alternative> getAlternatives(EGroumNode node, BiPredicate<EGroumNode, EGroumNode> nodeMatcher) {
+            return pattern.vertexSet().stream()
+                    .filter(patternNode -> nodeMatcher.test(node, patternNode))
+                    .map(patternNode -> new Alternative(this, patternNode)).collect(Collectors.toSet());
+        }
+
         private EGroumEdge pollEdgeWithLeastAlternatives(Set<EGroumEdge> targetExtensionEdges,
                                                          Set<Alternative> alternatives,
                                                          BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {
             int minNumberOfAlternatives = Integer.MAX_VALUE;
             EGroumEdge bestTargetEdge = null;
-            for (EGroumEdge targetExtensionEdge : targetExtensionEdges) {
+            for (Iterator<EGroumEdge> edgeIt = targetExtensionEdges.iterator(); edgeIt.hasNext();) {
+                EGroumEdge targetExtensionEdge = edgeIt.next();
                 int numberOfAlternatives = 0;
                 for (Alternative alternative : alternatives) {
                     numberOfAlternatives += getCandidatePatternEdges(alternative, targetExtensionEdge, edgeMatcher).size();
                 }
-                if (numberOfAlternatives < minNumberOfAlternatives) {
                 numberOfAlternatives *= getEquivalentTargetEdgeCount(targetExtensionEdge, edgeMatcher);
+                if (numberOfAlternatives == 0) {
+                    edgeIt.remove();
+                } else if (numberOfAlternatives < minNumberOfAlternatives) {
                     bestTargetEdge = targetExtensionEdge;
                     minNumberOfAlternatives = numberOfAlternatives;
                 }
             }
             targetExtensionEdges.remove(bestTargetEdge);
             return bestTargetEdge;
-        }
-
-        private int getEquivalentTargetEdgeCount(EGroumEdge targetEdge, BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {
-            int sourceIndex = getTargetNodeIndex(targetEdge.getSource());
-            int targetIndex = getTargetNodeIndex(targetEdge.getTarget());
-
-            Stream<EGroumEdge> candidates;
-            if (sourceIndex > -1) {
-                if (targetIndex > -1) {
-                    candidates = Stream.of(targetEdge);
-                } else {
-                    candidates = target.edgesOf(targetEdge.getSource()).stream();
-                }
-            } else if (targetIndex > -1) {
-                candidates = target.edgesOf(targetEdge.getTarget()).stream();
-            } else {
-                throw new IllegalArgumentException("cannot extend with an edge that is detachted from the fragment");
-            }
-
-            return (int) candidates.filter(edge -> edgeMatcher.test(edge, targetEdge)).count();
         }
 
         private Set<EGroumEdge> getCandidatePatternEdges(Alternative alternative, EGroumEdge targetEdge, BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {
@@ -251,7 +243,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
             } else if (patternTargetNode != null) {
                 candidates = pattern.incomingEdgesOf(patternTargetNode).stream();
             } else {
-                throw new IllegalStateException("cannot extend with an edge that is detached from the alternative");
+                throw new IllegalArgumentException("cannot extend with an edge that is detached from the alternative");
             }
 
             return candidates
@@ -261,11 +253,31 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
                     .collect(Collectors.toSet());
         }
 
-        private int getOrCreateTargetNodeIndex(EGroumNode source) {
-            int targetSourceIndex = getTargetNodeIndex(source);
+        private int getEquivalentTargetEdgeCount(EGroumEdge targetEdge, BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {
+            boolean sourceNodeIsMapped = getTargetNodeIndex(targetEdge.getSource()) > -1;
+            boolean targetNodeIsMapped = getTargetNodeIndex(targetEdge.getTarget()) > -1;
+
+            Stream<EGroumEdge> candidates;
+            if (sourceNodeIsMapped) {
+                if (targetNodeIsMapped) {
+                    candidates = Stream.of(targetEdge);
+                } else {
+                    candidates = target.outgoingEdgesOf(targetEdge.getSource()).stream();
+                }
+            } else if (targetNodeIsMapped) {
+                candidates = target.incomingEdgesOf(targetEdge.getTarget()).stream();
+            } else {
+                throw new IllegalArgumentException("cannot extend with an edge that is detachted from the fragment");
+            }
+
+            return (int) candidates.filter(edge -> edgeMatcher.test(targetEdge, edge)).count();
+        }
+
+        private int getOrCreateTargetNodeIndex(EGroumNode targetNode) {
+            int targetSourceIndex = getTargetNodeIndex(targetNode);
             if (targetSourceIndex == -1) {
                 targetSourceIndex = exploredTargetNodes.size();
-                exploredTargetNodes.add(source);
+                exploredTargetNodes.add(targetNode);
             }
             return targetSourceIndex;
         }
