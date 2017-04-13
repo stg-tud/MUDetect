@@ -5,18 +5,55 @@ import java.util.ArrayList;
 public static class InverseStore {
     protected ArrayList<String> part = new ArrayList<String>();
     protected ArrayList<Object> follow = new ArrayList<Object>();
-	StringBuffer sb = new StringBuffer();
-    
-    void m() {
-    	sb.append(1).append("2");
-    	sb.toString();
+	StringBuffer sb = new StringBuffer(), buf = new StringBuffer();
+	
+	int index = 0;
+	String oid;
+	
+    public String nextToken() {
+        if (index == oid.length()) {
+            return null;
+        }
+        int     end = index + 1;
+        boolean quoted = false;
+        boolean escaped = false;
+        buf.setLength(0);
+        while (end != oid.length()) {
+            char    c = oid.charAt(end);
+            if (c == '"') {
+                if (!escaped) {
+                    quoted = !quoted;
+                }
+                else {
+                    buf.append(c);
+                }
+                escaped = false;
+            }
+            else {
+                if (escaped || quoted) {
+                    buf.append(c);
+                    escaped = false;
+                }
+                else if (c == '\\') {
+                    escaped = true;
+                }
+                else if (c == ',') {
+                    break;
+                }
+                else {
+                    buf.append(c);
+                }
+            }
+            end++;
+        }
+        index = end;
+        return buf.toString().trim();
     }
 
-    /**
-     * Gets the full name by traversing the hierarchy using only the
-     * index 0.
-     * @return the full name
-     */
+    void m() {
+    	System.out.println(oid.charAt(oid.length()));
+    }
+//
     public String getDefaultName() {
         InverseStore store = this;
         while (true) {
@@ -27,14 +64,6 @@ public static class InverseStore {
         }
     }
 
-    /**
-     * Search the current node for a similar name. A similar name starts
-     * with the same name but has a different index. For example, "detail[3]"
-     * is similar to "detail[9]". The main use is to discard names that
-     * correspond to out of bounds records.
-     * @param name the name to search
-     * @return <CODE>true</CODE> if a similitude was found
-     */
     public boolean isSimilar(String name) {
         int idx = name.indexOf('[');
         name = name.substring(0, idx + 1);

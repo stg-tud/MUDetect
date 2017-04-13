@@ -2246,19 +2246,30 @@ public class EGroumGraph implements Serializable {
 			if (node instanceof EGroumDataNode) {
 				String name = ((EGroumDataNode) node).dataName;
 				if (name.equals("this") || name.equals("super")) {
-					for (EGroumEdge e1 : new HashSet<EGroumEdge>(node.outEdges)) {
-						if (e1 instanceof EGroumDataEdge && (((EGroumDataEdge) e1).type == Type.QUALIFIER || ((EGroumDataEdge) e1).type == Type.RECEIVER)) {
-							if (configuration.removeImplementationCode > 1) {
-								if (e1.target instanceof EGroumDataNode) {
-									for (EGroumEdge e2 : new HashSet<EGroumEdge>(e1.target.outEdges)) {
-										if (e2 instanceof EGroumDataEdge && (((EGroumDataEdge) e2).type == Type.QUALIFIER || ((EGroumDataEdge) e2).type == Type.RECEIVER))
-											delete(e2.target);
+					ArrayList<EGroumNode> refs = node.getReferences();
+					if (refs.isEmpty())
+						continue;
+					for (EGroumNode ref : refs) {
+						for (EGroumEdge e1 : new HashSet<EGroumEdge>(ref.outEdges)) {
+							if (e1 instanceof EGroumDataEdge && (((EGroumDataEdge) e1).type == Type.QUALIFIER || ((EGroumDataEdge) e1).type == Type.RECEIVER)) {
+								for (EGroumNode ref1 : e1.target.getReferences()) {
+									if (configuration.removeImplementationCode > 1) {
+										for (EGroumEdge e2 : new HashSet<EGroumEdge>(ref1.outEdges)) {
+											if (e2 instanceof EGroumDataEdge && (((EGroumDataEdge) e2).type == Type.QUALIFIER || ((EGroumDataEdge) e2).type == Type.RECEIVER)) {
+												for (EGroumNode ref2 : e2.target.getReferences())
+													delete(ref2);
+												delete(e2.target);
+											}
+										}
 									}
+									delete(ref1);
 								}
+								delete(e1.target);
 							}
-							delete(e1.target);
 						}
+						delete(ref);
 					}
+					delete(node);
 				}
 			}
 		}
