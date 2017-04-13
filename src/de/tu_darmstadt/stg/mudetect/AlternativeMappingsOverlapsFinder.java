@@ -137,8 +137,8 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
         private final Set<EGroumEdge> candidates = new HashSet<>();
         private final List<EGroumEdge> exploredTargetEdges = new ArrayList<>();
 
-        private EGroumEdge nextExtension;
-        private int nextExtensionIndex;
+        private EGroumEdge nextExtensionEdge;
+        private int nextExtensionEdgeIndex;
         private Map<Alternative, Set<EGroumEdge>> nextExtensionMappingAlternatives;
 
         ExtensionStrategy(TargetFragment fragment, BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {
@@ -153,7 +153,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
 
         boolean hasMoreExtensionEdges(Set<Alternative> alternatives) {
             nextExtensionMappingAlternatives = new HashMap<>();
-            nextExtension = null;
+            nextExtensionEdge = null;
             int minNumberOfAlternatives = Integer.MAX_VALUE;
             for (Iterator<EGroumEdge> edgeIt = candidates.iterator(); edgeIt.hasNext();) {
                 EGroumEdge targetExtensionEdge = edgeIt.next();
@@ -168,15 +168,15 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
                 if (numberOfAlternatives == 0) {
                     edgeIt.remove();
                 } else if (numberOfAlternatives < minNumberOfAlternatives) {
-                    nextExtension = targetExtensionEdge;
+                    nextExtensionEdge = targetExtensionEdge;
                     nextExtensionMappingAlternatives = patternExtensionCandidates;
                     minNumberOfAlternatives = numberOfAlternatives;
                 }
             }
-            candidates.remove(nextExtension);
-            nextExtensionIndex = exploredTargetEdges.size();
-            exploredTargetEdges.add(nextExtension);
-            return nextExtension != null;
+            candidates.remove(nextExtensionEdge);
+            nextExtensionEdgeIndex = exploredTargetEdges.size();
+            exploredTargetEdges.add(nextExtensionEdge);
+            return nextExtensionEdge != null;
         }
 
         private Set<EGroumEdge> getCandidatePatternEdges(Alternative alternative, EGroumEdge targetEdge) {
@@ -223,14 +223,14 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
         }
 
         EGroumEdge nextExtensionEdge() {
-            return nextExtension;
+            return nextExtensionEdge;
         }
 
-        int getNextExtensionIndex() {
-            return nextExtensionIndex;
+        int getNextExtensionEdgeIndex() {
+            return nextExtensionEdgeIndex;
         }
 
-        Set<EGroumEdge> nextExtensionMappingAlternatives(Alternative alternative) {
+        Set<EGroumEdge> getNextExtensionEdgeMappingAlternatives(Alternative alternative) {
             return nextExtensionMappingAlternatives.get(alternative);
         }
     }
@@ -240,7 +240,6 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
         private final Pattern pattern;
 
         private final List<EGroumNode> exploredTargetNodes = new ArrayList<>();
-        private ExtensionStrategy extensionStrategy;
 
         private TargetFragment(AUG target, Pattern pattern, EGroumNode firstTargetNode) {
             this.target = target;
@@ -259,8 +258,9 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
         Set<Overlap> findLargestOverlaps(int maxNumberOfAlternatives,
                                          BiPredicate<EGroumNode, EGroumNode> nodeMatcher,
                                          BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {
-            extensionStrategy = new ExtensionStrategy(this, edgeMatcher);
+            ExtensionStrategy extensionStrategy = new ExtensionStrategy(this, edgeMatcher);
             extensionStrategy.addExtensionCandidates(getFirstTargetNode());
+
             Set<Alternative> alternatives = getAlternatives(getFirstTargetNode(), nodeMatcher);
             while (extensionStrategy.hasMoreExtensionEdges(alternatives) && alternatives.size() <= maxNumberOfAlternatives) {
                 EGroumEdge targetEdge = extensionStrategy.nextExtensionEdge();
@@ -268,10 +268,10 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
 
                 int targetSourceIndex = getOrCreateTargetNodeIndex(targetEdge.getSource());
                 int targetTargetIndex = getOrCreateTargetNodeIndex(targetEdge.getTarget());
-                int targetEdgeIndex = extensionStrategy.getNextExtensionIndex();
+                int targetEdgeIndex = extensionStrategy.getNextExtensionEdgeIndex();
 
                 Set<Alternative> newAlternatives = alternatives.stream().flatMap(alternative ->
-                        extensionStrategy.nextExtensionMappingAlternatives(alternative).stream()
+                        extensionStrategy.getNextExtensionEdgeMappingAlternatives(alternative).stream()
                                 .map(patternEdge -> alternative.createExtension(targetEdgeIndex, targetSourceIndex, targetTargetIndex, patternEdge)))
                         .collect(Collectors.toSet());
 
@@ -290,7 +290,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
                 alternatives.clear();
             }
 
-            return getLargestOverlaps(alternatives, extensionStrategy.exploredTargetEdges);
+            return getLargestOverlaps(alternatives, exploredTargetNodes, extensionStrategy.exploredTargetEdges);
         }
 
         private Set<Alternative> getAlternatives(EGroumNode node, BiPredicate<EGroumNode, EGroumNode> nodeMatcher) {
@@ -308,10 +308,10 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
             return targetSourceIndex;
         }
 
-        private Set<Overlap> getLargestOverlaps(Set<Alternative> alternatives, List<EGroumEdge> exploredTargetEdges) {
+        private Set<Overlap> getLargestOverlaps(Set<Alternative> alternatives, List<EGroumNode> targetNodes, List<EGroumEdge> targetEdges) {
             int maxSize = alternatives.stream().mapToInt(Alternative::getSize).max().orElse(0);
             return alternatives.stream().filter(alt -> alt.getSize() == maxSize)
-                    .map(alternative -> alternative.toOverlap(target, pattern, exploredTargetNodes, exploredTargetEdges)).collect(Collectors.toSet());
+                    .map(alternative -> alternative.toOverlap(target, pattern, targetNodes, targetEdges)).collect(Collectors.toSet());
         }
 
         @Override
