@@ -5,6 +5,8 @@ package mining;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -82,7 +84,17 @@ public class Miner {
 			if (!coreLabels.contains(label))
 				nodesOfLabel.remove(label);
 		}
-		for (String label : nodesOfLabel.keySet()) {
+		ArrayList<String> list = new ArrayList<>(nodesOfLabel.keySet());
+		Collections.sort(list, new Comparator<String>() {
+			@Override
+			public int compare(String l1, String l2) {
+				int c1 = nodesOfLabel.get(l1).size(), c2 = nodesOfLabel.get(l2).size();
+				if (c1 != c2)
+					return c2 - c1;
+				return l2.compareTo(l1);
+			}
+		});
+		for (String label : list) {
 			HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
 			HashSet<Fragment> fragments = new HashSet<>();
 			for (EGroumNode node : nodes) {
@@ -171,6 +183,7 @@ public class Miner {
 		}
 		HashSet<Fragment> group = new HashSet<>(), frequentFragments = new HashSet<>();
 		int xfreq = config.minPatternSupport - 1;
+		String xlabel = "";
 		boolean extensible = false;
 		for (String label : labelFragmentExtendableNodes.keySet()) {
 			HashMap<Fragment, HashSet<ArrayList<EGroumNode>>> fens = labelFragmentExtendableNodes.get(label);
@@ -181,14 +194,14 @@ public class Miner {
 					xfs.add(xf);
 				}
 			}
-			boolean isGiant = isGiant(xfs, pattern, label);
 			System.out.println("\tTrying with label " + label + ": " + xfs.size());
 			HashSet<Fragment> g = new HashSet<>();
-			int freq = mine(g, xfs, pattern, isGiant, frequentFragments);
-			if (freq > xfreq) {
+			int freq = mine(g, xfs, pattern, frequentFragments);
+			if (freq >= config.minPatternSupport && isBetter(freq, label, xfreq, xlabel)) {
 				extensible = true;
 				group = g;
 				xfreq = freq;
+				xlabel = label;
 			} else if (freq == -1)
 				extensible = true;
 		}
@@ -196,11 +209,11 @@ public class Miner {
 		if (extensible) {
 			HashSet<Fragment> inextensibles = new HashSet<>(pattern.getFragments());
 			for (Fragment xf : frequentFragments) {
-				inextensibles.remove(xf.getGenFragmen());
+				inextensibles.remove(xf.getGenFragment());
 			}
 			Pattern ip = null;
 			if (inextensibles.size() >= config.minPatternSupport) {
-				int freq = computeFrequency(inextensibles, false);
+				int freq = computeFrequency(inextensibles);
 				if (freq >= config.minPatternSupport && !Lattice.contains(lattices, inextensibles)) {
 					ip = new Pattern(inextensibles, freq);
 					ip.subPattern = pattern.subPattern;
@@ -250,16 +263,19 @@ public class Miner {
 			pattern.add2Lattice(lattices);
 	}
 
-	private boolean isGiant(HashSet<Fragment> xfs, Pattern pattern, String label) {
-		return /*(EGroumNode.isMethod(label) || EGroumNode.isLiteral(label)) && */isGiant(xfs, pattern);
+	private boolean isBetter(int freq, String label, int xfreq, String xlabel) {
+		if (label.endsWith(")") && !xlabel.endsWith(")"))
+			return true;
+		if (!label.endsWith(")") && xlabel.endsWith(")"))
+			return false;
+		if (freq > xfreq)
+			return true;
+		if (freq < xfreq)
+			return false;
+		return label.compareTo(xlabel) > 0;
 	}
 
-	private boolean isGiant(HashSet<Fragment> xfs, Pattern pattern) {
-		return pattern.getSize() > 1 
-				&& (xfs.size() > config.maxPatternSupport || xfs.size() > pattern.getFragments().size() * pattern.getSize() * pattern.getSize());
-	}
-
-	private int mine(HashSet<Fragment> result, HashSet<Fragment> fragments, Pattern pattern, boolean isGiant, HashSet<Fragment> frequentFragments) {
+	private int mine(HashSet<Fragment> result, HashSet<Fragment> fragments, Pattern pattern, HashSet<Fragment> frequentFragments) {
 		HashMap<Integer, HashSet<Fragment>> buckets = new HashMap<>();
 		for (Fragment f : fragments) {
 			int h = f.getVectorHashCode();
@@ -279,7 +295,7 @@ public class Miner {
 		int xfreq = config.minPatternSupport - 1;
 		boolean extensible = false;
 		for (HashSet<Fragment> g : groups) {
-			int freq = computeFrequency(g, isGiant && isGiant(g, pattern));
+			int freq = computeFrequency(g);
 			if (freq >= config.minPatternSupport)
 				frequentFragments.addAll(g);
 			if (freq > xfreq) {
@@ -296,7 +312,7 @@ public class Miner {
 		return xfreq;
 	}
 
-	private int computeFrequency(HashSet<Fragment> fragments, boolean isGiant) {
+	private int computeFrequency(HashSet<Fragment> fragments) {
 		HashMap<EGroumGraph, ArrayList<Fragment>> fragmentsOfGraph = new HashMap<EGroumGraph, ArrayList<Fragment>>();
 		for (Fragment f : fragments) {
 			EGroumGraph g = f.getGraph();
@@ -315,8 +331,6 @@ public class Miner {
 				int j = i + 1;
 				while (j < fs.size()) {
 					if (f.overlap(fs.get(j))) {
-						if (isGiant)
-							fragments.remove(fs.get(j));
 						fs.remove(j);
 					}
 					else
@@ -342,18 +356,18 @@ public class Miner {
 
 	private void group(Fragment f, HashSet<HashSet<Fragment>> groups, HashSet<Fragment> bucket) {
 		HashSet<Fragment> group = new HashSet<>();
-		HashSet<Fragment> fs = new HashSet<>();
+		HashSet<Fragment> gens = new HashSet<>();
 		group.add(f);
-		fs.add(f.getGenFragmen());
+		gens.add(f.getGenFragment());
 		bucket.remove(f);
 		for (Fragment g : new HashSet<Fragment>(bucket)) {
 			if (f.getVector().equals(g.getVector())) {
 				group.add(g);
-				fs.add(g.getGenFragmen());
+				gens.add(g.getGenFragment());
 				bucket.remove(g);
 			}
 		}
-		if (fs.size() >= config.minPatternSupport && group.size() >= config.minPatternSupport) {
+		if (gens.size() >= config.minPatternSupport && group.size() >= config.minPatternSupport) {
 			removeDuplicates(group);
 			if (group.size() >= config.minPatternSupport)
 				groups.add(group);

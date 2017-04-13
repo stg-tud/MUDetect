@@ -36,7 +36,7 @@ public class Fragment {
 	private final Configuration config;
 
 	private int id = -1;
-	private Fragment genFragmen;
+	private Fragment genFragment;
 	private ArrayList<EGroumNode> nodes = new ArrayList<>();
 	private EGroumGraph graph;
 	private HashMap<Integer, Integer> vector = new HashMap<>();
@@ -58,7 +58,7 @@ public class Fragment {
 	
 	public Fragment(Fragment fragment, ArrayList<EGroumNode> ens) {
 		this(fragment.config);
-		this.genFragmen = fragment;
+		this.genFragment = fragment;
 		this.graph = fragment.graph;
 		this.nodes = new ArrayList<EGroumNode>(fragment.getNodes());
 		this.idSum = fragment.getIdSum();
@@ -126,12 +126,12 @@ public class Fragment {
 		this.id = id;
 	}
 	
-	public Fragment getGenFragmen() {
-		return genFragmen;
+	public Fragment getGenFragment() {
+		return genFragment;
 	}
 
-	public void setGenFragmen(Fragment genFragmen) {
-		this.genFragmen = genFragmen;
+	public void setGenFragmen(Fragment genFragment) {
+		this.genFragment = genFragment;
 	}
 
 	public ArrayList<EGroumNode> getNodes() {
@@ -373,7 +373,7 @@ public class Fragment {
 	}
 
 	public void delete() {
-		this.genFragmen = null;
+		this.genFragment = null;
 		this.graph = null;
 		this.nodes.clear();
 		this.nodes = null;
@@ -412,17 +412,22 @@ public class Fragment {
 	}
 
 	public HashMap<String, HashSet<ArrayList<EGroumNode>>> extend() {
-		HashSet<EGroumNode> ens = new HashSet<>();
+		HashSet<EGroumNode> ens = new HashSet<>(), exclusions = new HashSet<>();
 		for (EGroumNode node : nodes) {
 			for (EGroumNode n : node.getInNodes()) {
-				if (!nodes.contains(n))
+				if (n.isCoreAction() && n.getLabel().equals(node.getLabel()))
+					exclusions.add(n);
+				else if (!nodes.contains(n))
 					ens.add(n);
 			}
 			for (EGroumNode n : node.getOutNodes()) {
-				if (!nodes.contains(n))
+				if (n.isCoreAction() && n.getLabel().equals(node.getLabel()))
+					exclusions.add(n);
+				else if(!nodes.contains(n))
 					ens.add(n);
 			}
 		}
+		ens.removeAll(exclusions);
 		HashMap<String, HashSet<ArrayList<EGroumNode>>> lens = new HashMap<>();
 		for (EGroumNode node : ens) {
 			if (node instanceof EGroumActionNode){
@@ -537,19 +542,19 @@ public class Fragment {
 				}
 			}
 		}
-		Random r = new Random();
-		for (String label : lens.keySet()) {
-			HashSet<ArrayList<EGroumNode>> s = lens.get(label);
-			if (s.size() > 50) {
-				ArrayList<ArrayList<EGroumNode>> l = new ArrayList<>(s);
-				s.clear();
-				for (int i = 0; i < 50; i++) {
-					int j = r.nextInt(l.size());
-					s.add(l.get(j));
-					l.remove(j);
-				}
-			}
-		}
+//		Random r = new Random();
+//		for (String label : lens.keySet()) {
+//			HashSet<ArrayList<EGroumNode>> s = lens.get(label);
+//			if (s.size() > 50) {
+//				ArrayList<ArrayList<EGroumNode>> l = new ArrayList<>(s);
+//				s.clear();
+//				for (int i = 0; i < 50; i++) {
+//					int j = r.nextInt(l.size());
+//					s.add(l.get(j));
+//					l.remove(j);
+//				}
+//			}
+//		}
 		return lens;
 	}
 
