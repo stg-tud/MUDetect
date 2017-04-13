@@ -209,12 +209,33 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
                     numberOfAlternatives += getCandidatePatternEdges(alternative, targetExtensionEdge, edgeMatcher).size();
                 }
                 if (numberOfAlternatives < minNumberOfAlternatives) {
+                numberOfAlternatives *= getEquivalentTargetEdgeCount(targetExtensionEdge, edgeMatcher);
                     bestTargetEdge = targetExtensionEdge;
                     minNumberOfAlternatives = numberOfAlternatives;
                 }
             }
             targetExtensionEdges.remove(bestTargetEdge);
             return bestTargetEdge;
+        }
+
+        private int getEquivalentTargetEdgeCount(EGroumEdge targetEdge, BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {
+            int sourceIndex = getTargetNodeIndex(targetEdge.getSource());
+            int targetIndex = getTargetNodeIndex(targetEdge.getTarget());
+
+            Stream<EGroumEdge> candidates;
+            if (sourceIndex > -1) {
+                if (targetIndex > -1) {
+                    candidates = Stream.of(targetEdge);
+                } else {
+                    candidates = target.edgesOf(targetEdge.getSource()).stream();
+                }
+            } else if (targetIndex > -1) {
+                candidates = target.edgesOf(targetEdge.getTarget()).stream();
+            } else {
+                throw new IllegalArgumentException("cannot extend with an edge that is detachted from the fragment");
+            }
+
+            return (int) candidates.filter(edge -> edgeMatcher.test(edge, targetEdge)).count();
         }
 
         private Set<EGroumEdge> getCandidatePatternEdges(Alternative alternative, EGroumEdge targetEdge, BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {
