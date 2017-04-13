@@ -2,7 +2,7 @@ package input;
 
 import java.util.ArrayList;
 
-public static class InverseStore {
+public static class Test_receiver {
     protected ArrayList<String> part = new ArrayList<String>();
     protected ArrayList<Object> follow = new ArrayList<Object>();
 	StringBuffer sb = new StringBuffer(), buf = new StringBuffer();
@@ -53,7 +53,7 @@ public static class InverseStore {
     void m() {
     	System.out.println(oid.charAt(oid.length()));
     }
-//
+
     public String getDefaultName() {
         InverseStore store = this;
         while (true) {

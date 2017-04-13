@@ -1751,9 +1751,9 @@ public class EGroumGraph implements Serializable {
 		statementSources.remove(node);
 		sinks.remove(node);
 		statementSinks.remove(node);
-		EGroumNode qual = node.getQualifier();
-		if (qual != null && !qual.isDeclaration())
-			delete(qual);
+//		EGroumNode qual = node.getQualifier();
+//		if (qual != null && !qual.isDeclaration())
+//			delete(qual);
 		node.delete();
 	}
 
@@ -2463,7 +2463,6 @@ public class EGroumGraph implements Serializable {
 	}
 
 	private void deleteUnusedDataNodes() {
-		HashSet<EGroumNode> dels = new HashSet<>();
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
 			if (node instanceof EGroumDataNode) {
 				if (node.outEdges.isEmpty()) {
@@ -2471,17 +2470,15 @@ public class EGroumGraph implements Serializable {
 					q.add(node);
 					while (!q.isEmpty()) {
 						EGroumNode n = q.remove();
-						dels.add(n);
 						for (EGroumEdge e : n.inEdges) {
-							if (!dels.contains(e.source) && e.source instanceof EGroumDataNode && e.source.outEdges.size() == 1)
+							if (e.source instanceof EGroumDataNode && e.source.outEdges.size() == 1)
 								q.add(e.source);
 						}
+						delete(n);
 					}
 				}
 			}
 		}
-		for (EGroumNode node : dels)
-			delete(node);
 	}
 
 	public void deleteUnreachableNodes() {
