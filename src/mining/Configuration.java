@@ -13,6 +13,11 @@ public class Configuration {
      * Whether or not the miner should output log information to System.out.
      */
     public boolean disableSystemOut = false;
+    
+    /**
+     * 
+     */
+    public boolean disAllowRepeatedCalls = true;
 
     /**
      * Path to write mined patterns to. <code>null</code> to disable output.

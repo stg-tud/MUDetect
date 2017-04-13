@@ -427,7 +427,8 @@ public class Fragment {
 					ens.add(n);
 			}
 		}
-		ens.removeAll(exclusions);
+		if (config.disAllowRepeatedCalls)
+			ens.removeAll(exclusions);
 		HashMap<String, HashSet<ArrayList<EGroumNode>>> lens = new HashMap<>();
 		for (EGroumNode node : ens) {
 			if (node instanceof EGroumActionNode){
