@@ -1,5 +1,7 @@
 package egroum;
 
+import java.util.HashSet;
+
 public class EGroumDataEdge extends EGroumEdge {
 	public enum Type {RECEIVER, PARAMETER, DEFINITION, REFERENCE, CONDITION, DEPENDENCE, QUALIFIER, THROW, FINALLY, ORDER, CONTAINS}
 	
@@ -24,6 +26,19 @@ public class EGroumDataEdge extends EGroumEdge {
 	@Override
 	public String getLabel() {
 		return getLabel(type, label);
+	}
+
+	@Override
+	public boolean isDirect() {
+		HashSet<EGroumNode> inter = new HashSet<>();
+		for (EGroumEdge e: this.source.outEdges)
+			if (e instanceof EGroumDataEdge)
+				inter.add(e.target);
+		for (EGroumEdge e : this.target.inEdges) {
+			if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == this.type && inter.contains(e.source))
+				return false;
+		}
+		return true;
 	}
 
 	public static String getLabel(Type type) {

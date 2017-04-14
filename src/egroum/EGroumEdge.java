@@ -60,11 +60,7 @@ public abstract class EGroumEdge {
 			new EGroumControlEdge(source, target, ((EGroumControlEdge) e).label);
 	}
 
-	public boolean isDirect() {
-		HashSet<EGroumNode> inter = this.source.getOutNodes();
-		inter.retainAll(this.target.getInNodes());
-		return inter.isEmpty();
-	}
+	abstract public boolean isDirect();
 	
 	@Override
 	public String toString() {

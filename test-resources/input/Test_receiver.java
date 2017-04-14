@@ -51,7 +51,10 @@ public static class Test_receiver {
     }
 
     void m() {
-    	System.out.println(oid.charAt(oid.length()));
+    	String oid = new String();
+    	System.out.println(oid);
+    	System.out.println(oid);
+    	System.out.println(oid.charAt(oid.indexOf(oid)));
     }
 
     public String getDefaultName() {
