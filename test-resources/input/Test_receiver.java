@@ -51,9 +51,8 @@ public static class Test_receiver {
     }
 
     void m() {
-    	String oid = new String();
-    	System.out.println(oid);
-    	System.out.println(oid);
+    	System.out.println(oid.f1);
+    	System.out.println(oid.f2);
     	System.out.println(oid.charAt(oid.indexOf(oid)));
     }
 

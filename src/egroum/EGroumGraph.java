@@ -2271,30 +2271,37 @@ public class EGroumGraph implements Serializable {
 			if (node instanceof EGroumDataNode) {
 				String name = ((EGroumDataNode) node).dataName;
 				if (name.equals("this") || name.equals("super")) {
-					ArrayList<EGroumNode> refs = node.getReferences();
+					ArrayList<EGroumNode> refs = node.getReferences(); // references of this/super
 					if (refs.isEmpty())
 						continue;
-					for (EGroumNode ref : refs) {
+					for (EGroumNode ref : refs) {// a reference of this/super
 						for (EGroumEdge e1 : new HashSet<EGroumEdge>(ref.outEdges)) {
 							if (e1 instanceof EGroumDataEdge && (((EGroumDataEdge) e1).type == Type.QUALIFIER || ((EGroumDataEdge) e1).type == Type.RECEIVER)) {
-								for (EGroumNode ref1 : e1.target.getReferences()) {
-									if (configuration.removeImplementationCode > 1) {
-										for (EGroumEdge e2 : new HashSet<EGroumEdge>(ref1.outEdges)) {
-											if (e2 instanceof EGroumDataEdge && (((EGroumDataEdge) e2).type == Type.QUALIFIER || ((EGroumDataEdge) e2).type == Type.RECEIVER)) {
-												for (EGroumNode ref2 : e2.target.getReferences())
-													delete(ref2);
-												delete(e2.target);
+								ArrayList<EGroumNode> refs1 = e1.target.getReferences();
+								if (refs1.isEmpty())
+									delete(e1.target);
+								else {
+									for (EGroumNode ref1 : refs1) {
+										if (configuration.removeImplementationCode > 1) {
+											for (EGroumEdge e2 : new HashSet<EGroumEdge>(ref1.outEdges)) {
+												if (e2 instanceof EGroumDataEdge && (((EGroumDataEdge) e2).type == Type.QUALIFIER || ((EGroumDataEdge) e2).type == Type.RECEIVER)) {
+													ArrayList<EGroumNode> refs2 = e2.target.getReferences();
+//													for (EGroumNode ref2 : refs2)
+//														delete(ref2);
+													if (refs2.isEmpty())
+														delete(e2.target);
+													delete(ref1);
+												}
 											}
 										}
 									}
-									delete(ref1);
 								}
-								delete(e1.target);
+								delete(ref);
+								break;
 							}
 						}
-						delete(ref);
 					}
-					delete(node);
+//					delete(node);
 				}
 			}
 		}
