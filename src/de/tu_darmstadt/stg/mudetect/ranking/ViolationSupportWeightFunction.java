@@ -6,8 +6,8 @@ import de.tu_darmstadt.stg.mudetect.model.Overlaps;
 
 public class ViolationSupportWeightFunction implements ViolationWeightFunction {
     @Override
-    public float getWeight(Overlap violation, Overlaps overlaps, Model model) {
-        return 1f / getNumberOfEqualViolations(violation, overlaps);
+    public double getWeight(Overlap violation, Overlaps overlaps, Model model) {
+        return 1.0 / getNumberOfEqualViolations(violation, overlaps);
     }
 
     @Override

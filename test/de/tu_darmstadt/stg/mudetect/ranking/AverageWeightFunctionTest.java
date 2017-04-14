@@ -18,9 +18,9 @@ public class AverageWeightFunctionTest {
         Model model = () -> asSet(instance.getPattern());
         ViolationWeightFunction weightFunction = new AverageWeightFunction(w((v, os, m) -> 42f));
 
-        float weight = weightFunction.getWeight(instance, overlaps, model);
+        double weight = weightFunction.getWeight(instance, overlaps, model);
 
-        assertThat(weight, is(42f));
+        assertThat(weight, is(42.0));
     }
 
     @Test
@@ -32,15 +32,15 @@ public class AverageWeightFunctionTest {
                 w((v, os, m) -> 2f),
                 w((v, os, m) -> 4f));
 
-        float weight = weightFunction.getWeight(instance, overlaps, model);
+        double weight = weightFunction.getWeight(instance, overlaps, model);
 
-        assertThat(weight, is(3f));
+        assertThat(weight, is(3.0));
     }
 
     private static ViolationWeightFunction w(Function<Overlap, Overlaps, Model, Float> weight) {
         return new ViolationWeightFunction() {
             @Override
-            public float getWeight(Overlap violation, Overlaps overlaps, Model model) {
+            public double getWeight(Overlap violation, Overlaps overlaps, Model model) {
                 return weight.apply(violation, overlaps, model);
             }
 

@@ -20,9 +20,9 @@ public class PatternSupportWeightFunctionTest {
         Model model = () -> asSet(pattern);
         ViolationWeightFunction weightFunction = new PatternSupportWeightFunction();
 
-        float weight = weightFunction.getWeight(overlap, null, model);
+        double weight = weightFunction.getWeight(overlap, null, model);
 
-        assertThat(weight, is(1f));
+        assertThat(weight, is(1.0));
     }
 
     @Test
@@ -31,9 +31,9 @@ public class PatternSupportWeightFunctionTest {
         Model model = () -> asSet(pattern, somePattern(4));
         ViolationWeightFunction weigthFunction = new PatternSupportWeightFunction();
 
-        float weight = weigthFunction.getWeight(emptyOverlap(pattern), null, model);
+        double weight = weigthFunction.getWeight(emptyOverlap(pattern), null, model);
 
-        assertThat(weight, is(0.5f));
+        assertThat(weight, is(0.5));
     }
 
 }

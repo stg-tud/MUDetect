@@ -20,9 +20,9 @@ public class OverlapWeightFunctionTest {
         Overlap violation = buildOverlap(targetBuilder, patternBuilder).withNode("a", "a").build();
         ViolationWeightFunction weightFunction = new OverlapWeightFunction();
 
-        float weight = weightFunction.getWeight(violation, null, null);
+        double weight = weightFunction.getWeight(violation, null, null);
 
-        assertThat(weight, is(0.5f));
+        assertThat(weight, is(0.5));
     }
 
     @Test
@@ -32,8 +32,8 @@ public class OverlapWeightFunctionTest {
         Overlap violation = buildOverlap(targetBuilder, patternBuilder).withNode("a", "a").build();
         ViolationWeightFunction weightFunction = new OverlapWeightFunction();
 
-        float weight = weightFunction.getWeight(violation, null, null);
+        double weight = weightFunction.getWeight(violation, null, null);
 
-        assertThat(weight, is(1/3f));
+        assertThat(weight, is(1/3.0));
     }
 }

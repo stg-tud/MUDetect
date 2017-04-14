@@ -5,10 +5,10 @@ import java.util.Objects;
 public class Violation implements Comparable<Violation> {
 
     private final Overlap overlap;
-    private final float confidence;
+    private final double confidence;
     private final String confidenceString;
 
-    public Violation(Overlap overlap, float confidence, String confidenceString) {
+    public Violation(Overlap overlap, double confidence, String confidenceString) {
         this.overlap = overlap;
         this.confidence = confidence;
         this.confidenceString = confidenceString;
@@ -22,7 +22,7 @@ public class Violation implements Comparable<Violation> {
         return overlap.getLocation();
     }
 
-    public float getConfidence() {
+    public double getConfidence() {
         return confidence;
     }
 
@@ -32,7 +32,7 @@ public class Violation implements Comparable<Violation> {
 
     @Override
     public int compareTo(Violation o) {
-        return Float.compare(getConfidence(), o.getConfidence());
+        return Double.compare(getConfidence(), o.getConfidence());
     }
 
     @Override
@@ -40,7 +40,7 @@ public class Violation implements Comparable<Violation> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Violation violation = (Violation) o;
-        return Float.compare(violation.confidence, confidence) == 0 &&
+        return Double.compare(violation.confidence, confidence) == 0 &&
                 Objects.equals(overlap, violation.overlap);
     }
 

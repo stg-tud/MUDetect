@@ -11,9 +11,9 @@ import java.util.Set;
 
 public class OverlapWithEdgesToMissingNodesWeightFunction implements ViolationWeightFunction {
     @Override
-    public float getWeight(Overlap violation, Overlaps overlaps, Model model) {
+    public double getWeight(Overlap violation, Overlaps overlaps, Model model) {
         Pattern pattern = violation.getPattern();
-        return 1 - (getNumberOfMissingElementsWithoutEdgesToMissingNodes(violation) / (float) pattern.getSize());
+        return 1 - (getNumberOfMissingElementsWithoutEdgesToMissingNodes(violation) / (double) pattern.getSize());
     }
 
     @Override

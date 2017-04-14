@@ -7,7 +7,7 @@ import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 
 public class OverlapWeightFunction implements ViolationWeightFunction {
     @Override
-    public float getWeight(Overlap violation, Overlaps overlaps, Model model) {
+    public double getWeight(Overlap violation, Overlaps overlaps, Model model) {
         int violationSize = violation.getSize();
         int patternSize = violation.getPattern().getSize();
         return violationSize / (float) patternSize;

@@ -17,18 +17,18 @@ public class OverlapWithEdgesToMissingNodesWeightFunctionTest {
     public void noMissingElements() throws Exception {
         Overlap instance = instance(buildAUG().withActionNode("A"));
 
-        float weight = new OverlapWithEdgesToMissingNodesWeightFunction().getWeight(instance, null, null);
+        double weight = new OverlapWithEdgesToMissingNodesWeightFunction().getWeight(instance, null, null);
 
-        assertThat(weight, is(1f));
+        assertThat(weight, is(1.0));
     }
 
     @Test
     public void noMissingElements_withEdge() throws Exception {
         Overlap instance = instance(buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B"));
 
-        float weight = new OverlapWithEdgesToMissingNodesWeightFunction().getWeight(instance, null, null);
+        double weight = new OverlapWithEdgesToMissingNodesWeightFunction().getWeight(instance, null, null);
 
-        assertThat(weight, is(1f));
+        assertThat(weight, is(1.0));
     }
 
     @Test

@@ -34,9 +34,9 @@ public class WeightRankingStrategyTest {
 
         ViolationWeightFunction weightFunction = context.mock(ViolationWeightFunction.class);
         context.checking(new Expectations() {{
-            allowing(weightFunction).getWeight(violation1, overlaps, model); will(returnValue(0.5f));
+            allowing(weightFunction).getWeight(violation1, overlaps, model); will(returnValue(0.5));
             allowing(weightFunction).getFormula(violation1, overlaps, model); will(returnValue("0.5"));
-            allowing(weightFunction).getWeight(violation2, overlaps, model); will(returnValue(0.7f));
+            allowing(weightFunction).getWeight(violation2, overlaps, model); will(returnValue(0.7));
             allowing(weightFunction).getFormula(violation2, overlaps, model); will(returnValue("0.7"));
         }});
 
@@ -44,8 +44,8 @@ public class WeightRankingStrategyTest {
         final List<Violation> violations = strategy.rankViolations(overlaps, model);
 
         assertThat(violations, contains(
-                new Violation(violation2, 0.7f, "0.7"),
-                new Violation(violation1, 0.5f, "0.5")));
+                new Violation(violation2, 0.7, "0.7"),
+                new Violation(violation1, 0.5, "0.5")));
     }
 
     @Test
@@ -61,9 +61,9 @@ public class WeightRankingStrategyTest {
 
         ViolationWeightFunction weightFunction = context.mock(ViolationWeightFunction.class);
         context.checking(new Expectations() {{
-            allowing(weightFunction).getWeight(violation1, overlaps, model); will(returnValue(1f));
+            allowing(weightFunction).getWeight(violation1, overlaps, model); will(returnValue(1.0));
             allowing(weightFunction).getFormula(violation1, overlaps, model); will(returnValue("1"));
-            allowing(weightFunction).getWeight(violation2, overlaps, model); will(returnValue(1f));
+            allowing(weightFunction).getWeight(violation2, overlaps, model); will(returnValue(1.0));
             allowing(weightFunction).getFormula(violation2, overlaps, model); will(returnValue("1"));
         }});
 
@@ -71,8 +71,8 @@ public class WeightRankingStrategyTest {
         final List<Violation> violations = strategy.rankViolations(overlaps, model);
 
         assertThat(violations, containsInAnyOrder(
-                new Violation(violation2, 1f, "1"),
-                new Violation(violation1, 1f, "1")));
+                new Violation(violation2, 1.0, "1"),
+                new Violation(violation1, 1.0, "1")));
     }
 
 
