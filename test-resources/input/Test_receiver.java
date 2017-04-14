@@ -51,7 +51,7 @@ public static class Test_receiver {
     }
 
     void m() {
-    	System.out.println(oid.f1);
+    	System.out.println(oid.CASE_INSENSITIVE_ORDER);
     	System.out.println(oid.f2);
     	System.out.println(oid.charAt(oid.indexOf(oid)));
     }
