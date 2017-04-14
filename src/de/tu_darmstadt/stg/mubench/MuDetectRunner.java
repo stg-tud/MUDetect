@@ -37,7 +37,9 @@ public class MuDetectRunner extends MuBenchRunner {
                 ProvidedPatternsModel::new,
                 args.getTargetPath(),
                 args.getDependencyClassPath(),
-                new EmptyOverlapsFinder(new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher())),
+                new EmptyOverlapsFinder(new AlternativeMappingsOverlapsFinder(new AlternativeMappingsOverlapsFinder.Config() {{
+                    nodeMatcher = new EquallyLabelledNodeMatcher();
+                }})),
                 new EverythingViolationFactory(),
                 new NoRankingStrategy(),
                 output);
@@ -55,9 +57,11 @@ public class MuDetectRunner extends MuBenchRunner {
                 args.getTargetPath(),
                 args.getDependencyClassPath(),
                 new AlternativeMappingsOverlapsFinder(
-                        new SubtypeNodeMatcher(TargetSrcTypeHierarchy.build(
-                                args.getTargetPath().srcPath,
-                                args.getDependencyClassPath())).or(new EquallyLabelledNodeMatcher())),
+                        new AlternativeMappingsOverlapsFinder.Config() {{
+                            nodeMatcher = new SubtypeNodeMatcher(TargetSrcTypeHierarchy.build(
+                                    args.getTargetPath().srcPath,
+                                    args.getDependencyClassPath())).or(new EquallyLabelledNodeMatcher());
+                        }}),
                 new MissingElementViolationFactory(),
                 new WeightRankingStrategy(
                         new AverageWeightFunction(

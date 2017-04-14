@@ -30,8 +30,11 @@ public class LimitExploredAlternativesTest {
                 .withDataNode("B3", "B").withDataEdge("B3", PARAMETER, "A");
         TestAUGBuilder target = buildAUG().withActionNode("A").withDataNode("B").withDataEdge("B", PARAMETER, "A");
 
-        AlternativeMappingsOverlapsFinder finder = new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher());
-        finder.setMaxNumberOfAlternatives(2);
+        AlternativeMappingsOverlapsFinder finder = new AlternativeMappingsOverlapsFinder(
+                new AlternativeMappingsOverlapsFinder.Config() {{
+                    nodeMatcher = new EquallyLabelledNodeMatcher();
+                    maxNumberOfAlternatives = 2;
+                }});
         List<Overlap> overlaps = finder.findOverlaps(target.build(), somePattern(pattern));
 
         assertThat(overlaps, is(empty()));
