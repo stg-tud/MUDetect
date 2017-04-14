@@ -93,7 +93,7 @@ public class DotGraph {
 						if (numOfEdges.containsKey(label))
 							n += numOfEdges.get(label);
 						numOfEdges.put(label, n);
-						graph.append(addEdge(sId, tId, STYLE_DOTTED, null,
+						graph.append(addEdge(sId, tId, e.isDirect() ? null : STYLE_DOTTED, null,
 								label + (((EGroumDataEdge) e).getType() == Type.PARAMETER ? n : "")));
 					}
 				} else if (e instanceof EGroumControlEdge) {
@@ -106,11 +106,11 @@ public class DotGraph {
 							if (out == e)
 								break;
 						}
-						graph.append(addEdge(sId, tId, null, null, label + n));
+						graph.append(addEdge(sId, tId, e.isDirect() ? null : STYLE_DOTTED, null, label + n));
 					} else
-						graph.append(addEdge(sId, tId, null, null, label));
+						graph.append(addEdge(sId, tId, e.isDirect() ? null : STYLE_DOTTED, null, label));
 				} else
-					graph.append(addEdge(sId, tId, null, null, label));
+					graph.append(addEdge(sId, tId, e.isDirect() ? null : STYLE_DOTTED, null, label));
 			}
 		}
 
@@ -168,7 +168,7 @@ public class DotGraph {
 						if (numOfEdges.containsKey(label))
 							n += numOfEdges.get(label);
 						numOfEdges.put(label, n);
-						graph.append(addEdge(sId, tId, STYLE_DOTTED, missingEdges.contains(e) ? COLOR_RED : null,
+						graph.append(addEdge(sId, tId, e.isDirect() ? null : STYLE_DOTTED, missingEdges.contains(e) ? COLOR_RED : null,
 								label + (((EGroumDataEdge) e).getType() == Type.PARAMETER ? n : "")));
 					}
 				} else if (e instanceof EGroumControlEdge) {
@@ -181,11 +181,11 @@ public class DotGraph {
 							if (out == e)
 								break;
 						}
-						graph.append(addEdge(sId, tId, null, missingEdges.contains(e) ? COLOR_RED : null, label + n));
+						graph.append(addEdge(sId, tId, e.isDirect() ? null : STYLE_DOTTED, missingEdges.contains(e) ? COLOR_RED : null, label + n));
 					} else
-						graph.append(addEdge(sId, tId, null, missingEdges.contains(e) ? COLOR_RED : null, label));
+						graph.append(addEdge(sId, tId, e.isDirect() ? null : STYLE_DOTTED, missingEdges.contains(e) ? COLOR_RED : null, label));
 				} else
-					graph.append(addEdge(sId, tId, null, missingEdges.contains(e) ? COLOR_RED : null, label));
+					graph.append(addEdge(sId, tId, e.isDirect() ? null : STYLE_DOTTED, missingEdges.contains(e) ? COLOR_RED : null, label));
 			}
 		}
 
@@ -245,7 +245,7 @@ public class DotGraph {
 						if (numOfEdges.containsKey(label))
 							n += numOfEdges.get(label);
 						numOfEdges.put(label, n);
-						graph.append(addEdge(sId, tId, STYLE_DOTTED, null,
+						graph.append(addEdge(sId, tId, e.isDirect() ? null : STYLE_DOTTED, null,
 								label + (((EGroumDataEdge) e).getType() == Type.PARAMETER ? n : "")));
 					}
 				} else if (e instanceof EGroumControlEdge) {
@@ -258,11 +258,11 @@ public class DotGraph {
 							if (out == e)
 								break;
 						}
-						graph.append(addEdge(sId, tId, null, null, label + n));
+						graph.append(addEdge(sId, tId, e.isDirect() ? null : STYLE_DOTTED, null, label + n));
 					} else
-						graph.append(addEdge(sId, tId, null, null, label));
+						graph.append(addEdge(sId, tId, e.isDirect() ? null : STYLE_DOTTED, null, label));
 				} else
-					graph.append(addEdge(sId, tId, null, null, label));
+					graph.append(addEdge(sId, tId, e.isDirect() ? null : STYLE_DOTTED, null, label));
 			}
 		}
 

@@ -363,7 +363,7 @@ public class Fragment {
 			for(EGroumEdge out : node.getOutEdges()) {
 				if (nodes.contains(out.getTarget())) {
 					int eId = ids.get(out.getTarget());
-					graph.append(dg.addEdge(sId, eId, null, null, out.getLabel()));
+					graph.append(dg.addEdge(sId, eId, out.isDirect() ? null : DotGraph.STYLE_DOTTED, null, out.getLabel()));
 				}
 			}
 		}

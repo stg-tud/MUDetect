@@ -139,6 +139,7 @@ public class EGroumGraph implements Serializable {
 		}
 		if (configuration.collapseIsomorphicSubgraphs)
 			collapseIsomorphicSubgraphs();
+//		markDirectEdges();
 		buildClosure();
 		if (configuration.removeImplementationCode > 0)
 			removeThisMembers();
@@ -153,6 +154,16 @@ public class EGroumGraph implements Serializable {
 			renameEdges();
 		}
 		cleanUp();
+	}
+
+	@SuppressWarnings("unused")
+	private void markDirectEdges() {
+		for (EGroumNode node : nodes) {
+			for (EGroumEdge e : node.inEdges)
+				e.isTransitive = false;
+			for (EGroumEdge e : node.outEdges)
+				e.isTransitive = false;
+		}
 	}
 
 	private int count = 0;
