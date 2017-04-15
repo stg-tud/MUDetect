@@ -678,66 +678,33 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			SwitchStatement astNode) {
-		// FIXME
-		if (true) return new EGroumGraph(context, configuration);
-		EGroumControlNode snode = new EGroumControlNode(control, branch,
-				astNode, astNode.getNodeType());
-		EGroumGraph pdg = new EGroumGraph(context, snode, configuration);
-		EGroumGraph ebg = new EGroumGraph(context, new EGroumActionNode(snode, "T",
-				null, ASTNode.EMPTY_STATEMENT, null, null, "empty"), configuration);
 		List<?> statements = astNode.statements();
-		int s = 0;
-		while (s < statements.size()) {
-			if (statements.get(s) instanceof SwitchCase)
-				break;
-		}
-		for (int e = s + 1; e < statements.size(); e++) {
-			if (statements.get(e) instanceof SwitchCase || e == statements.size() - 1) {
-				if (!(statements.get(e) instanceof SwitchCase))
-						e = statements.size();
-				if (e > s + 1) {
-					SwitchCase sc = (SwitchCase) statements.get(s);
-					EGroumGraph cg = null;
-					if (sc.isDefault()) {
-						cg = buildPDG(snode, "T", statements.subList(s+1, e));
-						ebg.mergeSequential(cg);
-					} else {
-						EGroumActionNode ccnode = new EGroumActionNode(snode, "T", null, ASTNode.INFIX_EXPRESSION, null, null, "==");
-						EGroumGraph exg = buildArgumentPDG(snode, "T", astNode.getExpression());
-						exg.mergeSequentialData(ccnode, Type.PARAMETER);
-						EGroumGraph cexg = buildArgumentPDG(snode, "T", ((SwitchCase) statements.get(s)).getExpression());
-						cexg.mergeSequentialData(ccnode, Type.PARAMETER);
-						cg = new EGroumGraph(context, configuration);
-						cg.mergeParallel(exg, cexg);
-						cg.mergeSequentialData(new EGroumActionNode(snode, "T", null, ASTNode.ASSIGNMENT, null, null, "="), Type.PARAMETER);
-						EGroumDataNode dummy = new EGroumDataNode(null, ASTNode.SIMPLE_NAME,
-								EGroumNode.PREFIX_DUMMY + astNode.getStartPosition() + "_"
-										+ astNode.getLength(), "boolean", EGroumNode.PREFIX_DUMMY, false, true);
-						cg.mergeSequentialData(dummy, Type.DEFINITION);
-						cg.mergeSequentialData(new EGroumDataNode(dummy.astNode, dummy.astNodeType, dummy.key, dummy.dataType, dummy.dataName), Type.REFERENCE);
-					
-						EGroumControlNode cnode = new EGroumControlNode(snode, "T", sc, ASTNode.IF_STATEMENT);
-						cg.mergeSequentialData(cnode, Type.CONDITION);
-		
-						EGroumGraph etg = new EGroumGraph(context, new EGroumActionNode(cnode, "T",
-								null, ASTNode.EMPTY_STATEMENT, null, null, "empty"), configuration);
-						EGroumGraph tg = buildPDG(cnode, "T", statements.subList(s+1, e));
-						if (!tg.isEmpty()) {
-							etg.mergeSequential(tg);
-							EGroumGraph efg = new EGroumGraph(context, new EGroumActionNode(cnode, "F",
-									null, ASTNode.EMPTY_STATEMENT, null, null, "empty"), configuration);
-							cg.mergeBranches(etg, efg);
-							ebg.mergeSequential(cg);
-						}
-					}
-				}
-				s = e;
+		if (statements.isEmpty() || !(statements.get(0) instanceof SwitchCase))
+			return new EGroumGraph(context, configuration);
+		context.addScope();
+		EGroumGraph pdg = buildArgumentPDG(control, branch, astNode.getExpression());
+		EGroumControlNode node = new EGroumControlNode(control, branch, astNode, astNode.getNodeType());
+		pdg.mergeSequentialData(node, Type.CONDITION);
+		ArrayList<EGroumGraph> cgs = new ArrayList<>();
+		int i = 1, s = 0;
+		while (i < statements.size()) {
+			if (statements.get(i) instanceof SwitchCase || i == statements.size()-1) {
+				if (!(statements.get(i) instanceof SwitchCase))
+					i++;
+				int end = s + 1;
+				while (end < i && !(statements.get(end) instanceof BreakStatement))
+					end++;
+				SwitchCase sc = (SwitchCase) statements.get(s);
+				List<?> subs = statements.subList(s+1, end);
+				EGroumGraph cg = buildPDG(node, sc.isDefault() ? "default" : sc.getExpression().toString(), subs);
+				cgs.add(cg);
+				s = i;
 			}
+			i++;
 		}
-		EGroumGraph eg = new EGroumGraph(context, new EGroumActionNode(snode, "F",
-				null, ASTNode.EMPTY_STATEMENT, null, null, "empty"), configuration);
-		pdg.mergeBranches(ebg, eg);
+		pdg.mergeBranches(cgs.toArray(new EGroumGraph[]{}));
 		pdg.adjustBreakNodes("");
+		context.removeScope();
 		return pdg;
 	}
 
