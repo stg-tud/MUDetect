@@ -123,6 +123,11 @@ public class AUGImprovement2 {
     }
 
     @Test
+    public void parameterizedType() throws Exception {
+        EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_parameterized_type.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
+    }
+
+    @Test
     public void dataNode() throws Exception {
         EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_data_node.java", null, "aug-improvement");
     }
