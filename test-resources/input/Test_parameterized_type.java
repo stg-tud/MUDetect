@@ -4,12 +4,10 @@ class Test_parameterized_type {
 	
 	@Override
 	public void processThis(Node externs, Node root) {
-		Preconditions.checkNotNull(root);
 		NodeTraversal.traverse(compiler, Preconditions.checkNotNull(this), this);
 	}
 	@Override
 	public void processNode(Node externs, Node root) {
-		Preconditions.checkNotNull(root);
 		NodeTraversal.traverse(compiler, Preconditions.checkNotNull(root), this);
 	}
 
