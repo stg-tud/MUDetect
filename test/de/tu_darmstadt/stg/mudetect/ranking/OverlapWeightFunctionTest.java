@@ -9,6 +9,7 @@ import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.extend;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static egroum.EGroumDataEdge.Type.ORDER;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.junit.Assert.assertThat;
 
 public class OverlapWeightFunctionTest {
@@ -34,6 +35,6 @@ public class OverlapWeightFunctionTest {
 
         double weight = weightFunction.getWeight(violation, null, null);
 
-        assertThat(weight, is(1/3.0));
+        assertThat(weight, is(closeTo(1/3.0, 0.00001)));
     }
 }
