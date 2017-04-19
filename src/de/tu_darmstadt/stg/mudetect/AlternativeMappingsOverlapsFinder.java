@@ -157,15 +157,16 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
                     System.out.println("Pattern: " + exporter.toDotGraph(pattern));
                     started = true;
                 }
-                EGroumEdge targetEdge = nextExtensionEdge();
-                int nextExtensionEdgeSourceIndex = getOrCreateTargetNodeIndex(targetEdge.getSource());
-                int nextExtensionEdgeTargetIndex = getOrCreateTargetNodeIndex(targetEdge.getTarget());
-                System.out.print("  Extending along " + targetEdge + "...");
+                EGroumEdge nextExtensionEdge = nextExtensionEdge();
+                int nextExtensionEdgeIndex = getNextExtensionEdgeIndex();
+                int nextExtensionEdgeSourceIndex = getOrCreateTargetNodeIndex(nextExtensionEdge.getSource());
+                int nextExtensionEdgeTargetIndex = getOrCreateTargetNodeIndex(nextExtensionEdge.getTarget());
+                System.out.print("  Extending along " + nextExtensionEdge + "...");
 
                 Set<Alternative> newAlternatives = alternatives.stream().flatMap(alternative ->
                         getNextExtensionEdgeMappingAlternatives(alternative).stream()
                                 .map(patternEdge -> alternative.createExtension(
-                                        getNextExtensionEdgeIndex(),
+                                        nextExtensionEdgeIndex,
                                         nextExtensionEdgeSourceIndex,
                                         nextExtensionEdgeTargetIndex,
                                         patternEdge)))
