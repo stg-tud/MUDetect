@@ -11,9 +11,13 @@ public class AUGEdgeAttributeProvider implements ComponentAttributeProvider<EGro
     @Override
     public Map<String, String> getComponentAttributes(EGroumEdge edge) {
         final LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+        String style;
         if (edge instanceof EGroumDataEdge) {
-            attributes.put("style", "dotted");
+            style = edge.isDirect() ? "solid" : "dotted";
+        } else {
+            style = edge.isDirect() ? "bold" : "dashed";
         }
+        attributes.put("style", style);
         return attributes;
     }
 }

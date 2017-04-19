@@ -60,7 +60,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
         String dotGraph = toDotGraph(someViolation(instance));
 
         assertDotGraphContains(dotGraph, " [ label=\"B\" shape=\"box\" color=\"gray\" fontcolor=\"gray\" ];");
-        assertDotGraphContains(dotGraph, " [ label=\"order\" style=\"dotted\" color=\"gray\" fontcolor=\"gray\" ];");
+        assertDotGraphContains(dotGraph, " [ label=\"order\" style=\"solid\" color=\"gray\" fontcolor=\"gray\" ];");
     }
 
     @Test
@@ -72,7 +72,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
         String dotGraph = toDotGraph(someViolation(instance));
 
         assertDotGraphContains(dotGraph, " [ label=\"A\" shape=\"box\" ];");
-        assertDotGraphContains(dotGraph, " [ label=\"order\" style=\"dotted\" ];");
+        assertDotGraphContains(dotGraph, " [ label=\"order\" style=\"solid\" ];");
     }
 
     @Test
@@ -86,7 +86,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
 
         String dotGraph = toDotGraph(someViolation(instance));
 
-        assertDotGraphContains(dotGraph, "[ label=\"para\" style=\"dotted\" color=\"gray\" fontcolor=\"gray\" ];");
+        assertDotGraphContains(dotGraph, "[ label=\"para\" style=\"solid\" color=\"gray\" fontcolor=\"gray\" ];");
     }
 
     /**
