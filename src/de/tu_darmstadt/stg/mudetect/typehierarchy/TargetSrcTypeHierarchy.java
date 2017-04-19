@@ -5,6 +5,7 @@ import org.eclipse.jdt.core.dom.*;
 import utils.FileIO;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,11 +29,18 @@ public class TargetSrcTypeHierarchy extends TypeHierarchy {
         options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
         ASTParser parser = ASTParser.newParser(AST.JLS8);
         parser.setCompilerOptions(options);
-        parser.setEnvironment(classPath, new String[0], new String[0], true);
+        parser.setEnvironment(ensureJdk(classPath), new String[0], new String[0], true);
         parser.setResolveBindings(true);
         parser.setBindingsRecovery(true);
         parser.createASTs(paths.toArray(new String[0]), null, new String[0], r, null);
         return visitor.getHierarchy();
+    }
+
+    private static String[] ensureJdk(String[] classPath) {
+        String[] extendedClassPath = new String[classPath.length + 1];
+        System.arraycopy(classPath, 0, extendedClassPath, 0, classPath.length);
+        extendedClassPath[classPath.length] = System.getProperty("java.home") + "/lib";
+        return extendedClassPath;
     }
 
     private TargetSrcTypeHierarchy() {}
