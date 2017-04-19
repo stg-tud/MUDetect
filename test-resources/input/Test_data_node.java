@@ -2,6 +2,21 @@ package input;
 
 class Test_data_node extends BufferedIndexOutput {
 
+	private Set<Node> findStorageLocationReferences(Node root) {
+		final Set<Node> references = Sets.newHashSet();
+
+		NodeTraversal.traverse(compiler, root, new AbstractShallowCallback() {
+			@Override
+			public void visit(NodeTraversal t, Node n, Node parent) {
+				if (NodeUtil.isGet(n) || (NodeUtil.isName(n) && !NodeUtil.isFunction(parent))) {
+					references.add(n);
+				} 
+			}       
+		});
+
+		return references;
+	}
+
 	void apply() {
 		if (NodeUtil.isFunctionDeclaration(node)) {
 			traverseFunction(node, scope);
