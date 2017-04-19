@@ -17,7 +17,6 @@ import org.junit.rules.TestName;
 import mcs.CISGraph;
 import mcs.MCISFinder;
 import mcs.MCSFragment;
-import mining.Lattice;
 import mining.Miner;
 import mining.Pattern;
 import utils.FileIO;

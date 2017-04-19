@@ -17,7 +17,7 @@ public class Configuration {
     /**
      * 
      */
-    public boolean disAllowRepeatedCalls = true;
+    public boolean disallowRepeatedCalls = true;
 
     /**
      * Path to write mined patterns to. <code>null</code> to disable output.

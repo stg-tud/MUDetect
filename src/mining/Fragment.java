@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Random;
-
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import egroum.EGroumActionNode;
@@ -427,7 +425,7 @@ public class Fragment {
 					ens.add(n);
 			}
 		}
-		if (config.disAllowRepeatedCalls)
+		if (config.disallowRepeatedCalls)
 			ens.removeAll(exclusions);
 		HashMap<String, HashSet<ArrayList<EGroumNode>>> lens = new HashMap<>();
 		for (EGroumNode node : ens) {
