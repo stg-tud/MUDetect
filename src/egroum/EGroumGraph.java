@@ -505,6 +505,7 @@ public class EGroumGraph implements Serializable {
 			return pdg;
 		}
 		EGroumGraph pdg = buildDefinitionPDG(control, branch, astNode.getInitializer(), node);
+		pdg.mergeSequentialData(new EGroumDataNode(node), Type.REFERENCE);
 		return pdg;
 	}
 
@@ -1480,6 +1481,7 @@ public class EGroumGraph implements Serializable {
 		} else {
 			pdg = buildDefinitionPDG(control, branch, astNode.getRightHandSide(), lnode);
 		}
+		pdg.mergeSequentialData(new EGroumDataNode(lnode), Type.REFERENCE);
 		pdg.nodes.addAll(lg.nodes);
 		pdg.statementNodes.addAll(lg.statementNodes);
 		lg.dataSources.remove(lnode);

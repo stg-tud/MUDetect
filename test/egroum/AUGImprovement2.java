@@ -133,6 +133,11 @@ public class AUGImprovement2 {
     }
 
     @Test
+    public void npe2() throws Exception {
+        EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_npe2.java", new String[]{"test-resources/lib/guava-21.0.jar", "test-resources/lib/closure-compiler-v20170409.jar"}, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
+    }
+
+    @Test
     public void resolveType() throws Exception {
         EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_resolve_type.java", new String[]{"test-resources/lib/guava-21.0.jar", "test-resources/lib/closure-compiler-v20170409.jar"}, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
     }
