@@ -10,27 +10,40 @@ import egroum.EGroumNode;
 import java.util.Set;
 
 public class OverlapWithEdgesToMissingNodesWeightFunction implements ViolationWeightFunction {
+    private NodeWeightFunction nodeWeight;
+
+    public OverlapWithEdgesToMissingNodesWeightFunction(NodeWeightFunction nodeWeight) {
+        this.nodeWeight = nodeWeight;
+    }
+
     @Override
     public double getWeight(Overlap violation, Overlaps overlaps, Model model) {
-        Pattern pattern = violation.getPattern();
-        return 1 - (getNumberOfMissingElementsWithoutEdgesToMissingNodes(violation) / (double) pattern.getSize());
+        return 1 - (getMissingElementWeight(violation) / getPatternWeight(violation));
     }
 
     @Override
     public String getFormula(Overlap violation, Overlaps overlaps, Model model) {
-        Pattern pattern = violation.getPattern();
-        return String.format("overlap = 1 - (%d / %d)", getNumberOfMissingElementsWithoutEdgesToMissingNodes(violation), pattern.getSize());
+        double missingElementsWeight = getMissingElementWeight(violation);
+        double patternWeight = getPatternWeight(violation);
+        return String.format("overlap = %.2f / %.2f", patternWeight - missingElementsWeight, patternWeight);
     }
 
-    private int getNumberOfMissingElementsWithoutEdgesToMissingNodes(Overlap violation) {
+    private double getMissingElementWeight(Overlap violation) {
         Set<EGroumNode> missingNodes = violation.getMissingNodes();
         Set<EGroumEdge> missingEdges = violation.getMissingEdges();
-        int numberOfMissingElementsWithoutEdgesToMissingNodes = missingNodes.size();
-        for (EGroumEdge missingEdge : missingEdges) {
-            if (!missingNodes.contains(missingEdge.getSource()) && !missingNodes.contains(missingEdge.getTarget())) {
-                numberOfMissingElementsWithoutEdgesToMissingNodes++;
-            }
-        }
-        return numberOfMissingElementsWithoutEdgesToMissingNodes;
+        return nodeWeight.getInverseWeight(missingNodes) + getNumberOfMissingEdgesBetweenMappedNodes(violation);
+    }
+
+    private int getNumberOfMissingEdgesBetweenMappedNodes(Overlap violation) {
+        Set<EGroumNode> missingNodes = violation.getMissingNodes();
+        Set<EGroumEdge> missingEdges = violation.getMissingEdges();
+        return (int) missingEdges.stream()
+                .filter(edge -> !missingNodes.contains(edge.getSource()) && !missingNodes.contains(edge.getTarget()))
+                .count();
+    }
+
+    private double getPatternWeight(Overlap violation) {
+        Pattern pattern = violation.getPattern();
+        return nodeWeight.getInverseWeight(pattern.vertexSet()) + pattern.getEdgeSize();
     }
 }

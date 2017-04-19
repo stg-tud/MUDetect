@@ -10,6 +10,7 @@ import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.instance;
 import static egroum.EGroumDataEdge.Type.ORDER;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 
 public class OverlapWithEdgesToMissingNodesWeightFunctionTest {
@@ -17,7 +18,7 @@ public class OverlapWithEdgesToMissingNodesWeightFunctionTest {
     public void noMissingElements() throws Exception {
         Overlap instance = instance(buildAUG().withActionNode("A"));
 
-        double weight = new OverlapWithEdgesToMissingNodesWeightFunction().getWeight(instance, null, null);
+        double weight = getWeight(instance, node -> 1);
 
         assertThat(weight, is(1.0));
     }
@@ -26,7 +27,7 @@ public class OverlapWithEdgesToMissingNodesWeightFunctionTest {
     public void noMissingElements_withEdge() throws Exception {
         Overlap instance = instance(buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B"));
 
-        double weight = new OverlapWithEdgesToMissingNodesWeightFunction().getWeight(instance, null, null);
+        double weight = getWeight(instance, node -> 1);
 
         assertThat(weight, is(1.0));
     }
@@ -37,9 +38,37 @@ public class OverlapWithEdgesToMissingNodesWeightFunctionTest {
         TestAUGBuilder target = buildAUG().withActionNode("A");
         Overlap violation = buildOverlap(target, pattern).withNode("A").build();
 
-        double weight = new OverlapWithEdgesToMissingNodesWeightFunction().getWeight(violation, null, null);
+        double weight = getWeight(violation, node -> 1);
 
         assertThat(weight, is(closeTo(0.666, 0.001)));
     }
 
+    @Test
+    public void considersNodeImportance() throws Exception {
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
+        TestAUGBuilder target = buildAUG().withActionNode("A");
+        Overlap violation = buildOverlap(target, pattern).withNode("A").build();
+
+        double weightWithEqualImportance = getWeight(violation, node -> 1);
+        double weightWithMissingNodeDoubleImportance = getWeight(violation, node -> node.getLabel().equals("B") ? 2 : 1);
+
+        assertThat(weightWithEqualImportance, is(lessThan(weightWithMissingNodeDoubleImportance)));
+    }
+
+    @Test
+    public void considerNodeImportance2() throws Exception {
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B", "C")
+                .withDataEdge("A", ORDER, "B").withDataEdge("A", ORDER, "C").withDataEdge("B", ORDER, "C");
+        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
+        Overlap violation = buildOverlap(target, pattern).withNodes("A", "B").withEdge("A", ORDER, "B").build();
+
+        double weightWithEqualImportance = getWeight(violation, node -> 1);
+        double weightWithMissingNodeDoubleImportance = getWeight(violation, node -> node.getLabel().equals("C") ? 2 : 1);
+
+        assertThat(weightWithEqualImportance, is(lessThan(weightWithMissingNodeDoubleImportance)));
+    }
+
+    private double getWeight(Overlap violation, NodeWeightFunction a) {
+        return new OverlapWithEdgesToMissingNodesWeightFunction(a).getWeight(violation, null, null);
+    }
 }
