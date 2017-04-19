@@ -36,6 +36,9 @@ import utils.JavaASTUtil;
 
 public class EGroumBuilder {
     private final AUGConfiguration configuration;
+    
+    // DEBUG
+    public StringBuilder sbGroums = new StringBuilder();
 
     public EGroumBuilder(AUGConfiguration configuration) {
         this.configuration = configuration;
@@ -395,6 +398,8 @@ public class EGroumBuilder {
 		EGroumGraph g = new EGroumGraph(method, new EGroumBuildingContext(false), configuration);
 		g.setFilePath(filepath);
 		g.setName(name + sig);
+		// DEBUG
+		sbGroums.append(filepath + "#" + name + sig + "\t" + g.getNodes().size() + "\t" + g.getEdges().size() + "\n");
 		return g;
 	}
 }

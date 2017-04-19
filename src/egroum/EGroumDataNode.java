@@ -1,5 +1,7 @@
 package egroum;
 
+import java.util.HashMap;
+
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import egroum.EGroumDataEdge.Type;

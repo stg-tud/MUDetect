@@ -9,6 +9,8 @@ import java.util.Comparator;
 
 import egroum.AUGConfiguration;
 import egroum.EGroumBuilder;
+import egroum.EGroumDataNode;
+import egroum.EGroumNode;
 import mining.Anomaly;
 import mining.Configuration;
 import mining.Fragment;
@@ -26,12 +28,14 @@ public class Mine {
 	 */
 	public static void main(String[] args) {
 		long start = System.currentTimeMillis();
-		String path = "T:/repos/itext/5090/original-src", name = "itext";
+//		String path = "T:/repos/itext/5090/original-src", name = "itext";
+		String path = "T:/repos/closure-compiler/src", name = "closure";
 //		String path = "input/Test2.java", name = "";
 //		String path = "test/input/Test_mine.java", name = "";
-		EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration(){{groum = true;}});
-		Miner miner = new Miner(name, new Configuration());
+		EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration());
+		Miner miner = new Miner(name, new Configuration(){{outputPath = "T:/usage-patterns/patterns";}});
 		miner.mine(new ArrayList<>(gb.buildBatch(path, null)));
+		FileIO.writeStringToFile(gb.sbGroums.toString(), "T:/usage-patterns/patterns/" + (System.currentTimeMillis() / 1000) + ".csv");
 		ArrayList<Anomaly> anomalies = miner.anomalies;
 		Collections.sort(anomalies, new Comparator<Anomaly>() {
 
@@ -52,13 +56,23 @@ public class Mine {
 			sb.append("::");
 			sb.append(a.getPatternFreq());
 			sb.append("::");
+			int len = 0;
 			for (Fragment f : a.getInstances()) {
 				sb.append(f.getNodes());
+				len = f.getNodes().size();
 				break;
 			}
+			ArrayList<EGroumNode> nodes = a.getPattern().getNodes();
+			boolean missDataNodes = true;
+			for (int i = len; i < nodes.size(); i++)
+				if (!(nodes.get(i) instanceof EGroumDataNode)) {
+					missDataNodes = false;
+					break;
+				}
 			sb.append("::");
 			sb.append(a.getPattern().getNodes());
-			FileIO.logStream.println(sb.toString());
+			if (!missDataNodes)
+				FileIO.logStream.println(sb.toString());
 		}
 		long end = System.currentTimeMillis();
 		System.out.println((end - start) / 1000);

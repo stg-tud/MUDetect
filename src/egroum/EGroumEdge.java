@@ -1,7 +1,5 @@
 package egroum;
 
-import java.util.HashSet;
-
 import egroum.EGroumDataEdge.Type;
 
 public abstract class EGroumEdge {

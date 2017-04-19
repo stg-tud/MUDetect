@@ -58,6 +58,7 @@ public abstract class EGroumNode {
 	protected EGroumGraph graph;
 	protected ArrayList<EGroumEdge> inEdges = new ArrayList<EGroumEdge>();
 	protected ArrayList<EGroumEdge> outEdges = new ArrayList<EGroumEdge>();
+	protected HashMap<String, HashSet<EGroumDataNode>> defStore = new HashMap<>();
 
 	public EGroumNode(ASTNode astNode, int nodeType) {
 		this.id = ++numOfNodes;
@@ -477,5 +478,24 @@ public abstract class EGroumNode {
 
 	public static boolean isThisMethodCall(String label) {
 		return label.startsWith("this.") && label.endsWith("()");
+	}
+
+	public void consumeDefStore(HashMap<String, HashSet<EGroumDataNode>> otherDefStore) {
+		for (String key : this.defStore.keySet()) {
+			if (otherDefStore.containsKey(key)) {
+				otherDefStore.get(key).clear();
+				otherDefStore.remove(key);
+			}
+		}
+		for (String key : otherDefStore.keySet()) {
+			HashSet<EGroumDataNode> otherDefs = otherDefStore.get(key), defs = this.defStore.get(key);
+			if (defs == null) {
+				defs = new HashSet<>();
+				this.defStore.put(key, defs);
+			}
+			defs.addAll(otherDefs);
+			otherDefs.clear();
+		}
+		otherDefStore.clear();
 	}
 }

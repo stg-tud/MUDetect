@@ -36,7 +36,7 @@ public class EGroumTestUtils {
 	}
 
 	public static void buildAndPrintGroumsForFile(String inputPath, String name, String[] classpaths, String outputPath) {
-		EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration(){{groum = true;}});
+		EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration(){{removeImplementationCode = 2;}});
 		inputPath = inputPath + "/" + name;
 		String content = FileIO.readStringFromFile(inputPath);
 		ASTNode ast = JavaASTUtil.parseSource(content, inputPath, name, classpaths);
