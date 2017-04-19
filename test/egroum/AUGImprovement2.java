@@ -123,8 +123,13 @@ public class AUGImprovement2 {
     }
 
     @Test
+    public void resolveType() throws Exception {
+        EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_resolve_type.java", new String[]{"test-resources/lib/guava-21.0.jar", "test-resources/lib/closure-compiler-v20170409.jar"}, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
+    }
+
+    @Test
     public void parameterizedType() throws Exception {
-        EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_parameterized_type.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
+        EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_parameterized_type.java", new String[]{"test-resources/lib/guava-21.0.jar", "test-resources/lib/closure-compiler-v20170409.jar"}, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
     }
 
     @Test
