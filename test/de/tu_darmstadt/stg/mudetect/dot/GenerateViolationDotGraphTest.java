@@ -27,7 +27,7 @@ public class GenerateViolationDotGraphTest {
         AUG aug = buildAUG(":G:").withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
         Violation violation = new Violation(instance(aug), 1, "constant rank");
 
-        assertDotGraphContains(violation, " [ label=\"order\" style=\"dotted\" ");
+        assertDotGraphContains(violation, " [ label=\"order\" style=\"solid\" ");
     }
 
     @Test
@@ -43,7 +43,7 @@ public class GenerateViolationDotGraphTest {
         AUG aug = buildAUG().withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
         Violation violation = new Violation(someOverlap(aug, aug.vertexSet(), new HashSet<>()), 1, "constant rank");
 
-        assertDotGraphContains(violation, " [ label=\"order\" style=\"dotted\" color=\"red\" fontcolor=\"red\" ];");
+        assertDotGraphContains(violation, " [ label=\"order\" style=\"solid\" color=\"red\" fontcolor=\"red\" ];");
     }
 
     @Test

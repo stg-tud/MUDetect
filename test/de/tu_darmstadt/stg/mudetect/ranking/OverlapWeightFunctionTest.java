@@ -9,6 +9,7 @@ import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.extend;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static egroum.EGroumDataEdge.Type.ORDER;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.junit.Assert.assertThat;
 
 public class OverlapWeightFunctionTest {
@@ -20,9 +21,9 @@ public class OverlapWeightFunctionTest {
         Overlap violation = buildOverlap(targetBuilder, patternBuilder).withNode("a", "a").build();
         ViolationWeightFunction weightFunction = new OverlapWeightFunction();
 
-        float weight = weightFunction.getWeight(violation, null, null);
+        double weight = weightFunction.getWeight(violation, null, null);
 
-        assertThat(weight, is(0.5f));
+        assertThat(weight, is(0.5));
     }
 
     @Test
@@ -32,8 +33,8 @@ public class OverlapWeightFunctionTest {
         Overlap violation = buildOverlap(targetBuilder, patternBuilder).withNode("a", "a").build();
         ViolationWeightFunction weightFunction = new OverlapWeightFunction();
 
-        float weight = weightFunction.getWeight(violation, null, null);
+        double weight = weightFunction.getWeight(violation, null, null);
 
-        assertThat(weight, is(1/3f));
+        assertThat(weight, is(closeTo(1/3.0, 0.00001)));
     }
 }

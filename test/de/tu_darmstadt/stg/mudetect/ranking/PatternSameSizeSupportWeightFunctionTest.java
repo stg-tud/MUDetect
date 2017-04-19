@@ -34,9 +34,9 @@ public class PatternSameSizeSupportWeightFunctionTest {
     public void calculatesPatternSupportWeight_noEquallySizedPattern() throws Exception {
         ViolationWeightFunction weightFunction = new PatternSameSizeSupportWeightFunction();
 
-        float weight = weightFunction.getWeight(violation, null, model);
+        double weight = weightFunction.getWeight(violation, null, model);
 
-        assertThat(weight, is(1f));
+        assertThat(weight, is(1.0));
     }
 
     @Test
@@ -45,9 +45,9 @@ public class PatternSameSizeSupportWeightFunctionTest {
         model = () -> asSet(pattern, pattern2);
         ViolationWeightFunction weightFunction = new PatternSameSizeSupportWeightFunction();
 
-        float weight = weightFunction.getWeight(violation, null, model);
+        double weight = weightFunction.getWeight(violation, null, model);
 
-        assertThat(weight, is(0.5f));
+        assertThat(weight, is(0.5));
     }
 
     @Test
@@ -56,9 +56,9 @@ public class PatternSameSizeSupportWeightFunctionTest {
         model = () -> asSet(pattern, pattern2);
         ViolationWeightFunction weightFunction = new PatternSameSizeSupportWeightFunction();
 
-        float weight = weightFunction.getWeight(violation, null, model);
+        double weight = weightFunction.getWeight(violation, null, model);
 
-        assertThat(weight, is(1f));
+        assertThat(weight, is(1.0));
     }
 
 }

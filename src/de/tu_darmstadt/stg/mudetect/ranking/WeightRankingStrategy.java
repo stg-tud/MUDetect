@@ -22,7 +22,7 @@ public class WeightRankingStrategy implements ViolationRankingStrategy {
     public List<Violation> rankViolations(Overlaps overlaps, Model model) {
         PriorityQueue<Violation> violations = new PriorityQueue<>(Comparator.reverseOrder());
         for (Overlap violation : overlaps.getViolations()) {
-            float confidence = weightFunction.getWeight(violation, overlaps, model);
+            double confidence = weightFunction.getWeight(violation, overlaps, model);
             String confidenceString = weightFunction.getFormula(violation, overlaps, model);
             violations.add(new Violation(violation, confidence, confidenceString));
         }

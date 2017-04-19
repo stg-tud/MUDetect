@@ -138,8 +138,6 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
         private EGroumEdge nextExtensionEdge;
         private int nextExtensionEdgeIndex;
         private Map<Alternative, Set<EGroumEdge>> nextExtensionMappingAlternatives;
-        private int nextExtensionEdgeTargetIndex;
-        private int nextExtensionEdgeSourceIndex;
 
         ExtensionStrategy(AUG target, Pattern pattern, Config config) {
             this.target = target;
@@ -160,14 +158,16 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
                     started = true;
                 }
                 EGroumEdge targetEdge = nextExtensionEdge();
+                int nextExtensionEdgeSourceIndex = getOrCreateTargetNodeIndex(targetEdge.getSource());
+                int nextExtensionEdgeTargetIndex = getOrCreateTargetNodeIndex(targetEdge.getTarget());
                 System.out.print("  Extending along " + targetEdge + "...");
 
                 Set<Alternative> newAlternatives = alternatives.stream().flatMap(alternative ->
                         getNextExtensionEdgeMappingAlternatives(alternative).stream()
                                 .map(patternEdge -> alternative.createExtension(
                                         getNextExtensionEdgeIndex(),
-                                        getNextExtensionEdgeSourceIndex(),
-                                        getNextExtensionEdgeTargetIndex(),
+                                        nextExtensionEdgeSourceIndex,
+                                        nextExtensionEdgeTargetIndex,
                                         patternEdge)))
                         .collect(Collectors.toSet());
 
@@ -215,8 +215,6 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
                 candidates.remove(nextExtensionEdge);
                 nextExtensionEdgeIndex = exploredTargetEdges.size();
                 exploredTargetEdges.add(nextExtensionEdge);
-                nextExtensionEdgeSourceIndex = getOrCreateTargetNodeIndex(nextExtensionEdge.getSource());
-                nextExtensionEdgeTargetIndex = getOrCreateTargetNodeIndex(nextExtensionEdge.getTarget());
                 candidates.addAll(target.edgesOf(nextExtensionEdge.getSource()));
                 candidates.addAll(target.edgesOf(nextExtensionEdge.getTarget()));
                 candidates.removeAll(exploredTargetEdges);
@@ -307,14 +305,6 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
 
         private int getNextExtensionEdgeIndex() {
             return nextExtensionEdgeIndex;
-        }
-
-        private int getNextExtensionEdgeSourceIndex() {
-            return nextExtensionEdgeSourceIndex;
-        }
-
-        private int getNextExtensionEdgeTargetIndex() {
-            return nextExtensionEdgeTargetIndex;
         }
 
         private Set<EGroumEdge> getNextExtensionEdgeMappingAlternatives(Alternative alternative) {

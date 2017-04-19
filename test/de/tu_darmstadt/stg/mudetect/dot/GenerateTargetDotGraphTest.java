@@ -31,7 +31,7 @@ public class GenerateTargetDotGraphTest {
         Violation violation = new Violation(emptyOverlap(pattern, target), 1, "constant rank");
 
         assertTargetDotGraphContains(violation,
-                " [ label=\"order\" style=\"dotted\" color=\"gray\" fontcolor=\"gray\" ];");
+                " [ label=\"order\" style=\"solid\" color=\"gray\" fontcolor=\"gray\" ];");
     }
 
     @Test
@@ -40,7 +40,7 @@ public class GenerateTargetDotGraphTest {
         Violation violation = new Violation(instance(aug), 1, "constant rank");
 
         assertTargetDotGraphContains(violation, " [ label=\":b:\" shape=\"box\" ");
-        assertTargetDotGraphContains(violation, " [ label=\"order\" style=\"dotted\" ");
+        assertTargetDotGraphContains(violation, " [ label=\"order\" style=\"solid\" ");
     }
 
     private void assertTargetDotGraphContains(Violation violation, String expectedDotGraph) {

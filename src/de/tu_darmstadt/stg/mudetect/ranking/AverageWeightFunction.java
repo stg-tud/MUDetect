@@ -12,8 +12,8 @@ public class AverageWeightFunction implements ViolationWeightFunction {
     }
 
     @Override
-    public float getWeight(Overlap violation, Overlaps overlaps, Model model) {
-        float weight = 0;
+    public double getWeight(Overlap violation, Overlaps overlaps, Model model) {
+        double weight = 0;
         for (ViolationWeightFunction strategy : strategies) {
             weight += strategy.getWeight(violation, overlaps, model);
         }

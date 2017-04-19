@@ -32,9 +32,9 @@ public class ViolationSupportWeightFunctionTest {
     public void withoutEqualViolations() throws Exception {
         ViolationWeightFunction weightFunction = new ViolationSupportWeightFunction();
 
-        float weight = weightFunction.getWeight(violation, overlaps, null);
+        double weight = weightFunction.getWeight(violation, overlaps, null);
 
-        assertThat(weight, is(1f));
+        assertThat(weight, is(1.0));
     }
 
     @Test
@@ -44,9 +44,9 @@ public class ViolationSupportWeightFunctionTest {
         overlaps.addViolation(anEqualViolation);
         ViolationWeightFunction weightFunction = new ViolationSupportWeightFunction();
 
-        float weight = weightFunction.getWeight(violation, overlaps, null);
+        double weight = weightFunction.getWeight(violation, overlaps, null);
 
-        assertThat(weight, is(0.5f));
+        assertThat(weight, is(0.5));
     }
 
 }

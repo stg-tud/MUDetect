@@ -34,9 +34,9 @@ public class PatternViolationsWeightFunctionTest {
     public void withoutOtherViolationOfPattern() throws Exception {
         ViolationWeightFunction weightFunction = new PatternViolationsWeightFunction();
 
-        float weight = weightFunction.getWeight(violation, overlaps, null);
+        double weight = weightFunction.getWeight(violation, overlaps, null);
 
-        assertThat(weight, is(1f));
+        assertThat(weight, is(1.0));
     }
 
     @Test
@@ -44,9 +44,9 @@ public class PatternViolationsWeightFunctionTest {
         overlaps.addViolation(someOverlap(aPattern, someAUG()));
         ViolationWeightFunction weightFunction = new PatternViolationsWeightFunction();
 
-        float weight = weightFunction.getWeight(violation, overlaps, null);
+        double weight = weightFunction.getWeight(violation, overlaps, null);
 
-        assertThat(weight, is(0.5f));
+        assertThat(weight, is(0.5));
     }
 
     @Test
@@ -54,8 +54,8 @@ public class PatternViolationsWeightFunctionTest {
         overlaps.addViolation(someOverlap(somePattern(), someAUG()));
         ViolationWeightFunction weightFunction = new PatternViolationsWeightFunction();
 
-        float weight = weightFunction.getWeight(violation, overlaps, null);
+        double weight = weightFunction.getWeight(violation, overlaps, null);
 
-        assertThat(weight, is(1f));
+        assertThat(weight, is(1.0));
     }
 }
