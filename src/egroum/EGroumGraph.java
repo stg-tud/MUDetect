@@ -870,7 +870,7 @@ public class EGroumGraph implements Serializable {
 		if (astNode.getOperator() == PrefixExpression.Operator.INCREMENT
 				|| astNode.getOperator() == PrefixExpression.Operator.DECREMENT) {
 			EGroumGraph rg = new EGroumGraph(context, new EGroumDataNode(
-					null, ASTNode.NUMBER_LITERAL, "1", "number", "1"), configuration);
+					null, ASTNode.NUMBER_LITERAL, "1", "int", "1"), configuration);
 			EGroumActionNode op = new EGroumActionNode(control, branch,
 					astNode, astNode.getNodeType(), null, "<a>", 
 					astNode.getOperator().toString().substring(0, 1));
@@ -899,7 +899,7 @@ public class EGroumGraph implements Serializable {
 		EGroumGraph lg = buildArgumentPDG(control, branch, astNode.getOperand());
 		EGroumDataNode node = lg.getOnlyDataOut();
 		EGroumGraph rg = new EGroumGraph(context, new EGroumDataNode(
-				null, ASTNode.NUMBER_LITERAL, "1", "number", "1"), configuration);
+				null, ASTNode.NUMBER_LITERAL, "1", "int", "1"), configuration);
 		EGroumActionNode op = new EGroumActionNode(control, branch,
 				astNode, astNode.getNodeType(), null, "<a>", astNode.getOperator().toString()
 						.substring(0, 1));
@@ -1733,8 +1733,8 @@ public class EGroumGraph implements Serializable {
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, FieldAccess astNode) {
+		String name = astNode.getName().getIdentifier();
 		if (astNode.getExpression() instanceof ThisExpression) {
-			String name = astNode.getName().getIdentifier();
 			String type = null;
 			if (astNode.resolveTypeBinding() != null)
 				type = astNode.resolveTypeBinding().getTypeDeclaration().getName();
