@@ -1045,13 +1045,19 @@ public class EGroumGraph implements Serializable {
 				astNode, astNode.getNodeType(), null, label, label);
 		lg.mergeSequentialData(node, Type.PARAMETER);
 		rg.mergeSequentialData(node, Type.PARAMETER);
-		pdg.mergeParallel(lg, rg);
-		if (astNode.hasExtendedOperands())
+		if (astNode.hasExtendedOperands()) {
+			EGroumGraph[] egs = new EGroumGraph[2 + astNode.extendedOperands().size()];
+			egs[0] = lg;
+			egs[1] = rg;
 			for (int i = 0; i < astNode.extendedOperands().size(); i++) {
 				EGroumGraph tmp = buildArgumentPDG(control, branch, (Expression) astNode.extendedOperands().get(i));
 				tmp.mergeSequentialData(node, Type.PARAMETER);
-				pdg.mergeParallel(tmp);
+				egs[2+i] = tmp;
 			}
+			pdg.mergeParallel(egs);
+		}
+		else
+			pdg.mergeParallel(lg, rg);
 		return pdg;
 	}
 
