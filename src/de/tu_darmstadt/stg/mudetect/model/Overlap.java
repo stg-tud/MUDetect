@@ -41,6 +41,10 @@ public class Overlap {
         return patternOverlap.containsEdge(edge) || targetOverlap.containsEdge(edge);
     }
 
+    public EGroumNode getMappedTargetNode(EGroumNode patternNode) {
+        return targetNodeByPatternNode.get(patternNode);
+    }
+
     public AUG getTarget() { return (AUG) targetOverlap.getBase(); }
 
     public Location getLocation() {

@@ -1,7 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.dot;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Violation;
+import de.tu_darmstadt.stg.mudetect.model.*;
 import org.junit.Test;
 
 import java.util.HashSet;
@@ -52,6 +51,15 @@ public class GenerateViolationDotGraphTest {
         final Violation violation = new Violation(instance(aug), 1, "constant rank");
 
         assertDotGraphContains(violation, "[ label=\"D\" shape=\"ellipse\" ");
+    }
+
+    @Test
+    public void includesTargetNodeLabelIfDifferent() throws Exception {
+        TestAUGBuilder target = buildAUG().withActionNode("A");
+        TestAUGBuilder pattern = buildAUG().withActionNode("B");
+        Overlap overlap = buildOverlap(target, pattern).withNode("A", "B").build();
+
+        assertDotGraphContains(new Violation(overlap, 1, "constant rank"), " [ label=\"B\\n(A)\"");
     }
 
     private void assertDotGraphContains(Violation violation, String expectedDotGraphFragment) {

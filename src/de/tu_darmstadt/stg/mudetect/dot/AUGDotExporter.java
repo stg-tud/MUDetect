@@ -1,8 +1,10 @@
 package de.tu_darmstadt.stg.mudetect.dot;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
+import egroum.EGroumActionNode;
 import egroum.EGroumEdge;
 import egroum.EGroumNode;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.jgrapht.ext.*;
 
 import java.io.PrintWriter;
@@ -10,6 +12,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 public class AUGDotExporter {
     private static final String NEW_LINE = System.getProperty("line.separator");
@@ -17,10 +21,11 @@ public class AUGDotExporter {
     private final IntegerNameProvider<EGroumNode> nodeIdProvider = new IntegerNameProvider<>();
     private final DOTExporter<EGroumNode, EGroumEdge> exporter;
 
-    public AUGDotExporter(AUGNodeAttributeProvider nodeAttributeProvider,
+    public AUGDotExporter(VertexNameProvider<EGroumNode> nodeLabelProvider,
+                          AUGNodeAttributeProvider nodeAttributeProvider,
                           AUGEdgeAttributeProvider edgeAttributeProvider) {
         exporter = new DOTExporter<>(nodeIdProvider,
-                EGroumNode::getLabel, EGroumEdge::getLabel,
+                nodeLabelProvider, EGroumEdge::getLabel,
                 nodeAttributeProvider, edgeAttributeProvider);
     }
 
