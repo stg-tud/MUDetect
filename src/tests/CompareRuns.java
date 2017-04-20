@@ -1,16 +1,47 @@
 package tests;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.HashSet;
+
+import utils.FileIO;
 
 public class CompareRuns {
 
 	public static void main(String[] args) {
+//		comparePatterns();
+		compareGroums();
+	}
+
+	private static void compareGroums() {
+		File dir = new File("T:/usage-patterns/patterns");
+		HashMap<String, String[]> preGroums = null;
+		for (File file : dir.listFiles()) {
+			if (!file.isDirectory() && file.getName().endsWith(".dat")) {
+				HashMap<String, String[]> groums = (HashMap<String, String[]>) FileIO.readObjectFromFile(file.getAbsolutePath());
+				if (preGroums != null) {
+//					assert groums.keySet().equals(preGroums.keySet());
+					for (String key : groums.keySet()) {
+						String[] pre = preGroums.get(key), cur = groums.get(key);
+						if (!pre[0].equals(cur[0])) {
+							System.err.println(pre[1]);
+							System.err.println(cur[1]);
+							System.err.println(pre[0] + "\t" + cur[0]);
+							System.out.println();
+						}
+					}
+				}
+				preGroums = groums;
+			}
+		}
+	}
+
+	public static void comparePatterns() {
 		File dir = new File("T:/usage-patterns/indeterministic/closure");
 		HashSet<String> preRunPatterns = new HashSet<>();
 		File preDirRun = null;
 		File[] subs = dir.listFiles();
-		for (int i = 0; i < subs.length; i++) {
+		for (int i = 0; i < Math.min(5, subs.length); i++) {
 			File dirRun = subs[i];
 			HashSet<String> runPatterns = new HashSet<>();
 			File dirPatterns = dirRun; // new File(dirRun, "patterns").listFiles()[0];

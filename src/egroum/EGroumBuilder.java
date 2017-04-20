@@ -39,6 +39,7 @@ public class EGroumBuilder {
     
     // DEBUG
     public StringBuilder sbGroums = new StringBuilder();
+    public HashMap<String, String[]> groums = new HashMap<>();
 
     public EGroumBuilder(AUGConfiguration configuration) {
         this.configuration = configuration;
@@ -400,6 +401,8 @@ public class EGroumBuilder {
 		g.setName(name + sig);
 		// DEBUG
 		sbGroums.append(filepath + "#" + name + sig + "\t" + g.getNodes().size() + "\t" + g.getEdges().size() + "\n");
+		sbGroums.append(g.toString() + "\n");
+		groums.put(filepath + "#" + name + sig, new String[]{g.getNodes().size() + "\t" + g.getEdges().size(), g.toString()});
 		return g;
 	}
 }
