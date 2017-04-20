@@ -64,7 +64,7 @@ public class AUGTestUtils {
     }
 
     public static Matcher<? super AUG> hasNode(Matcher<? super EGroumNode> matcher) {
-        return new AUGElementMatcher<EGroumNode>(AbstractBaseGraph::vertexSet, matcher);
+        return new AUGElementMatcher<>(AbstractBaseGraph::vertexSet, matcher);
     }
 
     @SafeVarargs
@@ -130,12 +130,12 @@ public class AUGTestUtils {
     }
 
     private static Matcher<? super AUG> hasEdge(Matcher<? super EGroumEdge> matcher) {
-        return new AUGElementMatcher<EGroumEdge>(AbstractBaseGraph::edgeSet, matcher);
+        return new AUGElementMatcher<>(AbstractBaseGraph::edgeSet, matcher);
     }
 
     private static class AUGElementMatcher<E> extends BaseMatcher<AUG> {
         private final static AUGDotExporter augDotExporter = new AUGDotExporter(
-                new AUGNodeAttributeProvider(), new AUGEdgeAttributeProvider());
+                EGroumNode::getLabel, new AUGNodeAttributeProvider(), new AUGEdgeAttributeProvider());
 
         private final Function<AUG, Set<E>> selector;
         private final Matcher<? super E> elementMatcher;
@@ -164,7 +164,7 @@ public class AUGTestUtils {
                 super.describeMismatch(item, description);
             }
         }
-    };
+    }
 
     private static class EdgeMatcher extends BaseMatcher<EGroumEdge> {
         private final Matcher<? super EGroumNode> sourceMatcher;
