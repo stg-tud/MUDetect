@@ -273,12 +273,11 @@ public class DotGraph {
 		this.graph = graph;
 	}
 
-	public String addStart(String name)
-	{
+	public String addStart(String name) {
 		return "digraph \"" + name + "\" {\n";
 	}
-	public String addNode(int id, String label, String shape, String style, String borderColor, String fontColor)
-	{
+	
+	public String addNode(int id, String label, String shape, String style, String borderColor, String fontColor) {
 		StringBuffer buf = new StringBuffer();
 		buf.append(id + " [label=\"" + escapeControlChars(label) + "\"");
 		if(shape != null && !shape.isEmpty())
@@ -300,8 +299,8 @@ public class DotGraph {
 		else
 			return label.replace("\b", "\\b").replace("\f", "\\f").replace("\b", "\\b").replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t").replace("\"", "\\\"");
 	}
-	public String addEdge(int sId, int eId, String style, String color, String label)
-	{
+	
+	public String addEdge(int sId, int eId, String style, String color, String label) {
 		StringBuffer buf = new StringBuffer();
 		if(label == null)
 			label = "";
@@ -314,17 +313,16 @@ public class DotGraph {
 
 		return buf.toString();
 	}
-	public String addEnd()
-	{
+	
+	public String addEnd() {
 		return "}";
 	}
-	public String getGraph()
-	{
+	
+	public String getGraph() {
 		return this.graph.toString();
 	}
 	
-	public void toDotFile(File file)
-	{
+	public void toDotFile(File file) {
 		try {
 			BufferedWriter fout = new BufferedWriter(new FileWriter(file));
 			fout.append(this.graph.toString());
@@ -335,8 +333,8 @@ public class DotGraph {
 			e.printStackTrace();
 		}
 	}
-	public void toGraphics(String file, String type)
-	{
+	
+	public void toGraphics(String file, String type) {
 		Runtime rt = Runtime.getRuntime();
 
 		String[] args = {EXEC_DOT, "-T"+type, file+".dot", "-o", file+"."+type};
