@@ -152,7 +152,8 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
             boolean started = false;
             while (hasMoreExtensionEdges(alternatives) && alternatives.size() <= config.maxNumberOfAlternatives) {
                 if (!started) {
-                    AUGDotExporter exporter = new AUGDotExporter(new AUGNodeAttributeProvider(), new AUGEdgeAttributeProvider());
+                    AUGDotExporter exporter = new AUGDotExporter(
+                            EGroumNode::getLabel, new AUGNodeAttributeProvider(), new AUGEdgeAttributeProvider());
                     System.out.println("Target: " + exporter.toDotGraph(target));
                     System.out.println("Pattern: " + exporter.toDotGraph(pattern));
                     started = true;

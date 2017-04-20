@@ -3,9 +3,11 @@ package egroum;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Optional;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import egroum.EGroumDataEdge.Type;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import utils.JavaASTUtil;
 
 public abstract class EGroumNode {
@@ -103,6 +105,17 @@ public abstract class EGroumNode {
 
 	public ASTNode getAstNode() {
 		return astNode;
+	}
+
+	public Optional<Integer> getSourceLineNumber() {
+		ASTNode node = getAstNode();
+		while (node != null) {
+			node = getAstNode().getParent();
+			if (node instanceof CompilationUnit) {
+				return Optional.of(((CompilationUnit) node).getLineNumber(getAstNode().getStartPosition()));
+			}
+		}
+		return Optional.empty();
 	}
 
 	public ArrayList<EGroumEdge> getInEdges() {
