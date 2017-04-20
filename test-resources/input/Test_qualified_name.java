@@ -7,6 +7,7 @@ class Test_qualified_name {
 	}
 	
 	private synchronized void setRollbackSegmentInfos(C c) {
+		f0 = 1;
 		c.f = (F) c.clone();
 		c.f.hashCode(f0);
 	}
