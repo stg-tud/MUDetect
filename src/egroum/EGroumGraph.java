@@ -141,7 +141,6 @@ public class EGroumGraph implements Serializable {
 		}
 		if (configuration.collapseIsomorphicSubgraphs)
 			collapseIsomorphicSubgraphs();
-//		markDirectEdges();
 		buildClosure();
 		if (configuration.removeImplementationCode > 0)
 			removeThisMembers();
@@ -1483,6 +1482,8 @@ public class EGroumGraph implements Serializable {
 			pdg = buildDefinitionPDG(control, branch, astNode.getRightHandSide(), lnode);
 		}
 		pdg.mergeSequentialData(new EGroumDataNode(lnode), Type.REFERENCE);
+		if (!pdg.nodes.contains(lnode))
+			lg.nodes.remove(lnode);
 		pdg.nodes.addAll(lg.nodes);
 		pdg.statementNodes.addAll(lg.statementNodes);
 		lg.dataSources.remove(lnode);
@@ -1663,6 +1664,11 @@ public class EGroumGraph implements Serializable {
 			for (EGroumNode def : out.getDefinitions()) {
 				((EGroumDataNode) def).copyData(data);
 				def.defStore = new HashMap<>(out.defStore);
+				for (EGroumEdge e : data.inEdges) {
+					if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.QUALIFIER) {
+						new EGroumDataEdge(e.source, def, Type.QUALIFIER);
+					}
+				}
 			}
 			pdg.delete(out);
 		} else {
@@ -2118,13 +2124,13 @@ public class EGroumGraph implements Serializable {
 //														delete(ref2);
 													if (refs2.isEmpty())
 														delete(e2.target);
-													delete(ref1);
+//													delete(ref1);
 												}
 											}
 										}
 									}
 								}
-								delete(ref);
+//								delete(ref);
 								break;
 							}
 						}
@@ -2214,8 +2220,15 @@ public class EGroumGraph implements Serializable {
 						}
 					}
 				}
-				if (isRef)
+				if (isRef) {
+					for (EGroumEdge e : node.inEdges) {
+						if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.QUALIFIER) {
+							delete(e.source);
+							break;
+						}
+					}
 					delete(node);
+				}
 			}
 		}
 	}
