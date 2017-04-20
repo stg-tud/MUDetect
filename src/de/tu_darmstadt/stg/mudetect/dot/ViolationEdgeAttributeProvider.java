@@ -5,11 +5,11 @@ import egroum.EGroumEdge;
 
 import java.util.Map;
 
-public class ViolationEdgeAttributeProvider extends AUGEdgeAttributeProvider {
+class ViolationEdgeAttributeProvider extends AUGEdgeAttributeProvider {
     private final Overlap violation;
     private final String unmappedNodeColor;
 
-    public ViolationEdgeAttributeProvider(Overlap violation, String unmappedNodeColor) {
+    ViolationEdgeAttributeProvider(Overlap violation, String unmappedNodeColor) {
         this.unmappedNodeColor = unmappedNodeColor;
         this.violation = violation;
     }
