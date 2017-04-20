@@ -870,14 +870,13 @@ public class EGroumGraph implements Serializable {
 			return pdg;
 		if (astNode.getOperator() == PrefixExpression.Operator.INCREMENT
 				|| astNode.getOperator() == PrefixExpression.Operator.DECREMENT) {
-			EGroumGraph rg = new EGroumGraph(context, new EGroumDataNode(
-					null, ASTNode.NUMBER_LITERAL, "1", "int", "1"), configuration);
 			EGroumActionNode op = new EGroumActionNode(control, branch,
 					astNode, astNode.getNodeType(), null, "<a>", 
 					astNode.getOperator().toString().substring(0, 1));
 			pdg.mergeSequentialData(op, Type.PARAMETER);
-			rg.mergeSequentialData(op, Type.PARAMETER);
-			pdg.mergeParallel(rg);
+			EGroumDataNode lit = new EGroumDataNode(null, ASTNode.NUMBER_LITERAL, "1", "int", "1");
+			new EGroumDataEdge(lit, op, Type.PARAMETER);
+			pdg.nodes.add(lit);
 		} else {
 			if (!configuration.encodeUnaryOperators)
 				return pdg;
@@ -902,8 +901,7 @@ public class EGroumGraph implements Serializable {
 		EGroumGraph rg = new EGroumGraph(context, new EGroumDataNode(
 				null, ASTNode.NUMBER_LITERAL, "1", "int", "1"), configuration);
 		EGroumActionNode op = new EGroumActionNode(control, branch,
-				astNode, astNode.getNodeType(), null, "<a>", astNode.getOperator().toString()
-						.substring(0, 1));
+				astNode, astNode.getNodeType(), null, "<a>", astNode.getOperator().toString().substring(0, 1));
 		lg.mergeSequentialData(op, Type.PARAMETER);
 		rg.mergeSequentialData(op, Type.PARAMETER);
 		EGroumGraph pdg = new EGroumGraph(context, configuration);
@@ -1300,6 +1298,7 @@ public class EGroumGraph implements Serializable {
 			EGroumGraph acg = new EGroumGraph(context, configuration);
 			EGroumDataNode acn = new EGroumDataNode(acd, ASTNode.TYPE_LITERAL, "" + acd.getStartPosition(), type, type, false, true);
 			new EGroumDataEdge(acn, node, Type.RECEIVER);
+			ArrayList<EGroumGraph> mgs = new ArrayList<>();
 			for (int i = 0; i < acd.bodyDeclarations().size(); i++) {
 				if (acd.bodyDeclarations().get(i) instanceof MethodDeclaration) {
 					MethodDeclaration md = (MethodDeclaration) acd.bodyDeclarations().get(i);
@@ -1314,10 +1313,12 @@ public class EGroumGraph implements Serializable {
 								new EGroumDataEdge(mdn, mgn, Type.CONTAINS);
 						}
 						mg.nodes.add(mdn);
-						acg.mergeParallel(mg);
+						mgs.add(mg);
 					}
 				}
 			}
+			if (!mgs.isEmpty())
+				acg.mergeParallel(mgs.toArray(new EGroumGraph[0]));
 			acg.nodes.add(acn);
 			acg.breaks.clear();
 			acg.clearDefStore();

@@ -1,6 +1,10 @@
 package egroum;
 
 import graphics.DotGraph;
+import utils.FileIO;
+
+import java.util.ArrayList;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -37,6 +41,36 @@ public class AUGImprovement2 {
     public void switchstate() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
     	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_switch.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    }
+
+    @Test
+    public void itext() throws Exception {
+//    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_non_determinism.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0; groum = false;}});
+    	EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration());
+    	gb.buildBatch("T:/repos/itext/5091/original-src", null);
+		FileIO.writeStringToFile(gb.sbGroums.toString(), "T:/usage-patterns/patterns/" + (System.currentTimeMillis() / 1000) + ".csv");
+		FileIO.writeObjectToFile(gb.groums, "T:/usage-patterns/patterns/" + (System.currentTimeMillis() / 1000) + ".dat", false);
+    }
+
+    @Test
+    public void nonDeterminism() throws Exception {
+//    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_non_determinism.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0; groum = false;}});
+    	EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration());
+    	gb.buildBatch("T:/repos/closure-compiler/src", null);
+		FileIO.writeStringToFile(gb.sbGroums.toString(), "T:/usage-patterns/patterns/" + (System.currentTimeMillis() / 1000) + ".csv");
+		FileIO.writeObjectToFile(gb.groums, "T:/usage-patterns/patterns/" + (System.currentTimeMillis() / 1000) + ".dat", false);
+    }
+
+    @Test
+    public void nonDeterminism1() throws Exception {
+        // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
+    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_non_determinism.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0; groum = false;}});
+    }
+
+    @Test
+    public void equals() throws Exception {
+        // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
+    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_equals.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0; groum = false;}});
     }
 
     @Test
