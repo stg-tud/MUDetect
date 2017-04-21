@@ -8,6 +8,8 @@ import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import egroum.EGroumEdge;
 import egroum.EGroumNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.BiPredicate;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AlternativeMappingsOverlapsFinder.class);
 
     private final Config config;
 
@@ -149,20 +152,12 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
             this.candidates.addAll(target.edgesOf(startTargetNode));
             this.exploredTargetNodes.add(startTargetNode);
             Set<Alternative> alternatives = getAlternatives(startTargetNode, pattern);
-            boolean started = false;
             while (hasMoreExtensionEdges(alternatives) && alternatives.size() <= config.maxNumberOfAlternatives) {
-                if (!started) {
-                    AUGDotExporter exporter = new AUGDotExporter(
-                            EGroumNode::getLabel, new AUGNodeAttributeProvider(), new AUGEdgeAttributeProvider());
-                    System.out.println("Target: " + exporter.toDotGraph(target));
-                    System.out.println("Pattern: " + exporter.toDotGraph(pattern));
-                    started = true;
-                }
                 EGroumEdge nextExtensionEdge = nextExtensionEdge();
                 int nextExtensionEdgeIndex = getNextExtensionEdgeIndex();
                 int nextExtensionEdgeSourceIndex = getOrCreateTargetNodeIndex(nextExtensionEdge.getSource());
                 int nextExtensionEdgeTargetIndex = getOrCreateTargetNodeIndex(nextExtensionEdge.getTarget());
-                System.out.print("  Extending along " + nextExtensionEdge + "...");
+                LOGGER.debug("  Extending along {}...", nextExtensionEdge);
 
                 Set<Alternative> newAlternatives = alternatives.stream().flatMap(alternative ->
                         getNextExtensionEdgeMappingAlternatives(alternative).stream()
@@ -177,7 +172,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
                     alternatives.clear();
                     alternatives.addAll(newAlternatives);
                 }
-                System.out.println(" now " + alternatives.size() + " alternatives.");
+                LOGGER.debug("  now {} alternatives.", alternatives.size());
             }
 
             AlternativeMappingsOverlapsFinder.numberOfExploredAlternatives += alternatives.size();
@@ -373,12 +368,19 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
     public List<Overlap> findOverlaps(AUG target, Pattern pattern) {
         List<Overlap> overlaps = new ArrayList<>();
         Set<EGroumNode> coveredTargetNodes = new HashSet<>();
-        for (EGroumNode startTargetNode : target.getMeaningfulActionNodes()) {
+        Set<EGroumNode> startTargetNodes = target.getMeaningfulActionNodes();
+        if (!startTargetNodes.isEmpty()) {
+            AUGDotExporter exporter = new AUGDotExporter(
+                    EGroumNode::getLabel, new AUGNodeAttributeProvider(), new AUGEdgeAttributeProvider());
+            LOGGER.debug("Target: {}", exporter.toDotGraph(target));
+            LOGGER.debug("Pattern: {}", exporter.toDotGraph(pattern));
+        }
+        for (EGroumNode startTargetNode : startTargetNodes) {
             // Our goal is to find for every mappable target node at least one overlap that maps the target node. Hence,
             // if we found one before, there's no need to start from this node again.
             if (coveredTargetNodes.contains(startTargetNode)) continue;
 
-            System.out.println("Exploring from " + startTargetNode + "...");
+            LOGGER.debug("Exploring from {}...", startTargetNode);
             ExtensionStrategy extensionStrategy = new ExtensionStrategy(target, pattern, config);
             for (Overlap overlap : extensionStrategy.findLargestOverlaps(startTargetNode)) {
                 overlaps.add(overlap);
@@ -386,6 +388,9 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
             }
         }
         removeSubgraphs(overlaps);
+        if (!startTargetNodes.isEmpty()) {
+            LOGGER.debug("Found {} overlaps.", overlaps.size());
+        }
         return overlaps;
     }
 
