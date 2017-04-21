@@ -51,6 +51,7 @@ public class MuDetectRunner extends MuBenchRunner {
                 args.getTargetPath(),
                 groums -> new MinedPatternsModel(new Configuration() {{
                     minPatternSupport = 10;
+                    minPatternCalls = 2;
                     disableSystemOut = true;
                     outputPath = getPatternOutputPath();
                 }}, groums),
