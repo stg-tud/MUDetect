@@ -65,10 +65,9 @@ public class MuDetectRunner extends MuBenchRunner {
                         }}),
                 new MissingElementViolationFactory(),
                 new WeightRankingStrategy(
-                        new AverageWeightFunction(
+                        new ProductWeightFunction(
                                 new PatternSupportWeightFunction(),
                                 new PatternViolationsWeightFunction(),
-                                new ViolationSupportWeightFunction(),
                                 new OverlapWithoutEdgesToMissingNodesWeightFunction(
                                         new ConstantNodeWeightFunction()
                                 ))),
