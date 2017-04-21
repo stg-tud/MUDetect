@@ -54,6 +54,7 @@ public abstract class EGroumNode {
 	protected int id;
 	protected ASTNode astNode;
 	protected int astNodeType;
+	private int sourceLineNumber;
 	protected String key;
 	protected EGroumNode control;
 	protected String dataType;
@@ -66,6 +67,14 @@ public abstract class EGroumNode {
 		this.id = ++numOfNodes;
 		this.astNode = astNode;
 		this.astNodeType = nodeType;
+		this.sourceLineNumber = -1;
+		ASTNode node = astNode;
+		while (node != null) {
+			if (node instanceof CompilationUnit) {
+				this.sourceLineNumber = ((CompilationUnit) node).getLineNumber(astNode.getStartPosition());
+			}
+			node = node.getParent();
+		}
 	}
 	
 	public EGroumNode(ASTNode astNode, int nodeType, String key) {
@@ -108,14 +117,7 @@ public abstract class EGroumNode {
 	}
 
 	public Optional<Integer> getSourceLineNumber() {
-		ASTNode node = getAstNode();
-		while (node != null) {
-			node = getAstNode().getParent();
-			if (node instanceof CompilationUnit) {
-				return Optional.of(((CompilationUnit) node).getLineNumber(getAstNode().getStartPosition()));
-			}
-		}
-		return Optional.empty();
+		return sourceLineNumber == -1 ? Optional.empty() : Optional.of(sourceLineNumber);
 	}
 
 	public ArrayList<EGroumEdge> getInEdges() {
