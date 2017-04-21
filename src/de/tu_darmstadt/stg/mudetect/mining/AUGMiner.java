@@ -4,12 +4,14 @@ import de.tu_darmstadt.stg.mudetect.model.Location;
 import egroum.*;
 import mining.Configuration;
 import mining.Fragment;
+import org.eclipse.jdt.core.dom.ASTNode;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class AUGMiner {
     private final Configuration config;
@@ -62,8 +64,8 @@ class AUGMiner {
         }
     }
 
-    private static Set<de.tu_darmstadt.stg.mudetect.mining.Pattern> toAUGPatterns(Set<mining.Pattern> patterns) {
-        return patterns.stream().map(AUGMiner::toAUGPattern).collect(Collectors.toSet());
+    private Set<de.tu_darmstadt.stg.mudetect.mining.Pattern> toAUGPatterns(Set<mining.Pattern> patterns) {
+        return patterns.stream().map(AUGMiner::toAUGPattern).filter(this::isLargeEnough).collect(Collectors.toSet());
     }
 
     private static de.tu_darmstadt.stg.mudetect.mining.Pattern toAUGPattern(mining.Pattern pattern) {
@@ -101,5 +103,13 @@ class AUGMiner {
     private static Location getLocation(Fragment example) {
         EGroumGraph graph = example.getGraph();
         return new Location(graph.getFilePath(), AUGBuilder.getMethodSignature(graph));
+    }
+
+    private boolean isLargeEnough(Pattern pattern) {
+        return pattern.vertexSet().stream().filter(this::isMethodCall).count() >= config.minPatternCalls;
+    }
+
+    private boolean isMethodCall(EGroumNode node) {
+        return node.getAstNodeType() == ASTNode.METHOD_INVOCATION;
     }
 }

@@ -5,6 +5,11 @@ public class Configuration {
     public int minPatternSupport = 10, maxPatternSupport = 1000;
 
     /**
+     * Minimum number of method calls in a pattern.
+     */
+    public int minPatternCalls = 1;
+
+    /**
      * The miner should extend the pattern with an incoming data node even if the data node does not have a definition core action node 
      * TODO what exactly is the impact of this flag?
      */
