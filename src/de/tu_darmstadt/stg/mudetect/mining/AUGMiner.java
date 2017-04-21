@@ -110,6 +110,7 @@ class AUGMiner {
     }
 
     private boolean isMethodCall(EGroumNode node) {
-        return node.getAstNodeType() == ASTNode.METHOD_INVOCATION;
+        int nodeType = node.getAstNodeType();
+        return nodeType == ASTNode.METHOD_INVOCATION || nodeType == ASTNode.CLASS_INSTANCE_CREATION;
     }
 }
