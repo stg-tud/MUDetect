@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 
-public class OverlapWithEdgesToMissingNodesWeightFunctionTest {
+public class OverlapWithoutEdgesToMissingNodesWeightFunctionTest {
     @Test
     public void noMissingElements() throws Exception {
         Overlap instance = instance(buildAUG().withActionNode("A"));
@@ -33,14 +33,14 @@ public class OverlapWithEdgesToMissingNodesWeightFunctionTest {
     }
 
     @Test
-    public void includesEdgeToMissingNode() throws Exception {
+    public void excludesEdgeToMissingNode() throws Exception {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNode("A");
         Overlap violation = buildOverlap(target, pattern).withNode("A").build();
 
         double weight = getWeight(violation, node -> 1);
 
-        assertThat(weight, is(closeTo(0.666, 0.001)));
+        assertThat(weight, is(0.5));
     }
 
     @Test
@@ -69,6 +69,6 @@ public class OverlapWithEdgesToMissingNodesWeightFunctionTest {
     }
 
     private double getWeight(Overlap violation, NodeWeightFunction a) {
-        return new OverlapWithEdgesToMissingNodesWeightFunction(a).getWeight(violation, null, null);
+        return new OverlapWithoutEdgesToMissingNodesWeightFunction(a).getWeight(violation, null, null);
     }
 }
