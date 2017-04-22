@@ -120,6 +120,7 @@ public class EGroumGraph implements Serializable {
 			Block block = md.getBody();
 			if (!block.statements().isEmpty()) {
 				EGroumGraph pdg = buildPDG(entryNode, "", block);
+				addDefinitions(pdg);
 				mergeSequential(pdg);
 			}
 		}
@@ -127,7 +128,7 @@ public class EGroumGraph implements Serializable {
 			statementSinks.addAll(context.popTry());
 		adjustControlEdges();
 		context.removeScope();
-		addDefinitions();
+//		addDefinitions();
 		if (!configuration.encodeConditionalOperators)
 			deleteConditionalOperators();
 		if (configuration.collapseTemporaryDataNodes)
@@ -156,6 +157,31 @@ public class EGroumGraph implements Serializable {
 			renameEdges();
 		}
 		cleanUp();
+	}
+
+	private void addDefinitions(EGroumGraph pdg) {
+		LinkedList<EGroumDataNode> sources = new LinkedList<>(pdg.dataSources);
+		while (!sources.isEmpty()) {
+			EGroumDataNode source = sources.pop();
+			if (!entryNode.defStore.containsKey(source.key)) {
+				EGroumDataNode def = new EGroumDataNode(source);
+				def.isDeclaration = true;
+				nodes.add(def);
+				HashSet<EGroumDataNode> defs = new HashSet<>();
+				defs.add(def);
+				entryNode.defStore.put(source.key, defs);
+				EGroumNode qual = source.getQualifier();
+				while (qual != null && qual instanceof EGroumDataNode) {
+					EGroumDataNode q = new EGroumDataNode((EGroumDataNode) qual);
+					new EGroumDataEdge(q, def, Type.QUALIFIER);
+					sources.push(q);
+					pdg.dataSources.add(q);
+					pdg.nodes.add(q);
+					def = q;
+					qual = qual.getQualifier();
+				}
+			}
+		}
 	}
 
 	@SuppressWarnings("unused")
@@ -1425,7 +1451,10 @@ public class EGroumGraph implements Serializable {
 			if (!pdg.isEmpty()) {
 				g.mergeSequential(pdg);
 			}
-			if (list.get(i) instanceof ReturnStatement || list.get(i) instanceof ThrowStatement || list.get(i).toString().startsWith("System.exit(")) {
+			if (list.get(i) instanceof ReturnStatement 
+					|| list.get(i) instanceof ThrowStatement 
+					|| list.get(i).toString().startsWith("System.exit(")
+					) {
 				g.clearDefStore();
 				return g;
 			}
@@ -2228,6 +2257,7 @@ public class EGroumGraph implements Serializable {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void addDefinitions() {
 		HashMap<EGroumNode, HashMap<String, EGroumNode>> defs = new HashMap<>();
 		defs.put(null, new HashMap<String, EGroumNode>());
