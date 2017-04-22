@@ -2123,32 +2123,14 @@ public class EGroumGraph implements Serializable {
 	
 	private void removeThisMembers() {
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
-			if (node instanceof EGroumDataNode) {
-				String name = ((EGroumDataNode) node).dataName;
-				if (!name.equals("this") && !name.equals("super"))
-					continue;
-				ArrayList<EGroumNode> refs = node.getReferences(); // references of this/super
-				for (EGroumNode ref : refs) {// a reference of this/super
-					for (EGroumEdge e1 : new HashSet<EGroumEdge>(ref.outEdges)) {
-						if (!(e1 instanceof EGroumDataEdge))
-							continue;
-						if (((EGroumDataEdge) e1).type == Type.RECEIVER) {
-							delete(e1.target);
+			if (node instanceof EGroumDataNode && (node.key.startsWith("this") || node.key.startsWith("super"))) {
+				String[] parts = node.key.split("\\.");
+				if ((parts[0].equals("this") || parts[0].equals("super")) && parts.length <= configuration.removeImplementationCode) {
+					for (EGroumEdge e : node.outEdges)
+						if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.RECEIVER) {
+							delete(e.target);
 							break;
 						}
-						if (configuration.removeImplementationCode > 1 && ((EGroumDataEdge) e1).type == Type.QUALIFIER) {
-							ArrayList<EGroumNode> refs1 = e1.target.getReferences();
-							for (EGroumNode ref1 : refs1) {
-								for (EGroumEdge e2 : new HashSet<EGroumEdge>(ref1.outEdges)) {
-									if (e2 instanceof EGroumDataEdge && ((EGroumDataEdge) e2).type == Type.RECEIVER) {
-										delete(e2.target);
-										break;
-									}
-								}
-							}
-							break;
-						}
-					}
 				}
 			}
 		}
