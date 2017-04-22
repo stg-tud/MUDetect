@@ -194,9 +194,9 @@ public class Miner {
 					xfs.add(xf);
 				}
 			}
-			System.out.println("\tTrying with label " + label + ": " + xfs.size());
 			HashSet<Fragment> g = new HashSet<>();
 			int freq = mine(g, xfs, pattern, frequentFragments);
+			System.out.println("\tTrying with label " + label + ": " + xfs.size() + "\t" + freq + "\t" + xfreq);
 			if (freq >= config.minPatternSupport && isBetter(freq, label, xfreq, xlabel)) {
 				extensible = true;
 				group = g;
