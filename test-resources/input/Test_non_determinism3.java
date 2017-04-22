@@ -20,7 +20,7 @@ class Test_non_determinism3 {
 		}
 		
 		if (!doc.map.containsKey(parameter)) {
-			doc.map.put(parameter, description);
+			doc.map.put(parameter, description + Integer.MIN_VALUE);
 			return true;
 		} else
 			return false;

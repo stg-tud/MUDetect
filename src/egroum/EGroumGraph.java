@@ -811,13 +811,20 @@ public class EGroumGraph implements Serializable {
 				return new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS,
 					"this." + name, type, name, true,
 					false), configuration);
-			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
-					null, ASTNode.THIS_EXPRESSION, "this",
-					context.getType(), "this"), configuration);
-			pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS,
-					"this." + name, type, name, true,
-					false), Type.QUALIFIER);
-			return pdg;
+			if (configuration.keepQualifierEdges) {
+				EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
+						null, ASTNode.THIS_EXPRESSION, "this",
+						context.getType(), "this"), configuration);
+				pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS,
+						"this." + name, type, name, true,
+						false), Type.QUALIFIER);
+				return pdg;
+			} else {
+				EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS,
+						"this." + name, type, name, true,
+						false), configuration);
+				return pdg;
+			}
 		}
 		if (Character.isUpperCase(name.charAt(0))) {
 			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
@@ -825,13 +832,20 @@ public class EGroumGraph implements Serializable {
 					name, false, false), configuration);
 			return pdg;
 		}
-		EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
-				null, ASTNode.THIS_EXPRESSION, "this",
-				context.getType(), "this"), configuration);
-		pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS,
-				"this." + name, "UNKNOWN", name, true,
-				false), Type.QUALIFIER);
-		return pdg;
+		if (configuration.keepQualifierEdges) {
+			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
+					null, ASTNode.THIS_EXPRESSION, "this",
+					context.getType(), "this"), configuration);
+			pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS,
+					"this." + name, "UNKNOWN", name, true,
+					false), Type.QUALIFIER);
+			return pdg;
+		} else {
+			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS,
+					"this." + name, "UNKNOWN", name, true,
+					false), configuration);
+			return pdg;
+		}
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, ReturnStatement astNode) {
@@ -877,14 +891,21 @@ public class EGroumGraph implements Serializable {
 						qtype + "." + name, name, true, false), configuration);
 			}
 		if (type != null) {
-			pdg.mergeSequentialData(
-					new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, node.key + "." + name, type, name, true, false),
-					Type.QUALIFIER);
+			if (configuration.keepQualifierEdges)
+				pdg.mergeSequentialData(
+						new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, node.key + "." + name, type, name, true, false),
+						Type.QUALIFIER);
+			else
+				pdg = new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, node.key + "." + name, type, name, true, false), configuration);
 		} else {
-			pdg.mergeSequentialData(
-					new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, node.key + "." + name,
-							qtype + "." + name, name, true, false),
-					Type.QUALIFIER);
+			if (configuration.keepQualifierEdges)
+				pdg.mergeSequentialData(
+						new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, node.key + "." + name,
+								qtype + "." + name, name, true, false),
+						Type.QUALIFIER);
+			else
+				pdg = new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, node.key + "." + name,
+							qtype + "." + name, name, true, false), configuration);
 		}
 		return pdg;
 	}
@@ -1780,13 +1801,23 @@ public class EGroumGraph implements Serializable {
 			if (type == null)
 				type = context.getFieldType(astNode.getName());
 			if (type != null) {
+				if (configuration.keepQualifierEdges) {
+					EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(null, ASTNode.THIS_EXPRESSION, "this", context.getType(), "this"), configuration);
+					pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, "this." + name, type, name, true, false), Type.QUALIFIER);
+					return pdg;
+				} else {
+					EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, "this." + name, type, name, true, false), configuration);
+					return pdg;
+				}
+			}
+			if (configuration.keepQualifierEdges) {
 				EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(null, ASTNode.THIS_EXPRESSION, "this", context.getType(), "this"), configuration);
-				pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, "this." + name, type, name, true, false), Type.QUALIFIER);
+				pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, "this." + name, "UNKNOWN", name, true, false), Type.QUALIFIER);
+				return pdg;
+			} else {
+				EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, "this." + name, "UNKNOWN", name, true, false), configuration);
 				return pdg;
 			}
-			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(null, ASTNode.THIS_EXPRESSION, "this", context.getType(), "this"), configuration);
-			pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, "this." + name, "UNKNOWN", name, true, false), Type.QUALIFIER);
-			return pdg;
 		} else {
 			EGroumGraph pdg = buildArgumentPDG(control, branch, astNode.getExpression());
 			EGroumDataNode qual = pdg.getOnlyDataOut();
@@ -1794,7 +1825,10 @@ public class EGroumGraph implements Serializable {
 			if (astNode.getExpression().resolveTypeBinding() != null)
 				type = astNode.getExpression().resolveTypeBinding().getTypeDeclaration().getName();
 			EGroumDataNode node = new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, qual.key == null ? astNode.toString() : qual.key + "." + astNode.getName().getIdentifier(), type + "." + name, name, true, false);
-			pdg.mergeSequentialData(node, Type.QUALIFIER);
+			if (configuration.keepQualifierEdges)
+				pdg.mergeSequentialData(node, Type.QUALIFIER);
+			else
+				pdg = new EGroumGraph(context, node, configuration);
 			return pdg;
 		}
 	}
@@ -1808,13 +1842,24 @@ public class EGroumGraph implements Serializable {
 		if (type == null)
 			type = context.getFieldType(astNode.getName());
 		if (type != null) {
+			if (configuration.keepQualifierEdges) {
+				EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(null, ASTNode.THIS_EXPRESSION, "this", context.getSuperType(), "super"), configuration);
+				pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, "this." + name, type, name, true, false), Type.QUALIFIER);
+				return pdg;
+			}
+			else {
+				EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, "this." + name, type, name, true, false), configuration);
+				return pdg;
+			}
+		}
+		if (configuration.keepQualifierEdges) {
 			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(null, ASTNode.THIS_EXPRESSION, "this", context.getSuperType(), "super"), configuration);
-			pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, "this." + name, type, name, true, false), Type.QUALIFIER);
+			pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, astNode.toString(), context.getSuperType() + "." + name, name, true, false), Type.QUALIFIER);
+			return pdg;
+		} else {
+			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, astNode.toString(), context.getSuperType() + "." + name, name, true, false), configuration);
 			return pdg;
 		}
-		EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(null, ASTNode.THIS_EXPRESSION, "this", context.getSuperType(), "super"), configuration);
-		pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, astNode.toString(), context.getSuperType() + "." + name, name, true, false), Type.QUALIFIER);
-		return pdg;
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,

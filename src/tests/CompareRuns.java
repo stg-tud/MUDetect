@@ -27,7 +27,10 @@ public class CompareRuns {
 							System.err.println(pre[1]);
 							System.err.println(cur[1]);
 							System.err.println(pre[0] + "\t" + cur[0]);
-							System.out.println();
+							String[] parts = pre[0].split("\t");
+							int size = Integer.parseInt(parts[0]);
+							if (size <= 20)
+								System.out.println();
 						}
 					}
 				}
