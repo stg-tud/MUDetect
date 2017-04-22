@@ -111,16 +111,17 @@ public class EGroumGraph implements Serializable {
 			SingleVariableDeclaration d = (SingleVariableDeclaration) md.parameters().get(i);
 			EGroumGraph pg = buildPDG(entryNode, "", d);
 			this.nodes.addAll(pg.nodes);
-			for (EGroumNode sink : pg.sinks)
-				entryNode.consumeDefStore(sink.defStore);
+			entryNode.consumeDefStore(pg);
 		}
 		entryNode.consumeDefStore(thisNode.defStore);
 		if (context.interprocedural)
 			context.pushTry();
 		if (md.getBody() != null) {
 			Block block = md.getBody();
-			if (!block.statements().isEmpty())
-				mergeSequential(buildPDG(entryNode, "", block));
+			if (!block.statements().isEmpty()) {
+				EGroumGraph pdg = buildPDG(entryNode, "", block);
+				mergeSequential(pdg);
+			}
 		}
 		if (context.interprocedural)
 			statementSinks.addAll(context.popTry());
@@ -1421,8 +1422,9 @@ public class EGroumGraph implements Serializable {
 			Object s = list.get(i);
 			if (s instanceof EmptyStatement) continue;
 			EGroumGraph pdg = buildPDG(control, branch, (ASTNode) s);
-			if (!pdg.isEmpty())
+			if (!pdg.isEmpty()) {
 				g.mergeSequential(pdg);
+			}
 			if (list.get(i) instanceof ReturnStatement || list.get(i) instanceof ThrowStatement || list.get(i).toString().startsWith("System.exit(")) {
 				g.clearDefStore();
 				return g;
@@ -1483,7 +1485,7 @@ public class EGroumGraph implements Serializable {
 		}
 		pdg.mergeSequentialData(new EGroumDataNode(lnode), Type.REFERENCE);
 		if (!pdg.nodes.contains(lnode))
-			lg.nodes.remove(lnode);
+			lg.delete(lnode);
 		pdg.nodes.addAll(lg.nodes);
 		pdg.statementNodes.addAll(lg.statementNodes);
 		lg.dataSources.remove(lnode);
@@ -1561,14 +1563,8 @@ public class EGroumGraph implements Serializable {
 				}
 				pdg.dataSources = remains;
 			}
-			for (EGroumNode sink1 : sinks)
-				for (EGroumNode sink2 : pdg.sinks)
-					sink2.consumeDefStore(sink1.defStore);
-		}
-		for (EGroumGraph pdg : pdgs) {
-			for (EGroumNode sink1 : sinks)
-				for (EGroumNode sink2 : pdg.sinks)
-					sink2.consumeDefStore(sink1.defStore);
+			for (EGroumNode sink : pdg.sinks)
+				sink.consumeDefStore(this);
 		}
 		sinks.clear();
 		statementSinks.clear();
@@ -1589,9 +1585,8 @@ public class EGroumGraph implements Serializable {
 
 	private void mergeParallel(EGroumGraph... pdgs) {
 		for (EGroumGraph pdg : pdgs)
-			for (EGroumNode sink1 : sinks)
-				for (EGroumNode sink2 : pdg.sinks)
-					sink2.consumeDefStore(sink1.defStore);
+			for (EGroumNode sink : pdg.sinks)
+				sink.consumeDefStore(this);
 		for (EGroumGraph pdg : pdgs) {
 			nodes.addAll(pdg.nodes);
 			statementNodes.addAll(pdg.statementNodes);
@@ -1821,9 +1816,8 @@ public class EGroumGraph implements Serializable {
 			}
 			pdg.dataSources = remains;
 		}
-		for (EGroumNode sink1 : sinks)
-			for (EGroumNode sink2 : pdg.sinks)
-				sink2.consumeDefStore(sink1.defStore);
+		for (EGroumNode sink : pdg.sinks)
+			sink.consumeDefStore(this);
 		for (EGroumNode sink : statementSinks) {
 			for (EGroumNode source : pdg.statementSources) {
 				new EGroumDataEdge(sink, source, Type.DEPENDENCE);
@@ -1857,8 +1851,7 @@ public class EGroumGraph implements Serializable {
 	}
 	
 	private void mergeSequentialControl(EGroumNode next, String label) {
-		for (EGroumNode sink : sinks)
-			next.consumeDefStore(sink.defStore);
+		next.consumeDefStore(this);
 		sinks.clear();
 		sinks.add(next);
 		statementSinks.clear();
@@ -1873,8 +1866,7 @@ public class EGroumGraph implements Serializable {
 		if (next.isStatement())
 			for (EGroumNode sink : statementSinks)
 				new EGroumDataEdge(sink, next, Type.DEPENDENCE);
-		for (EGroumNode sink : sinks)
-			next.consumeDefStore(sink.defStore);
+		next.consumeDefStore(this);
 		if (type == Type.QUALIFIER) {
 			dataSources.add((EGroumDataNode) next);
 		} else if (type != Type.DEFINITION && type != Type.REFERENCE && next instanceof EGroumDataNode) {

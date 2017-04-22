@@ -494,14 +494,12 @@ public abstract class EGroumNode {
 	}
 
 	public void consumeDefStore(HashMap<String, HashSet<EGroumDataNode>> otherDefStore) {
-		for (String key : this.defStore.keySet()) {
-			if (otherDefStore.containsKey(key)) {
-				otherDefStore.get(key).clear();
-				otherDefStore.remove(key);
-			}
-		}
-		for (String key : otherDefStore.keySet()) {
-			HashSet<EGroumDataNode> otherDefs = otherDefStore.get(key), defs = this.defStore.get(key);
+		HashMap<String, HashSet<EGroumDataNode>> temp = new HashMap<>();
+		for (String key : otherDefStore.keySet())
+			if (!this.defStore.containsKey(key))
+				temp.put(key, new HashSet<>(otherDefStore.get(key)));
+		for (String key : temp.keySet()) {
+			HashSet<EGroumDataNode> otherDefs = temp.get(key), defs = this.defStore.get(key);
 			if (defs == null) {
 				defs = new HashSet<>();
 				this.defStore.put(key, defs);
@@ -509,6 +507,28 @@ public abstract class EGroumNode {
 			defs.addAll(otherDefs);
 			otherDefs.clear();
 		}
-		otherDefStore.clear();
+		temp.clear();
+	}
+
+	public void consumeDefStore(HashSet<EGroumNode> sinks) {
+		HashMap<String, HashSet<EGroumDataNode>> defStores = new HashMap<>();
+		for (EGroumNode sink : sinks)
+			update(defStores, sink.defStore);
+		consumeDefStore(defStores);
+	}
+
+	public void consumeDefStore(EGroumGraph g) {
+		consumeDefStore(g.sinks);
+	}
+
+	private void update(HashMap<String, HashSet<EGroumDataNode>> defStores, HashMap<String, HashSet<EGroumDataNode>> otherDefStore) {
+		for (String key : otherDefStore.keySet()) {
+			HashSet<EGroumDataNode> defs = defStores.get(key);
+			if (defs == null) {
+				defs = new HashSet<>();
+				defStores.put(key, defs);
+			}
+			defs.addAll(otherDefStore.get(key));
+		}
 	}
 }

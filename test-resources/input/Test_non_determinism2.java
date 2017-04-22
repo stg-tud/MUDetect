@@ -1,6 +1,6 @@
 package input;
 
-class Test_non_determinism {
+class Test_non_determinism2 {
 
 	  private String resolveJsModuleNodeFileOrDirectory(String scriptAddress, String moduleAddress) {
 	    String loadAddress;

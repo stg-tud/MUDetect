@@ -55,7 +55,8 @@ public class EGroumTestUtils {
 		}
 	}
 
-	public static void buildAndPrintGroumsForFile(String inputPath, String name, String[] classpaths, String outputPath, AUGConfiguration config) {
+	public static ArrayList<EGroumGraph> buildAndPrintGroumsForFile(String inputPath, String name, String[] classpaths, String outputPath, AUGConfiguration config) {
+		ArrayList<EGroumGraph> gs = new ArrayList<>();
 		EGroumBuilder gb = new EGroumBuilder(config);
 		inputPath = inputPath + "/" + name;
 		String content = FileIO.readStringFromFile(inputPath);
@@ -72,6 +73,8 @@ public class EGroumTestUtils {
 			s = "0 [label=\"" + s + "\"" + " shape=box style=dotted]";
 //			System.out.println(s);
 			g.toGraphics(s, outputPath);
+			gs.add(g);
 		}
+		return gs;
 	}
 }
