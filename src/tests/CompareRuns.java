@@ -23,14 +23,13 @@ public class CompareRuns {
 //					assert groums.keySet().equals(preGroums.keySet());
 					for (String key : groums.keySet()) {
 						String[] pre = preGroums.get(key), cur = groums.get(key);
-						if (!pre[0].equals(cur[0])) {
+						String[] parts = pre[0].split("\t");
+						int size = Integer.parseInt(parts[0]);
+						if (size <= 10 && !pre[0].equals(cur[0])) {
 							System.err.println(pre[1]);
 							System.err.println(cur[1]);
 							System.err.println(pre[0] + "\t" + cur[0]);
-							String[] parts = pre[0].split("\t");
-							int size = Integer.parseInt(parts[0]);
-							if (size <= 20)
-								System.out.println();
+							System.out.println();
 						}
 					}
 				}

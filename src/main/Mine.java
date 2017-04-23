@@ -35,7 +35,6 @@ public class Mine {
 		EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration());
 		Miner miner = new Miner(name, new Configuration(){{outputPath = "T:/usage-patterns/patterns";}});
 		miner.mine(new ArrayList<>(gb.buildBatch(path, null)));
-		FileIO.writeStringToFile(gb.sbGroums.toString(), "T:/usage-patterns/patterns/" + (System.currentTimeMillis() / 1000) + ".csv");
 		ArrayList<Anomaly> anomalies = miner.anomalies;
 		Collections.sort(anomalies, new Comparator<Anomaly>() {
 

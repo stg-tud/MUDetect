@@ -37,10 +37,6 @@ import utils.JavaASTUtil;
 public class EGroumBuilder {
     private final AUGConfiguration configuration;
     
-    // DEBUG non-determinism
-    public StringBuilder sbGroums = new StringBuilder();
-    public HashMap<String, String[]> groums = new HashMap<>();
-
     public EGroumBuilder(AUGConfiguration configuration) {
         this.configuration = configuration;
     }
@@ -399,10 +395,6 @@ public class EGroumBuilder {
 		EGroumGraph g = new EGroumGraph(method, new EGroumBuildingContext(false), configuration);
 		g.setFilePath(filepath);
 		g.setName(name + sig);
-		// DEBUG non-determinism
-		sbGroums.append(filepath + "#" + name + sig + "\t" + g.getNodes().size() + "\t" + g.getEdges().size() + "\n");
-		sbGroums.append(g.toString() + "\n");
-		groums.put(filepath + "#" + name + sig, new String[]{g.getNodes().size() + "\t" + g.getEdges().size(), g.toString()});
 		return g;
 	}
 }

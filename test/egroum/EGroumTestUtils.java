@@ -10,7 +10,6 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import utils.FileIO;
 import utils.JavaASTUtil;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
