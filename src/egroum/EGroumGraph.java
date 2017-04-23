@@ -128,7 +128,6 @@ public class EGroumGraph implements Serializable {
 			statementSinks.addAll(context.popTry());
 		adjustControlEdges();
 		context.removeScope();
-//		addDefinitions();
 		if (!configuration.encodeConditionalOperators)
 			deleteConditionalOperators();
 		if (configuration.collapseTemporaryDataNodes)
@@ -2171,11 +2170,9 @@ public class EGroumGraph implements Serializable {
 			if (node instanceof EGroumDataNode && (node.key.startsWith("this") || node.key.startsWith("super"))) {
 				String[] parts = node.key.split("\\.");
 				if ((parts[0].equals("this") || parts[0].equals("super")) && parts.length <= configuration.removeImplementationCode) {
-					for (EGroumEdge e : node.outEdges)
-						if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.RECEIVER) {
+					for (EGroumEdge e : new HashSet<EGroumEdge>(node.outEdges))
+						if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.RECEIVER)
 							delete(e.target);
-							break;
-						}
 				}
 			}
 		}
