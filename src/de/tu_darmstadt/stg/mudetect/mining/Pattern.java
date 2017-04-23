@@ -9,7 +9,6 @@ import egroum.EGroumNode;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("serial")
 public class Pattern extends AUG {
     private final int support;
     private final Map<EGroumNode, Multiset<String>> literals;
