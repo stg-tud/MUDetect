@@ -2205,7 +2205,7 @@ public class EGroumGraph implements Serializable {
 
 	private void deleteTemporaryDataNodesIncomingToControlNodes() {
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
-			if (node instanceof EGroumControlNode && node.astNodeType != ASTNode.CATCH_CLAUSE && node.astNodeType != ASTNode.SYNCHRONIZED_STATEMENT) {
+			if (node instanceof EGroumControlNode && node.astNodeType != ASTNode.CATCH_CLAUSE && node.astNodeType != ASTNode.ENHANCED_FOR_STATEMENT && node.astNodeType != ASTNode.SYNCHRONIZED_STATEMENT) {
 				int i = 0;
 				while (i < node.inEdges.size()) {
 					EGroumEdge e = node.inEdges.get(i);
