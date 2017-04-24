@@ -164,6 +164,11 @@ public class EGroumGraph implements Serializable {
 		for (EGroumNode node : nodes) {
 			if (!(node instanceof EGroumActionNode))
 				continue;
+			if (node.getAstNodeType() == ASTNode.BREAK_STATEMENT 
+					|| node.getAstNodeType() == ASTNode.CONTINUE_STATEMENT
+					|| node.getAstNodeType() == ASTNode.RETURN_STATEMENT
+					|| node.getAstNodeType() == ASTNode.THROW_STATEMENT)
+				continue;
 			for (EGroumEdge e : new HashSet<EGroumEdge>(node.inEdges)) {
 				if (!(e instanceof EGroumControlEdge) || !(e.source instanceof EGroumControlNode))
 					continue;
