@@ -13,7 +13,6 @@ public class EGroumActionNode extends EGroumNode {
 	protected String name;
 	protected String[] parameterTypes;
 	protected HashSet<String> exceptionTypes;
-	protected HashSet<EGroumNode> parameterNodes = new HashSet<>();
 
 	public EGroumActionNode(EGroumNode control, String branch, ASTNode astNode, int nodeType, String key, String type, String name) {
 		super(astNode, nodeType, key);
@@ -69,28 +68,28 @@ public class EGroumActionNode extends EGroumNode {
 		return sb.toString();
 	}
 
-	void buildParameterClosure() {
-		if (this.parameterNodes.isEmpty()) {
-			for (EGroumEdge edge : inEdges) {
-				if (!(edge instanceof EGroumDataEdge))
-					continue; 
-				if (((EGroumDataEdge) edge).type != Type.CONDITION)
-					continue;
-				LinkedList<EGroumNode> nodes = new LinkedList<>();
-				nodes.add(edge.source);
-				while (!nodes.isEmpty()) {
-					EGroumNode node = nodes.removeFirst();
-					parameterNodes.add(node);
-					for (EGroumEdge e : node.inEdges) {
-						if (e instanceof EGroumDataEdge && !parameterNodes.contains(e.source)) {
-							EGroumDataEdge de = (EGroumDataEdge) e;
-							if (de.type == Type.PARAMETER || de.type == Type.QUALIFIER || de.type == Type.RECEIVER)
-								nodes.add(de.source);
-						}
+	HashSet<EGroumNode> buildTransitiveParameterClosure() {
+		HashSet<EGroumNode> parameterTransitiveNodes = new HashSet<>();
+		for (EGroumEdge edge : inEdges) {
+			if (!(edge instanceof EGroumDataEdge))
+				continue; 
+			if (((EGroumDataEdge) edge).type != Type.CONDITION)
+				continue;
+			LinkedList<EGroumNode> nodes = new LinkedList<>();
+			nodes.add(edge.source);
+			while (!nodes.isEmpty()) {
+				EGroumNode node = nodes.removeFirst();
+				parameterTransitiveNodes.add(node);
+				for (EGroumEdge e : node.inEdges) {
+					if (e instanceof EGroumDataEdge && !parameterTransitiveNodes.contains(e.source)) {
+						EGroumDataEdge de = (EGroumDataEdge) e;
+						if (de.type == Type.PARAMETER || de.type == Type.QUALIFIER || de.type == Type.RECEIVER || de.type == Type.REFERENCE)
+							nodes.add(de.source);
 					}
 				}
 			}
 		}
+		return parameterTransitiveNodes;
 	}
 	
 	@Override

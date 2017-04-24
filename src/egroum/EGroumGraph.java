@@ -172,10 +172,8 @@ public class EGroumGraph implements Serializable {
 			for (EGroumEdge e : new HashSet<EGroumEdge>(node.inEdges)) {
 				if (!(e instanceof EGroumControlEdge) || !(e.source instanceof EGroumControlNode))
 					continue;
-				((EGroumActionNode) node).buildParameterClosure();
-				HashSet<EGroumNode> inter = new HashSet<>(((EGroumActionNode) node).parameterNodes);
-				((EGroumControlNode) e.source).buildConditionClosure();
-				inter.retainAll(((EGroumControlNode) e.source).conditionNodes);
+				HashSet<EGroumNode> inter = new HashSet<>(((EGroumActionNode) node).buildTransitiveParameterClosure());
+				inter.retainAll(((EGroumControlNode) e.source).buildTransitiveConditionClosure());
 				if (!inter.isEmpty())
 					e.delete();
 			}

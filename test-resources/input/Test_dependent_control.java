@@ -12,6 +12,11 @@ class Test_dependent_control {
 	ArrayList arrayList;
 	Oject object;
 	
+	void m1(java.util.List l) {
+		if (l.size() > 42)
+			l.get(41);
+	}
+	
 //    public static List<Integer> expand(String ranges, int maxNumber) {
 //        SequenceList parse = new SequenceList(ranges);
 //        LinkedList<Integer> list = new LinkedList<Integer>();

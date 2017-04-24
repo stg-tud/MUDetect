@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.*;
 
 import egroum.AUGConfiguration;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
