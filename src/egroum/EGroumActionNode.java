@@ -2,8 +2,6 @@ package egroum;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
-
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import egroum.EGroumDataEdge.Type;
@@ -64,24 +62,6 @@ public class EGroumActionNode extends EGroumNode {
 		}
 		sb.append(")");
 		return sb.toString();
-	}
-
-	HashSet<EGroumNode> buildTransitiveParameterClosure() {
-		HashSet<EGroumNode> parameterTransitiveNodes = new HashSet<>();
-		LinkedList<EGroumNode> nodes = new LinkedList<>();
-		nodes.add(this);
-		while (!nodes.isEmpty()) {
-			EGroumNode node = nodes.removeFirst();
-			parameterTransitiveNodes.add(node);
-			for (EGroumEdge e : node.inEdges) {
-				if (e instanceof EGroumDataEdge && !parameterTransitiveNodes.contains(e.source)) {
-					EGroumDataEdge de = (EGroumDataEdge) e;
-					if (de.type == Type.PARAMETER || de.type == Type.QUALIFIER || de.type == Type.RECEIVER || de.type == Type.REFERENCE)
-						nodes.add(de.source);
-				}
-			}
-		}
-		return parameterTransitiveNodes;
 	}
 	
 	@Override

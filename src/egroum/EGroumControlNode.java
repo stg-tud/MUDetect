@@ -71,30 +71,6 @@ public class EGroumControlNode extends EGroumNode {
 		doneNodes.add(this);
 	}
 
-	public HashSet<EGroumNode> buildTransitiveConditionClosure() {
-		HashSet<EGroumNode> conditionTransitiveNodes = new HashSet<>();
-		for (EGroumEdge edge : inEdges) {
-			if (!(edge instanceof EGroumDataEdge))
-				continue; 
-			if (((EGroumDataEdge) edge).type != Type.CONDITION)
-				continue;
-			LinkedList<EGroumNode> nodes = new LinkedList<>();
-			nodes.add(edge.source);
-			while (!nodes.isEmpty()) {
-				EGroumNode node = nodes.removeFirst();
-				conditionTransitiveNodes.add(node);
-				for (EGroumEdge e : node.inEdges) {
-					if (e instanceof EGroumDataEdge && !conditionTransitiveNodes.contains(e.source)) {
-						EGroumDataEdge de = (EGroumDataEdge) e;
-						if (de.type == Type.PARAMETER || de.type == Type.QUALIFIER || de.type == Type.RECEIVER || de.type == Type.REFERENCE)
-							nodes.add(de.source);
-					}
-				}
-			}
-		}
-		return conditionTransitiveNodes;
-	}
-
 	protected void buildConditionClosure() {
 		HashSet<EGroumNode> conditionNodes = new HashSet<>();
 		for (EGroumEdge edge : inEdges) {

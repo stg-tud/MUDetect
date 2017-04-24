@@ -3,6 +3,7 @@ package egroum;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Optional;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -411,6 +412,24 @@ public abstract class EGroumNode {
 				&& getAstNodeType() != ASTNode.INSTANCEOF_EXPRESSION
 				&& getAstNodeType() != ASTNode.RETURN_STATEMENT
 				&& getAstNodeType() != ASTNode.THROW_STATEMENT;
+	}
+
+	HashSet<EGroumNode> buildTransitiveParameterClosure() {
+		HashSet<EGroumNode> parameterTransitiveNodes = new HashSet<>();
+		LinkedList<EGroumNode> nodes = new LinkedList<>();
+		nodes.add(this);
+		while (!nodes.isEmpty()) {
+			EGroumNode node = nodes.removeFirst();
+			parameterTransitiveNodes.add(node);
+			for (EGroumEdge e : node.inEdges) {
+				if (e instanceof EGroumDataEdge && !parameterTransitiveNodes.contains(e.source)) {
+					EGroumDataEdge de = (EGroumDataEdge) e;
+					if (de.type == Type.PARAMETER || de.type == Type.QUALIFIER || de.type == Type.RECEIVER || de.type == Type.REFERENCE)
+						nodes.add(de.source);
+				}
+			}
+		}
+		return parameterTransitiveNodes;
 	}
 
 	public void buildControlClosure(HashSet<EGroumNode> doneNodes) {

@@ -142,13 +142,13 @@ public class EGroumGraph implements Serializable {
 		}
 		if (configuration.collapseIsomorphicSubgraphs)
 			collapseIsomorphicSubgraphs();
-		if (configuration.removeIndependentControlEdges)
-			deleteIndependentControlEdges();
 		buildClosure();
 		if (configuration.removeImplementationCode > 0)
 			removeThisMembers();
 		deleteReferences();
 		deleteAssignmentNodes();
+		if (configuration.removeIndependentControlEdges)
+			deleteIndependentControlEdges();
 		deleteUnreachableNodes();
 		deleteControlNodes();
 		deleteUnusedDataNodes();
@@ -170,12 +170,12 @@ public class EGroumGraph implements Serializable {
 					|| node.getAstNodeType() == ASTNode.THROW_STATEMENT)
 				continue;
 			for (EGroumEdge e : new HashSet<EGroumEdge>(node.inEdges)) {
-				if (!(e instanceof EGroumControlEdge) || !(e.source instanceof EGroumControlNode))
-					continue;
-				HashSet<EGroumNode> inter = new HashSet<>(((EGroumActionNode) node).buildTransitiveParameterClosure());
-				inter.retainAll(((EGroumControlNode) e.source).buildTransitiveConditionClosure());
-				if (!inter.isEmpty())
-					e.delete();
+				if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.CONDITION) {
+					HashSet<EGroumNode> inter = new HashSet<>(node.buildTransitiveParameterClosure());
+					inter.retainAll(e.source.buildTransitiveParameterClosure());
+					if (inter.isEmpty())
+						e.delete();
+				}
 			}
 		}
 	}

@@ -66,5 +66,5 @@ public class AUGConfiguration {
     /**
      * 
      */
-    public boolean removeIndependentControlEdges = false;
+    public boolean removeIndependentControlEdges = true;
 }

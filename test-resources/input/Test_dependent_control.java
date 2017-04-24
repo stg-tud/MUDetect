@@ -111,10 +111,12 @@ class Test_dependent_control {
 
 	void m(List l, int i) {
 		int s = l.size();
-		if (s > 0) {
-			l.set(i, null);
-			l.add(null);
-			System.out.println(i);
+		if (l != null ) {
+			if (i > 0) {
+				l.set(i, null);
+				l.add(null);
+				System.out.println(i);
+			}
 		}
 	}
 }
