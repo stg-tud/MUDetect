@@ -468,7 +468,8 @@ public class Fragment {
 							}
 							if (found) {
 								for (EGroumNode next : ins) {
-									add(node, next, lens);
+									if (next.isCoreAction() || (config.extendSourceDataNodes && next instanceof EGroumDataNode))
+										add(node, next, lens);
 								}
 							}
 						}
