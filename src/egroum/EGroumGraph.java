@@ -142,6 +142,8 @@ public class EGroumGraph implements Serializable {
 		}
 		if (configuration.collapseIsomorphicSubgraphs)
 			collapseIsomorphicSubgraphs();
+		if (configuration.removeIndependentControlEdges)
+			deleteIndependentControlEdges();
 		buildClosure();
 		if (configuration.removeImplementationCode > 0)
 			removeThisMembers();
@@ -156,6 +158,23 @@ public class EGroumGraph implements Serializable {
 			renameEdges();
 		}
 		cleanUp();
+	}
+
+	private void deleteIndependentControlEdges() {
+		for (EGroumNode node : nodes) {
+			if (!(node instanceof EGroumActionNode))
+				continue;
+			for (EGroumEdge e : new HashSet<EGroumEdge>(node.inEdges)) {
+				if (!(e instanceof EGroumControlEdge) || !(e.source instanceof EGroumControlNode))
+					continue;
+				((EGroumActionNode) node).buildParameterClosure();
+				HashSet<EGroumNode> inter = new HashSet<>(((EGroumActionNode) node).parameterNodes);
+				((EGroumControlNode) e.source).buildConditionClosure();
+				inter.retainAll(((EGroumControlNode) e.source).conditionNodes);
+				if (!inter.isEmpty())
+					e.delete();
+			}
+		}
 	}
 
 	private void addDefinitions(EGroumGraph pdg) {
@@ -1607,7 +1626,8 @@ public class EGroumGraph implements Serializable {
 							remains.add(source);
 						else
 							for (EGroumDataNode def : defs)
-								new EGroumDataEdge(def, source, Type.REFERENCE);
+								if (!source.hasInDataNode(def, Type.REFERENCE))
+									new EGroumDataEdge(def, source, Type.REFERENCE);
 					}
 				}
 				pdg.dataSources = remains;
@@ -1884,7 +1904,8 @@ public class EGroumGraph implements Serializable {
 						remains.add(source);
 					else
 						for (EGroumDataNode def : defs)
-							new EGroumDataEdge(def, source, Type.REFERENCE);
+							if (!source.hasInDataNode(def, Type.REFERENCE))
+								new EGroumDataEdge(def, source, Type.REFERENCE);
 				}
 			}
 			pdg.dataSources = remains;
@@ -1946,7 +1967,8 @@ public class EGroumGraph implements Serializable {
 			HashSet<EGroumDataNode> ns = next.defStore.get(next.key);
 			if (ns != null)
 				for (EGroumDataNode def : ns)
-					new EGroumDataEdge(def, next, Type.REFERENCE);
+					if (!next.hasInDataNode(def, Type.REFERENCE))
+						new EGroumDataEdge(def, next, Type.REFERENCE);
 		}
 		if (type == Type.DEFINITION) {
 			HashSet<EGroumDataNode> defs = new HashSet<>();

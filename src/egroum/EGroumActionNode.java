@@ -2,6 +2,7 @@ package egroum;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
@@ -12,6 +13,7 @@ public class EGroumActionNode extends EGroumNode {
 	protected String name;
 	protected String[] parameterTypes;
 	protected HashSet<String> exceptionTypes;
+	protected HashSet<EGroumNode> parameterNodes = new HashSet<>();
 
 	public EGroumActionNode(EGroumNode control, String branch, ASTNode astNode, int nodeType, String key, String type, String name) {
 		super(astNode, nodeType, key);
@@ -65,6 +67,30 @@ public class EGroumActionNode extends EGroumNode {
 		}
 		sb.append(")");
 		return sb.toString();
+	}
+
+	void buildParameterClosure() {
+		if (this.parameterNodes.isEmpty()) {
+			for (EGroumEdge edge : inEdges) {
+				if (!(edge instanceof EGroumDataEdge))
+					continue; 
+				if (((EGroumDataEdge) edge).type != Type.CONDITION)
+					continue;
+				LinkedList<EGroumNode> nodes = new LinkedList<>();
+				nodes.add(edge.source);
+				while (!nodes.isEmpty()) {
+					EGroumNode node = nodes.removeFirst();
+					parameterNodes.add(node);
+					for (EGroumEdge e : node.inEdges) {
+						if (e instanceof EGroumDataEdge && !parameterNodes.contains(e.source)) {
+							EGroumDataEdge de = (EGroumDataEdge) e;
+							if (de.type == Type.PARAMETER || de.type == Type.QUALIFIER || de.type == Type.RECEIVER)
+								nodes.add(de.source);
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -165,11 +191,11 @@ public class EGroumActionNode extends EGroumNode {
 						if (e1 instanceof EGroumControlEdge)
 							new EGroumControlEdge(e1.source, this, ((EGroumControlEdge) e1).label);
 						else {
+							EGroumDataEdge de = (EGroumDataEdge) e1;
 							/*if (this.hasBackwardDataDependence(e1.source))
 								new EGroumDataEdge(e1.source, this, ((EGroumDataEdge) e1).type);
 							else if (this.hasBackwardThrowDependence(e1.source))
 								new EGroumDataEdge(e1.source, this, ((EGroumDataEdge) e1).type);*/
-							EGroumDataEdge de = (EGroumDataEdge) e1;
 //							if (de.type == Type.FINALLY || e1.isDirect() || !e1.source.isCoreAction())
 								new EGroumDataEdge(e1.source, this, de.type, de.label);
 						}

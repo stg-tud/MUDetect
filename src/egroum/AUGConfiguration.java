@@ -62,4 +62,9 @@ public class AUGConfiguration {
      * 
      */
     public boolean keepQualifierEdges = true;
+    
+    /**
+     * 
+     */
+    public boolean removeIndependentControlEdges = true;
 }

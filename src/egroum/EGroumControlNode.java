@@ -7,6 +7,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import egroum.EGroumDataEdge.Type;
 
 public class EGroumControlNode extends EGroumNode {
+	protected HashSet<EGroumNode> conditionNodes = new HashSet<>();
 
 	public EGroumControlNode(EGroumNode control, String branch, ASTNode astNode, int nodeType) {
 		super(astNode, nodeType);
@@ -72,22 +73,23 @@ public class EGroumControlNode extends EGroumNode {
 	}
 
 	void buildConditionClosure() {
-		HashSet<EGroumNode> conditionNodes = new HashSet<>();
-		for (EGroumEdge edge : inEdges) {
-			if (!(edge instanceof EGroumDataEdge))
-				continue; 
-			if (((EGroumDataEdge) edge).type != Type.CONDITION)
-				continue;
-			LinkedList<EGroumNode> nodes = new LinkedList<>();
-			nodes.add(edge.source);
-			while (!nodes.isEmpty()) {
-				EGroumNode node = nodes.removeFirst();
-				conditionNodes.add(node);
-				for (EGroumEdge e : node.inEdges) {
-					if (e instanceof EGroumDataEdge && !conditionNodes.contains(e.source)) {
-						EGroumDataEdge de = (EGroumDataEdge) e;
-						if (de.type == Type.PARAMETER || de.type == Type.QUALIFIER || de.type == Type.RECEIVER)
-							nodes.add(de.source);
+		if (this.conditionNodes.isEmpty()) {
+			for (EGroumEdge edge : inEdges) {
+				if (!(edge instanceof EGroumDataEdge))
+					continue; 
+				if (((EGroumDataEdge) edge).type != Type.CONDITION)
+					continue;
+				LinkedList<EGroumNode> nodes = new LinkedList<>();
+				nodes.add(edge.source);
+				while (!nodes.isEmpty()) {
+					EGroumNode node = nodes.removeFirst();
+					conditionNodes.add(node);
+					for (EGroumEdge e : node.inEdges) {
+						if (e instanceof EGroumDataEdge && !conditionNodes.contains(e.source)) {
+							EGroumDataEdge de = (EGroumDataEdge) e;
+							if (de.type == Type.PARAMETER || de.type == Type.QUALIFIER || de.type == Type.RECEIVER)
+								nodes.add(de.source);
+						}
 					}
 				}
 			}
