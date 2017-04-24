@@ -21,7 +21,7 @@ public class MCISFinder {
 		for (EGroumGraph groum : graphs) {
 			for (EGroumNode node : groum.getNodes()) {
 				node.setGraph(groum);
-				String label = node.getLabel();
+				String label = node.getAbstractLabel();
 				if (node.isCoreAction() && label.endsWith(")")) {
 					HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
 					if (nodes == null) {

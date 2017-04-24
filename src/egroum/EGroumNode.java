@@ -103,11 +103,11 @@ public abstract class EGroumNode {
 			return ((EGroumDataNode) this).getDataName();
 		return null;
 	}
-
+	
 	abstract public String getLabel();
 	
-	abstract public String getExasLabel();
-
+	abstract public String getAbstractLabel();
+	
 	public int getAstNodeType() {
 		return astNodeType;
 	}

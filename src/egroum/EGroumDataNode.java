@@ -41,35 +41,18 @@ public class EGroumDataNode extends EGroumNode {
 	}
 
 	@Override
-	public String getLabel() {
+	public String getAbstractLabel() {
 		if (isLiteral()) {
-//			return dataType + "(" + dataName + ")";
 			return "lit";
 		}
-//		return dataType;
 		return "Object";
 	}
 
 	@Override
-	public String getExasLabel() {
-		if (astNodeType == ASTNode.NULL_LITERAL)
-			return "null";
-		if (astNodeType == ASTNode.BOOLEAN_LITERAL)
-			return "boolean";
-		if (astNodeType == ASTNode.CHARACTER_LITERAL)
-			return "char";
-		if (astNodeType == ASTNode.NUMBER_LITERAL)
-			return "number";
-		if (astNodeType == ASTNode.STRING_LITERAL)
-			return "String";
-		/*if (astNodeType == ASTNode.CHARACTER_LITERAL || astNodeType == ASTNode.STRING_LITERAL)
-			return dataType + "(lit(" + dataName.substring(1, dataName.length()-1) + "))";
-		return dataType;*/
-		if (dataType == null)
-			return "UNKNOWN";
+	public String getLabel() {
 		return dataType;
 	}
-	
+
 	@Override
 	public boolean isDefinition() {
 		for (EGroumEdge e : inEdges)

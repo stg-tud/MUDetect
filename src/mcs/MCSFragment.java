@@ -49,14 +49,14 @@ public class MCSFragment {
 			this.nodes.add(ee.getSource());
 			this.idSum += ee.getSource().getId();
 			exasFeature = new ExasFeature(nodes);
-			int feature = exasFeature.getNodeFeature(ee.getSource().getLabel());
+			int feature = exasFeature.getNodeFeature(ee.getSource().getAbstractLabel());
 			addFeature(feature, vector);
 		}
 		if (!this.nodes.contains(ee.getTarget())) {
 			this.nodes.add(ee.getTarget());
 			this.idSum += ee.getTarget().getId();
 			exasFeature = new ExasFeature(nodes);
-			int feature = exasFeature.getNodeFeature(ee.getTarget().getLabel());
+			int feature = exasFeature.getNodeFeature(ee.getTarget().getAbstractLabel());
 			addFeature(feature, vector);
 		}
 		if (exasFeature == null)
@@ -78,9 +78,9 @@ public class MCSFragment {
 
 	private void buildVector(EGroumEdge ee, ExasFeature exasFeature) {
 		ArrayList<String> sequence = new ArrayList<>();
-		sequence.add(ee.getSource().getLabel());
+		sequence.add(ee.getSource().getAbstractLabel());
 		sequence.add(ee.getLabel());
-		sequence.add(ee.getTarget().getLabel());
+		sequence.add(ee.getTarget().getAbstractLabel());
 		backwardDFS(ee.getSource(), ee.getTarget(), sequence, exasFeature);
 	}
 	
@@ -92,7 +92,7 @@ public class MCSFragment {
 				if (edges.contains(e)) {
 					EGroumNode n = e.getSource();
 					sequence.add(0, e.getLabel());
-					sequence.add(0, n.getLabel());
+					sequence.add(0, n.getAbstractLabel());
 					backwardDFS(n, lastNode, sequence, exasFeature);
 					sequence.remove(0);
 					sequence.remove(0);
@@ -110,7 +110,7 @@ public class MCSFragment {
 				if (edges.contains(e)) {
 					EGroumNode n = e.getTarget();
 					sequence.add(e.getLabel());
-					sequence.add(n.getLabel());
+					sequence.add(n.getAbstractLabel());
 					forwardDFS(firstNode, n, sequence, exasFeature);
 					sequence.remove(sequence.size()-1);
 					sequence.remove(sequence.size()-1);

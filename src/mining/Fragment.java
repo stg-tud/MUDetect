@@ -71,7 +71,7 @@ public class Fragment {
 	
 	public void buildVector(EGroumNode node, ExasFeature exasFeature) {
 		ArrayList<String> sequence = new ArrayList<>();
-		sequence.add(node.getLabel());
+		sequence.add(node.getAbstractLabel());
 		backwardDFS(node, node, sequence, exasFeature);
 	}
 	
@@ -83,7 +83,7 @@ public class Fragment {
 				if (nodes.contains(e.getSource())) {
 					EGroumNode n = e.getSource();
 					sequence.add(0, e.getLabel());
-					sequence.add(0, n.getLabel());
+					sequence.add(0, n.getAbstractLabel());
 					backwardDFS(n, lastNode, sequence, exasFeature);
 					sequence.remove(0);
 					sequence.remove(0);
@@ -101,7 +101,7 @@ public class Fragment {
 				if (nodes.contains(e.getTarget())) {
 					EGroumNode n = e.getTarget();
 					sequence.add(e.getLabel());
-					sequence.add(n.getLabel());
+					sequence.add(n.getAbstractLabel());
 					forwardDFS(firstNode, n, sequence, exasFeature);
 					sequence.remove(sequence.size()-1);
 					sequence.remove(sequence.size()-1);
@@ -559,7 +559,7 @@ public class Fragment {
 	}
 
 	private void add(EGroumNode node, HashMap<String, HashSet<ArrayList<EGroumNode>>> lens) {
-		String label = node.getLabel();
+		String label = node.getAbstractLabel();
 		HashSet<ArrayList<EGroumNode>> s = lens.get(label);
 		if (s == null) {
 			s = new HashSet<>();
@@ -571,7 +571,7 @@ public class Fragment {
 	}
 
 	private void add(EGroumNode node, EGroumNode next, HashMap<String, HashSet<ArrayList<EGroumNode>>> lens) {
-		String label = node.getLabel() + "-" + next.getLabel();
+		String label = node.getAbstractLabel() + "-" + next.getAbstractLabel();
 		HashSet<ArrayList<EGroumNode>> s = lens.get(label);
 		if (s == null) {
 			s = new HashSet<>();

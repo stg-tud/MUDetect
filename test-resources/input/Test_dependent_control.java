@@ -11,7 +11,7 @@ import java.util.ListIterator;
 class Test_dependent_control {
 	ArrayList arrayList;
 	Oject object;
-
+	
 	void m2(java.util.Iterable it) {
 		for (Object o : it) {
 			o.hashCode();

@@ -45,15 +45,13 @@ public class EGroumActionNode extends EGroumNode {
 	}
 
 	@Override
-	public String getLabel() {
+	public String getAbstractLabel() {
 		return dataType == null ? name : dataType;
 	}
 
 	@Override
-	public String getExasLabel() {
-		//return name + (parameterTypes == null ? "" : buildParameters());
-		int index = name.lastIndexOf('.');
-		return name.substring(index + 1);
+	public String getLabel() {
+		return dataType == null ? name : dataType;
 	}
 
 	public String buildParameters() {
@@ -70,22 +68,16 @@ public class EGroumActionNode extends EGroumNode {
 
 	HashSet<EGroumNode> buildTransitiveParameterClosure() {
 		HashSet<EGroumNode> parameterTransitiveNodes = new HashSet<>();
-		for (EGroumEdge edge : inEdges) {
-			if (!(edge instanceof EGroumDataEdge))
-				continue; 
-			if (((EGroumDataEdge) edge).type != Type.CONDITION)
-				continue;
-			LinkedList<EGroumNode> nodes = new LinkedList<>();
-			nodes.add(edge.source);
-			while (!nodes.isEmpty()) {
-				EGroumNode node = nodes.removeFirst();
-				parameterTransitiveNodes.add(node);
-				for (EGroumEdge e : node.inEdges) {
-					if (e instanceof EGroumDataEdge && !parameterTransitiveNodes.contains(e.source)) {
-						EGroumDataEdge de = (EGroumDataEdge) e;
-						if (de.type == Type.PARAMETER || de.type == Type.QUALIFIER || de.type == Type.RECEIVER || de.type == Type.REFERENCE)
-							nodes.add(de.source);
-					}
+		LinkedList<EGroumNode> nodes = new LinkedList<>();
+		nodes.add(this);
+		while (!nodes.isEmpty()) {
+			EGroumNode node = nodes.removeFirst();
+			parameterTransitiveNodes.add(node);
+			for (EGroumEdge e : node.inEdges) {
+				if (e instanceof EGroumDataEdge && !parameterTransitiveNodes.contains(e.source)) {
+					EGroumDataEdge de = (EGroumDataEdge) e;
+					if (de.type == Type.PARAMETER || de.type == Type.QUALIFIER || de.type == Type.RECEIVER || de.type == Type.REFERENCE)
+						nodes.add(de.source);
 				}
 			}
 		}
