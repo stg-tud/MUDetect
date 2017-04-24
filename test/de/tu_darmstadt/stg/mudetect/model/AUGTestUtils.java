@@ -87,8 +87,7 @@ public class AUGTestUtils {
 
             @Override
             public void describeTo(Description description) {
-                description.appendText("an action node with label ");
-                description.appendValue(label);
+                description.appendText("a ").appendValue(label).appendText(" action node");
             }
         };
     }
@@ -102,8 +101,7 @@ public class AUGTestUtils {
 
             @Override
             public void describeTo(Description description) {
-                description.appendText("a data node with label ");
-                description.appendValue(label);
+                description.appendText("a ").appendValue(label).appendText(" data node");
             }
         };
     }
@@ -192,7 +190,7 @@ public class AUGTestUtils {
 
         @Override
         public void describeTo(Description description) {
-            description.appendText("an edge with label ").appendValue(edgeLabel).appendText(" from ");
+            description.appendText("a ").appendValue(edgeLabel).appendText(" edge from ");
             description.appendDescriptionOf(sourceMatcher).appendText(" to ").appendDescriptionOf(targetMatcher);
         }
     }
