@@ -2090,9 +2090,9 @@ public class EGroumGraph implements Serializable {
 		}
 		visitedNodes.clear();
 		for (EGroumNode node : preNodesOfNode.keySet()) {
-			if (node.isCoreAction()) {
+			if (node.getAstNodeType() == ASTNode.METHOD_INVOCATION || node.isCoreAction()) {
 				for (EGroumNode preNode : preNodesOfNode.get(node)) {
-					if (preNode.isCoreAction() && !node.hasInNode(preNode) && ((EGroumActionNode) node).hasBackwardDataDependence((EGroumActionNode) preNode)) {
+					if ((preNode.getAstNodeType() == ASTNode.METHOD_INVOCATION || preNode.isCoreAction()) && !node.hasInNode(preNode) && ((EGroumActionNode) node).hasBackwardDataDependence((EGroumActionNode) preNode)) {
 						HashSet<EGroumNode> preNodes = new HashSet<>(preNodesOfNode.get(preNode));
 						boolean inDifferentCatches = false;
 						HashSet<EGroumNode> cns = node.getCatchClauses();
