@@ -1,6 +1,7 @@
 package egroum;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.*;
@@ -24,6 +25,18 @@ public class EncodeConditionsTest {
         AUG aug = buildAUG("void m(java.util.List l) { if (l.isEmpty()) l.get(0); }");
 
         assertThat(aug, hasSelEdge(actionNodeWithLabel("Collection.isEmpty()"), actionNodeWithLabel("List.get()")));
+    }
+
+    @Test
+    public void doesNotControlSubsequentAction() throws Exception {
+        AUG aug = buildAUG("void m(java.util.List l) {\n" +
+                "  if (l.isEmpty())\n" +
+                "    l.add(null);\n" +
+                "  }\n" +
+                "  l.clear();\n" +
+                " }");
+
+        assertThat(aug, not(hasSelEdge(actionNodeWithLabel("Collection.isEmpty()"), actionNodeWithLabel("Collection.clear()"))));
     }
 
     // State relation condition: if (l.size() > 42)
