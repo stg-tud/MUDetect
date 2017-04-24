@@ -10,6 +10,8 @@ import static egroum.EGroumDataEdge.Type.RECEIVER;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
+import org.junit.Ignore;
+
 public class EncodeLoopsTest {
     @Test
     public void addsRepeatEdge() throws Exception {
@@ -33,7 +35,8 @@ public class EncodeLoopsTest {
 
         assertThat(aug, not(hasRepeatEdge(actionNodeWithLabel("Collection.isEmpty()"), actionNodeWithLabel("Stack.push()"))));
     }
-
+    
+    @Ignore
     @Test
     public void encodesForeach() throws Exception {
         AUG aug = buildAUG("void m(java.util.Iterable it) {\n" +
