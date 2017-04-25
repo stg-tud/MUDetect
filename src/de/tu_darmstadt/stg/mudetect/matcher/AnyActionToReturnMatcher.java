@@ -8,7 +8,7 @@ import egroum.EGroumNode;
  * that is a parameter to the return node, should be used <i>somehow</i> (as opposed to dropped). To reflect this idea
  * in the detection, we match any action node taking the respective parameter to the return node in the pattern.
  */
-public class AnyToReturnMatcher implements NodeMatcher {
+public class AnyActionToReturnMatcher implements NodeMatcher {
     @Override
     public boolean test(EGroumNode targetNode, EGroumNode patternNode) {
         return targetNode instanceof EGroumActionNode && patternNode.getLabel().equals("return");
