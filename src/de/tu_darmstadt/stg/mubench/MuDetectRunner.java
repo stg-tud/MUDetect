@@ -17,7 +17,6 @@ import mining.Configuration;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -31,7 +30,12 @@ public class MuDetectRunner extends MuBenchRunner {
     protected void detectOnly(DetectorArgs args, DetectorOutput output) throws Exception {
         run(getAUGConfiguration(),
                 args.getPatternPath(),
-                ProvidedPatternsModel::new,
+                groums -> new ProvidedPatternsModel(new Configuration() {{
+                    minPatternCalls = 2;
+                    disableSystemOut = true;
+                    outputPath = getPatternOutputPath();
+                    nodeToLabel = node -> node instanceof EGroumDataNode ? "Object" : node.getLabel();
+                }}, groums),
                 args.getTargetPath(),
                 args.getDependencyClassPath(),
                 new EmptyOverlapsFinder(new AlternativeMappingsOverlapsFinder(new AlternativeMappingsOverlapsFinder.Config() {{

@@ -14,18 +14,19 @@ import java.util.stream.Stream;
 public class ProvidedPatternsModel implements Model {
     private Set<Pattern> patterns = new HashSet<>();
 
-    public ProvidedPatternsModel(Collection<EGroumGraph> groums) {
+    public ProvidedPatternsModel(Configuration config, Collection<EGroumGraph> groums) {
+        config.minPatternSupport = 1;
         patterns = groums.stream()
-                .flatMap(this::getMiningResultEquivalent)
+                .flatMap((graph) -> getMiningResultEquivalent(graph, config))
                 .collect(Collectors.toSet());
     }
 
     /**
-     * Returns an {@link AUG} that represents how the given graph would look like. if it were returned by a call to
+     * Returns an {@link AUG} that represents how the given graph would look like, if it were returned by a call to
      * mine, instead of directly from the {@link EGroumBuilder}.
      */
-    private Stream<Pattern> getMiningResultEquivalent(EGroumGraph graph) {
-        return new AUGMiner(new Configuration() {{ minPatternSupport = 1; outputPath = null; }}).mine(graph).stream();
+    private Stream<Pattern> getMiningResultEquivalent(EGroumGraph graph, Configuration config) {
+        return new AUGMiner(config).mine(graph).stream();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
 import egroum.EGroumGraph;
+import mining.Configuration;
 import org.junit.Test;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class ProvidedPatternsModelTest {
                 "  void n(C c) { c.bar(); }" +
                 "}");
 
-        Model model = new ProvidedPatternsModel(groums);
+        Model model = new ProvidedPatternsModel(new Configuration() {{ outputPath = null; }}, groums);
 
         assertThat(model.getPatterns(), hasSize(2));
     }
