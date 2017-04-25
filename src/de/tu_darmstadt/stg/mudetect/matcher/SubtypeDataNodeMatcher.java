@@ -3,11 +3,11 @@ package de.tu_darmstadt.stg.mudetect.matcher;
 import de.tu_darmstadt.stg.mudetect.typehierarchy.TypeHierarchy;
 import egroum.EGroumNode;
 
-public class SubtypeNodeMatcher implements NodeMatcher {
+public class SubtypeDataNodeMatcher implements NodeMatcher {
 
     private TypeHierarchy typeHierarchy;
 
-    public SubtypeNodeMatcher(TypeHierarchy typeHierarchy) {
+    public SubtypeDataNodeMatcher(TypeHierarchy typeHierarchy) {
         this.typeHierarchy = typeHierarchy;
     }
 

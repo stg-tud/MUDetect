@@ -4,7 +4,7 @@ import de.tu_darmstadt.stg.mubench.cli.*;
 import de.tu_darmstadt.stg.mudetect.*;
 import de.tu_darmstadt.stg.mudetect.dot.ViolationDotExporter;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
-import de.tu_darmstadt.stg.mudetect.matcher.SubtypeNodeMatcher;
+import de.tu_darmstadt.stg.mudetect.matcher.SubtypeDataNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.mining.MinedPatternsModel;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
 import de.tu_darmstadt.stg.mudetect.mining.ProvidedPatternsModel;
@@ -59,7 +59,7 @@ public class MuDetectRunner extends MuBenchRunner {
                 args.getDependencyClassPath(),
                 new AlternativeMappingsOverlapsFinder(
                         new AlternativeMappingsOverlapsFinder.Config() {{
-                            nodeMatcher = new SubtypeNodeMatcher(TargetSrcTypeHierarchy.build(
+                            nodeMatcher = new SubtypeDataNodeMatcher(TargetSrcTypeHierarchy.build(
                                     args.getTargetPath().srcPath,
                                     args.getDependencyClassPath())).or(new EquallyLabelledNodeMatcher());
                         }}),
