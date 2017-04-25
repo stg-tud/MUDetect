@@ -13,7 +13,7 @@ class AUGNodeNameProvider implements VertexNameProvider<EGroumNode> {
         if (targetNode instanceof EGroumActionNode) {
             Optional<Integer> sourceLineNumber = targetNode.getSourceLineNumber();
             if (sourceLineNumber.isPresent()) {
-                label.append(" L").append(sourceLineNumber);
+                label.append(" L").append(sourceLineNumber.get());
             }
         }
         return label.toString();
