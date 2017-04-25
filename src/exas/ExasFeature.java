@@ -2,6 +2,7 @@ package exas;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.Function;
 
 import egroum.EGroumDataEdge;
 import egroum.EGroumDataEdge.Type;
@@ -29,10 +30,12 @@ public class ExasFeature {
 	
 	private HashMap<String, Integer> nodeFeatures = new HashMap<>();
 	
-	public ExasFeature(ArrayList<EGroumNode> nodes) {
-		for (int i = 0; i < nodes.size(); i++)
-			if (!nodeFeatures.containsKey(nodes.get(i).getAbstractLabel()))
-				nodeFeatures.put(nodes.get(i).getAbstractLabel(), i + 1);
+	public ExasFeature(ArrayList<EGroumNode> nodes, Function<EGroumNode, String> nodeToLabel) {
+		for (int i = 0; i < nodes.size(); i++) {
+			String label = nodeToLabel.apply(nodes.get(i));
+			if (!nodeFeatures.containsKey(label))
+				nodeFeatures.put(label, i + 1);
+		}
 	}
 
 	public int getNodeFeature(String label) {

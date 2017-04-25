@@ -51,7 +51,7 @@ public class Miner {
 		for (EGroumGraph groum : groums) {
 			for (EGroumNode node : groum.getNodes()) {
 				node.setGraph(groum);
-				String label = node.getAbstractLabel();
+				String label = config.nodeToLabel.apply(node);
 				HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
 				if (nodes == null)
 					nodes = new HashSet<EGroumNode>();

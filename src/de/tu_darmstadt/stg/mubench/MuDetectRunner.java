@@ -3,8 +3,8 @@ package de.tu_darmstadt.stg.mubench;
 import de.tu_darmstadt.stg.mubench.cli.*;
 import de.tu_darmstadt.stg.mudetect.*;
 import de.tu_darmstadt.stg.mudetect.dot.ViolationDotExporter;
+import de.tu_darmstadt.stg.mudetect.matcher.AllDataNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
-import de.tu_darmstadt.stg.mudetect.matcher.SubtypeDataNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.mining.MinedPatternsModel;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
 import de.tu_darmstadt.stg.mudetect.mining.ProvidedPatternsModel;
@@ -12,15 +12,12 @@ import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Location;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import de.tu_darmstadt.stg.mudetect.ranking.*;
-import de.tu_darmstadt.stg.mudetect.typehierarchy.TargetSrcTypeHierarchy;
-import egroum.AUGBuilder;
-import egroum.AUGConfiguration;
-import egroum.EGroumBuilder;
-import egroum.EGroumGraph;
+import egroum.*;
 import mining.Configuration;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -54,14 +51,13 @@ public class MuDetectRunner extends MuBenchRunner {
                     minPatternCalls = 2;
                     disableSystemOut = true;
                     outputPath = getPatternOutputPath();
+                    nodeToLabel = node -> node instanceof EGroumDataNode ? "Object" : node.getLabel();
                 }}, groums),
                 args.getTargetPath(),
                 args.getDependencyClassPath(),
                 new AlternativeMappingsOverlapsFinder(
                         new AlternativeMappingsOverlapsFinder.Config() {{
-                            nodeMatcher = new SubtypeDataNodeMatcher(TargetSrcTypeHierarchy.build(
-                                    args.getTargetPath().srcPath,
-                                    args.getDependencyClassPath())).or(new EquallyLabelledNodeMatcher());
+                            nodeMatcher = new AllDataNodeMatcher().or(new EquallyLabelledNodeMatcher());
                         }}),
                 new MissingElementViolationFactory(),
                 new WeightRankingStrategy(

@@ -43,11 +43,6 @@ public class EGroumActionNode extends EGroumNode {
 	}
 
 	@Override
-	public String getAbstractLabel() {
-		return dataType == null ? name : dataType;
-	}
-
-	@Override
 	public String getLabel() {
 		return dataType == null ? name : dataType;
 	}

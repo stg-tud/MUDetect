@@ -125,7 +125,7 @@ public class MCISGFinderTest {
 	}
 
 	private ArrayList<CISGraph> match(HashSet<EGroumGraph> groums) {
-		MCISFinder matcher = new MCISFinder();
+		MCISFinder matcher = new MCISFinder(new Configuration());
 		return matcher.match(groums);
 	}
 	

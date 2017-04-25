@@ -64,14 +64,14 @@ public class Fragment {
 		for (EGroumNode en : ens) {
 			this.nodes.add(en);
 			this.idSum += en.getId();
-			ExasFeature exasFeature = new ExasFeature(nodes);
+			ExasFeature exasFeature = new ExasFeature(nodes, config.nodeToLabel);
 			buildVector(en, exasFeature);
 		}
 	}
 	
 	public void buildVector(EGroumNode node, ExasFeature exasFeature) {
 		ArrayList<String> sequence = new ArrayList<>();
-		sequence.add(node.getAbstractLabel());
+		sequence.add(config.nodeToLabel.apply(node));
 		backwardDFS(node, node, sequence, exasFeature);
 	}
 	
@@ -83,7 +83,7 @@ public class Fragment {
 				if (nodes.contains(e.getSource())) {
 					EGroumNode n = e.getSource();
 					sequence.add(0, e.getLabel());
-					sequence.add(0, n.getAbstractLabel());
+					sequence.add(0, config.nodeToLabel.apply(n));
 					backwardDFS(n, lastNode, sequence, exasFeature);
 					sequence.remove(0);
 					sequence.remove(0);
@@ -101,7 +101,7 @@ public class Fragment {
 				if (nodes.contains(e.getTarget())) {
 					EGroumNode n = e.getTarget();
 					sequence.add(e.getLabel());
-					sequence.add(n.getAbstractLabel());
+					sequence.add(config.nodeToLabel.apply(n));
 					forwardDFS(firstNode, n, sequence, exasFeature);
 					sequence.remove(sequence.size()-1);
 					sequence.remove(sequence.size()-1);
@@ -559,7 +559,7 @@ public class Fragment {
 	}
 
 	private void add(EGroumNode node, HashMap<String, HashSet<ArrayList<EGroumNode>>> lens) {
-		String label = node.getAbstractLabel();
+		String label = config.nodeToLabel.apply(node);
 		HashSet<ArrayList<EGroumNode>> s = lens.get(label);
 		if (s == null) {
 			s = new HashSet<>();
@@ -571,7 +571,7 @@ public class Fragment {
 	}
 
 	private void add(EGroumNode node, EGroumNode next, HashMap<String, HashSet<ArrayList<EGroumNode>>> lens) {
-		String label = node.getAbstractLabel() + "-" + next.getAbstractLabel();
+		String label = config.nodeToLabel.apply(node) + "-" + config.nodeToLabel.apply(next);
 		HashSet<ArrayList<EGroumNode>> s = lens.get(label);
 		if (s == null) {
 			s = new HashSet<>();

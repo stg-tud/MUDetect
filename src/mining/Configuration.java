@@ -1,5 +1,9 @@
 package mining;
 
+import egroum.EGroumNode;
+
+import java.util.function.Function;
+
 public class Configuration {
     public int minPatternSize = 1, maxPatternSize = Integer.MAX_VALUE;
     public int minPatternSupport = 10, maxPatternSupport = 1000;
@@ -29,4 +33,9 @@ public class Configuration {
      * Path to write mined patterns to. <code>null</code> to disable output.
      */
     public String outputPath = "output/patterns";
+
+    /**
+     * Function that maps nodes to labels used in the mining.
+     */
+    public Function<EGroumNode, String> nodeToLabel = EGroumNode::getLabel;
 }

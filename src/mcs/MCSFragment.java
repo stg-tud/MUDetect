@@ -9,10 +9,12 @@ import egroum.EGroumEdge;
 import egroum.EGroumGraph;
 import egroum.EGroumNode;
 import exas.ExasFeature;
+import mining.Configuration;
 
 public class MCSFragment {
 	public static int nextFragmentId = 1, numofFragments = 0;
-	
+	private final Configuration config;
+
 	int id = -1;
 	MCSFragment genFragment;
 	ArrayList<EGroumNode> nodes = new ArrayList<>();
@@ -21,21 +23,22 @@ public class MCSFragment {
 	HashMap<Integer, Integer> vector = new HashMap<>();
 	int idSum = 0;
 	
-	public MCSFragment() {
+	public MCSFragment(Configuration config) {
+		this.config = config;
 		this.id = nextFragmentId++;
 		numofFragments++;
 	}
 	
-	public MCSFragment(EGroumNode node) {
-		this();
+	public MCSFragment(EGroumNode node, Configuration config) {
+		this(config);
 		this.graph = node.getGraph();
 		nodes.add(node);
 		this.idSum = node.getId();
 		vector.put(1, 1);
 	}
 	
-	public MCSFragment(MCSFragment fragment, EGroumEdge ee) {
-		this();
+	public MCSFragment(MCSFragment fragment, EGroumEdge ee, Configuration config) {
+		this(config);
 		this.genFragment = fragment;
 		this.graph = fragment.graph;
 		this.nodes = new ArrayList<EGroumNode>(fragment.nodes);
@@ -48,19 +51,19 @@ public class MCSFragment {
 		if (!this.nodes.contains(ee.getSource())) {
 			this.nodes.add(ee.getSource());
 			this.idSum += ee.getSource().getId();
-			exasFeature = new ExasFeature(nodes);
-			int feature = exasFeature.getNodeFeature(ee.getSource().getAbstractLabel());
+			exasFeature = new ExasFeature(nodes, config.nodeToLabel);
+			int feature = exasFeature.getNodeFeature(config.nodeToLabel.apply(ee.getSource()));
 			addFeature(feature, vector);
 		}
 		if (!this.nodes.contains(ee.getTarget())) {
 			this.nodes.add(ee.getTarget());
 			this.idSum += ee.getTarget().getId();
-			exasFeature = new ExasFeature(nodes);
-			int feature = exasFeature.getNodeFeature(ee.getTarget().getAbstractLabel());
+			exasFeature = new ExasFeature(nodes, config.nodeToLabel);
+			int feature = exasFeature.getNodeFeature(config.nodeToLabel.apply(ee.getTarget()));
 			addFeature(feature, vector);
 		}
 		if (exasFeature == null)
-			exasFeature = new ExasFeature(nodes);
+			exasFeature = new ExasFeature(nodes, config.nodeToLabel);
 		buildVector(ee, exasFeature);
 	}
 
@@ -78,9 +81,9 @@ public class MCSFragment {
 
 	private void buildVector(EGroumEdge ee, ExasFeature exasFeature) {
 		ArrayList<String> sequence = new ArrayList<>();
-		sequence.add(ee.getSource().getAbstractLabel());
+		sequence.add(config.nodeToLabel.apply(ee.getSource()));
 		sequence.add(ee.getLabel());
-		sequence.add(ee.getTarget().getAbstractLabel());
+		sequence.add(config.nodeToLabel.apply(ee.getTarget()));
 		backwardDFS(ee.getSource(), ee.getTarget(), sequence, exasFeature);
 	}
 	
@@ -92,7 +95,7 @@ public class MCSFragment {
 				if (edges.contains(e)) {
 					EGroumNode n = e.getSource();
 					sequence.add(0, e.getLabel());
-					sequence.add(0, n.getAbstractLabel());
+					sequence.add(0, config.nodeToLabel.apply(n));
 					backwardDFS(n, lastNode, sequence, exasFeature);
 					sequence.remove(0);
 					sequence.remove(0);
@@ -110,7 +113,7 @@ public class MCSFragment {
 				if (edges.contains(e)) {
 					EGroumNode n = e.getTarget();
 					sequence.add(e.getLabel());
-					sequence.add(n.getAbstractLabel());
+					sequence.add(config.nodeToLabel.apply(n));
 					forwardDFS(firstNode, n, sequence, exasFeature);
 					sequence.remove(sequence.size()-1);
 					sequence.remove(sequence.size()-1);

@@ -7,21 +7,24 @@ import java.util.HashSet;
 import egroum.EGroumEdge;
 import egroum.EGroumGraph;
 import egroum.EGroumNode;
-import mcs.MCSFragment;
-import mcs.Lattice;
-import mcs.CISGraph;
+import mining.Configuration;
 
 public class MCISFinder {
 
 	private ArrayList<Lattice> lattices = new ArrayList<Lattice>();
-	
+	private Configuration config;
+
+	public MCISFinder(Configuration config) {
+		this.config = config;
+	}
+
 	public ArrayList<CISGraph> match(HashSet<EGroumGraph> graphs) {
 		HashMap<String, HashSet<EGroumNode>> nodesOfLabel = new HashMap<>();
 		HashMap<String, HashSet<EGroumGraph>> graphsOfLabel = new HashMap<>();
 		for (EGroumGraph groum : graphs) {
 			for (EGroumNode node : groum.getNodes()) {
 				node.setGraph(groum);
-				String label = node.getAbstractLabel();
+				String label = config.nodeToLabel.apply(node);
 				if (node.isCoreAction() && label.endsWith(")")) {
 					HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
 					if (nodes == null) {
@@ -50,7 +53,7 @@ public class MCISFinder {
 			HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
 			HashSet<MCSFragment> fragments = new HashSet<>();
 			for (EGroumNode node : nodes) {
-				MCSFragment f = new MCSFragment(node);
+				MCSFragment f = new MCSFragment(node, config);
 				fragments.add(f);
 			}
 			CISGraph p = new CISGraph(fragments, fragments.size());
@@ -94,7 +97,7 @@ public class MCISFinder {
 				HashSet<MCSFragment> xfs = new HashSet<>();
 				for (MCSFragment f : fragmentEdges.keySet()) {
 					for (EGroumEdge e : fragmentEdges.get(f)) {
-						MCSFragment xf = new MCSFragment(f, e);
+						MCSFragment xf = new MCSFragment(f, e, config);
 						xfs.add(xf);
 					}
 				}

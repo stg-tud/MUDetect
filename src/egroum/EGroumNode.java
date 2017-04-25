@@ -107,8 +107,6 @@ public abstract class EGroumNode {
 	
 	abstract public String getLabel();
 	
-	abstract public String getAbstractLabel();
-	
 	public int getAstNodeType() {
 		return astNodeType;
 	}

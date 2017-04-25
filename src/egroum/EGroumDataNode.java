@@ -41,14 +41,6 @@ public class EGroumDataNode extends EGroumNode {
 	}
 
 	@Override
-	public String getAbstractLabel() {
-//		if (isLiteral()) {
-//			return "lit";
-//		}
-		return "Object";
-	}
-
-	@Override
 	public String getLabel() {
 		return dataType;
 	}

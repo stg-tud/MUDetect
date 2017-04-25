@@ -11,11 +11,6 @@ public class EGroumEntryNode extends EGroumNode {
 	}
 
 	@Override
-	public String getAbstractLabel() {
-		return label;
-	}
-
-	@Override
 	public String getLabel() {
 		return label;
 	}

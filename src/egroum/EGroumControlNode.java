@@ -21,11 +21,6 @@ public class EGroumControlNode extends EGroumNode {
 	}
 
 	@Override
-	public String getAbstractLabel() {
-		return ASTNode.nodeClassForType(astNodeType).getSimpleName();
-	}
-
-	@Override
 	public String getLabel() {
 		return ASTNode.nodeClassForType(astNodeType).getSimpleName();
 	}
