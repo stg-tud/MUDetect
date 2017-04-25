@@ -23,8 +23,12 @@ public class TestOverlapBuilder {
         return emptyOverlap(pattern, pattern);
     }
 
-    public static Overlap emptyOverlap(AUG aug) {
-        return emptyOverlap(somePattern(aug), aug);
+    public static Overlap emptyOverlap(AUG pattern) {
+        return emptyOverlap(somePattern(pattern), pattern);
+    }
+
+    public static Overlap emptyOverlap(TestAUGBuilder pattern) {
+        return emptyOverlap(pattern.build());
     }
 
     public static Overlap instance(AUG aug) {

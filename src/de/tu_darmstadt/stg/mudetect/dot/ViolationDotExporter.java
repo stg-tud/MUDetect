@@ -17,7 +17,7 @@ public class ViolationDotExporter {
     public String toDotGraph(Violation violation) {
         Overlap overlap = violation.getOverlap();
         return new AUGDotExporter(
-                new OverlapPatternAndTargetNodeNameProvider(overlap),
+                new OverlapTargetNodeNameProvider(overlap),
                 new OverlapNodeAttributeProvider(overlap, "red"),
                 new OverlapEdgeAttributeProvider(overlap, "red"))
                 .toDotGraph(overlap.getPattern());

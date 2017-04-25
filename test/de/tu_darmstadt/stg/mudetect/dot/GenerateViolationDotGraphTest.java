@@ -54,12 +54,20 @@ public class GenerateViolationDotGraphTest {
     }
 
     @Test
-    public void includesTargetNodeLabelIfDifferent() throws Exception {
+    public void usesTargetNodeLabelByDefault() throws Exception {
         TestAUGBuilder target = buildAUG().withActionNode("A");
         TestAUGBuilder pattern = buildAUG().withActionNode("B");
         Overlap overlap = buildOverlap(target, pattern).withNode("A", "B").build();
 
-        assertDotGraphContains(new Violation(overlap, 1, "constant rank"), " [ label=\"B\\n(A)\"");
+        assertDotGraphContains(new Violation(overlap, 1, "constant rank"), " [ label=\"A\"");
+    }
+
+    @Test
+    public void fallsBackToPatternNodeLabelForMissingNodes() throws Exception {
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A");
+        Overlap overlap = emptyOverlap(pattern);
+
+        assertDotGraphContains(new Violation(overlap, 1, "constant rank"), " [ label=\"A\"");
     }
 
     private void assertDotGraphContains(Violation violation, String expectedDotGraphFragment) {
