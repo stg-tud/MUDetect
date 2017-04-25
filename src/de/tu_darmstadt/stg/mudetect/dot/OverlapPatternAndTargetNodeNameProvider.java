@@ -4,12 +4,12 @@ import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import egroum.EGroumNode;
 import org.jgrapht.ext.VertexNameProvider;
 
-class ViolationPatternNodeNameProvider implements VertexNameProvider<EGroumNode> {
-    private static final ViolationTargetNodeNameProvider targetNodeNameProvider = new ViolationTargetNodeNameProvider();
+class OverlapPatternAndTargetNodeNameProvider implements VertexNameProvider<EGroumNode> {
+    private static final AUGNodeNameProvider TARGET_AUG_NODE_NAME_PROVIDER = new AUGNodeNameProvider();
 
     private final Overlap overlap;
 
-    ViolationPatternNodeNameProvider(Overlap overlap) {
+    OverlapPatternAndTargetNodeNameProvider(Overlap overlap) {
         this.overlap = overlap;
     }
 
@@ -19,7 +19,7 @@ class ViolationPatternNodeNameProvider implements VertexNameProvider<EGroumNode>
         if (overlap.mapsNode(patternNode)) {
             EGroumNode targetNode = overlap.getMappedTargetNode(patternNode);
             if (!patternNode.getLabel().equals(targetNode.getLabel())) {
-                label.append("\\n(").append(targetNodeNameProvider.getVertexName(targetNode)).append(")");
+                label.append("\\n(").append(TARGET_AUG_NODE_NAME_PROVIDER.getVertexName(targetNode)).append(")");
             }
         }
         return label.toString();

@@ -17,9 +17,9 @@ public class ViolationDotExporter {
     public String toDotGraph(Violation violation) {
         Overlap overlap = violation.getOverlap();
         return new AUGDotExporter(
-                new ViolationPatternNodeNameProvider(overlap),
-                new ViolationNodeAttributeProvider(overlap, "red"),
-                new ViolationEdgeAttributeProvider(overlap, "red"))
+                new OverlapPatternAndTargetNodeNameProvider(overlap),
+                new OverlapNodeAttributeProvider(overlap, "red"),
+                new OverlapEdgeAttributeProvider(overlap, "red"))
                 .toDotGraph(overlap.getPattern());
     }
 
@@ -34,9 +34,9 @@ public class ViolationDotExporter {
 
     private String toTargetDotGraph(Overlap instance, AUG target, Map<String, String> graphAttributes) {
         return new AUGDotExporter(
-                new ViolationTargetNodeNameProvider(),
-                new ViolationNodeAttributeProvider(instance, "gray"),
-                new ViolationEdgeAttributeProvider(instance, "gray"))
+                new AUGNodeNameProvider(),
+                new OverlapNodeAttributeProvider(instance, "gray"),
+                new OverlapEdgeAttributeProvider(instance, "gray"))
                 .toDotGraph(target, graphAttributes);
     }
 

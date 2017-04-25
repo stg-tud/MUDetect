@@ -6,7 +6,7 @@ import org.jgrapht.ext.VertexNameProvider;
 
 import java.util.Optional;
 
-class ViolationTargetNodeNameProvider implements VertexNameProvider<EGroumNode> {
+class AUGNodeNameProvider implements VertexNameProvider<EGroumNode> {
     @Override
     public String getVertexName(EGroumNode targetNode) {
         StringBuilder label = new StringBuilder(targetNode.getLabel());
