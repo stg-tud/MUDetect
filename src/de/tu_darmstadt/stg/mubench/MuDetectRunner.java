@@ -35,7 +35,7 @@ public class MuDetectRunner extends MuBenchRunner {
                 args.getTargetPath(),
                 args.getDependencyClassPath(),
                 new EmptyOverlapsFinder(new AlternativeMappingsOverlapsFinder(new AlternativeMappingsOverlapsFinder.Config() {{
-                    nodeMatcher = new EquallyLabelledNodeMatcher();
+                    nodeMatcher = new AllDataNodeMatcher().or(new EquallyLabelledNodeMatcher());
                 }})),
                 new EverythingViolationFactory(),
                 new NoRankingStrategy(),
