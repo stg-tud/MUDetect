@@ -402,14 +402,7 @@ public abstract class EGroumNode {
 	}
 
 	public boolean isMeaningfulAction() {
-		return isCoreAction()
-				&& getAstNodeType() != ASTNode.ASSERT_STATEMENT
-				&& getAstNodeType() != ASTNode.BREAK_STATEMENT
-				&& getAstNodeType() != ASTNode.CAST_EXPRESSION
-				&& getAstNodeType() != ASTNode.CONTINUE_STATEMENT
-				&& getAstNodeType() != ASTNode.INSTANCEOF_EXPRESSION
-				&& getAstNodeType() != ASTNode.RETURN_STATEMENT
-				&& getAstNodeType() != ASTNode.THROW_STATEMENT;
+		return astNodeType == ASTNode.METHOD_INVOCATION || astNodeType == ASTNode.CONSTRUCTOR_INVOCATION;
 	}
 
 	HashSet<EGroumNode> buildTransitiveParameterClosure() {
