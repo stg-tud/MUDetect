@@ -65,7 +65,7 @@ class AUGMiner {
     }
 
     private Set<de.tu_darmstadt.stg.mudetect.mining.Pattern> toAUGPatterns(Set<mining.Pattern> patterns) {
-        return patterns.stream().map(AUGMiner::toAUGPattern).filter(this::isLargeEnough).collect(Collectors.toSet());
+        return patterns.stream().map(AUGMiner::toAUGPattern).collect(Collectors.toSet());
     }
 
     private static de.tu_darmstadt.stg.mudetect.mining.Pattern toAUGPattern(mining.Pattern pattern) {
@@ -103,14 +103,5 @@ class AUGMiner {
     private static Location getLocation(Fragment example) {
         EGroumGraph graph = example.getGraph();
         return new Location(graph.getFilePath(), AUGBuilder.getMethodSignature(graph));
-    }
-
-    private boolean isLargeEnough(Pattern pattern) {
-        return pattern.vertexSet().stream().filter(this::isMethodCall).count() >= config.minPatternCalls;
-    }
-
-    private boolean isMethodCall(EGroumNode node) {
-        int nodeType = node.getAstNodeType();
-        return nodeType == ASTNode.METHOD_INVOCATION || nodeType == ASTNode.CLASS_INSTANCE_CREATION;
     }
 }
