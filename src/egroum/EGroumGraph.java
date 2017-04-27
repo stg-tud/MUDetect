@@ -76,7 +76,6 @@ import utils.JavaASTUtil;
 
 public class EGroumGraph implements Serializable {
 	private static final long serialVersionUID = -5128703931982211886L;
-	private static final int MAX_BRANCHES = 100;
 
 	private final AUGConfiguration configuration;
 

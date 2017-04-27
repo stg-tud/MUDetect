@@ -133,7 +133,8 @@ public class MuDetectRunner extends MuBenchRunner {
     }
 
     private Collection<EGroumGraph> buildGroums(CodePath path, String[] dependenciesClassPath, AUGConfiguration configuration) {
-        return new EGroumBuilder(configuration).buildBatch(path.srcPath, dependenciesClassPath);
+        return new EGroumBuilder(configuration).buildBatch(path.srcPath, dependenciesClassPath).stream()
+                .filter(DenseGroumPredicate::isNotDense).collect(Collectors.toList());
     }
 
     private Collection<AUG> buildAUGs(CodePath path, String[] dependenciesClassPath, AUGConfiguration configuration) {
