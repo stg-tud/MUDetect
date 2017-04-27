@@ -135,11 +135,6 @@ public class EGroumGraph implements Serializable {
 		else if (configuration.collapseTemporaryDataNodesIncomingToControlNodes)
 			deleteTemporaryDataNodesIncomingToControlNodes();
 		deleteEmptyStatementNodes();
-		if (isTooDense()) {
-			nodes.clear();
-			cleanUp();
-			return;
-		}
 		if (configuration.collapseIsomorphicSubgraphs)
 			collapseIsomorphicSubgraphs();
 		buildClosure();
@@ -231,38 +226,6 @@ public class EGroumGraph implements Serializable {
 
 	private void collapseIsomorphicSubgraphs() {
 		
-	}
-
-	private boolean isTooDense() {
-		for (EGroumNode node : nodes)
-			if (node instanceof EGroumDataNode) {
-				if (node.outEdges.size() > MAX_BRANCHES)
-					return true;
-				if (node.outEdges.size() < 10)
-					continue;
-				HashMap<String, Integer> nodeCount = new HashMap<>();
-				int max = 0;
-				for (EGroumEdge e : node.outEdges) {
-					ArrayList<String> labels = new ArrayList<>();
-					if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.REFERENCE) {
-						for (EGroumEdge e1 : e.target.outEdges)
-							if (e1 instanceof EGroumDataEdge && (((EGroumDataEdge) e1).type == Type.RECEIVER || ((EGroumDataEdge) e1).type == Type.PARAMETER))
-								labels.add(e1.toString());
-					} else
-						labels.add(e.toString());
-					for (String label : labels) {
-						int count = 1;
-						if (nodeCount.containsKey(label))
-							count += nodeCount.get(label);
-						nodeCount.put(label, count);
-						if (count > max)
-							max = count;
-						if (max >= 10)
-							return true;
-					}
-				}
-			}
-		return false;
 	}
 
 	public EGroumGraph(EGroumBuildingContext context, AUGConfiguration configuration) {
