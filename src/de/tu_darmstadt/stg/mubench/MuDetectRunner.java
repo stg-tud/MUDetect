@@ -5,7 +5,7 @@ import de.tu_darmstadt.stg.mudetect.*;
 import de.tu_darmstadt.stg.mudetect.dot.ViolationDotExporter;
 import de.tu_darmstadt.stg.mudetect.matcher.AllDataNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
-import de.tu_darmstadt.stg.mudetect.mining.MinCallSizeModel;
+import de.tu_darmstadt.stg.mudetect.mining.MinPatternActionsModel;
 import de.tu_darmstadt.stg.mudetect.mining.MinedPatternsModel;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
 import de.tu_darmstadt.stg.mudetect.mining.ProvidedPatternsModel;
@@ -31,7 +31,7 @@ public class MuDetectRunner extends MuBenchRunner {
     protected void detectOnly(DetectorArgs args, DetectorOutput output) throws Exception {
         run(getAUGConfiguration(),
                 args.getPatternPath(),
-                groums -> new MinCallSizeModel(new ProvidedPatternsModel(new Configuration() {{
+                groums -> new MinPatternActionsModel(new ProvidedPatternsModel(new Configuration() {{
                     disableSystemOut = true;
                     outputPath = getPatternOutputPath();
                     nodeToLabel = node -> node instanceof EGroumDataNode ? "Object" : node.getLabel();
@@ -50,7 +50,7 @@ public class MuDetectRunner extends MuBenchRunner {
     protected void mineAndDetect(DetectorArgs args, DetectorOutput output) throws Exception {
         run(getAUGConfiguration(),
                 args.getTargetPath(),
-                groums -> new MinCallSizeModel(new MinedPatternsModel(new Configuration() {{
+                groums -> new MinPatternActionsModel(new MinedPatternsModel(new Configuration() {{
                     minPatternSupport = 10;
                     disableSystemOut = true;
                     outputPath = getPatternOutputPath();

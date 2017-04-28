@@ -7,18 +7,18 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class MinCallSizeModel implements Model {
+public class MinPatternActionsModel implements Model {
 
     private final Set<Pattern> patterns;
 
-    public MinCallSizeModel(Model model, int minNumberOfCalls) {
+    public MinPatternActionsModel(Model model, int minNumberOfCalls) {
         patterns = model.getPatterns().stream()
                 .filter((pattern) -> hasEnoughCalls(pattern, minNumberOfCalls))
                 .collect(Collectors.toSet());
     }
 
     private boolean hasEnoughCalls(Pattern pattern, int minNumberOfCalls) {
-        long numberOfCalls = pattern.vertexSet().stream().filter(MinCallSizeModel::isMethodCall).count();
+        long numberOfCalls = pattern.vertexSet().stream().filter(MinPatternActionsModel::isMethodCall).count();
         long numberOfThrows = pattern.edgeSet().stream().filter(this::isRelevant).count();
         return numberOfCalls + numberOfThrows >= minNumberOfCalls;
     }
