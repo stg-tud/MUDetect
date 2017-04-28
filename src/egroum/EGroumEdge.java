@@ -33,15 +33,15 @@ public abstract class EGroumEdge {
 	}
 
 	public boolean isDef() {
-		return this instanceof EGroumDataEdge && ((EGroumDataEdge) this).type == Type.DEFINITION;
+		return this instanceof EGroumDataEdge && ((EGroumDataEdge) this).getType() == Type.DEFINITION;
 	}
 
 	public boolean isRecv() {
-		return this instanceof EGroumDataEdge && ((EGroumDataEdge) this).type == Type.RECEIVER;
+		return this instanceof EGroumDataEdge && ((EGroumDataEdge) this).getType() == Type.RECEIVER;
 	}
 
 	public boolean isCond() {
-		return this instanceof EGroumDataEdge && ((EGroumDataEdge) this).type == Type.CONDITION;
+		return this instanceof EGroumDataEdge && ((EGroumDataEdge) this).getType() == Type.CONDITION;
 	}
 
 	public void delete() {
