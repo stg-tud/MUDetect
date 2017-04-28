@@ -1,5 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
+import egroum.EGroumEdge;
 import egroum.EGroumNode;
 import org.eclipse.jdt.core.dom.ASTNode;
 
@@ -17,10 +18,12 @@ public class MinCallSizeModel implements Model {
     }
 
     private boolean hasEnoughCalls(Pattern pattern, int minNumberOfCalls) {
-        return pattern.vertexSet().stream().filter(this::isMethodCall).count() >= minNumberOfCalls;
+        long numberOfCalls = pattern.vertexSet().stream().filter(MinCallSizeModel::isMethodCall).count();
+        long numberOfThrows = pattern.edgeSet().stream().filter(EGroumEdge::isThrow).count();
+        return numberOfCalls + numberOfThrows >= minNumberOfCalls;
     }
 
-    private boolean isMethodCall(EGroumNode node) {
+    private static boolean isMethodCall(EGroumNode node) {
         int nodeType = node.getAstNodeType();
         return nodeType == ASTNode.METHOD_INVOCATION || nodeType == ASTNode.CLASS_INSTANCE_CREATION;
     }
