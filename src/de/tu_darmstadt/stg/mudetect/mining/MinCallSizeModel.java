@@ -19,8 +19,12 @@ public class MinCallSizeModel implements Model {
 
     private boolean hasEnoughCalls(Pattern pattern, int minNumberOfCalls) {
         long numberOfCalls = pattern.vertexSet().stream().filter(MinCallSizeModel::isMethodCall).count();
-        long numberOfThrows = pattern.edgeSet().stream().filter(EGroumEdge::isThrow).count();
+        long numberOfThrows = pattern.edgeSet().stream().filter(this::isRelevant).count();
         return numberOfCalls + numberOfThrows >= minNumberOfCalls;
+    }
+
+    private boolean isRelevant(EGroumEdge edge) {
+        return edge.isThrow() || edge.isSync();
     }
 
     private static boolean isMethodCall(EGroumNode node) {

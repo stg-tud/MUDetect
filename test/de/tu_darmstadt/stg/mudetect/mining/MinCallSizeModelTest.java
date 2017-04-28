@@ -43,4 +43,15 @@ public class MinCallSizeModelTest {
 
         assertThat(patterns, is(not(empty())));
     }
+
+    @Test
+    public void considersSynchronization() throws Exception {
+        Pattern pattern = somePattern(TestAUGBuilder.buildAUG()
+                .withDataNode("Object").withActionNodes("m()")
+                .withCondEdge("Object", "syn", "m()"));
+
+        Set<Pattern> patterns = new MinCallSizeModel(() -> asSet(pattern), 2).getPatterns();
+
+        assertThat(patterns, is(not(empty())));
+    }
 }
