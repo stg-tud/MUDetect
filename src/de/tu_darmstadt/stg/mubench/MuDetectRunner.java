@@ -3,8 +3,9 @@ package de.tu_darmstadt.stg.mubench;
 import de.tu_darmstadt.stg.mubench.cli.*;
 import de.tu_darmstadt.stg.mudetect.*;
 import de.tu_darmstadt.stg.mudetect.dot.ViolationDotExporter;
-import de.tu_darmstadt.stg.mudetect.matcher.AllDataNodeMatcher;
+import de.tu_darmstadt.stg.mudetect.matcher.DataNodeConstantLabelProvider;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
+import de.tu_darmstadt.stg.mudetect.matcher.NodeLabelProvider;
 import de.tu_darmstadt.stg.mudetect.mining.MinPatternActionsModel;
 import de.tu_darmstadt.stg.mudetect.mining.MinedPatternsModel;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
@@ -29,17 +30,18 @@ public class MuDetectRunner extends MuBenchRunner {
 
     @Override
     protected void detectOnly(DetectorArgs args, DetectorOutput output) throws Exception {
+        Function<EGroumNode, String> nodeLabelProvider = createNodeLabelProvider();
         run(getAUGConfiguration(),
                 args.getPatternPath(),
                 groums -> new MinPatternActionsModel(new ProvidedPatternsModel(new Configuration() {{
                     disableSystemOut = true;
                     outputPath = getPatternOutputPath();
-                    nodeToLabel = node -> node instanceof EGroumDataNode ? "Object" : node.getLabel();
+                    nodeToLabel = nodeLabelProvider;
                 }}, groums), 2),
                 args.getTargetPath(),
                 args.getDependencyClassPath(),
                 new EmptyOverlapsFinder(new AlternativeMappingsOverlapsFinder(new AlternativeMappingsOverlapsFinder.Config() {{
-                    nodeMatcher = new AllDataNodeMatcher().or(new EquallyLabelledNodeMatcher());
+                    nodeMatcher = new EquallyLabelledNodeMatcher(nodeLabelProvider);
                 }})),
                 new EverythingViolationFactory(),
                 new NoRankingStrategy(),
@@ -48,19 +50,20 @@ public class MuDetectRunner extends MuBenchRunner {
 
     @Override
     protected void mineAndDetect(DetectorArgs args, DetectorOutput output) throws Exception {
+        Function<EGroumNode, String> nodeLabelProvider = createNodeLabelProvider();
         run(getAUGConfiguration(),
                 args.getTargetPath(),
                 groums -> new MinPatternActionsModel(new MinedPatternsModel(new Configuration() {{
                     minPatternSupport = 10;
                     disableSystemOut = true;
                     outputPath = getPatternOutputPath();
-                    nodeToLabel = node -> node instanceof EGroumDataNode ? "Object" : node.getLabel();
+                    nodeToLabel = nodeLabelProvider;
                 }}, groums), 2),
                 args.getTargetPath(),
                 args.getDependencyClassPath(),
                 new AlternativeMappingsOverlapsFinder(
                         new AlternativeMappingsOverlapsFinder.Config() {{
-                            nodeMatcher = new AllDataNodeMatcher().or(new EquallyLabelledNodeMatcher());
+                            nodeMatcher = new EquallyLabelledNodeMatcher(nodeLabelProvider);
                         }}),
                 new MissingElementViolationFactory(),
                 new WeightRankingStrategy(
@@ -71,6 +74,12 @@ public class MuDetectRunner extends MuBenchRunner {
                                         new ConstantNodeWeightFunction()
                                 ))),
                 output);
+    }
+
+    private Function<EGroumNode, String> createNodeLabelProvider() {
+        return NodeLabelProvider.firstOrDefaultLabel(
+                new DataNodeConstantLabelProvider()
+        );
     }
 
     private static AUGConfiguration getAUGConfiguration() {
