@@ -85,6 +85,10 @@ public class JavaASTUtil {
 		assignmentLabels.put(Assignment.Operator.RIGHT_SHIFT_UNSIGNED_ASSIGN.toString(), "<b>");
 	}
 
+	public static String getLabel(InfixExpression.Operator key) {
+		return JavaASTUtil.infixExpressionLables.get(key.toString());
+	}
+
 	@SuppressWarnings("rawtypes")
 	public static ASTNode parseSource(String source, String path, String name, String[] classpaths) {
 		Map options = JavaCore.getOptions();
