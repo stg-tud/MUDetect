@@ -10,7 +10,6 @@ import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
-import static egroum.EGroumDataEdge.Type.ORDER;
 import static egroum.EGroumDataEdge.Type.PARAMETER;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
