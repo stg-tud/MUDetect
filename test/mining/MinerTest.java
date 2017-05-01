@@ -118,6 +118,27 @@ public class MinerTest {
 	}
 	
 	@Test
+	public void decrypt() {
+		ArrayList<EGroumGraph> groums = buildGroumsFromFile("test-resources/input/Test_alibaba2_old.java", null);
+		groums.addAll(buildGroumsFromFile("test-resources/input/Test_alibaba2_new.java", null));
+		
+		List<Pattern> patterns = mine(groums, null);
+//		print(patterns);
+		
+		assertThat(patterns.size(), is(2));
+		
+		boolean contains = false;
+		for (Pattern p : patterns) {
+			for (EGroumNode node : p.getRepresentative().getNodes())
+				if (node.getLabel().equals("Cipher.getInstance()")) {
+					contains = true;
+					break;
+				}
+		}
+		assertThat(contains, is(true));
+	}
+	
+	@Test
 	public void jackrabbit1() {
 		String targetSource = "public class ItemManager {\n" + 
 				"    private SessionImpl session;" + 
@@ -217,7 +238,7 @@ public class MinerTest {
 	}
 
 	private ArrayList<EGroumGraph> buildGroumsFromFile(String path, String[] classpaths) {
-		return new EGroumBuilder(new AUGConfiguration()).build(path, classpaths);
+		return new EGroumBuilder(new AUGConfiguration(){{removeImplementationCode = 2;}}).build(path, classpaths);
 	}
 
 	private ArrayList<EGroumGraph> buildGroums(String[] sourceCodes, String[] classpaths) {
