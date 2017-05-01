@@ -3,12 +3,15 @@ package egroum;
 import graphics.DotGraph;
 import java.util.ArrayList;
 
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.hamcrest.core.Is;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+
+import egroum.EGroumDataEdge.Type;
 
 public class AUGImprovement2 {
     @Rule
@@ -28,12 +31,27 @@ public class AUGImprovement2 {
     	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_cast.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
     	Assert.assertThat(gs.get(0).getNodes().size(), Is.is(6));
     	Assert.assertThat(gs.get(0).getEdges().size(), Is.is(9));
+    	
+    	boolean hasCastParameter = false;
+    	for (EGroumEdge e : gs.get(1).getEdges()) {
+    		if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.PARAMETER 
+    				&& e.source.getAstNodeType() == ASTNode.CAST_EXPRESSION && e.target.getAstNodeType() == ASTNode.METHOD_INVOCATION) {
+    			hasCastParameter = true;
+    			break;
+    		}
+    	}
+    	Assert.assertThat(hasCastParameter, Is.is(true));
     }
 
     @Test
     public void dependentControl() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
     	/*ArrayList<EGroumGraph> gs = */EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_dependent_control.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    }
+
+    @Test
+    public void staticCall() throws Exception {
+    	/*ArrayList<EGroumGraph> gs = */EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_alibaba2_old.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
     }
 
     @Test

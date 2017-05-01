@@ -1,7 +1,6 @@
 package egroum;
 
 import de.tu_darmstadt.stg.mudetect.model.AUG;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.*;
