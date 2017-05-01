@@ -161,10 +161,13 @@ public class EGroumGraph implements Serializable {
 			if (node.getAstNodeType() == ASTNode.BREAK_STATEMENT
 					|| node.getAstNodeType() == ASTNode.CONTINUE_STATEMENT
 					|| node.getAstNodeType() == ASTNode.RETURN_STATEMENT
-					|| node.getAstNodeType() == ASTNode.THROW_STATEMENT)
+					|| node.getAstNodeType() == ASTNode.THROW_STATEMENT
+					|| node.getAstNodeType() == ASTNode.CATCH_CLAUSE)
 				continue;
 			for (EGroumEdge e : new HashSet<EGroumEdge>(node.inEdges)) {
 				if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.CONDITION) {
+					if (e.source instanceof EGroumDataNode && ((EGroumDataNode) e.source).isException())
+						continue;
 					HashSet<EGroumNode> inter = new HashSet<>(node.buildTransitiveParameterClosure());
 					inter.retainAll(e.source.buildTransitiveParameterClosure());
 					if (inter.isEmpty())
@@ -1944,7 +1947,7 @@ public class EGroumGraph implements Serializable {
 			new EGroumDataEdge(node, next, type, type == Type.CONDITION ? next.getConditionLabel() : null);
 		sinks.clear();
 		sinks.add(next);
-		if (nodes.isEmpty() && next instanceof EGroumDataNode)
+		if (nodes.isEmpty() && next instanceof EGroumDataNode && type != type.DEFINITION)
 			dataSources.add((EGroumDataNode) next);
 		nodes.add(next);
 		if (next.isStatement()) {

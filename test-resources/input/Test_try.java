@@ -5,6 +5,14 @@ import java.io.PrintWriter;
 import java.io.Writer;
 
 class Test_try {
+
+	void m(java.util.List<String> l, Object obj) {
+		try {
+			l.contains(obj);
+		} catch (java.lang.ClassCastException e) {
+			l.clear();
+		}
+	}
 	
 	public void pattern1(OutputStream out, String value) throws IOException {
 		Writer writer = null;
