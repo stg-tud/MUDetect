@@ -1,5 +1,6 @@
 package de.tu_darmstadt.stg.mubench;
 
+import com.google.common.collect.Multiset;
 import de.tu_darmstadt.stg.mubench.cli.*;
 import de.tu_darmstadt.stg.mudetect.*;
 import de.tu_darmstadt.stg.mudetect.dot.ViolationDotExporter;
@@ -14,6 +15,7 @@ import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Location;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import de.tu_darmstadt.stg.mudetect.ranking.*;
+import de.tu_darmstadt.stg.mustudies.UsageUtils;
 import egroum.*;
 import mining.Configuration;
 
@@ -126,6 +128,7 @@ public class MuDetectRunner extends MuBenchRunner {
 
         Collection<AUG> targets = buildAUGs(targetPath, dependenciesClassPath, configuration);
         long endDetectionLoadTime = System.currentTimeMillis();
+        output.addRunInformation("numberOfUsages", toListOfString(UsageUtils.countNumberOfUsagesPerType(targets)));
         output.addRunInformation("detectionLoadTime", Long.toString(endDetectionLoadTime - endTrainingTime));
         output.addRunInformation("numberOfTargets", Integer.toString(targets.size()));
 
@@ -139,6 +142,12 @@ public class MuDetectRunner extends MuBenchRunner {
         report(violations, output);
         long endReportingTime = System.currentTimeMillis();
         output.addRunInformation("reportingTime", Long.toString(endReportingTime - endDetectionTime));
+    }
+
+    private List<String> toListOfString(Multiset<String> frequencyMap) {
+        return frequencyMap.entrySet().stream()
+                .map(entry -> String.format("%s: %d", entry.getElement(), entry.getCount()))
+                .collect(Collectors.toList());
     }
 
     private Collection<EGroumGraph> buildGroums(CodePath path, String[] dependenciesClassPath, AUGConfiguration configuration) {
