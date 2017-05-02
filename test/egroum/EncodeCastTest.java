@@ -23,7 +23,7 @@ public class EncodeCastTest {
         assertThat(aug, hasNode(actionNodeWithLabel("List.<cast>")));
     }
 
-    @Test @Ignore("this edge is not currently added")
+    @Test 
     public void addsTransitiveParameterEdgeThroughCast() throws Exception {
         AUG aug = buildAUG("class C {\n" +
                 "  void m(java.util.List l) {\n" +
@@ -35,7 +35,7 @@ public class EncodeCastTest {
         assertThat(aug, hasEdge(actionNodeWithLabel("List.get()"), PARAMETER, actionNodeWithLabel("List.remove()")));
     }
 
-    @Test @Ignore("this edge is not currently added")
+    @Test
     public void addsTransitiveReceiverEdgeThroughCast() throws Exception {
         AUG aug = buildAUG("class C {\n" +
                 "  void m(java.util.List l) {\n" +

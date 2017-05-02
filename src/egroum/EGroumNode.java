@@ -444,7 +444,7 @@ public abstract class EGroumNode {
 					for (EGroumEdge e1 : e.source.inEdges) {
 						if (e1 instanceof EGroumDataEdge) {
 							Type type = ((EGroumDataEdge) e1).type;
-							if (e1.source.isCoreAction() && (type == Type.PARAMETER || type == Type.RECEIVER))
+							if ((e1.source.getAstNodeType() == ASTNode.METHOD_INVOCATION || e1.source.isCoreAction()) && (type == Type.PARAMETER || type == Type.RECEIVER))
 								if (!this.hasInEdge(e1))
 									new EGroumDataEdge(e1.source, this, de.type, de.label);
 						}
