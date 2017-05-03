@@ -128,11 +128,6 @@ public class MinerTest {
 //		print(patterns);
 		
 		assertThat(patterns.size(), is(1));
-		for (EGroumGraph g : groums) {
-			HashSet<EGroumNode> nodes = new HashSet<>(g.getNodes());
-			nodes.removeAll(patterns.get(0).getRepresentative().getNodes());
-			System.out.println();
-		}
 		assertThat(patterns.get(0).getRepresentative().getNodes().size(), is(groums.get(0).getNodes().size()));
 	}
 	
