@@ -268,6 +268,10 @@ public class Miner {
 			return true;
 		if (!label.endsWith(")") && xlabel.endsWith(")"))
 			return false;
+		if (label.contains("(") && label.contains(")") && (!xlabel.contains("(") || !xlabel.contains(")")))
+			return true;
+		if (xlabel.contains("(") && xlabel.contains(")") && (!label.contains("(") || !label.contains(")")))
+			return false;
 		if (freq > xfreq)
 			return true;
 		if (freq < xfreq)

@@ -1,5 +1,6 @@
 class Test_alibaba2_old {
-	public static String decrypt_old(PublicKey publicKey, String cipherText) throws Exception {
+	public static String decrypt(PublicKey publicKey, String cipherText)
+			throws Exception {
 		Cipher cipher = Cipher.getInstance("RSA");
 		try {
 			cipher.init(Cipher.DECRYPT_MODE, publicKey);
@@ -10,7 +11,7 @@ class Test_alibaba2_old {
 			Key fakePublicKey = KeyFactory.getInstance("RSA").generatePrivate(spec);
 			cipher.init(Cipher.DECRYPT_MODE, fakePublicKey);
 		}
-
+		
 		if (cipherText == null || cipherText.length() == 0) {
 			return cipherText;
 		}
