@@ -118,11 +118,11 @@ public class MinerTest {
 		print(patterns);
 	}
 	
-	@Ignore ("missing <cast> in mined pattern") 
 	@Test
 	public void decryptPattern() {
 		ArrayList<EGroumGraph> groums = buildGroumsFromFile("test-resources/input/Test_alibaba2_new.java", null);
 		groums.addAll(buildGroumsFromFile("test-resources/input/Test_alibaba2_new.java", null));
+		System.out.println(groums);
 		
 		List<Pattern> patterns = mine(groums, null);
 //		print(patterns);
@@ -136,7 +136,6 @@ public class MinerTest {
 		assertThat(patterns.get(0).getRepresentative().getNodes().size(), is(groums.get(0).getNodes().size()));
 	}
 	
-	@Ignore ("missing <cast> in mined pattern") 
 	@Test
 	public void decryptTarget() {
 		ArrayList<EGroumGraph> groums = buildGroumsFromFile("test-resources/input/Test_alibaba2_old.java", null);

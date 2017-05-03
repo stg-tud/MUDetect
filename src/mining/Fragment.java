@@ -445,7 +445,7 @@ public class Fragment {
 						if (found) {
 							found = false;
 							for (EGroumNode n : outs) {
-								if (nodes.contains(n) && n.isCoreAction()) {
+								if (nodes.contains(n)) {
 									found = true;
 									break;
 								}
@@ -461,7 +461,7 @@ public class Fragment {
 						} else {
 							found = false;
 							for (EGroumNode n : outs) {
-								if (nodes.contains(n) && n.isCoreAction()) {
+								if (nodes.contains(n)) {
 									found = true;
 									break;
 								}
