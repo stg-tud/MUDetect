@@ -11,7 +11,7 @@ class Test_alibaba2_old {
 			Key fakePublicKey = KeyFactory.getInstance("RSA").generatePrivate(spec);
 			cipher.init(Cipher.DECRYPT_MODE, fakePublicKey);
 		}
-		
+
 		if (cipherText == null || cipherText.length() == 0) {
 			return cipherText;
 		}

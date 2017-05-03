@@ -9,6 +9,7 @@ import java.util.*;
 
 import egroum.AUGConfiguration;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -117,15 +118,46 @@ public class MinerTest {
 		print(patterns);
 	}
 	
+	@Ignore ("missing <cast> in mined pattern") 
 	@Test
-	public void decrypt() {
-		ArrayList<EGroumGraph> groums = buildGroumsFromFile("test-resources/input/Test_alibaba2_old.java", null);
+	public void decryptPattern() {
+		ArrayList<EGroumGraph> groums = buildGroumsFromFile("test-resources/input/Test_alibaba2_new.java", null);
 		groums.addAll(buildGroumsFromFile("test-resources/input/Test_alibaba2_new.java", null));
 		
 		List<Pattern> patterns = mine(groums, null);
 //		print(patterns);
 		
-		assertThat(patterns.size(), is(2));
+		assertThat(patterns.size(), is(1));
+		for (EGroumGraph g : groums) {
+			HashSet<EGroumNode> nodes = new HashSet<>(g.getNodes());
+			nodes.removeAll(patterns.get(0).getRepresentative().getNodes());
+			System.out.println();
+		}
+		assertThat(patterns.get(0).getRepresentative().getNodes().size(), is(groums.get(0).getNodes().size()));
+	}
+	
+	@Ignore ("missing <cast> in mined pattern") 
+	@Test
+	public void decryptTarget() {
+		ArrayList<EGroumGraph> groums = buildGroumsFromFile("test-resources/input/Test_alibaba2_old.java", null);
+		groums.addAll(buildGroumsFromFile("test-resources/input/Test_alibaba2_old.java", null));
+		
+		List<Pattern> patterns = mine(groums, null);
+//		print(patterns);
+		
+		assertThat(patterns.size(), is(1));
+		assertThat(patterns.get(0).getRepresentative().getNodes().size(), is(groums.get(0).getNodes().size()));
+	}
+	
+	@Test
+	public void decrypt() {
+		ArrayList<EGroumGraph> groums = buildGroumsFromFile("test-resources/input/Test_alibaba2_old.java", null);
+		groums.addAll(buildGroumsFromFile("test-resources/input/Test_alibaba2_old.java", null));
+		
+		List<Pattern> patterns = mine(groums, null);
+//		print(patterns);
+		
+		assertThat(patterns.size(), is(1));
 		
 		boolean contains = false;
 		for (Pattern p : patterns) {
