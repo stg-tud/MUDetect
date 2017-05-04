@@ -19,6 +19,20 @@ class Test_foreach {
 //            entry.getValue();
 //        }
 //	}
+    
+    void m(java.lang.Iterable it) {
+    	java.util.Iterator itr = it.iterator();
+    	while (itr.hasNext()) {
+    		Object o = itr.next();
+    		o.hashCode();
+    	}
+    }
+    
+    void n(java.lang.Iterable it) {
+    	for (Object o : it) {
+    		o.hashCode();
+    	}
+    }
 	
 	void p() {
 		for (Map.Entry<Integer, Integer> kv : names.entrySet()) {

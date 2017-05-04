@@ -1187,17 +1187,51 @@ public class EGroumGraph implements Serializable {
 				"" + name.getStartPosition(), type,
 				name.getIdentifier(), false, true);
 		EGroumGraph pdg = buildArgumentPDG(control, branch, astNode.getExpression());
-		pdg.mergeSequentialData(new EGroumActionNode(control, branch,
-				astNode, ASTNode.ASSIGNMENT, null, null, "="), Type.PARAMETER);
-		pdg.mergeSequentialData(var, Type.DEFINITION);
-		pdg.mergeSequentialData(new EGroumDataNode(null, var.astNodeType, var.key, var.dataType, var.dataName), Type.REFERENCE);
-		EGroumControlNode node = new EGroumControlNode(control, branch, astNode, astNode.getNodeType());
-		pdg.mergeSequentialData(node, Type.CONDITION);
-		pdg.mergeSequentialControl(new EGroumActionNode(node, "",
-				null, ASTNode.EMPTY_STATEMENT, null, null, "empty"), "");
-		EGroumGraph bg = buildPDG(node, "", astNode.getBody());
-		if (!bg.isEmpty())
-			pdg.mergeSequential(bg);
+		boolean isArray = false;
+		if (astNode.getExpression().resolveTypeBinding() != null) {
+			ITypeBinding tb = astNode.getExpression().resolveTypeBinding();
+			isArray = tb.isArray();
+		} else {
+			for (EGroumNode sink : pdg.sinks) {
+				if (sink.dataType != null && sink.dataType.endsWith("[]")) {
+					isArray = true;
+					break;
+				}
+			}
+		}
+		if (isArray) {
+			pdg.mergeSequentialData(new EGroumActionNode(control, branch,
+					astNode, ASTNode.ASSIGNMENT, null, null, "="), Type.PARAMETER);
+			pdg.mergeSequentialData(var, Type.DEFINITION);
+			pdg.mergeSequentialData(new EGroumDataNode(null, var.astNodeType, var.key, var.dataType, var.dataName), Type.REFERENCE);
+			EGroumControlNode node = new EGroumControlNode(control, branch, astNode, astNode.getNodeType());
+			pdg.mergeSequentialData(node, Type.CONDITION);
+			pdg.mergeSequentialControl(new EGroumActionNode(node, "", null, ASTNode.EMPTY_STATEMENT, null, null, "empty"), "");
+			EGroumGraph bg = buildPDG(node, "", astNode.getBody());
+			if (!bg.isEmpty())
+				pdg.mergeSequential(bg);
+		} else {
+			EGroumActionNode iteratorCall = new EGroumActionNode(control, branch, null, ASTNode.METHOD_INVOCATION, null, "Iterable.iterator()", "iterator");
+			pdg.mergeSequentialData(iteratorCall, Type.RECEIVER);
+			pdg.mergeSequentialData(new EGroumActionNode(control, branch, null, ASTNode.ASSIGNMENT, null, null, "="), Type.PARAMETER);
+			pdg.mergeSequentialData(new EGroumDataNode(null, ASTNode.SIMPLE_NAME, EGroumNode.PREFIX_DUMMY + astNode.getExpression().getStartPosition() + "_" + astNode.getExpression().getLength(), "Iterator", EGroumNode.PREFIX_DUMMY, false, true), Type.DEFINITION);
+			EGroumDataNode iterator = new EGroumDataNode(null, ASTNode.SIMPLE_NAME, EGroumNode.PREFIX_DUMMY + astNode.getExpression().getStartPosition() + "_" + astNode.getExpression().getLength(), "Iterator", EGroumNode.PREFIX_DUMMY, false, false);
+			pdg.mergeSequentialData(iterator, Type.REFERENCE);
+			pdg.mergeSequentialData(new EGroumActionNode(control, branch, null, ASTNode.METHOD_INVOCATION, null, "Iterator.hasNext()", "hasNext"), Type.RECEIVER);
+			pdg.mergeSequentialData(new EGroumActionNode(control, branch, null, ASTNode.ASSIGNMENT, null, null, "="), Type.PARAMETER);
+			pdg.mergeSequentialData(new EGroumDataNode(null, ASTNode.SIMPLE_NAME, EGroumNode.PREFIX_DUMMY + astNode.getStartPosition() + "_" + astNode.getLength(), "boolean", EGroumNode.PREFIX_DUMMY, false, true), Type.DEFINITION);
+			pdg.mergeSequentialData(new EGroumDataNode(null, ASTNode.SIMPLE_NAME, EGroumNode.PREFIX_DUMMY + astNode.getStartPosition() + "_" + astNode.getLength(), "boolean", EGroumNode.PREFIX_DUMMY, false, false), Type.REFERENCE);
+			EGroumControlNode node = new EGroumControlNode(control, branch, astNode, ASTNode.WHILE_STATEMENT);
+			pdg.mergeSequentialData(node, Type.CONDITION);
+			EGroumGraph bg = new EGroumGraph(context, new EGroumDataNode(iterator), configuration);
+			bg.mergeSequentialData(new EGroumActionNode(node, "T", null, ASTNode.METHOD_INVOCATION, null, "Iterator.next()", "next"), Type.RECEIVER);
+			bg.mergeSequentialData(new EGroumActionNode(node, "T", null, ASTNode.ASSIGNMENT, null, null, "="), Type.PARAMETER);
+			bg.mergeSequentialData(var, Type.DEFINITION);
+			bg.mergeSequential(buildPDG(node, "T", astNode.getBody()));
+			EGroumGraph eg = new EGroumGraph(context, new EGroumActionNode(node, "F",
+					null, ASTNode.EMPTY_STATEMENT, null, null, "empty"), configuration);
+			pdg.mergeBranches(bg, eg);
+		}
 		pdg.adjustBreakNodes("");
 		context.removeScope();
 		return pdg;

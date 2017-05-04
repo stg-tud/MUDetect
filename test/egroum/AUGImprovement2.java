@@ -146,7 +146,7 @@ public class AUGImprovement2 {
     @Test
     public void foreach() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_foreach.java", null, "aug-improvement", new AUGConfiguration(){{groum = true;}});
+    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_foreach.java", null, "aug-improvement", new AUGConfiguration(){{}});
     }
 
     @Test

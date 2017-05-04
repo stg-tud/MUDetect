@@ -36,10 +36,9 @@ public class EncodeLoopsTest {
         assertThat(aug, not(hasRepeatEdge(actionNodeWithLabel("Collection.isEmpty()"), actionNodeWithLabel("Stack.push()"))));
     }
     
-    @Ignore
     @Test
     public void encodesForeach() throws Exception {
-        AUG aug = buildAUG("void m(java.util.Iterable it) {\n" +
+        AUG aug = buildAUG("void m(java.lang.Iterable it) {\n" +
                 "  for (Object o : it) {\n" +
                 "    o.hashCode();\n" +
                 "  }\n" +
