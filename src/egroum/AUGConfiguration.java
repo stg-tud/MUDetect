@@ -67,4 +67,9 @@ public class AUGConfiguration {
      * 
      */
     public boolean removeIndependentControlEdges = true;
+    
+    /**
+     * 
+     */
+	public boolean removeTransitiveDefinitionEdgesFromMethodCalls = true;
 }

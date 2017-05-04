@@ -143,6 +143,8 @@ public class EGroumGraph implements Serializable {
 		deleteAssignmentNodes();
 		if (configuration.removeIndependentControlEdges)
 			deleteIndependentControlEdges();
+		if (configuration.removeTransitiveDefinitionEdgesFromMethodCalls)
+			deleteTransitiveDefinitionEdgesFromMethodCalls();
 		deleteUnreachableNodes();
 		deleteControlNodes();
 		deleteUnusedDataNodes();
@@ -152,6 +154,34 @@ public class EGroumGraph implements Serializable {
 			renameEdges();
 		}
 		cleanUp();
+	}
+
+	private void deleteTransitiveDefinitionEdgesFromMethodCalls() {
+		for (EGroumNode node : nodes) {
+			if (node instanceof EGroumActionNode && node.astNodeType != ASTNode.INFIX_EXPRESSION && node.astNodeType != ASTNode.PREFIX_EXPRESSION && node.astNodeType != ASTNode.POSTFIX_EXPRESSION) {
+				for (EGroumEdge e : new HashSet<EGroumEdge>(node.outEdges)) {
+					if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.DEFINITION) {
+						HashSet<EGroumNode> defs = new HashSet<>();
+						for (EGroumEdge e1 : e.target.inEdges)
+							if (e1 instanceof EGroumDataEdge && ((EGroumDataEdge) e1).type == Type.DEFINITION)
+								defs.add(e1.source);
+						HashSet<EGroumNode> outs = new HashSet<>();
+						for (EGroumEdge e1 : node.outEdges)
+							if (e1 instanceof EGroumDataEdge)
+								outs.add(e1.target);
+						defs.retainAll(outs);
+						boolean isRemoved = false;
+						for (EGroumNode def : defs)
+							if (def.astNodeType != ASTNode.INFIX_EXPRESSION && def.astNodeType != ASTNode.PREFIX_EXPRESSION && def.astNodeType != ASTNode.POSTFIX_EXPRESSION) {
+								isRemoved = true;
+								break;
+							}
+						if (isRemoved)
+							e.delete();
+					}
+				}
+			}
+		}
 	}
 
 	private void deleteIndependentControlEdges() {

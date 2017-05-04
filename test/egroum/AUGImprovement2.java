@@ -22,7 +22,7 @@ public class AUGImprovement2 {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
     	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_qualified_name.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
     	Assert.assertThat(gs.get(0).getNodes().size(), Is.is(9));
-    	Assert.assertThat(gs.get(0).getEdges().size(), Is.is(13));
+    	Assert.assertThat(gs.get(0).getEdges().size(), Is.is(12));
     }
 
     @Test
@@ -30,7 +30,7 @@ public class AUGImprovement2 {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
     	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_cast.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
     	Assert.assertThat(gs.get(0).getNodes().size(), Is.is(6));
-    	Assert.assertThat(gs.get(0).getEdges().size(), Is.is(9));
+    	Assert.assertThat(gs.get(0).getEdges().size(), Is.is(8));
     	
     	boolean hasCastParameter = false;
     	for (EGroumEdge e : gs.get(1).getEdges()) {

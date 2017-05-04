@@ -12,7 +12,6 @@ import static egroum.EGroumDataEdge.Type.DEFINITION;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
-@Ignore
 public class EncodeDefinitionsTest {
     @Test
     public void encodesOnlyDirectDefinitionEdges() throws Exception {
@@ -28,11 +27,14 @@ public class EncodeDefinitionsTest {
 
     @Test
     public void encodesTransitiveDefinitionEdgesThroughArithmeticOperator() throws Exception {
-        AUG aug = buildAUG("double m(java.util.Collection c) {\n" +
+        AUG aug = buildAUG("double m() {\n" + 
+        		"  java.util.List c = new ArrayList();" +
                 "  double d = c.size() + 1f;\n" +
                 "  return d;\n" +
                 "}");
 
-        assertThat(aug, not(hasEdge(actionNodeWithLabel("Collection.size()"), DEFINITION, dataNodeWithLabel("double"))));
+        assertThat(aug, hasEdge(actionNodeWithLabel("ArrayList.<init>"), DEFINITION, dataNodeWithLabel("List")));
+        assertThat(aug, hasEdge(actionNodeWithLabel("Collection.size()"), DEFINITION, dataNodeWithLabel("double")));
+        assertThat(aug, not(hasEdge(actionNodeWithLabel("ArrayList.<init>"), DEFINITION, dataNodeWithLabel("double"))));
     }
 }
