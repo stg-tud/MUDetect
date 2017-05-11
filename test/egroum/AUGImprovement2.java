@@ -92,6 +92,13 @@ public class AUGImprovement2 {
 
     @Ignore
     @Test
+    public void eclipse_jdt_core() throws Exception {
+    	EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration());
+    	gb.buildBatch("T:/repos/eclipse.jdt.core", null);
+    }
+
+    @Ignore
+    @Test
     public void JetBrains_intellij_community() throws Exception {
     	EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration());
     	gb.buildBatch("F:/github/repos-IntelliJ/JetBrains/intellij-community/java", null);
