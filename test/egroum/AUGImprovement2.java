@@ -89,6 +89,13 @@ public class AUGImprovement2 {
     	EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration());
     	gb.buildBatch("T:/repos/itext/5091/original-src", null);
     }
+
+    @Ignore
+    @Test
+    public void JetBrains_intellij_community() throws Exception {
+    	EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration());
+    	gb.buildBatch("F:/github/repos-IntelliJ/JetBrains/intellij-community/java", null);
+    }
     
     @Test
     public void closure() throws Exception {

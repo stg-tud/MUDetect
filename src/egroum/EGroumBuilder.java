@@ -80,9 +80,14 @@ public class EGroumBuilder {
 			if (file.getName().endsWith(".jar"))
 				buildJar(file.getAbsolutePath());
 			else if (file.getName().endsWith(".java")) {
-				CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(FileIO.readStringFromFile(file.getAbsolutePath()));
-				for (int i = 0 ; i < cu.types().size(); i++)
-					buildHierarchy((AbstractTypeDeclaration) cu.types().get(i), cu.getPackage() == null ? "" : cu.getPackage().getName().getFullyQualifiedName() + ".");
+				try {
+					CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(FileIO.readStringFromFile(file.getAbsolutePath()));
+					for (int i = 0 ; i < cu.types().size(); i++)
+						buildHierarchy((AbstractTypeDeclaration) cu.types().get(i), cu.getPackage() == null ? "" : cu.getPackage().getName().getFullyQualifiedName() + ".");
+				} catch (Exception e) {
+					System.err.println("Failed to parse file " + file.getAbsolutePath() + ": " + e.getClass().getName());
+					// TODO Suppress runtime problems with unknown reason
+				}
 			}
 		}
 		EGroumBuildingContext.buildExceptionHierarchy();
