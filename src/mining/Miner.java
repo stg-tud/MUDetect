@@ -328,6 +328,8 @@ public class Miner {
 			fs.add(f);
 			fragmentsOfGraph.put(g, fs);
 		}
+		if (config.occurenceLevel == 1)
+			return fragmentsOfGraph.size();
 		int freq = 0;
 		for (EGroumGraph g : fragmentsOfGraph.keySet()) {
 			ArrayList<Fragment> fs = fragmentsOfGraph.get(g);
