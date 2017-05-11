@@ -2011,7 +2011,7 @@ public class EGroumGraph implements Serializable {
 			new EGroumDataEdge(node, next, type, type == Type.CONDITION ? next.getConditionLabel() : null);
 		sinks.clear();
 		sinks.add(next);
-		if (nodes.isEmpty() && next instanceof EGroumDataNode && type != type.DEFINITION)
+		if (nodes.isEmpty() && next instanceof EGroumDataNode && type != Type.DEFINITION)
 			dataSources.add((EGroumDataNode) next);
 		nodes.add(next);
 		if (next.isStatement()) {
