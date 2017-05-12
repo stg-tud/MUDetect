@@ -100,7 +100,7 @@ public class MuDetectCrossProjectRunner {
         }
 
         private String getTargetTypeSimpleName(String targetTypeName) {
-            return targetTypeName.substring(targetTypeName.lastIndexOf('.'));
+            return targetTypeName.substring(targetTypeName.lastIndexOf('.') + 1);
         }
     }
 }
