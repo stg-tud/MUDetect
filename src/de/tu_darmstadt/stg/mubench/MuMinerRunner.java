@@ -7,38 +7,53 @@ import egroum.EGroumBuilder;
 import egroum.EGroumGraph;
 import mining.*;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-public class MuMinerRunner extends MuBenchRunner {
-
+public class MuMinerRunner {
     public static void main(String[] args) throws Exception {
-        new MuMinerRunner().run(args);
+        new MuBenchRunner().withMineAndDetectStrategy(new MuMinerStrategy()).run(args);
     }
 
-    @Override
-    protected void detectOnly(DetectorArgs args, DetectorOutput detectorOutput) throws Exception {
-        throw new UnsupportedOperationException();
-    }
+    private static class MuMinerStrategy implements DetectionStrategy {
+        @Override
+        public DetectorOutput detectViolations(DetectorArgs args) throws Exception {
+            ArrayList<EGroumGraph> groums = loadTargetData(args);
+            ArrayList<Anomaly> anomalies = detectAnomalies(groums);
+            List<DetectorFinding> findings = toDetectorFindings(anomalies);
+            return createOutput().withFindings(findings);
+        }
 
-    @Override
-    protected void mineAndDetect(DetectorArgs args, DetectorOutput output) throws Exception {
-        EGroumBuilder builder = new EGroumBuilder(new AUGConfiguration());
-        ArrayList<EGroumGraph> groums = builder.buildBatch(args.getTargetPath().srcPath, null);
-        Miner miner = new Miner("-project-name-", new Configuration() {{ minPatternSupport = 10; }});
-        miner.mine(groums);
-        Queue<Anomaly> anomalies = new PriorityQueue<>((a1, a2) -> -Double.compare(a1.getScore(), a2.getScore()));
-        anomalies.addAll(miner.anomalies);
-        while (!anomalies.isEmpty()) {
-            Anomaly anomaly = anomalies.poll();
-            for (Fragment fragment : anomaly.getInstances()) {
-                EGroumGraph target = fragment.getGraph();
-                DetectorFinding finding = output.add(target.getFilePath(), AUGBuilder.getMethodSignature(target));
-                finding.put("score", Double.toString(anomaly.getScore()));
-                finding.put("pattern", anomaly.getPattern().getDotGraph().getGraph());
-                finding.put("violation", fragment.getDotGraph().getGraph());
+        private ArrayList<EGroumGraph> loadTargetData(DetectorArgs args) throws FileNotFoundException {
+            return new EGroumBuilder(new DefaultAUGConfiguration())
+                    .buildBatch(args.getTargetPath().srcPath, args.getDependencyClassPath());
+        }
+
+        private ArrayList<Anomaly> detectAnomalies(ArrayList<EGroumGraph> groums) {
+            mining.Miner miner = new mining.Miner("-project-name-", new DefaultMiningConfiguration());
+            miner.mine(groums);
+            return miner.anomalies;
+        }
+
+        private List<DetectorFinding> toDetectorFindings(ArrayList<Anomaly> anomalies1) {
+            Queue<Anomaly> anomalies = new PriorityQueue<>((a1, a2) -> -Double.compare(a1.getScore(), a2.getScore()));
+            anomalies.addAll(anomalies1);
+            List<DetectorFinding> findings = new ArrayList<>();
+            while (!anomalies.isEmpty()) {
+                Anomaly anomaly = anomalies.poll();
+                for (Fragment fragment : anomaly.getInstances()) {
+                    EGroumGraph target = fragment.getGraph();
+                    DetectorFinding finding = new DetectorFinding(target.getFilePath(), AUGBuilder.getMethodSignature(target));
+                    finding.put("score", anomaly.getScore());
+                    finding.put("pattern", anomaly.getPattern().getDotGraph().getGraph());
+                    finding.put("violation", fragment.getDotGraph().getGraph());
+                    findings.add(finding);
+                }
             }
+            return findings;
         }
     }
 }

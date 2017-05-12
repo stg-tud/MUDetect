@@ -80,7 +80,7 @@
         <dependency>
             <groupId>de.tu-darmstadt.stg</groupId>
             <artifactId>mubench.cli</artifactId>
-            <version>0.0.9-SNAPSHOT</version>
+            <version>0.0.10-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.jmock</groupId>
@@ -151,6 +151,26 @@
 							<goal>single</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>mudetect-crossproject</id>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>de.tu_darmstadt.stg.mubench.MuDetectCrossProjectRunner</mainClass>
+								</manifest>
+							</archive>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<finalName>MuDetect-XProject</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
+						</configuration>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+
 					<execution>
 						<id>muminer</id>
 						<configuration>
