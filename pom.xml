@@ -152,7 +152,7 @@
 						</goals>
 					</execution>
 					<execution>
-						<id>mudetect-crossproject</id>
+						<id>mudetect-xproject</id>
 						<configuration>
 							<archive>
 								<manifest>
@@ -162,7 +162,7 @@
 							<descriptorRefs>
 								<descriptorRef>jar-with-dependencies</descriptorRef>
 							</descriptorRefs>
-							<finalName>MuDetect-XProject</finalName>
+							<finalName>MuDetectXProject</finalName>
 							<appendAssemblyId>false</appendAssemblyId>
 						</configuration>
 						<phase>package</phase>
