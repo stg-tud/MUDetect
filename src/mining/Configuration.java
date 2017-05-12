@@ -33,4 +33,12 @@ public class Configuration {
      * Function that maps nodes to labels used in the mining.
      */
     public Function<EGroumNode, String> nodeToLabel = EGroumNode::getLabel;
+    
+    /**
+     * The level of occurrence of instances of a pattern
+     * 0: with a method graph
+     * 1: cross method graphs
+     * 2: cross projects
+     */
+    public int occurenceLevel = 0;
 }

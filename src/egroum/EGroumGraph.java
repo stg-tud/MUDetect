@@ -39,8 +39,10 @@ import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.InstanceofExpression;
 import org.eclipse.jdt.core.dom.LabeledStatement;
+import org.eclipse.jdt.core.dom.LambdaExpression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.MethodReference;
 import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.NullLiteral;
 import org.eclipse.jdt.core.dom.NumberLiteral;
@@ -447,10 +449,14 @@ public class EGroumGraph implements Serializable {
 			return buildPDG(control, branch, (InstanceofExpression) node);
 		if (node instanceof LabeledStatement)
 			return buildPDG(control, branch, (LabeledStatement) node);
+		if (node instanceof LambdaExpression)
+			return buildPDG(control, branch, (LambdaExpression) node);
 		if (node instanceof MethodDeclaration)
 			return buildPDG(control, branch, (MethodDeclaration) node);
 		if (node instanceof MethodInvocation)
 			return buildPDG(control, branch, (MethodInvocation) node);
+		if (node instanceof MethodReference)
+			return buildPDG(control, branch, (MethodReference) node);
 		if (node instanceof NullLiteral)
 			return buildPDG(control, branch, (NullLiteral) node);
 		if (node instanceof NumberLiteral)
@@ -1078,10 +1084,19 @@ public class EGroumGraph implements Serializable {
 		return pdg;
 	}
 
-	private EGroumGraph buildPDG(EGroumNode control, String branch,
-			LabeledStatement astNode) {
+	private EGroumGraph buildPDG(EGroumNode control, String branch, LabeledStatement astNode) {
 		adjustBreakNodes(astNode.getLabel().getIdentifier());
 		return buildPDG(control, branch, astNode.getBody());
+	}
+
+	private EGroumGraph buildPDG(EGroumNode control, String branch, LambdaExpression astNode) {
+		// TODO
+		return new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.NULL_LITERAL, "null", "null", "LAMBDA"), configuration);
+	}
+
+	private EGroumGraph buildPDG(EGroumNode control, String branch, MethodReference astNode) {
+		// TODO
+		return new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.NULL_LITERAL, "null", "null", "LAMBDA"), configuration);
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, InstanceofExpression astNode) {
@@ -2011,7 +2026,7 @@ public class EGroumGraph implements Serializable {
 			new EGroumDataEdge(node, next, type, type == Type.CONDITION ? next.getConditionLabel() : null);
 		sinks.clear();
 		sinks.add(next);
-		if (nodes.isEmpty() && next instanceof EGroumDataNode && type != type.DEFINITION)
+		if (nodes.isEmpty() && next instanceof EGroumDataNode && type != Type.DEFINITION)
 			dataSources.add((EGroumDataNode) next);
 		nodes.add(next);
 		if (next.isStatement()) {
@@ -2068,7 +2083,6 @@ public class EGroumGraph implements Serializable {
 				if (n instanceof EGroumDataNode)
 					return (EGroumDataNode) n;
 		System.err.println("ERROR in getting the only data output node!!!");
-		System.exit(-1);
 		return null;
 	}
 

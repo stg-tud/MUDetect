@@ -17,10 +17,12 @@ import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.InfixExpression;
+import org.eclipse.jdt.core.dom.IntersectionType;
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.NameQualifiedType;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.PostfixExpression;
@@ -37,6 +39,7 @@ import org.eclipse.jdt.core.dom.UnionType;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.eclipse.jdt.core.dom.WildcardType;
 import org.eclipse.jdt.core.dom.Assignment.Operator;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.internal.core.dom.NaiveASTFlattener;
@@ -255,16 +258,28 @@ public class JavaASTUtil {
 					|| pt.equals("Float") || pt.equals("Double"))
 				return "number";*/
 			return pt;
-		} else if (type.isUnionType()) {
+		} else if (type.isIntersectionType()) {
+			IntersectionType it = (IntersectionType) type;
+			@SuppressWarnings("unchecked")
+			ArrayList<Type> types = new ArrayList<>(it.types());
+			String s = getSimpleType(types.get(0));
+			for (int i = 1; i < types.size(); i++)
+				s += "&" + getSimpleType(types.get(i));
+			return s;
+		}  else if (type.isUnionType()) {
 			UnionType ut = (UnionType) type;
 			String s = getSimpleType((Type) ut.types().get(0));
 			for (int i = 1; i < ut.types().size(); i++)
 				s += "|" + getSimpleType((Type) ut.types().get(i));
 			return s;
 		} else if (type.isWildcardType()) {
-			//WildcardType t = (WildcardType) type;
-			System.err.println("ERROR: Declare a variable with wildcard type!!!");
-			System.exit(0);
+			WildcardType t = (WildcardType) type;
+			return getSimpleType(t.getBound());
+		} else if (type.isNameQualifiedType()) {
+			NameQualifiedType nqt = (NameQualifiedType) type;
+			return nqt.getName().getIdentifier();
+		} else if (type.isAnnotatable()) {
+			return type.toString();
 		}
 		System.err.println("ERROR: Declare a variable with unknown type!!!");
 		System.exit(0);
@@ -291,6 +306,14 @@ public class JavaASTUtil {
 			if (typeParameters.contains(type.toString()))
 				return "Object";
 			return type.toString();
+		} else if (type.isIntersectionType()) {
+			IntersectionType it = (IntersectionType) type;
+			@SuppressWarnings("unchecked")
+			ArrayList<Type> types = new ArrayList<>(it.types());
+			String s = getSimpleType(types.get(0), typeParameters);
+			for (int i = 1; i < types.size(); i++)
+				s += "&" + getSimpleType(types.get(i), typeParameters);
+			return s;
 		} else if (type.isUnionType()) {
 			UnionType ut = (UnionType) type;
 			String s = getSimpleType((Type) ut.types().get(0), typeParameters);
@@ -298,9 +321,13 @@ public class JavaASTUtil {
 				s += "|" + getSimpleType((Type) ut.types().get(i), typeParameters);
 			return s;
 		} else if (type.isWildcardType()) {
-			//WildcardType t = (WildcardType) type;
-			System.err.println("ERROR: Declare a variable with wildcard type!!!");
-			System.exit(0);
+			WildcardType t = (WildcardType) type;
+			return getSimpleType(t.getBound(), typeParameters);
+		} else if (type.isNameQualifiedType()) {
+			NameQualifiedType nqt = (NameQualifiedType) type;
+			return nqt.getName().getIdentifier();
+		} else if (type.isAnnotatable()) {
+			return type.toString();
 		}
 		System.err.println("ERROR: Declare a variable with unknown type!!!");
 		System.exit(0);

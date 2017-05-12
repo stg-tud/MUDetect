@@ -98,8 +98,10 @@ public class Miner {
 			HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
 			HashSet<Fragment> fragments = new HashSet<>();
 			for (EGroumNode node : nodes) {
-				Fragment f = new Fragment(node, config);
-				fragments.add(f);
+				if (node.getAstNodeType() == ASTNode.METHOD_INVOCATION && node.isCoreAction()) {
+					Fragment f = new Fragment(node, config);
+					fragments.add(f);
+				}
 			}
 			Pattern p = new Pattern(fragments, fragments.size());
 			extend(p);
@@ -326,6 +328,8 @@ public class Miner {
 			fs.add(f);
 			fragmentsOfGraph.put(g, fs);
 		}
+		if (config.occurenceLevel == 1)
+			return fragmentsOfGraph.size();
 		int freq = 0;
 		for (EGroumGraph g : fragmentsOfGraph.keySet()) {
 			ArrayList<Fragment> fs = fragmentsOfGraph.get(g);
