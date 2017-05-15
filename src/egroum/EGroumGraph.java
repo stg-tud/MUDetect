@@ -1828,9 +1828,10 @@ public class EGroumGraph implements Serializable {
 			type = "boolean";
 		if (((Expression) exp).resolveTypeBinding() != null) {
 			ITypeBinding itb = ((Expression) exp).resolveTypeBinding().getTypeDeclaration();
-			if (itb.isAnonymous())
-				type = JavaASTUtil.getSimpleType(((ClassInstanceCreation) exp).getType());
-			else
+			if (itb.isAnonymous()) {
+				if (exp instanceof ClassInstanceCreation)
+					type = JavaASTUtil.getSimpleType(((ClassInstanceCreation) exp).getType());
+			} else
 				type = itb.getName();
 		}
 		EGroumDataNode dummy = new EGroumDataNode(null, ASTNode.SIMPLE_NAME,
