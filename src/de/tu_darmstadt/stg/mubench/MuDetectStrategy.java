@@ -82,6 +82,7 @@ abstract class MuDetectStrategy implements DetectionStrategy {
         finding.put("pattern_support", violation.getOverlap().getPattern().getSupport());
         finding.put("confidence_string", violation.getConfidenceString());
         finding.put("pattern_examples", getPatternInstanceLocations(violation));
+        finding.put("startline", getStartLine(violation));
         return finding;
     }
 
@@ -89,5 +90,11 @@ abstract class MuDetectStrategy implements DetectionStrategy {
         return violation.getOverlap().getPattern().getExampleLocations().stream()
                 .map(Object::toString).map(loc -> loc.split("checkouts/")[1]).distinct().limit(5)
                 .collect(Collectors.toSet());
+    }
+
+    private int getStartLine(Violation violation) {
+        return violation.getOverlap().getMappedTargetNodes().stream()
+                .mapToInt(node -> node.getSourceLineNumber().orElse(Integer.MAX_VALUE))
+                .min().orElse(0);
     }
 }
