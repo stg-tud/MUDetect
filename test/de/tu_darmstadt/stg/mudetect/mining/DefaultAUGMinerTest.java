@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 import static utils.CollectionUtils.first;
 
-public class AUGMinerTest {
+public class DefaultAUGMinerTest {
     @Test
     public void findsPattern() throws Exception {
         List<EGroumGraph> groums = buildGroumsForClass("class A {" +
@@ -90,7 +90,7 @@ public class AUGMinerTest {
 
     private Set<Pattern> minePatterns(List<EGroumGraph> groums) {
         Configuration config = new Configuration() {{ minPatternSupport = 2; extendSourceDataNodes = true; }};
-        return new AUGMiner(config).mine(groums);
+        return new DefaultAUGMiner(config).mine(groums).getPatterns();
     }
 
     private EGroumNode node(String label, AUG aug) {

@@ -4,6 +4,7 @@ import com.google.common.collect.Multiset;
 import de.tu_darmstadt.stg.mubench.cli.*;
 import de.tu_darmstadt.stg.mudetect.*;
 import de.tu_darmstadt.stg.mudetect.dot.ViolationDotExporter;
+import de.tu_darmstadt.stg.mudetect.mining.AUGMiner;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Location;
@@ -12,7 +13,6 @@ import de.tu_darmstadt.stg.mustudies.UsageUtils;
 import de.tu_darmstadt.stg.yaml.YamlObject;
 import egroum.AUGBuilder;
 import egroum.EGroumGraph;
-import mining.Configuration;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -26,7 +26,7 @@ abstract class MuDetectStrategy implements DetectionStrategy {
 
     abstract Collection<EGroumGraph> loadTrainingExamples(DetectorArgs args) throws IOException;
 
-    abstract Miner createMiner();
+    abstract AUGMiner createMiner();
 
     private Collection<AUG> loadDetectionTargets(DetectorArgs args) throws IOException {
         return new AUGBuilder(new DefaultAUGConfiguration()).build(args.getTargetPath().srcPath, args.getDependencyClassPath());
