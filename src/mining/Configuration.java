@@ -9,8 +9,8 @@ public class Configuration {
     public int minPatternSupport = 10, maxPatternSupport = 1000;
 
     /**
-     * The miner should extend the pattern with an incoming data node even if the data node does not have a definition core action node 
-     * TODO what exactly is the impact of this flag?
+     * Whether or not the miner should extend a pattern with an incoming data node, if that data node is not defined by
+     * a core-action node.
      */
     public boolean extendSourceDataNodes = true;
 
@@ -20,7 +20,7 @@ public class Configuration {
     public boolean disableSystemOut = false;
     
     /**
-     * 
+     * Whether or not the miner should allow the same call to appear multiple times in a pattern.
      */
     public boolean disallowRepeatedCalls = true;
 
