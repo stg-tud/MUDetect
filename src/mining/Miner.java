@@ -11,13 +11,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import egroum.*;
 import org.eclipse.jdt.core.dom.ASTNode;
 
-import egroum.EGroumActionNode;
-import egroum.EGroumDataEdge;
-import egroum.EGroumEdge;
-import egroum.EGroumGraph;
-import egroum.EGroumNode;
 import egroum.EGroumDataEdge.Type;
 import utils.FileIO;
 
@@ -42,6 +38,7 @@ public class Miner {
 	}
 
 	public Set<Pattern> mine(ArrayList<EGroumGraph> groums) {
+		groums.removeIf(DenseGroumPredicate::isTooDense);
 		for (EGroumGraph groum : groums) {
 			//groum.deleteUnaryOperationNodes();
 			groum.collapseLiterals();

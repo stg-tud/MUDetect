@@ -10,8 +10,8 @@ public class DenseGroumPredicate implements Predicate<EGroumGraph> {
     private static final int MAX_BRANCHES = 100;
     private static final int MAX_REFERENCES = 9;
 
-    public static boolean isNotDense(EGroumGraph graph) {
-        return !new DenseGroumPredicate().test(graph);
+    public static boolean isTooDense(EGroumGraph graph) {
+        return new DenseGroumPredicate().test(graph);
     }
 
     @Override

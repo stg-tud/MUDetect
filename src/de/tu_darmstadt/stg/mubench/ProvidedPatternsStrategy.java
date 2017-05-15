@@ -20,9 +20,7 @@ class ProvidedPatternsStrategy extends MuDetectStrategy {
     @Override
     Collection<EGroumGraph> loadTrainingExamples(DetectorArgs args) throws FileNotFoundException {
         return new EGroumBuilder(new DefaultAUGConfiguration())
-                .buildBatch(args.getPatternPath().srcPath, args.getDependencyClassPath())
-                .stream().filter(DenseGroumPredicate::isNotDense)
-                .collect(Collectors.toList());
+                .buildBatch(args.getPatternPath().srcPath, args.getDependencyClassPath());
     }
 
     @Override

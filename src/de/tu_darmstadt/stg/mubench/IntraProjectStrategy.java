@@ -22,9 +22,7 @@ class IntraProjectStrategy extends MuDetectStrategy {
     @Override
     Collection<EGroumGraph> loadTrainingExamples(DetectorArgs args) throws IOException {
         return new EGroumBuilder(new DefaultAUGConfiguration())
-                .buildBatch(args.getTargetPath().srcPath, args.getDependencyClassPath())
-                .stream().filter(DenseGroumPredicate::isNotDense)
-                .collect(Collectors.toList());
+                .buildBatch(args.getTargetPath().srcPath, args.getDependencyClassPath());
     }
 
     @Override
