@@ -1,8 +1,12 @@
 package de.tu_darmstadt.stg.mubench;
 
 import com.google.common.collect.Multiset;
-import de.tu_darmstadt.stg.mubench.cli.*;
-import de.tu_darmstadt.stg.mudetect.*;
+import de.tu_darmstadt.stg.mubench.cli.DetectionStrategy;
+import de.tu_darmstadt.stg.mubench.cli.DetectorArgs;
+import de.tu_darmstadt.stg.mubench.cli.DetectorFinding;
+import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
+import de.tu_darmstadt.stg.mudetect.AlternativeMappingsOverlapsFinder;
+import de.tu_darmstadt.stg.mudetect.MuDetect;
 import de.tu_darmstadt.stg.mudetect.dot.ViolationDotExporter;
 import de.tu_darmstadt.stg.mudetect.mining.AUGMiner;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
