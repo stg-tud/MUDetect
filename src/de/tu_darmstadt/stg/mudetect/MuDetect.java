@@ -1,7 +1,6 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.*;
-import egroum.EGroumEdge;
 import egroum.EGroumNode;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
 import de.tu_darmstadt.stg.mudetect.mining.Pattern;
