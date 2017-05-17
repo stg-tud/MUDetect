@@ -24,13 +24,13 @@ public class AUGImprovement2 {
     	Assert.assertThat(gs.get(0).getEdges().size(), Is.is(38));
     	int c = 0;
     	for (EGroumNode node : gs.get(0).getNodes()) {
-    		if (node.getDataType().equals("int") && node.getDataName().equals("0"))
+    		if (node.getAstNodeType() == ASTNode.NUMBER_LITERAL && node.getDataType().equals("int") && node.getDataName().equals("0"))
     			c++;
-    		else if (node.getDataType().equals("boolean") && node.getDataName().equals("true"))
+    		else if (node.getAstNodeType() == ASTNode.BOOLEAN_LITERAL && node.getDataType().equals("boolean") && node.getDataName().equals("true"))
     			c++;
-    		else if (node.getDataType().equals("char") && node.getDataName().equals("c"))
+    		else if (node.getAstNodeType() == ASTNode.CHARACTER_LITERAL && node.getDataType().equals("char") && node.getDataName().equals("c"))
     			c++;
-    		else if (node.getDataType().equals("String") && node.getDataName().equals("s"))
+    		else if (node.getAstNodeType() == ASTNode.STRING_LITERAL && node.getDataType().equals("String") && node.getDataName().equals("s"))
     			c++;
     	}
     	Assert.assertThat(c, Is.is(4));
