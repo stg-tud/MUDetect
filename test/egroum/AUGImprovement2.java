@@ -18,6 +18,25 @@ public class AUGImprovement2 {
     public TestName name = new TestName();
 
     @Test
+    public void constant() throws Exception {
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_constant.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
+    	Assert.assertThat(gs.get(0).getNodes().size(), Is.is(16));
+    	Assert.assertThat(gs.get(0).getEdges().size(), Is.is(38));
+    	int c = 0;
+    	for (EGroumNode node : gs.get(0).getNodes()) {
+    		if (node.getDataType().equals("int") && node.getDataName().equals("0"))
+    			c++;
+    		else if (node.getDataType().equals("boolean") && node.getDataName().equals("true"))
+    			c++;
+    		else if (node.getDataType().equals("char") && node.getDataName().equals("c"))
+    			c++;
+    		else if (node.getDataType().equals("String") && node.getDataName().equals("s"))
+    			c++;
+    	}
+    	Assert.assertThat(c, Is.is(4));
+    }
+
+    @Test
     public void qualifiedName() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
     	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_qualified_name.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
