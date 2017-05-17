@@ -19,19 +19,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 class CrossProjectStrategy extends IntraProjectStrategy {
-    @SuppressWarnings("unchecked")
     @Override
     Collection<EGroumGraph> loadTrainingExamples(DetectorArgs args) throws FileNotFoundException {
         AUGCollector collector = new AUGCollector(new DefaultAUGConfiguration());
         String targetTypeName = inferTargetType(args.getTargetPath());
-        for (Object entry : getExampleData(targetTypeName)) {
-            Map<String, Object> data = (Map<String, Object>) entry;
-            String projectPath = (String) data.get("path");
-            List<String> srcDirs = (List<String>) data.get("source_paths");
-            for (String srcDir : srcDirs) {
-                Path projectSrcPath = Paths.get(getMuBenchBasePath().toString(), projectPath, srcDir);
+        for (ExampleProject exampleProject : getExampleData(targetTypeName)) {
+            for (String srcDir : exampleProject.getSrcDirs()) {
+                Path projectSrcPath = Paths.get(getMuBenchBasePath().toString(), exampleProject.getProjectPath(), srcDir);
                 collector.collectFrom(projectSrcPath, args.getDependencyClassPath());
             }
         }
@@ -52,12 +49,40 @@ class CrossProjectStrategy extends IntraProjectStrategy {
         }
     }
 
-    private Iterable<Object> getExampleData(String targetType) {
+    private List<ExampleProject> getExampleData(String targetType) {
         Path dataFile = Paths.get(getExamplesBasePath().toString(), targetType + ".yml");
         try (InputStream is = new FileInputStream(dataFile.toFile())) {
-            return new Yaml().loadAll(is);
+            return StreamSupport.stream(new Yaml().loadAll(is).spliterator(), false)
+                    .map(ExampleProject::create).collect(Collectors.toList());
         } catch (IOException e) {
             throw new IllegalArgumentException("failed to load example data for " + targetType, e);
+        }
+    }
+
+    private static class ExampleProject {
+        private final String projectPath;
+        private final List<String> srcDirs;
+
+        private ExampleProject(String projectPath, List<String> srcDirs) {
+
+            this.projectPath = projectPath;
+            this.srcDirs = srcDirs;
+        }
+
+        @SuppressWarnings("unchecked")
+        static ExampleProject create(Object yamlSpec) {
+            Map<String, Object> data = (Map<String, Object>) yamlSpec;
+            String projectPath = (String) data.get("path");
+            List<String> srcDirs = (List<String>) data.get("source_paths");
+            return new ExampleProject(projectPath, srcDirs);
+        }
+
+        String getProjectPath() {
+            return projectPath;
+        }
+
+        List<String> getSrcDirs() {
+            return srcDirs;
         }
     }
 
