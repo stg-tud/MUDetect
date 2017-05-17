@@ -74,7 +74,7 @@ class CrossProjectStrategy extends IntraProjectStrategy {
     }
 
     private Path getMuBenchBasePath() {
-        return Paths.get("/Users/svenamann/Documents/PhD/API Misuse Benchmark/MUBench", ".");
+        return Paths.get(".");
     }
 
     private static class Project {
