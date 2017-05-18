@@ -22,14 +22,14 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 class CrossProjectStrategy extends IntraProjectStrategy {
-    private int numberOfMethods = 0;
-    private int numberOfExampleProjects = 0;
 
     @Override
     Collection<EGroumGraph> loadTrainingExamples(DetectorArgs args) throws FileNotFoundException {
-        AUGCollector collector = new AUGCollector(new DefaultAUGConfiguration());
         String targetTypeName = inferTargetType(args.getTargetPath());
         System.out.println(String.format("[MuDetectXProject] Target Type = %s", targetTypeName));
+        String targetTypeSimpleName = getTargetTypeSimpleName(targetTypeName);
+        System.out.println(String.format("[MuDetectXProject] Target Type Simple Name = %s", targetTypeSimpleName));
+        AUGCollector collector = new AUGCollector(new DefaultAUGConfiguration(), new ContainsTypeUsagePredicate(targetTypeSimpleName));
         List<ExampleProject> exampleProjects = getExampleProjects(targetTypeName);
         System.out.println(String.format("[MuDetectXProject] Example Projects = %d", exampleProjects.size()));
         for (ExampleProject exampleProject : exampleProjects) {
@@ -40,11 +40,7 @@ class CrossProjectStrategy extends IntraProjectStrategy {
             }
         }
         System.out.println(String.format("[MuDetectXProject] Methods = %d", collector.getAUGs().size()));
-        String targetTypeSimpleName = getTargetTypeSimpleName(targetTypeName);
-        System.out.println(String.format("[MuDetectXProject] Target Type Simple Name = %s", targetTypeSimpleName));
-        List<EGroumGraph> examples = collector.getAUGs().stream()
-                .filter(new ContainsTypeUsagePredicate(targetTypeSimpleName))
-                .collect(Collectors.toList());
+        Collection<EGroumGraph> examples = collector.getAUGs();
         System.out.println(String.format("[MuDetectXProject] Examples = %d", examples.size()));
         return examples;
     }
@@ -76,7 +72,6 @@ class CrossProjectStrategy extends IntraProjectStrategy {
         private final List<String> srcDirs;
 
         private ExampleProject(String projectPath, List<String> srcDirs) {
-
             this.projectPath = projectPath;
             this.srcDirs = srcDirs;
         }
