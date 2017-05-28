@@ -34,6 +34,26 @@ public class EGroumTestUtils {
 		return builder.buildGroums(classCode, "test", "test", null);
 	}
 
+	public static ArrayList<EGroumGraph> buildGroumsFromFile(String path) {
+		return new EGroumBuilder(new AUGConfiguration(){{removeImplementationCode = 2;}}).build(path, null);
+	}
+
+	public static ArrayList<EGroumGraph> buildGroumsForClasses(String[] sourceCodes) {
+		ArrayList<EGroumGraph> groums = new ArrayList<>();
+		for (String sourceCode : sourceCodes) {
+			groums.addAll(buildGroumsForClass(sourceCode));
+		}
+		return groums;
+	}
+
+	public static ArrayList<EGroumGraph> buildGroumsForMethods(String[] sourceCodes) {
+		ArrayList<EGroumGraph> groums = new ArrayList<>();
+		for (String sourceCode : sourceCodes) {
+			groums.add(buildGroumForMethod(sourceCode));
+		}
+		return groums;
+	}
+
 	public static void buildAndPrintGroumsForFile(String inputPath, String name, String[] classpaths, String outputPath) {
 		EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration(){{removeImplementationCode = 2;}});
 		inputPath = inputPath + "/" + name;
