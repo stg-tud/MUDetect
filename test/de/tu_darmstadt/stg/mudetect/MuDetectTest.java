@@ -47,7 +47,7 @@ public class MuDetectTest {
         context.checking(new Expectations() {{
             oneOf(model).getPatterns(); will(returnValue(Collections.singleton(pattern)));
             oneOf(overlapsFinder).findOverlaps(target, pattern); will(returnValue(singletonList(overlap)));
-            oneOf(violationPredicate).isViolation(overlap); will(returnValue(Optional.of(true)));
+            oneOf(violationPredicate).apply(overlap); will(returnValue(Optional.of(true)));
         }});
 
         MuDetect muDetect = new MuDetect(model, overlapsFinder, violationPredicate, rankingStrategy);
@@ -68,7 +68,7 @@ public class MuDetectTest {
         context.checking(new Expectations() {{
             oneOf(model).getPatterns(); will(returnValue(Collections.singleton(pattern)));
             oneOf(overlapsFinder).findOverlaps(target, pattern); will(returnValue(singletonList(overlap)));
-            allowing(violationPredicate).isViolation(with(any(Overlap.class))); will(returnValue(Optional.of(false)));
+            allowing(violationPredicate).apply(with(any(Overlap.class))); will(returnValue(Optional.of(false)));
         }});
 
         MuDetect muDetect = new MuDetect(model, overlapsFinder, violationPredicate, rankingStrategy);

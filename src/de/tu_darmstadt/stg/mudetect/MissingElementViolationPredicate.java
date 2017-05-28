@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public class MissingElementViolationPredicate implements ViolationPredicate {
     @Override
-    public Optional<Boolean> isViolation(Overlap overlap) {
+    public Optional<Boolean> apply(Overlap overlap) {
         return isMissingElement(overlap) ? Optional.of(true) : Optional.empty();
     }
 

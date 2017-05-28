@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public class EverythingViolationPredicate implements ViolationPredicate {
     @Override
-    public Optional<Boolean> isViolation(Overlap overlap) {
+    public Optional<Boolean> apply(Overlap overlap) {
         return Optional.of(true);
     }
 }
