@@ -57,7 +57,7 @@ public class MuDetect {
         for (AUG target : targets) {
             for (Pattern pattern : patterns) {
                 for (Overlap overlap : overlapsFinder.findOverlaps(target, pattern)) {
-                    if (violationPredicate.isViolation(overlap)) {
+                    if (violationPredicate.isViolation(overlap).orElse(false)) {
                         overlaps.addViolation(overlap);
                     } else {
                         overlaps.addInstance(overlap);

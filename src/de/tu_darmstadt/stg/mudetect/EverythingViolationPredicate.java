@@ -2,9 +2,11 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 
+import java.util.Optional;
+
 public class EverythingViolationPredicate implements ViolationPredicate {
     @Override
-    public boolean isViolation(Overlap overlap) {
-        return true;
+    public Optional<Boolean> isViolation(Overlap overlap) {
+        return Optional.of(true);
     }
 }

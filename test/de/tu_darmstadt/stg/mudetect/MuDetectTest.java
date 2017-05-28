@@ -1,11 +1,11 @@
 package de.tu_darmstadt.stg.mudetect;
 
+import de.tu_darmstadt.stg.mudetect.mining.Model;
+import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import de.tu_darmstadt.stg.mudetect.ranking.NoRankingStrategy;
-import de.tu_darmstadt.stg.mudetect.mining.Model;
 import org.jmock.Expectations;
 import org.jmock.auto.Mock;
 import org.jmock.integration.junit4.JUnitRuleMockery;
@@ -15,10 +15,11 @@ import org.junit.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.someOverlap;
-import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -46,7 +47,7 @@ public class MuDetectTest {
         context.checking(new Expectations() {{
             oneOf(model).getPatterns(); will(returnValue(Collections.singleton(pattern)));
             oneOf(overlapsFinder).findOverlaps(target, pattern); will(returnValue(singletonList(overlap)));
-            oneOf(violationPredicate).isViolation(overlap); will(returnValue(true));
+            oneOf(violationPredicate).isViolation(overlap); will(returnValue(Optional.of(true)));
         }});
 
         MuDetect muDetect = new MuDetect(model, overlapsFinder, violationPredicate, rankingStrategy);
@@ -67,7 +68,7 @@ public class MuDetectTest {
         context.checking(new Expectations() {{
             oneOf(model).getPatterns(); will(returnValue(Collections.singleton(pattern)));
             oneOf(overlapsFinder).findOverlaps(target, pattern); will(returnValue(singletonList(overlap)));
-            allowing(violationPredicate).isViolation(with(any(Overlap.class))); will(returnValue(false));
+            allowing(violationPredicate).isViolation(with(any(Overlap.class))); will(returnValue(Optional.of(false)));
         }});
 
         MuDetect muDetect = new MuDetect(model, overlapsFinder, violationPredicate, rankingStrategy);

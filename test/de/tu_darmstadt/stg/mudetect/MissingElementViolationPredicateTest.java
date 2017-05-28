@@ -16,7 +16,7 @@ public class MissingElementViolationPredicateTest {
         Overlap overlap = buildOverlap(buildAUG().withActionNode(":action:")).withNode(":action:").build();
 
         ViolationPredicate strategy = new MissingElementViolationPredicate();
-        assertFalse(strategy.isViolation(overlap));
+        assertFalse(strategy.isViolation(overlap).isPresent());
     }
 
     @Test
@@ -24,7 +24,7 @@ public class MissingElementViolationPredicateTest {
         Overlap overlap = buildOverlap(buildAUG().withActionNode(":action:")).build();
 
         MissingElementViolationPredicate strategy = new MissingElementViolationPredicate();
-        assertTrue(strategy.isViolation(overlap));
+        assertTrue(strategy.isViolation(overlap).orElse(false));
     }
 
     @Test
@@ -33,6 +33,6 @@ public class MissingElementViolationPredicateTest {
         Overlap overlap = buildOverlap(builder).withNode(":a1:").withNode(":a2:").build();
 
         MissingElementViolationPredicate strategy = new MissingElementViolationPredicate();
-        assertTrue(strategy.isViolation(overlap));
+        assertTrue(strategy.isViolation(overlap).orElse(false));
     }
 }
