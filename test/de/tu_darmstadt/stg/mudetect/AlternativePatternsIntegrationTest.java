@@ -37,7 +37,7 @@ public class AlternativePatternsIntegrationTest {
         AUG target = buildAUG("void v(Iterator i) { i.hasNext(); }");
         MuDetect detector = new MuDetect(() -> asSet(patternA, patternB),
                 new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher()),
-                new MissingElementViolationFactory(),
+                new MissingElementViolationPredicate(),
                 new WeightRankingStrategy(new PatternSupportWeightFunction()));
 
         List<Violation> violations = detector.findViolations(asSet(target));
@@ -56,7 +56,7 @@ public class AlternativePatternsIntegrationTest {
         TypeHierarchy typeHierarchy = new TypeHierarchy() {{ addSupertype("Integer", "Object"); }};
         MuDetect detector = new MuDetect(() -> asSet(pattern),
                 new AlternativeMappingsOverlapsFinder(new SubtypeDataNodeMatcher(typeHierarchy).or(new EquallyLabelledNodeMatcher())),
-                new MissingElementViolationFactory(),
+                new MissingElementViolationPredicate(),
                 new NoRankingStrategy());
 
         List<Violation> violations = detector.findViolations(asSet(target));
@@ -86,7 +86,7 @@ public class AlternativePatternsIntegrationTest {
                 "}");
         MuDetect detector = new MuDetect(() -> asSet(pattern),
                 new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher()),
-                new MissingElementViolationFactory(),
+                new MissingElementViolationPredicate(),
                 new NoRankingStrategy());
 
         List<Violation> violations = detector.findViolations(asSet(target));
@@ -129,7 +129,7 @@ public class AlternativePatternsIntegrationTest {
 
         MuDetect detector = new MuDetect(() -> asSet(pattern),
                 new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher()),
-                new MissingElementViolationFactory(),
+                new MissingElementViolationPredicate(),
                 new NoRankingStrategy());
 
         List<Violation> violations = detector.findViolations(asSet(target));

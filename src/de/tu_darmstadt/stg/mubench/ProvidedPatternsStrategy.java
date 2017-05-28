@@ -35,7 +35,7 @@ class ProvidedPatternsStrategy extends MuDetectStrategy {
                         new AlternativeMappingsOverlapsFinder(new AlternativeMappingsOverlapsFinder.Config() {{
                             nodeMatcher = new EquallyLabelledNodeMatcher(((Configuration) new DefaultMiningConfiguration()).nodeToLabel);
                         }})),
-                new EverythingViolationFactory(),
+                new EverythingViolationPredicate(),
                 new NoRankingStrategy());
     }
 }

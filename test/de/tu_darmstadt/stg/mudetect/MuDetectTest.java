@@ -32,7 +32,7 @@ public class MuDetectTest {
     @Mock
     private OverlapsFinder overlapsFinder;
     @Mock
-    private ViolationFactory violationFactory;
+    private ViolationPredicate violationPredicate;
 
     @Test
     public void findsViolations() throws Exception {
@@ -46,10 +46,10 @@ public class MuDetectTest {
         context.checking(new Expectations() {{
             oneOf(model).getPatterns(); will(returnValue(Collections.singleton(pattern)));
             oneOf(overlapsFinder).findOverlaps(target, pattern); will(returnValue(singletonList(overlap)));
-            oneOf(violationFactory).isViolation(overlap); will(returnValue(true));
+            oneOf(violationPredicate).isViolation(overlap); will(returnValue(true));
         }});
 
-        MuDetect muDetect = new MuDetect(model, overlapsFinder, violationFactory, rankingStrategy);
+        MuDetect muDetect = new MuDetect(model, overlapsFinder, violationPredicate, rankingStrategy);
         List<Violation> violations = muDetect.findViolations(targets);
 
         assertThat(violations, hasSize(1));
@@ -67,10 +67,10 @@ public class MuDetectTest {
         context.checking(new Expectations() {{
             oneOf(model).getPatterns(); will(returnValue(Collections.singleton(pattern)));
             oneOf(overlapsFinder).findOverlaps(target, pattern); will(returnValue(singletonList(overlap)));
-            allowing(violationFactory).isViolation(with(any(Overlap.class))); will(returnValue(false));
+            allowing(violationPredicate).isViolation(with(any(Overlap.class))); will(returnValue(false));
         }});
 
-        MuDetect muDetect = new MuDetect(model, overlapsFinder, violationFactory, rankingStrategy);
+        MuDetect muDetect = new MuDetect(model, overlapsFinder, violationPredicate, rankingStrategy);
         List<Violation> violations = muDetect.findViolations(targets);
 
         assertThat(violations, is(empty()));

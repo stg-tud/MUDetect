@@ -12,17 +12,17 @@ public class MuDetect {
 
     private final Model model;
     private final OverlapsFinder overlapsFinder;
-    private final ViolationFactory violationFactory;
+    private final ViolationPredicate violationPredicate;
     private final ViolationRankingStrategy rankingStrategy;
     private final AlternativePatternInstancePredicate alternativePatternInstancePredicate;
 
     public MuDetect(Model model,
                     OverlapsFinder overlapsFinder,
-                    ViolationFactory violationFactory,
+                    ViolationPredicate violationPredicate,
                     ViolationRankingStrategy rankingStrategy) {
         this.model = model;
         this.overlapsFinder = overlapsFinder;
-        this.violationFactory = violationFactory;
+        this.violationPredicate = violationPredicate;
         this.rankingStrategy = rankingStrategy;
         // TODO find a testing strategy for this filtering
         this.alternativePatternInstancePredicate = new AlternativePatternInstancePredicate();
@@ -57,7 +57,7 @@ public class MuDetect {
         for (AUG target : targets) {
             for (Pattern pattern : patterns) {
                 for (Overlap overlap : overlapsFinder.findOverlaps(target, pattern)) {
-                    if (violationFactory.isViolation(overlap)) {
+                    if (violationPredicate.isViolation(overlap)) {
                         overlaps.addViolation(overlap);
                     } else {
                         overlaps.addInstance(overlap);

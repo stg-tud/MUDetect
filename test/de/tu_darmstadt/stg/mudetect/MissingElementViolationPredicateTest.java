@@ -10,12 +10,12 @@ import static egroum.EGroumDataEdge.Type.ORDER;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class MissingElementViolationFactoryTest {
+public class MissingElementViolationPredicateTest {
     @Test
     public void fullInstance() throws Exception {
         Overlap overlap = buildOverlap(buildAUG().withActionNode(":action:")).withNode(":action:").build();
 
-        ViolationFactory strategy = new MissingElementViolationFactory();
+        ViolationPredicate strategy = new MissingElementViolationPredicate();
         assertFalse(strategy.isViolation(overlap));
     }
 
@@ -23,7 +23,7 @@ public class MissingElementViolationFactoryTest {
     public void missingNode() throws Exception {
         Overlap overlap = buildOverlap(buildAUG().withActionNode(":action:")).build();
 
-        MissingElementViolationFactory strategy = new MissingElementViolationFactory();
+        MissingElementViolationPredicate strategy = new MissingElementViolationPredicate();
         assertTrue(strategy.isViolation(overlap));
     }
 
@@ -32,7 +32,7 @@ public class MissingElementViolationFactoryTest {
         final TestAUGBuilder builder = buildAUG().withActionNodes(":a1:", ":a2:").withDataEdge(":a1:", ORDER, ":a2:");
         Overlap overlap = buildOverlap(builder).withNode(":a1:").withNode(":a2:").build();
 
-        MissingElementViolationFactory strategy = new MissingElementViolationFactory();
+        MissingElementViolationPredicate strategy = new MissingElementViolationPredicate();
         assertTrue(strategy.isViolation(overlap));
     }
 }
