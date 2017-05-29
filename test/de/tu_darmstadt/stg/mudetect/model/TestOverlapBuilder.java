@@ -120,10 +120,20 @@ public class TestOverlapBuilder {
     }
 
     public TestOverlapBuilder withEdge(String targetSourceNodeId, String patternSourceNodeId, EGroumDataEdge.Type type, String targetTargetNodeId, String patternTargetNodeId) {
+        if (!maps(targetSourceNodeId, patternSourceNodeId)) {
+            throw new IllegalArgumentException("not mapped '" + targetSourceNodeId + "'<->'" + patternSourceNodeId + "'");
+        }
+        if (!maps(targetTargetNodeId, patternTargetNodeId)) {
+            throw new IllegalArgumentException("not mapped '" + targetTargetNodeId + "'<->'" + patternTargetNodeId + "'");
+        }
         targetEdgeByPatternEdge.put(
                 patternAUGBuilder.getEdge(patternSourceNodeId, type, patternTargetNodeId),
                 targetAUGBuilder.getEdge(targetSourceNodeId, type, targetTargetNodeId));
         return this;
+    }
+
+    private boolean maps(String targetNodeId, String patternNodeId) {
+        return targetNodeByPatternNode.get(patternAUGBuilder.getNode(patternNodeId)) == targetAUGBuilder.getNode(targetNodeId);
     }
 
     public TestOverlapBuilder withEdge(String targetAndPatternSourceNodeId, EGroumDataEdge.Type type, String targetAndPatternTargetNodeId) {
