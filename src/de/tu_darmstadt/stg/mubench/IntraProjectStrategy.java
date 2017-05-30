@@ -1,9 +1,7 @@
 package de.tu_darmstadt.stg.mubench;
 
 import de.tu_darmstadt.stg.mubench.cli.DetectorArgs;
-import de.tu_darmstadt.stg.mudetect.AlternativeMappingsOverlapsFinder;
-import de.tu_darmstadt.stg.mudetect.MissingElementViolationPredicate;
-import de.tu_darmstadt.stg.mudetect.MuDetect;
+import de.tu_darmstadt.stg.mudetect.*;
 import de.tu_darmstadt.stg.mudetect.mining.AUGMiner;
 import de.tu_darmstadt.stg.mudetect.mining.DefaultAUGMiner;
 import de.tu_darmstadt.stg.mudetect.mining.MinPatternActionsModel;
@@ -32,7 +30,9 @@ class IntraProjectStrategy extends MuDetectStrategy {
         return new MuDetect(
                 new MinPatternActionsModel(model, 2),
                 new AlternativeMappingsOverlapsFinder(new DefaultOverlapFinderConfig(new DefaultMiningConfiguration())),
-                new MissingElementViolationPredicate(),
+                new FirstDecisionViolationPredicate(
+                        new OptionalDefPrefixViolationPredicate(),
+                        new MissingElementViolationPredicate()),
                 new WeightRankingStrategy(
                         new ProductWeightFunction(
                                 new PatternSupportWeightFunction(),
