@@ -72,4 +72,9 @@ public class AUGConfiguration {
      * 
      */
 	public boolean removeTransitiveDefinitionEdgesFromMethodCalls = true;
+	
+	/**
+	 * List of API classes of interest
+	 */
+	public String[] apiClasses;
 }

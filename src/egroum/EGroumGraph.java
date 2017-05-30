@@ -1596,7 +1596,7 @@ public class EGroumGraph implements Serializable {
 		return new EGroumGraph(context, configuration);
 	}
 
-	public EGroumGraph buildPDG(EGroumNode control, String branch, List<?> list) {
+	private EGroumGraph buildPDG(EGroumNode control, String branch, List<?> list) {
 		EGroumGraph g = new EGroumGraph(context, configuration);
 		for (int i = 0; i < list.size(); i++) {
 			Object s = list.get(i);
