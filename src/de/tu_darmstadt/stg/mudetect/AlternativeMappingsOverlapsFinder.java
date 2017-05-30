@@ -347,8 +347,21 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
 
     @SuppressWarnings("WeakerAccess")
     public static class Config {
+        /**
+         * Predicate stating whether a target node (first argument) is matched by a pattern node (second argument). The
+         * predicate may be asymmetric.
+         */
         public BiPredicate<EGroumNode, EGroumNode> nodeMatcher;
+
+        /**
+         * Predicate stating whether a target-edge label (first argument) is matched by a pattern-edge label (second
+         * argument). The predicate may be asymmetric.
+         */
         public BiPredicate<String, String> edgeMatcher = String::equals;
+
+        /**
+         * Detection is skipped when more than the designated number of alternative mappings have been explored.
+         */
         public int maxNumberOfAlternatives = 100000;
 
         public boolean matchEntireConditions = false;
