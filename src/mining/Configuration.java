@@ -34,11 +34,9 @@ public class Configuration {
      */
     public Function<EGroumNode, String> nodeToLabel = EGroumNode::getLabel;
     
+    public enum Level {WITHIN_METHOD, CROSS_METHOD, CROSS_PROJECT}
     /**
      * The level of occurrence of instances of a pattern
-     * 0: with a method graph
-     * 1: cross method graphs
-     * 2: cross projects
      */
-    public int occurenceLevel = 0;
+    public Level occurenceLevel = Level.WITHIN_METHOD;
 }

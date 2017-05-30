@@ -15,6 +15,7 @@ import egroum.*;
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import egroum.EGroumDataEdge.Type;
+import mining.Configuration.Level;
 import utils.FileIO;
 
 /**
@@ -325,7 +326,7 @@ public class Miner {
 			fs.add(f);
 			fragmentsOfGraph.put(g, fs);
 		}
-		if (config.occurenceLevel == 1)
+		if (config.occurenceLevel == Level.CROSS_METHOD)
 			return fragmentsOfGraph.size();
 		int freq = 0;
 		for (EGroumGraph g : fragmentsOfGraph.keySet()) {
