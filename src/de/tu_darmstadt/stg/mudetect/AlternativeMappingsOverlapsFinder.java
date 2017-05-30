@@ -1,5 +1,6 @@
 package de.tu_darmstadt.stg.mudetect;
 
+import de.tu_darmstadt.stg.mubench.NoEdgeOrder;
 import de.tu_darmstadt.stg.mudetect.dot.AUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.dot.AUGEdgeAttributeProvider;
 import de.tu_darmstadt.stg.mudetect.dot.AUGNodeAttributeProvider;
@@ -207,7 +208,9 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
                 numberOfAlternatives *= getEquivalentTargetEdgeCount(this.target, targetExtensionEdge, targetEdgeSourceIndex, targetEdgeTargetIndex, this::match);
                 if (numberOfAlternatives == 0) {
                     edgeIt.remove();
-                } else if (numberOfAlternatives < minNumberOfAlternatives) {
+                } else if (numberOfAlternatives < minNumberOfAlternatives
+                        || (numberOfAlternatives == minNumberOfAlternatives
+                        && config.edgeOrder.test(targetExtensionEdge, nextExtensionEdge))) {
                     nextExtensionEdge = targetExtensionEdge;
                     nextExtensionMappingAlternatives = patternExtensionCandidates;
                     minNumberOfAlternatives = numberOfAlternatives;
@@ -358,6 +361,12 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
          * argument). The predicate may be asymmetric.
          */
         public BiPredicate<String, String> edgeMatcher = String::equals;
+
+        /**
+         * A predicate expressing a (partial) order over edges. When the predicate evaluates to <code>true</code>, the
+         * first edge is given priority over the second edge.
+         */
+        public BiPredicate<EGroumEdge, EGroumEdge> edgeOrder = new NoEdgeOrder();
 
         /**
          * Detection is skipped when more than the designated number of alternative mappings have been explored.
