@@ -53,4 +53,20 @@ public class OptionalDefPrefixViolationPredicateTest {
 
         assertThat(decision, is(Optional.of(false)));
     }
+
+    @Test
+    public void missingDefPrefixWithPredecessorIsNoViolation() throws Exception {
+        TestAUGBuilder pattern = buildAUG().withActionNodes("create()", "use()").withDataNodes("Creator", "Object")
+                .withDataEdge("Creator", RECEIVER, "create()")
+                .withDataEdge("create()", DEFINITION, "Object")
+                .withDataEdge("Object", RECEIVER, "use()").withDataEdge("create()", RECEIVER, "use()");
+        TestAUGBuilder target = buildAUG().withActionNodes("use()").withDataNodes("Object")
+                .withDataEdge("Object", RECEIVER, "use()");
+        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("use()", "Object")
+                .withEdge("Object", RECEIVER, "use()");
+
+        Optional<Boolean> decision = new OptionalDefPrefixViolationPredicate().apply(overlap.build());
+
+        assertThat(decision, is(Optional.of(false)));
+    }
 }
