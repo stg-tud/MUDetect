@@ -31,12 +31,6 @@ public class DefaultAUGMiner implements AUGMiner {
         });
     }
 
-    public Model mine(EGroumGraph... groums) {
-        ArrayList<EGroumGraph> groumList = new ArrayList<>();
-        Collections.addAll(groumList, groums);
-        return mine(groumList);
-    }
-
     public Model mine(Collection<EGroumGraph> groums) {
         return mine(new ArrayList<>(groums));
     }
@@ -81,9 +75,6 @@ public class DefaultAUGMiner implements AUGMiner {
                     augPattern.addLiteral(node, fragment.getNodes().get(i).getDataName());
                 }
             }
-        }
-        for (EGroumNode node : f.getNodes()) {
-            augPattern.addVertex(node);
         }
         for (EGroumNode node : f.getNodes()) {
             for (EGroumEdge e : node.getInEdges()) {
