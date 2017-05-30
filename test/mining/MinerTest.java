@@ -257,20 +257,6 @@ public class MinerTest {
 		assertThat(patterns, hasSize(2));
 	}
 
-	@Test
-	public void mineCorePattern() throws Exception {
-		String iterColl = "class C { void m(Collection c) { Iterator i = c.iterator(); while(i.hasNext()) i.next(); } }";
-		String iterAddList = "class C { void m(Collection c) { c.add(); Iterator i = c.iterator(); while(i.hasNext()) i.next(); } }";
-		String iterRemList = "class C { void m(Collection c) { c.remove(); Iterator i = c.iterator(); while(i.hasNext()) i.next(); } }";
-		ArrayList<EGroumGraph> augs = EGroumTestUtils.buildGroumsForClasses(new String[] {iterColl, iterColl, iterRemList, iterRemList, iterAddList, iterAddList, iterAddList});
-		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(augs);
-		for (Pattern pattern : patterns) {
-			System.out.println("Support=" + pattern.getFreq());
-			print(pattern);
-		}
-		assertThat(patterns, hasSize(2));
-	}
-
 	private void print(Pattern pattern) {
 		MinerTestUtils.print(pattern, testName);
 	}
