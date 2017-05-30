@@ -29,11 +29,23 @@ public class TestAUGBuilder {
     }
 
     public static AUG someAUG() {
-        return buildAUG().withActionNode(":dummy:" + (++randomAUGCount)).build();
+        return someAUG(getFreshAUGName());
+    }
+
+    private static String getFreshAUGName() {
+        return ":AUG-" + (++randomAUGCount) + ":";
+    }
+
+    public static AUG someAUG(String name) {
+        return buildAUG(name).withActionNode(getFreshNodeName()).build();
+    }
+
+    private static String getFreshNodeName() {
+        return ":node-" + (++randomAUGCount) + ":";
     }
 
     public static TestAUGBuilder buildAUG() {
-        return new TestAUGBuilder(":AUG:");
+        return new TestAUGBuilder(getFreshAUGName());
     }
 
     public static TestAUGBuilder buildAUG(String name) {
