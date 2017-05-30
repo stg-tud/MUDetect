@@ -32,7 +32,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
         private Alternative() {}
 
         Collection<EGroumNode> getMappedPatternNodes() {
-            return patternNodes.stream().filter(node -> node != null).collect(Collectors.toList());
+            return patternNodes.stream().filter(Objects::nonNull).collect(Collectors.toList());
         }
 
         int getNodeSize() {
@@ -40,7 +40,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
         }
 
         int getEdgeSize() {
-            return (int) patternEdges.stream().filter(edge -> edge != null).count();
+            return (int) patternEdges.stream().filter(Objects::nonNull).count();
         }
 
         int getSize() {
