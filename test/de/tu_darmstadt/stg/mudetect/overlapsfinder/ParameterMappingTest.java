@@ -15,7 +15,6 @@ import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap
 import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.contains;
 import static egroum.EGroumDataEdge.Type.DEFINITION;
 import static egroum.EGroumDataEdge.Type.PARAMETER;
-import static egroum.EGroumDataEdge.Type.RECEIVER;
 import static org.junit.Assert.assertThat;
 
 public class ParameterMappingTest {
