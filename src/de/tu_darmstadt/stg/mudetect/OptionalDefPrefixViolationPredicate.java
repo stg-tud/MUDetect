@@ -12,12 +12,12 @@ public class OptionalDefPrefixViolationPredicate implements ViolationPredicate {
         Set<EGroumEdge> missingEdges = overlap.getMissingEdges();
         boolean onlyMissesDefPrefix = !missingEdges.isEmpty() && missingEdges.stream()
                 .filter(EGroumEdge::isDirect)
-                .filter(edge -> connectsMissingToMappedNode(overlap, edge))
+                .filter(edge -> connectsToMappedNode(overlap, edge))
                 .allMatch(EGroumEdge::isDef);
         return onlyMissesDefPrefix ? Optional.of(false) : Optional.empty();
     }
 
-    private boolean connectsMissingToMappedNode(Overlap overlap, EGroumEdge edge) {
-        return overlap.mapsNode(edge.getSource()) ^ overlap.mapsNode(edge.getTarget());
+    private boolean connectsToMappedNode(Overlap overlap, EGroumEdge edge) {
+        return overlap.mapsNode(edge.getSource()) || overlap.mapsNode(edge.getTarget());
     }
 }
