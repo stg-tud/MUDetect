@@ -8,6 +8,7 @@ import de.tu_darmstadt.stg.mudetect.dot.AUGNodeAttributeProvider;
 import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.mining.Pattern;
+import egroum.EGroumDataEdge;
 import egroum.EGroumEdge;
 import egroum.EGroumNode;
 import org.slf4j.Logger;
@@ -189,6 +190,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
         }
 
         boolean hasMoreExtensionEdges(Set<Alternative> alternatives) {
+            EGroumEdge priorityEdge = tryGetCorrespondingDirectEdge(nextExtensionEdge);
             nextExtensionEdge = null;
             nextExtensionMappingAlternatives = new LinkedHashMap<>();
             int minNumberOfAlternatives = Integer.MAX_VALUE;
@@ -206,7 +208,11 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
                     patternExtensionCandidates.put(alternative, mappingAlternatives);
                     numberOfAlternatives += mappingAlternatives.size();
                 }
-                numberOfAlternatives *= getEquivalentTargetEdgeCount(this.target, targetExtensionEdge, targetEdgeSourceIndex, targetEdgeTargetIndex, this::match);
+                if (targetExtensionEdge == priorityEdge) {
+                    numberOfAlternatives *= -1;
+                } else {
+                    numberOfAlternatives *= getEquivalentTargetEdgeCount(this.target, targetExtensionEdge, targetEdgeSourceIndex, targetEdgeTargetIndex, this::match);
+                }
                 if (numberOfAlternatives == 0) {
                     edgeIt.remove();
                 } else if (numberOfAlternatives < minNumberOfAlternatives
@@ -228,6 +234,27 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
             } else {
                 return false;
             }
+        }
+
+        private EGroumEdge tryGetCorrespondingDirectEdge(EGroumEdge possiblyIndirectEdge) {
+            if (possiblyIndirectEdge instanceof EGroumDataEdge) {
+                Set<EGroumNode> intermediateNodes = new HashSet<>();
+                for (EGroumEdge edge: possiblyIndirectEdge.getSource().getOutEdges()) {
+                    intermediateNodes.add(edge.getTarget());
+                }
+                for (EGroumEdge edge : possiblyIndirectEdge.getTarget().getInEdges()) {
+                    if (getType(edge) == getType(possiblyIndirectEdge) && intermediateNodes.contains(edge.getSource())) {
+                        if (candidates.contains(edge)) {
+                            return edge;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        private EGroumDataEdge.Type getType(EGroumEdge e) {
+            return e instanceof EGroumDataEdge ? ((EGroumDataEdge) e).getType() : null;
         }
 
         private static int getEquivalentTargetEdgeCount(AUG target, EGroumEdge targetEdge, int targetEdgeSourceIndex, int targetEdgeTargetIndex, BiPredicate<EGroumEdge, EGroumEdge> edgeMatcher) {

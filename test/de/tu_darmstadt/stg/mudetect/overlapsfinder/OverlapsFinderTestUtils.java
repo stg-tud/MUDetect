@@ -11,6 +11,7 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.junit.matchers.IsCollectionContaining;
 
 import java.util.List;
 
@@ -83,5 +84,10 @@ class OverlapsFinderTestUtils {
     static Matcher<OverlapsFinder> findsOverlaps(TestAUGBuilder targetBuilder, TestAUGBuilder patternBuilder, TestOverlapBuilder... expectedOverlapsBuilders) {
         Overlap[] expectedOverlaps = buildOverlaps(expectedOverlapsBuilders);
         return findsOverlaps(targetBuilder, patternBuilder, expectedOverlaps);
+    }
+
+    static Matcher<Iterable<? extends Overlap>> contains(TestOverlapBuilder... expectedOverlapsBuilders) {
+        Overlap[] expectedOverlaps = buildOverlaps(expectedOverlapsBuilders);
+        return Matchers.contains(expectedOverlaps);
     }
 }
