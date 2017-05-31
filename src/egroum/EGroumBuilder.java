@@ -19,7 +19,9 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
@@ -27,7 +29,9 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
@@ -319,6 +323,36 @@ public class EGroumBuilder {
 		return className;
 	}
 
+	private boolean containing = false;
+	private boolean contains(ASTNode ast, String[] apiClasses) {
+		containing = false;
+		HashSet<String> apiClassNames = new HashSet<>();
+		for (String api : apiClasses)
+			apiClassNames.add(api);
+		ast.accept(new ASTVisitor(false) {
+			@Override
+			public boolean visit(MethodInvocation node) {
+				IMethodBinding mb = node.resolveMethodBinding();
+				if (mb != null) {
+					String name = mb.getDeclaringClass().getTypeDeclaration().getQualifiedName();
+					if (apiClassNames.contains(name)) {
+						containing = true;
+						return false;
+					}
+				}
+				return super.visit(node);
+			}
+			
+			@Override
+			public boolean preVisit2(ASTNode node) {
+				if (containing)
+					return false;
+				return super.preVisit2(node);
+			}
+		});
+		return containing;
+	}
+
 	private ArrayList<EGroumGraph> buildBatchGroums(File dir, String[] classpaths) {
 		ArrayList<File> files = FileIO.getPaths(dir);
 		String[] paths = new String[files.size()];
@@ -329,7 +363,8 @@ public class EGroumBuilder {
 		FileASTRequestor r = new FileASTRequestor() {
 			@Override
 			public void acceptAST(String sourceFilePath, CompilationUnit ast) {
-				cus.put(sourceFilePath, ast);
+				if (configuration.apiClasses == null || contains(ast, configuration.apiClasses))
+					cus.put(sourceFilePath, ast);
 			}
 		};
 		@SuppressWarnings("rawtypes")
@@ -397,7 +432,11 @@ public class EGroumBuilder {
 	EGroumGraph buildGroum(MethodDeclaration method, String filepath, String name) {
 		String sig = JavaASTUtil.buildSignature(method);
 		System.out.println(filepath + " " + name + sig);
-		EGroumGraph g = new EGroumGraph(method, new EGroumBuildingContext(false), configuration);
+		EGroumGraph g = null;
+		if (configuration.apiClasses != null && !contains(method, configuration.apiClasses))
+			g = new EGroumGraph(new EGroumBuildingContext(false), configuration);
+		else
+			g = new EGroumGraph(method, new EGroumBuildingContext(false), configuration);
 		g.setFilePath(filepath);
 		g.setName(name + sig);
 		return g;
