@@ -1,5 +1,6 @@
-package de.tu_darmstadt.stg.mudetect;
+package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
+import de.tu_darmstadt.stg.mudetect.OverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.AUG;

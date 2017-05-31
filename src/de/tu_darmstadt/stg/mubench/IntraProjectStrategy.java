@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mubench;
 
 import de.tu_darmstadt.stg.mubench.cli.DetectorArgs;
 import de.tu_darmstadt.stg.mudetect.*;
+import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.mining.AUGMiner;
 import de.tu_darmstadt.stg.mudetect.mining.DefaultAUGMiner;
 import de.tu_darmstadt.stg.mudetect.mining.MinPatternActionsModel;

@@ -1,9 +1,9 @@
-package de.tu_darmstadt.stg.mudetect;
+package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.OverlapsFinderTestUtils.findOverlaps;
+import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.findOverlaps;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.empty;

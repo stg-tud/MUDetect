@@ -1,6 +1,7 @@
-package de.tu_darmstadt.stg.mudetect;
+package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
 import de.tu_darmstadt.stg.mubench.NoEdgeOrder;
+import de.tu_darmstadt.stg.mudetect.OverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.dot.AUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.dot.AUGEdgeAttributeProvider;
 import de.tu_darmstadt.stg.mudetect.dot.AUGNodeAttributeProvider;

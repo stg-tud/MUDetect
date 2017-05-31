@@ -1,4 +1,4 @@
-package de.tu_darmstadt.stg.mudetect;
+package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
@@ -7,8 +7,8 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.OverlapsFinderTestUtils.assertFindsOverlaps;
-import static de.tu_darmstadt.stg.mudetect.OverlapsFinderTestUtils.findOverlaps;
+import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.*;
+import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.findOverlaps;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.instance;

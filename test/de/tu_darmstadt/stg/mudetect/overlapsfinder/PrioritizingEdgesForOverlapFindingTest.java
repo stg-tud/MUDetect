@@ -1,16 +1,17 @@
-package de.tu_darmstadt.stg.mudetect;
+package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
+import de.tu_darmstadt.stg.mudetect.OverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
 import egroum.EGroumDataEdge;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.OverlapsFinderTestUtils.findsOverlaps;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
-import static egroum.EGroumDataEdge.Type.RECEIVER;
+import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.findsOverlaps;
 import static egroum.EGroumDataEdge.Type.PARAMETER;
+import static egroum.EGroumDataEdge.Type.RECEIVER;
 import static org.junit.Assert.assertThat;
 
 public class PrioritizingEdgesForOverlapFindingTest {

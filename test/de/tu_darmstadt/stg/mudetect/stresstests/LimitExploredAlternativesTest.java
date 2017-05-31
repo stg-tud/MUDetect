@@ -1,6 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.stresstests;
 
-import de.tu_darmstadt.stg.mudetect.AlternativeMappingsOverlapsFinder;
+import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
