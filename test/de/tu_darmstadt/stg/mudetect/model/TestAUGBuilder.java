@@ -4,10 +4,7 @@ import egroum.*;
 import org.eclipse.jdt.core.dom.ASTNode;
 import utils.JavaASTUtil;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class TestAUGBuilder {
     private static int randomAUGCount = 0;
@@ -18,14 +15,14 @@ public class TestAUGBuilder {
 
     private TestAUGBuilder(String name) {
         this.name = name;
-        nodeMap = new HashMap<>();
-        edges = new HashSet<>();
+        nodeMap = new LinkedHashMap<>();
+        edges = new LinkedHashSet<>();
     }
 
     private TestAUGBuilder(TestAUGBuilder baseBuilder) {
         name = baseBuilder.name;
-        nodeMap = new HashMap<>(baseBuilder.nodeMap);
-        edges = new HashSet<>(baseBuilder.edges);
+        nodeMap = new LinkedHashMap<>(baseBuilder.nodeMap);
+        edges = new LinkedHashSet<>(baseBuilder.edges);
     }
 
     public static AUG someAUG() {

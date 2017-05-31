@@ -137,7 +137,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
         private final Pattern pattern;
         private final Config config;
 
-        private final Set<EGroumEdge> candidates = new HashSet<>();
+        private final Set<EGroumEdge> candidates = new LinkedHashSet<>();
         private final List<EGroumEdge> exploredTargetEdges = new ArrayList<>();
         private final List<EGroumNode> exploredTargetNodes = new ArrayList<>();
         private EGroumEdge nextExtensionEdge;
@@ -189,12 +189,12 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
         }
 
         boolean hasMoreExtensionEdges(Set<Alternative> alternatives) {
-            nextExtensionMappingAlternatives = new HashMap<>();
             nextExtensionEdge = null;
+            nextExtensionMappingAlternatives = new LinkedHashMap<>();
             int minNumberOfAlternatives = Integer.MAX_VALUE;
             for (Iterator<EGroumEdge> edgeIt = candidates.iterator(); edgeIt.hasNext();) {
                 EGroumEdge targetExtensionEdge = edgeIt.next();
-                Map<Alternative, Set<EGroumEdge>> patternExtensionCandidates = new HashMap<>();
+                Map<Alternative, Set<EGroumEdge>> patternExtensionCandidates = new LinkedHashMap<>();
                 int targetEdgeSourceIndex = getTargetNodeIndex(targetExtensionEdge.getSource());
                 int targetEdgeTargetIndex = getTargetNodeIndex(targetExtensionEdge.getTarget());
                 int numberOfAlternatives = 0;
