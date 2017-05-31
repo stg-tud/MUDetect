@@ -7,6 +7,6 @@ import mining.Configuration;
 class DefaultOverlapFinderConfig extends AlternativeMappingsOverlapsFinder.Config {
     DefaultOverlapFinderConfig(Configuration config){
         nodeMatcher = new EquallyLabelledNodeMatcher(config.nodeToLabel);
-        edgeOrder = new NoEdgeOrder();
+        edgeOrder = new DataEdgeTypePriorityOrder();
     }
 }
