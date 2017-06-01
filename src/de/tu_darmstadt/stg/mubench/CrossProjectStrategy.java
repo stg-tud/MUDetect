@@ -29,7 +29,9 @@ class CrossProjectStrategy extends IntraProjectStrategy {
         System.out.println(String.format("[MuDetectXProject] Target Type = %s", targetTypeName));
         String targetTypeSimpleName = getTargetTypeSimpleName(targetTypeName);
         System.out.println(String.format("[MuDetectXProject] Target Type Simple Name = %s", targetTypeSimpleName));
-        AUGCollector collector = new AUGCollector(new DefaultAUGConfiguration(), new ContainsTypeUsagePredicate(targetTypeSimpleName));
+        AUGCollector collector = new AUGCollector(new DefaultAUGConfiguration() {{
+            apiClasses = new String[] {targetTypeSimpleName};
+        }});
         List<ExampleProject> exampleProjects = getExampleProjects(targetTypeName);
         System.out.println(String.format("[MuDetectXProject] Example Projects = %d", exampleProjects.size()));
         for (ExampleProject exampleProject : exampleProjects) {
