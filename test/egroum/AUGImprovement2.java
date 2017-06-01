@@ -19,6 +19,28 @@ public class AUGImprovement2 {
     public TestName name = new TestName();
 
     @Test
+    public void instanceOf() throws Exception {
+        // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_instanceof.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    	int c = 0;
+    	for (EGroumNode node : gs.get(0).nodes)
+    		if (node.getLabel().endsWith(".<instanceof>"))
+    			c++;
+    	Assert.assertThat(c, Is.is(1));
+    }
+
+    @Test
+    public void nullcheck() throws Exception {
+        // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_null_check.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    	int c = 0;
+    	for (EGroumNode node : gs.get(0).nodes)
+    		if (node.getLabel().equals("<nullcheck>"))
+    			c++;
+    	Assert.assertThat(c, Is.is(1));
+    }
+
+    @Test
     public void filterAPI() throws Exception {
     	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{}});
     	Assert.assertThat(gs.get(0).getNodes().size(), IsNot.not(0));

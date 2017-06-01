@@ -1170,7 +1170,7 @@ public class EGroumGraph implements Serializable {
 	private EGroumGraph buildPDG(EGroumNode control, String branch, InstanceofExpression astNode) {
 		EGroumGraph pdg = buildArgumentPDG(control, branch, astNode.getLeftOperand());
 		EGroumNode node = new EGroumActionNode(control, branch,
-				astNode, astNode.getNodeType(), null, "boolean", 
+				astNode, astNode.getNodeType(), null, JavaASTUtil.getSimpleType(astNode.getRightOperand()) + ".<instanceof>", 
 				JavaASTUtil.getSimpleType(astNode.getRightOperand()) + ".<instanceof>");
 		pdg.mergeSequentialData(node, Type.PARAMETER);
 		return pdg;
@@ -1182,12 +1182,21 @@ public class EGroumGraph implements Serializable {
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, InfixExpression astNode) {
-		EGroumGraph pdg = new EGroumGraph(context, configuration);
+		EGroumGraph pdg = null;
+		if (astNode.getLeftOperand() instanceof NullLiteral)
+			pdg = buildArgumentPDG(control, branch, astNode.getRightOperand());
+		else if (astNode.getRightOperand() instanceof NullLiteral)
+			pdg = buildArgumentPDG(control, branch, astNode.getLeftOperand());
+		if (pdg != null) {
+			EGroumActionNode node = new EGroumActionNode(control, branch, astNode, astNode.getNodeType(), null, "<nullcheck>", "<nullcheck>");
+			pdg.mergeSequentialData(node, Type.PARAMETER);
+			return pdg;
+		}
+		pdg = new EGroumGraph(context, configuration);
 		EGroumGraph lg = buildArgumentPDG(control, branch, astNode.getLeftOperand());
 		EGroumGraph rg = buildArgumentPDG(control, branch, astNode.getRightOperand());
 		String label = JavaASTUtil.buildLabel(astNode.getOperator());
-		EGroumActionNode node = new EGroumActionNode(control, branch,
-				astNode, astNode.getNodeType(), null, label, label);
+		EGroumActionNode node = new EGroumActionNode(control, branch, astNode, astNode.getNodeType(), null, label, label);
 		lg.mergeSequentialData(node, Type.PARAMETER);
 		rg.mergeSequentialData(node, Type.PARAMETER);
 		if (astNode.hasExtendedOperands()) {
