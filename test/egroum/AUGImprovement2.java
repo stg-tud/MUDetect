@@ -19,6 +19,21 @@ public class AUGImprovement2 {
     public TestName name = new TestName();
 
     @Test
+    public void direct() throws Exception {
+        // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_direct.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    	int c = 0;
+    	for (EGroumNode node : gs.get(0).nodes)
+    		if (node instanceof EGroumDataNode && node.getLabel().endsWith("String")) {
+    			for (EGroumEdge e : node.outEdges)
+    				if (e.isDirect())
+    					c++;
+    			break;
+    		}
+    	Assert.assertThat(c, Is.is(4));
+    }
+
+    @Test
     public void instanceOf() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
     	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_instanceof.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
@@ -187,28 +202,22 @@ public class AUGImprovement2 {
     	gb.buildBatch("T:/repos/closure-compiler/src/", null);
     }
 
-    @Ignore
     @Test
     public void nonDeterminism1() throws Exception {
-        // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_non_determinism1.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0; groum = false;}});
-    	Assert.assertThat(gs.get(0).getNodes().size(), Is.is(9));
-    	Assert.assertThat(gs.get(0).getEdges().size(), Is.is(16));
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_non_determinism1.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0; keepQualifierEdges = true;}});
+    	Assert.assertThat(gs.get(0).getNodes().size(), Is.is(8));
+    	Assert.assertThat(gs.get(0).getEdges().size(), Is.is(17));
     }
 
-    @Ignore
     @Test
     public void nonDeterminism2() throws Exception {
-        // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_non_determinism2.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0; groum = false;}});
-    	Assert.assertThat(gs.get(0).getNodes().size(), Is.is(10));
-    	Assert.assertThat(gs.get(0).getEdges().size(), Is.is(18));
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_non_determinism2.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0; keepQualifierEdges = true;}});
+    	Assert.assertThat(gs.get(0).getNodes().size(), Is.is(9));
+    	Assert.assertThat(gs.get(0).getEdges().size(), Is.is(17));
     }
 
-    @Ignore
     @Test
     public void nonDeterminism3() throws Exception {
-        // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
     	/*ArrayList<EGroumGraph> gs = */EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_non_determinism3.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
 //    	Assert.assertThat(gs.get(0).getNodes().size(), Is.is(9));
 //    	Assert.assertThat(gs.get(0).getEdges().size(), Is.is(16));

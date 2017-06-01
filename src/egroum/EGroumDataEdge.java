@@ -32,7 +32,7 @@ public class EGroumDataEdge extends EGroumEdge {
 	public boolean isDirect() {
 		HashSet<EGroumNode> inter = new HashSet<>();
 		for (EGroumEdge e: this.source.outEdges)
-			if (e instanceof EGroumDataEdge)
+			if (e instanceof EGroumDataEdge && (!(this.source instanceof EGroumDataNode) || e.target instanceof EGroumDataNode))
 				inter.add(e.target);
 		for (EGroumEdge e : this.target.inEdges) {
 			if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == this.type && inter.contains(e.source))
