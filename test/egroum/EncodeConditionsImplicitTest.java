@@ -31,7 +31,7 @@ public class EncodeConditionsImplicitTest {
                 "  l.clear();\n" +
                 "}");
 
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("<r>"), actionNodeWithLabel("Collection.clear()")));
+        assertThat(aug, hasSelEdge(actionNodeWithLabel("<nullcheck>"), actionNodeWithLabel("Collection.clear()")));
     }
 
     @Test
@@ -55,7 +55,7 @@ public class EncodeConditionsImplicitTest {
                 "  }\n" +
                 "}");
 
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("<r>"), actionNodeWithLabel("Object.hashCode()")));
+        assertThat(aug, hasSelEdge(actionNodeWithLabel("<nullcheck>"), actionNodeWithLabel("Object.hashCode()")));
     }
 
     @Test
@@ -67,7 +67,7 @@ public class EncodeConditionsImplicitTest {
                 "  }\n" +
                 "}");
 
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("<r>"), actionNodeWithLabel("Object.hashCode()")));
+        assertThat(aug, hasSelEdge(actionNodeWithLabel("<nullcheck>"), actionNodeWithLabel("Object.hashCode()")));
     }
 
     @Test
