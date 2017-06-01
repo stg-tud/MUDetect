@@ -29,17 +29,18 @@ public class DenseGroumPredicate implements Predicate<EGroumGraph> {
         return false;
     }
 
-    private int getNumberOfOutEdges(EGroumNode node) {
-        return node.outEdges.size();
+    private long getNumberOfOutEdges(EGroumNode node) {
+        return node.outEdges.stream().filter(EGroumEdge::isDirect).count();
     }
 
     private long getMaxNumberOfEqualOutEdges(EGroumNode node) {
-        return node.outEdges.stream().filter(this::isReceiverOrParameterEdge)
+        return node.outEdges.stream().filter(this::isDirectReceiverOrParameterEdge)
                 .collect(Collectors.groupingBy(EGroumEdge::toString, Collectors.counting()))
                 .values().stream().mapToLong(l -> l).max().orElse(0);
     }
 
-    private boolean isReceiverOrParameterEdge(EGroumEdge e1) {
-        return e1 instanceof EGroumDataEdge && (((EGroumDataEdge) e1).type == RECEIVER || ((EGroumDataEdge) e1).type == PARAMETER);
+    private boolean isDirectReceiverOrParameterEdge(EGroumEdge edge) {
+        return edge.isDirect() && edge instanceof EGroumDataEdge
+                && (((EGroumDataEdge) edge).type == RECEIVER || ((EGroumDataEdge) edge).type == PARAMETER);
     }
 }
