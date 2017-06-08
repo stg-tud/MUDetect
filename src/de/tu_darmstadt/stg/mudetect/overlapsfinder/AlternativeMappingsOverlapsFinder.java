@@ -9,6 +9,7 @@ import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import egroum.EGroumDataEdge;
+import egroum.EGroumDataNode;
 import egroum.EGroumEdge;
 import egroum.EGroumNode;
 import org.slf4j.Logger;
@@ -240,7 +241,9 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
             if (possiblyIndirectEdge instanceof EGroumDataEdge) {
                 Set<EGroumNode> intermediateNodes = new HashSet<>();
                 for (EGroumEdge edge: possiblyIndirectEdge.getSource().getOutEdges()) {
-                    intermediateNodes.add(edge.getTarget());
+                    if (edge instanceof EGroumDataEdge &&
+                            (!(possiblyIndirectEdge.getSource() instanceof EGroumDataNode) || edge.getTarget() instanceof EGroumDataNode))
+                        intermediateNodes.add(edge.getTarget());
                 }
                 for (EGroumEdge edge : possiblyIndirectEdge.getTarget().getInEdges()) {
                     if (getType(edge) == getType(possiblyIndirectEdge) && intermediateNodes.contains(edge.getSource())) {
