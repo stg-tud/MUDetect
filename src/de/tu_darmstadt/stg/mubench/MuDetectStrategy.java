@@ -43,12 +43,13 @@ abstract class MuDetectStrategy implements DetectionStrategy {
         DetectorOutput.Builder output = createOutput();
 
         long startTime = System.currentTimeMillis();
-        Collection<EGroumGraph> groums = loadTrainingExamples(args);
+        Collection<EGroumGraph> trainingExamples = loadTrainingExamples(args);
         long endTrainingLoadTime = System.currentTimeMillis();
         output.withRunInfo("trainingLoadTime", endTrainingLoadTime - startTime);
-        output.withRunInfo("numberOfTrainingExamples", groums.size());
+        output.withRunInfo("numberOfTrainingExamples", trainingExamples.size());
+        output.withRunInfo("numberOfUsagesInTrainingExamples", getTypeUsageCounts(trainingExamples));
 
-        Model model = createMiner().mine(groums);
+        Model model = createMiner().mine(trainingExamples);
         long endTrainingTime = System.currentTimeMillis();
         output.withRunInfo("trainingTime", endTrainingTime - endTrainingLoadTime);
         output.withRunInfo("numberOfPatterns", model.getPatterns().size());
@@ -56,7 +57,6 @@ abstract class MuDetectStrategy implements DetectionStrategy {
 
         Collection<AUG> targets = loadDetectionTargets(args);
         long endDetectionLoadTime = System.currentTimeMillis();
-        output.withRunInfo("numberOfUsages", getTypeUsageCounts(targets));
         output.withRunInfo("detectionLoadTime", endDetectionLoadTime - endTrainingTime);
         output.withRunInfo("numberOfTargets", targets.size());
 
@@ -69,7 +69,7 @@ abstract class MuDetectStrategy implements DetectionStrategy {
         return output.withFindings(violations, this::toFinding);
     }
 
-    private YamlObject getTypeUsageCounts(Collection<AUG> targets) {
+    private YamlObject getTypeUsageCounts(Collection<EGroumGraph> targets) {
         YamlObject object = new YamlObject();
         for (Multiset.Entry<String> entry : UsageUtils.countNumberOfUsagesPerType(targets).entrySet()) {
             object.put(entry.getElement(), entry.getCount());
