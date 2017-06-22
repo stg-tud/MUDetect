@@ -82,7 +82,7 @@ public class EGroumGraph implements Serializable {
 
 	private final AUGConfiguration configuration;
 
-	private String filePath, name;
+	private String filePath, name, projectName;
 	private EGroumBuildingContext context;
 	protected EGroumNode entryNode, endNode;
 	protected HashSet<EGroumNode> nodes = new HashSet<EGroumNode>();
@@ -384,6 +384,14 @@ public class EGroumGraph implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
 	}
 
 	public HashSet<EGroumNode> getNodes() {
