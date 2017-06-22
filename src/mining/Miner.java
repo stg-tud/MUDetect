@@ -317,15 +317,19 @@ public class Miner {
 	}
 
 	private int computeFrequency(HashSet<Fragment> fragments) {
+		HashSet<String> projectNames = new HashSet<>();
 		HashMap<EGroumGraph, ArrayList<Fragment>> fragmentsOfGraph = new HashMap<EGroumGraph, ArrayList<Fragment>>();
 		for (Fragment f : fragments) {
 			EGroumGraph g = f.getGraph();
+			projectNames.add(g.getProjectName());
 			ArrayList<Fragment> fs = fragmentsOfGraph.get(g);
 			if (fs == null)
 				fs = new ArrayList<Fragment>();
 			fs.add(f);
 			fragmentsOfGraph.put(g, fs);
 		}
+		if (config.occurenceLevel == Level.CROSS_PROJECT)
+			return projectNames.size();
 		if (config.occurenceLevel == Level.CROSS_METHOD)
 			return fragmentsOfGraph.size();
 		int freq = 0;
