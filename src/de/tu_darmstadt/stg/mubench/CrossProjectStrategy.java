@@ -38,7 +38,7 @@ class CrossProjectStrategy extends IntraProjectStrategy {
             for (String srcDir : exampleProject.getSrcDirs()) {
                 Path projectSrcPath = Paths.get(exampleProject.getProjectPath(), srcDir);
                 System.out.println(String.format("[MuDetectXProject] Scanning path %s", projectSrcPath));
-                collector.collectFrom(projectSrcPath, args.getDependencyClassPath());
+                collector.collectFrom(exampleProject.getProjectPath(), projectSrcPath, args.getDependencyClassPath());
             }
         }
         System.out.println(String.format("[MuDetectXProject] Methods = %d", collector.getAUGs().size()));

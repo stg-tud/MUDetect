@@ -14,8 +14,12 @@ public class AUGCollector {
         this.config = config;
     }
 
-    public void collectFrom(Path path, String[] dependencies) {
-        augs.addAll(new EGroumBuilder(config).buildBatch(convertPath(path), dependencies));
+    public void collectFrom(String projectName, Path path, String[] dependencies) {
+        ArrayList<EGroumGraph> groums = new EGroumBuilder(config).buildBatch(convertPath(path), dependencies);
+        for (EGroumGraph groum : groums) {
+            groum.setProjectName(projectName);
+            augs.add(groum);
+        }
     }
 
     private String convertPath(Path path) {
