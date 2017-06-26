@@ -28,7 +28,7 @@ abstract class MuDetectStrategy implements DetectionStrategy {
 
     private final ViolationDotExporter violationDotExporter = new ViolationDotExporter();
 
-    abstract Collection<EGroumGraph> loadTrainingExamples(DetectorArgs args) throws IOException;
+    abstract Collection<EGroumGraph> loadTrainingExamples(DetectorArgs args, DetectorOutput.Builder output) throws IOException;
 
     abstract AUGMiner createMiner();
 
@@ -43,7 +43,7 @@ abstract class MuDetectStrategy implements DetectionStrategy {
         DetectorOutput.Builder output = createOutput();
 
         long startTime = System.currentTimeMillis();
-        Collection<EGroumGraph> trainingExamples = loadTrainingExamples(args);
+        Collection<EGroumGraph> trainingExamples = loadTrainingExamples(args, output);
         long endTrainingLoadTime = System.currentTimeMillis();
         output.withRunInfo("trainingLoadTime", endTrainingLoadTime - startTime);
         output.withRunInfo("numberOfTrainingExamples", trainingExamples.size());

@@ -1,6 +1,7 @@
 package de.tu_darmstadt.stg.mubench;
 
 import de.tu_darmstadt.stg.mubench.cli.DetectorArgs;
+import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
 import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.overlapsfinder.EmptyOverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.EverythingViolationPredicate;
@@ -18,7 +19,7 @@ import java.util.Collection;
 
 class ProvidedPatternsStrategy extends MuDetectStrategy {
     @Override
-    Collection<EGroumGraph> loadTrainingExamples(DetectorArgs args) throws FileNotFoundException {
+    Collection<EGroumGraph> loadTrainingExamples(DetectorArgs args, DetectorOutput.Builder output) throws FileNotFoundException {
         return new EGroumBuilder(new DefaultAUGConfiguration())
                 .buildBatch(args.getPatternPath().srcPath, args.getDependencyClassPath());
     }

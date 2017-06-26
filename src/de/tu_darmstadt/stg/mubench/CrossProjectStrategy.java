@@ -2,8 +2,8 @@ package de.tu_darmstadt.stg.mubench;
 
 import de.tu_darmstadt.stg.mubench.cli.CodePath;
 import de.tu_darmstadt.stg.mubench.cli.DetectorArgs;
+import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
 import egroum.AUGCollector;
-import egroum.ContainsTypeUsagePredicate;
 import egroum.EGroumGraph;
 import org.yaml.snakeyaml.Yaml;
 
@@ -22,18 +22,21 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 class CrossProjectStrategy extends IntraProjectStrategy {
-
     @Override
-    Collection<EGroumGraph> loadTrainingExamples(DetectorArgs args) throws FileNotFoundException {
+    Collection<EGroumGraph> loadTrainingExamples(DetectorArgs args, DetectorOutput.Builder output) throws FileNotFoundException {
         String targetTypeName = inferTargetType(args.getTargetPath());
         System.out.println(String.format("[MuDetectXProject] Target Type = %s", targetTypeName));
         String targetTypeSimpleName = getTargetTypeSimpleName(targetTypeName);
         System.out.println(String.format("[MuDetectXProject] Target Type Simple Name = %s", targetTypeSimpleName));
+        output.withRunInfo("targetType", targetTypeName);
+
+        List<ExampleProject> exampleProjects = getExampleProjects(targetTypeName);
+        System.out.println(String.format("[MuDetectXProject] Example Projects = %d", exampleProjects.size()));
+        output.withRunInfo("numberOfExampleProjects", exampleProjects.size());
+
         AUGCollector collector = new AUGCollector(new DefaultAUGConfiguration() {{
             apiClasses = new String[] {targetTypeSimpleName, targetTypeName};
         }});
-        List<ExampleProject> exampleProjects = getExampleProjects(targetTypeName);
-        System.out.println(String.format("[MuDetectXProject] Example Projects = %d", exampleProjects.size()));
         for (ExampleProject exampleProject : exampleProjects) {
             for (String srcDir : exampleProject.getSrcDirs()) {
                 Path projectSrcPath = Paths.get(exampleProject.getProjectPath(), srcDir);
@@ -41,7 +44,6 @@ class CrossProjectStrategy extends IntraProjectStrategy {
                 collector.collectFrom(exampleProject.getProjectPath(), projectSrcPath, args.getDependencyClassPath());
             }
         }
-        System.out.println(String.format("[MuDetectXProject] Methods = %d", collector.getAUGs().size()));
         Collection<EGroumGraph> examples = collector.getAUGs();
         System.out.println(String.format("[MuDetectXProject] Examples = %d", examples.size()));
         return examples;
