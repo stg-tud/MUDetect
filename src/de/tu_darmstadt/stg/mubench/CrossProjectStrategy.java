@@ -42,6 +42,9 @@ class CrossProjectStrategy extends IntraProjectStrategy {
                     System.out.println(String.format("[MuDetectXProject] Scanning path %s", projectSrcPath));
                     collector.collectFrom(exampleProject.getProjectPath(), projectSrcPath, args.getDependencyClassPath());
                 }
+                if (collector.getAUGs().size() > 5000) {
+                    break;
+                }
             }
             Collection<EGroumGraph> targetTypeExamples = collector.getAUGs();
             System.out.println(String.format("[MuDetectXProject] Examples = %d", targetTypeExamples.size()));
