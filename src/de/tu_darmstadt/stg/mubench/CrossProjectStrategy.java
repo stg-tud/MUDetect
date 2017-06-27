@@ -3,6 +3,7 @@ package de.tu_darmstadt.stg.mubench;
 import de.tu_darmstadt.stg.mubench.cli.CodePath;
 import de.tu_darmstadt.stg.mubench.cli.DetectorArgs;
 import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
+import de.tu_darmstadt.stg.yaml.YamlObject;
 import egroum.AUGCollector;
 import egroum.EGroumGraph;
 import org.yaml.snakeyaml.Yaml;
@@ -14,9 +15,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -24,38 +23,49 @@ import java.util.stream.StreamSupport;
 class CrossProjectStrategy extends IntraProjectStrategy {
     @Override
     Collection<EGroumGraph> loadTrainingExamples(DetectorArgs args, DetectorOutput.Builder output) throws FileNotFoundException {
-        String targetTypeName = inferTargetType(args.getTargetPath());
-        System.out.println(String.format("[MuDetectXProject] Target Type = %s", targetTypeName));
-        String targetTypeSimpleName = getTargetTypeSimpleName(targetTypeName);
-        System.out.println(String.format("[MuDetectXProject] Target Type Simple Name = %s", targetTypeSimpleName));
-        output.withRunInfo("targetType", targetTypeName);
+        Collection<String> targetTypeNames = inferTargetTypes(args.getTargetPath());
+        Collection<EGroumGraph> examples = new HashSet<>();
+        for (String targetTypeName : targetTypeNames) {
+            System.out.println(String.format("[MuDetectXProject] Target Type = %s", targetTypeName));
+            String targetTypeSimpleName = getTargetTypeSimpleName(targetTypeName);
+            System.out.println(String.format("[MuDetectXProject] Target Type Simple Name = %s", targetTypeSimpleName));
 
-        List<ExampleProject> exampleProjects = getExampleProjects(targetTypeName);
-        System.out.println(String.format("[MuDetectXProject] Example Projects = %d", exampleProjects.size()));
-        output.withRunInfo("numberOfExampleProjects", exampleProjects.size());
+            List<ExampleProject> exampleProjects = getExampleProjects(targetTypeName);
+            System.out.println(String.format("[MuDetectXProject] Example Projects = %d", exampleProjects.size()));
 
-        AUGCollector collector = new AUGCollector(new DefaultAUGConfiguration() {{
-            apiClasses = new String[] {targetTypeSimpleName, targetTypeName};
-        }});
-        for (ExampleProject exampleProject : exampleProjects) {
-            for (String srcDir : exampleProject.getSrcDirs()) {
-                Path projectSrcPath = Paths.get(exampleProject.getProjectPath(), srcDir);
-                System.out.println(String.format("[MuDetectXProject] Scanning path %s", projectSrcPath));
-                collector.collectFrom(exampleProject.getProjectPath(), projectSrcPath, args.getDependencyClassPath());
+            AUGCollector collector = new AUGCollector(new DefaultAUGConfiguration() {{
+                apiClasses = new String[]{targetTypeSimpleName, targetTypeName};
+            }});
+            for (ExampleProject exampleProject : exampleProjects) {
+                for (String srcDir : exampleProject.getSrcDirs()) {
+                    Path projectSrcPath = Paths.get(exampleProject.getProjectPath(), srcDir);
+                    System.out.println(String.format("[MuDetectXProject] Scanning path %s", projectSrcPath));
+                    collector.collectFrom(exampleProject.getProjectPath(), projectSrcPath, args.getDependencyClassPath());
+                }
             }
+            Collection<EGroumGraph> targetTypeExamples = collector.getAUGs();
+            System.out.println(String.format("[MuDetectXProject] Examples = %d", targetTypeExamples.size()));
+
+            output.withRunInfo("targetType-" + targetTypeName, new YamlObject() {{
+                put("numberOfExampleProjects", exampleProjects.size());
+                put("numberOfExamples", targetTypeExamples.size());
+            }});
+
+            examples.addAll(targetTypeExamples);
         }
-        Collection<EGroumGraph> examples = collector.getAUGs();
-        System.out.println(String.format("[MuDetectXProject] Examples = %d", examples.size()));
         return examples;
     }
 
-    private String inferTargetType(CodePath targetPath) {
+    private Collection<String> inferTargetTypes(CodePath targetPath) {
         String targetSrcPath = targetPath.srcPath;
         try (Stream<String> lines = Files.lines(getIndexFilePath())) {
-            return lines.map(Project::createProject)
+            Set<String> targetTypes = lines.map(Project::createProject)
                     .filter(project -> project.residesIn(targetSrcPath))
-                    .map(Project::getTargetTypeName).findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("failed to determine target type for " + targetSrcPath));
+                    .map(Project::getTargetTypeName).collect(Collectors.toSet());
+            if (targetTypes.isEmpty()) {
+                throw new IllegalArgumentException("failed to determine target type for " + targetSrcPath);
+            }
+            return targetTypes;
         } catch (IOException e) {
             throw new IllegalStateException("index file missing or corrupted", e);
         }
