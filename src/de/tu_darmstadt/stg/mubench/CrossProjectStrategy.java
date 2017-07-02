@@ -236,7 +236,7 @@ class CrossProjectStrategy implements DetectionStrategy {
     private AUGMiner createMiner() {
         return new DefaultAUGMiner(new DefaultMiningConfiguration() {{
             occurenceLevel = Level.CROSS_PROJECT;
-            minPatternSupport = 8;
+            minPatternSupport = 5;
         }});
     }
 
