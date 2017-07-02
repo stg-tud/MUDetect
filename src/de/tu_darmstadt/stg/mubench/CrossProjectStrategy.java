@@ -3,6 +3,8 @@ package de.tu_darmstadt.stg.mubench;
 import de.tu_darmstadt.stg.mubench.cli.CodePath;
 import de.tu_darmstadt.stg.mubench.cli.DetectorArgs;
 import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
+import de.tu_darmstadt.stg.mudetect.mining.AUGMiner;
+import de.tu_darmstadt.stg.mudetect.mining.DefaultAUGMiner;
 import de.tu_darmstadt.stg.yaml.YamlObject;
 import egroum.AUGCollector;
 import egroum.EGroumGraph;
@@ -21,6 +23,14 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 class CrossProjectStrategy extends IntraProjectStrategy {
+
+    @Override
+    AUGMiner createMiner() {
+        return new DefaultAUGMiner(new DefaultMiningConfiguration() {{
+            occurenceLevel = Level.CROSS_PROJECT;
+        }});
+    }
+
     @Override
     Collection<EGroumGraph> loadTrainingExamples(DetectorArgs args, DetectorOutput.Builder output) throws FileNotFoundException {
         Collection<String> targetTypeNames = inferTargetTypes(args.getTargetPath());

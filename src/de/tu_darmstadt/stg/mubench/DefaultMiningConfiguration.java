@@ -8,6 +8,7 @@ import mining.Configuration;
 class DefaultMiningConfiguration extends Configuration {
     {
         minPatternSupport = 10;
+        occurenceLevel = Level.WITHIN_METHOD;
         disableSystemOut = true;
         outputPath = System.getProperty("mudetect.mining.outputpath");
         nodeToLabel = NodeLabelProvider.firstOrDefaultLabel(
