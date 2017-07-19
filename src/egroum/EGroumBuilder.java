@@ -18,22 +18,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
-import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
-import org.eclipse.jdt.core.dom.BodyDeclaration;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.EnumDeclaration;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.FileASTRequestor;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.*;
 
 import utils.FileIO;
 import utils.JavaASTUtil;
@@ -332,17 +317,30 @@ public class EGroumBuilder {
 		ast.accept(new ASTVisitor(false) {
 			@Override
 			public boolean visit(MethodInvocation node) {
-				IMethodBinding mb = node.resolveMethodBinding();
+				return !isDeclaredByApiClass(node.resolveMethodBinding()) && super.visit(node);
+			}
+
+			@Override
+			public boolean visit(ConstructorInvocation node) {
+				return !isDeclaredByApiClass(node.resolveConstructorBinding()) && super.visit(node);
+			}
+
+			@Override
+			public boolean visit(ClassInstanceCreation node) {
+				return !isDeclaredByApiClass(node.resolveConstructorBinding()) && super.visit(node);
+			}
+
+			private boolean isDeclaredByApiClass(IMethodBinding mb) {
 				if (mb != null) {
 					String name = mb.getDeclaringClass().getTypeDeclaration().getQualifiedName();
 					if (apiClassNames.contains(name)) {
 						containing = true;
-						return false;
+						return true;
 					}
 				}
-				return super.visit(node);
+				return false;
 			}
-			
+
 			@Override
 			public boolean preVisit2(ASTNode node) {
 				if (containing)
