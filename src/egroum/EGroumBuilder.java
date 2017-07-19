@@ -2,11 +2,7 @@ package egroum;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -311,9 +307,7 @@ public class EGroumBuilder {
 	private boolean containing = false;
 	private boolean contains(ASTNode ast, String[] apiClasses) {
 		containing = false;
-		HashSet<String> apiClassNames = new HashSet<>();
-		for (String api : apiClasses)
-			apiClassNames.add(api);
+		HashSet<String> apiClassNames = new HashSet<>(Arrays.asList(apiClasses));
 		ast.accept(new ASTVisitor(false) {
 			@Override
 			public boolean visit(MethodInvocation node) {
