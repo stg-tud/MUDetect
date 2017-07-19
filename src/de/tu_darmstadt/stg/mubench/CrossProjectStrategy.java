@@ -98,9 +98,9 @@ class CrossProjectStrategy implements DetectionStrategy {
     }
 
     private Collection<EGroumGraph> loadTrainingExamples(Type targetType, DetectorArgs args, DetectorOutput.Builder output) throws FileNotFoundException {
-        Collection<EGroumGraph> examples = new HashSet<>();
         List<ExampleProject> exampleProjects = getExampleProjects(targetType);
         System.out.println(String.format("[MuDetectXProject] Example Projects = %d", exampleProjects.size()));
+        output.withRunInfo(targetType + "-exampleProjects", exampleProjects.size());
 
         AUGCollector collector = new AUGCollector(new DefaultAUGConfiguration() {{
             apiClasses = new String[]{targetType.getName(), targetType.getSimpleName()};
@@ -123,10 +123,7 @@ class CrossProjectStrategy implements DetectionStrategy {
         Collection<EGroumGraph> targetTypeExamples = collector.getAUGs();
         System.out.println(String.format("[MuDetectXProject] Examples = %d", targetTypeExamples.size()));
 
-        output.withRunInfo(targetType + "-exampleProjects", exampleProjects.size());
-
-        examples.addAll(targetTypeExamples);
-        return examples;
+        return targetTypeExamples;
     }
 
     private Collection<String> inferTargetTypes(CodePath targetPath) {
