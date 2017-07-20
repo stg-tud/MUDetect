@@ -342,9 +342,7 @@ public class EGroumBuilder {
 
 			@Override
 			public boolean preVisit2(ASTNode node) {
-				if (containing)
-					return false;
-				return super.preVisit2(node);
+				return !containing && super.preVisit2(node);
 			}
 		});
 		return containing;
