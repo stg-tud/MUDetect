@@ -20,7 +20,8 @@ public class Configuration {
     public boolean disableSystemOut = false;
     
     /**
-     * Whether or not the miner should allow the same call to appear multiple times in a pattern.
+     * Whether or not the miner should allow the same call to appear multiple times successively, i.e., they are connected, in a pattern.
+     * Repeated calls on disconnected nodes, e.g., on different branches, are still allowed.
      */
     public boolean disallowRepeatedCalls = true;
 
