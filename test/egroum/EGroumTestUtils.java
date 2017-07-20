@@ -55,36 +55,14 @@ public class EGroumTestUtils {
 	}
 
 	public static void buildAndPrintGroumsForFile(String inputPath, String name, String[] classpaths, String outputPath) {
-		EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration(){{removeImplementationCode = 2;}});
-		inputPath = inputPath + "/" + name;
-		String content = FileIO.readStringFromFile(inputPath);
-		ASTNode ast = JavaASTUtil.parseSource(content, inputPath, name, classpaths);
-		CompilationUnit cu = (CompilationUnit) ast;
-		TypeDeclaration type = (TypeDeclaration) cu.types().get(0);
-		for (MethodDeclaration m : type.getMethods()) {
-			EGroumGraph g = gb.buildGroum(m, inputPath, type.getName().getIdentifier() + ".");
-			String s = m.toString();
-			s = s.replace("\n", "\\l");
-			s = s.replace("\t", "    ");
-			s = s.replace("\"", "\\\"");
-			s += "\\l";
-			s = "0 [label=\"" + s + "\"" + " shape=box style=dotted]";
-//			System.out.println(s);
-			g.toGraphics(s, outputPath);
-		}
+		buildAndPrintGroumsForFile(inputPath, name, classpaths, outputPath, new AUGConfiguration(){{removeImplementationCode = 2;}});
 	}
 
 	public static ArrayList<EGroumGraph> buildAndPrintGroumsForFile(String inputPath, String name, String[] classpaths, String outputPath, AUGConfiguration config) {
-		ArrayList<EGroumGraph> gs = new ArrayList<>();
 		EGroumBuilder gb = new EGroumBuilder(config);
-		inputPath = inputPath + "/" + name;
-		String content = FileIO.readStringFromFile(inputPath);
-		ASTNode ast = JavaASTUtil.parseSource(content, inputPath, name, classpaths);
-		CompilationUnit cu = (CompilationUnit) ast;
-		TypeDeclaration type = (TypeDeclaration) cu.types().get(0);
-		for (MethodDeclaration m : type.getMethods()) {
-			EGroumGraph g = gb.buildGroum(m, inputPath, type.getName().getIdentifier() + ".");
-			String s = m.toString();
+		ArrayList<EGroumGraph> gs = gb.buildBatch(inputPath + "/" + name, classpaths);
+		for (EGroumGraph g : gs) {
+			String s = g.getName();
 			s = s.replace("\n", "\\l");
 			s = s.replace("\t", "    ");
 			s = s.replace("\"", "\\\"");
@@ -92,7 +70,6 @@ public class EGroumTestUtils {
 			s = "0 [label=\"" + s + "\"" + " shape=box style=dotted]";
 //			System.out.println(s);
 			g.toGraphics(s, outputPath);
-			gs.add(g);
 		}
 		return gs;
 	}

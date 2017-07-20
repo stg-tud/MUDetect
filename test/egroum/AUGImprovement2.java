@@ -14,6 +14,10 @@ import org.junit.rules.TestName;
 
 import egroum.EGroumDataEdge.Type;
 
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+
 public class AUGImprovement2 {
     @Rule
     public TestName name = new TestName();
@@ -58,28 +62,22 @@ public class AUGImprovement2 {
     @Test
     public void filterAPI() throws Exception {
     	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{}});
-    	Assert.assertThat(gs.get(0).getNodes().size(), IsNot.not(0));
-    	Assert.assertThat(gs.get(0).getEdges().size(), IsNot.not(0));
+    	assertThat(gs, is(not(empty())));
     	
     	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{apiClasses = new String[]{};}});
-    	Assert.assertThat(gs.get(0).getNodes().size(), Is.is(0));
-    	Assert.assertThat(gs.get(0).getEdges().size(), Is.is(0));
+    	Assert.assertThat(gs, is(not(empty())));
     	
     	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{apiClasses = new String[]{"java.util"};}});
-    	Assert.assertThat(gs.get(0).getNodes().size(), Is.is(0));
-    	Assert.assertThat(gs.get(0).getEdges().size(), Is.is(0));
+    	Assert.assertThat(gs, is(empty()));
     	
     	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{apiClasses = new String[]{"java.util.Iterator"};}});
-    	Assert.assertThat(gs.get(0).getNodes().size(), IsNot.not(0));
-    	Assert.assertThat(gs.get(0).getEdges().size(), IsNot.not(0));
+    	Assert.assertThat(gs, is(not(empty())));
     	
     	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{apiClasses = new String[]{"java.util.Collection"};}});
-    	Assert.assertThat(gs.get(0).getNodes().size(), IsNot.not(0));
-    	Assert.assertThat(gs.get(0).getEdges().size(), IsNot.not(0));
+    	Assert.assertThat(gs, is(not(empty())));
     	
     	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{apiClasses = new String[]{"java.util.Collection", "java.util.Iterator"};}});
-    	Assert.assertThat(gs.get(0).getNodes().size(), IsNot.not(0));
-    	Assert.assertThat(gs.get(0).getEdges().size(), IsNot.not(0));
+    	Assert.assertThat(gs, is(not(empty())));
     }
 
     @Test
