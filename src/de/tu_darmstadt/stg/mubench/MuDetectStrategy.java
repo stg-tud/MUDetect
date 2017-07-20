@@ -18,6 +18,9 @@ import egroum.EGroumGraph;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static de.tu_darmstadt.stg.mudetect.AlternativeViolationPredicate.firstAlternativeViolation;
 
 abstract class MuDetectStrategy implements DetectionStrategy {
 
@@ -53,7 +56,8 @@ abstract class MuDetectStrategy implements DetectionStrategy {
         output.withRunInfo("detectionLoadTime", endDetectionLoadTime - endTrainingTime);
         output.withRunInfo("numberOfTargets", targets.size());
 
-        List<Violation> violations = createDetector(model).findViolations(targets);
+        List<Violation> violations = createDetector(model).findViolations(targets).stream()
+                .filter(firstAlternativeViolation()).collect(Collectors.toList());
         long endDetectionTime = System.currentTimeMillis();
         output.withRunInfo("detectionTime", endDetectionTime - endDetectionLoadTime);
         output.withRunInfo("numberOfViolations", violations.size());
