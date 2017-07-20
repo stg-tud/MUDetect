@@ -32,25 +32,6 @@ import static utils.SetUtils.asSet;
 public class AlternativePatternsIntegrationTest {
 
     @Test
-    public void reportsOnlyBestRankedViolationForAUsage() throws Exception {
-        Pattern patternA = buildPattern("void a(Iterator i) { while (i.hasNext()) { i.next(); } }", 3);
-        Pattern patternB = buildPattern("void b(Iterator i) { while (i.hasNext()) { i.remove(); } }", 2);
-        AUG target = buildAUG("void v(Iterator i) { i.hasNext(); }");
-        MuDetect detector = new MuDetect(() -> asSet(patternA, patternB),
-                new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher()),
-                new MissingElementViolationPredicate(),
-                new WeightRankingStrategy(new PatternSupportWeightFunction()));
-
-        List<Violation> violations = detector.findViolations(asSet(target));
-
-        Overlap overlap = buildOverlap(patternA, target)
-                .withNodes("Iterator", "Iterator.hasNext()")
-                .withEdge("Iterator", RECEIVER, "Iterator.hasNext()").build();
-        Violation violation = new Violation(overlap, 1.0f, "(pattern support = 3) / (max pattern support = 3)");
-        assertThat(violations, contains(violation));
-    }
-
-    @Test
     public void matchesSubtypes() throws Exception {
         Pattern pattern = buildPattern("void p(Object o) { o.hashCode(); }", 2);
         AUG target = buildAUG("void t(Integer i) { i.hashCode(); }");
