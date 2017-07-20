@@ -24,7 +24,7 @@ public class MuDetect {
         this.overlapsFinder = overlapsFinder;
         this.violationPredicate = violationPredicate;
         this.rankingStrategy = rankingStrategy;
-        // TODO find a testing strategy for this filtering
+        // SMELL this is untested behaviour, because it's very hard to test in this context. Can we separate it?
         this.alternativePatternInstancePredicate = new AlternativePatternInstancePredicate();
     }
 
@@ -36,6 +36,7 @@ public class MuDetect {
         return violations;
     }
 
+    // REFACTOR such filtering should be configurable and the detector shouldn't know about the specific strategy
     private void filterAlternativeViolations(List<Violation> violations) {
         Set<EGroumNode> converedNodes = new HashSet<>();
         Iterator<Violation> iterator = violations.iterator();
