@@ -2,6 +2,8 @@ package egroum;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Optional;
+
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import egroum.EGroumDataEdge.Type;
@@ -73,8 +75,12 @@ public class EGroumActionNode extends EGroumNode {
 	}
 
 	@Override
-	public boolean isAPI() {
-		return false;
+	public Optional<String> getAPI() {
+		if (getLabel().endsWith("()") || getLabel().endsWith("<init>")) {
+			return Optional.of(getLabel().split("\\.")[0]);
+		} else {
+			return Optional.empty();
+		}
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import egroum.EGroumEdge;
 import egroum.EGroumNode;
 import org.jgrapht.graph.DirectedMultigraph;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,9 @@ public class AUG extends DirectedMultigraph<EGroumNode, EGroumEdge> {
     }
 
     public Set<String> getAPIs() {
-        return vertexSet().stream().filter(EGroumNode::isAPI).map(EGroumNode::getLabel).collect(Collectors.toSet());
+        return vertexSet().stream().map(EGroumNode::getAPI)
+                .filter(Optional::isPresent).map(Optional::get)
+                .collect(Collectors.toSet());
     }
 
     @Override

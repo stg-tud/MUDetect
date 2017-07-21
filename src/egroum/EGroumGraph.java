@@ -408,7 +408,9 @@ public class EGroumGraph implements Serializable {
 	}
 
 	public Set<String> getAPIs() {
-		return getNodes().stream().filter(EGroumNode::isAPI).map(EGroumNode::getLabel).collect(Collectors.toSet());
+		return getNodes().stream().map(EGroumNode::getAPI)
+				.filter(Optional::isPresent).map(Optional::get)
+				.collect(Collectors.toSet());
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, ASTNode node) {

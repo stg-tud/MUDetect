@@ -2,6 +2,8 @@ package egroum;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
+import java.util.Optional;
+
 public class EGroumEntryNode extends EGroumNode {
 	private String label;
 	
@@ -21,8 +23,8 @@ public class EGroumEntryNode extends EGroumNode {
 	}
 
 	@Override
-	public boolean isAPI() {
-		return false;
+	public Optional<String> getAPI() {
+		return Optional.empty();
 	}
 
 	@Override
