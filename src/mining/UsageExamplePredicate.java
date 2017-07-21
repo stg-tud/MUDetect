@@ -1,13 +1,16 @@
 package mining;
 
+import egroum.EGroumGraph;
 import org.eclipse.jdt.core.dom.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 public class UsageExamplePredicate {
     private final Set<String> fullyQualifiedTypeNames;
+    private final Set<String> simpleTypeNames;
 
     public static UsageExamplePredicate allUsageExamples() {
         return new UsageExamplePredicate(new String[0]);
@@ -19,10 +22,18 @@ public class UsageExamplePredicate {
 
     private UsageExamplePredicate(String[] fullyQualifiedTypeNames) {
         this.fullyQualifiedTypeNames = new HashSet<>(Arrays.asList(fullyQualifiedTypeNames));
+        this.simpleTypeNames = new HashSet<>();
+        for (String fullyQualifiedTypeName : fullyQualifiedTypeNames) {
+            simpleTypeNames.add(fullyQualifiedTypeName.substring(fullyQualifiedTypeName.lastIndexOf('.') + 1));
+        }
     }
 
     private boolean matchesAnyExample() {
         return fullyQualifiedTypeNames.isEmpty();
+    }
+
+    public boolean matches(EGroumGraph graph) {
+        return matchesAnyExample() || !Collections.disjoint(graph.getAPIs(), simpleTypeNames);
     }
 
     private boolean containing;

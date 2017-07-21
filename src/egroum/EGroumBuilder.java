@@ -374,8 +374,11 @@ public class EGroumBuilder {
 	private ArrayList<EGroumGraph> buildGroums(TypeDeclaration type, String path, String prefix) {
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		for (MethodDeclaration method : type.getMethods())
-			if (configuration.usageExamplePredicate.matches(method))
-				groums.add(buildGroum(method, path, prefix + type.getName().getIdentifier() + "."));
+			if (configuration.usageExamplePredicate.matches(method)) {
+				EGroumGraph g = buildGroum(method, path, prefix + type.getName().getIdentifier() + ".");
+				if (configuration.usageExamplePredicate.matches(g))
+					groums.add(g);
+			}
 		for (TypeDeclaration inner : type.getTypes())
 			groums.addAll(buildGroums(inner, path, prefix + type.getName().getIdentifier() + "."));
 		return groums;
