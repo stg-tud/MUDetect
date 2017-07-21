@@ -3,10 +3,9 @@ package egroum;
 import graphics.DotGraph;
 import java.util.ArrayList;
 
+import mining.UsageExamplePredicate;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.hamcrest.core.Is;
-import org.hamcrest.core.IsNot;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -65,19 +64,24 @@ public class AUGImprovement2 {
     	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{}});
     	assertThat(gs, is(not(empty())));
     	
-    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{apiClasses = new String[]{};}});
+    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
+            usageExamplePredicate = UsageExamplePredicate.allUsageExamples();}});
     	assertThat(gs, is(not(empty())));
     	
-    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{apiClasses = new String[]{"java.util"};}});
+    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
+            usageExamplePredicate = UsageExamplePredicate.usageExamplesOf("java.util");}});
     	assertThat(gs, is(empty()));
     	
-    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{apiClasses = new String[]{"java.util.Iterator"};}});
+    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
+            usageExamplePredicate = UsageExamplePredicate.usageExamplesOf("java.util.Iterator");}});
     	assertThat(gs, is(not(empty())));
     	
-    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{apiClasses = new String[]{"java.util.Collection"};}});
+    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
+            usageExamplePredicate = UsageExamplePredicate.usageExamplesOf("java.util.Collection");}});
     	assertThat(gs, is(not(empty())));
     	
-    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{apiClasses = new String[]{"java.util.Collection", "java.util.Iterator"};}});
+    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
+            usageExamplePredicate = UsageExamplePredicate.usageExamplesOf("java.util.Collection", "java.util.Iterator");}});
     	assertThat(gs, is(not(empty())));
     }
 

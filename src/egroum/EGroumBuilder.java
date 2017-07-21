@@ -304,50 +304,6 @@ public class EGroumBuilder {
 		return className;
 	}
 
-	private boolean containing = false;
-	private boolean contains(ASTNode ast, String[] apiClasses) {
-		// nothing to filter by, so we assume everything is wanted
-		if (apiClasses == null || apiClasses.length == 0) {
-			return true;
-		}
-
-		containing = false;
-		HashSet<String> apiClassNames = new HashSet<>(Arrays.asList(apiClasses));
-		ast.accept(new ASTVisitor(false) {
-			@Override
-			public boolean visit(MethodInvocation node) {
-				return !isDeclaredByApiClass(node.resolveMethodBinding()) && super.visit(node);
-			}
-
-			@Override
-			public boolean visit(ConstructorInvocation node) {
-				return !isDeclaredByApiClass(node.resolveConstructorBinding()) && super.visit(node);
-			}
-
-			@Override
-			public boolean visit(ClassInstanceCreation node) {
-				return !isDeclaredByApiClass(node.resolveConstructorBinding()) && super.visit(node);
-			}
-
-			private boolean isDeclaredByApiClass(IMethodBinding mb) {
-				if (mb != null) {
-					String name = mb.getDeclaringClass().getTypeDeclaration().getQualifiedName();
-					if (apiClassNames.contains(name)) {
-						containing = true;
-						return true;
-					}
-				}
-				return false;
-			}
-
-			@Override
-			public boolean preVisit2(ASTNode node) {
-				return !containing && super.preVisit2(node);
-			}
-		});
-		return containing;
-	}
-
 	private ArrayList<EGroumGraph> buildBatchGroums(File dir, String[] classpaths) {
 		ArrayList<File> files = FileIO.getPaths(dir);
 		String[] paths = new String[files.size()];
@@ -358,7 +314,7 @@ public class EGroumBuilder {
 		FileASTRequestor r = new FileASTRequestor() {
 			@Override
 			public void acceptAST(String sourceFilePath, CompilationUnit ast) {
-				if (contains(ast, configuration.apiClasses))
+				if (configuration.usageExamplePredicate.matches(ast))
 					cus.put(sourceFilePath, ast);
 			}
 		};
@@ -418,7 +374,7 @@ public class EGroumBuilder {
 	private ArrayList<EGroumGraph> buildGroums(TypeDeclaration type, String path, String prefix) {
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		for (MethodDeclaration method : type.getMethods())
-			if (contains(method, configuration.apiClasses))
+			if (configuration.usageExamplePredicate.matches(method))
 				groums.add(buildGroum(method, path, prefix + type.getName().getIdentifier() + "."));
 		for (TypeDeclaration inner : type.getTypes())
 			groums.addAll(buildGroums(inner, path, prefix + type.getName().getIdentifier() + "."));

@@ -1,5 +1,7 @@
 package egroum;
 
+import mining.UsageExamplePredicate;
+
 public class AUGConfiguration {
     /**
      * Collapse isomporphic subgraphs within AUGs. Not Implemented.
@@ -74,7 +76,7 @@ public class AUGConfiguration {
 	public boolean removeTransitiveDefinitionEdgesFromMethodCalls = true;
 	
 	/**
-	 * List of API classes of interest
+	 * Predicate that matches usage examples of interest.
 	 */
-	public String[] apiClasses;
+	public UsageExamplePredicate usageExamplePredicate = UsageExamplePredicate.allUsageExamples();
 }

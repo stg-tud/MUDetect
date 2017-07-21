@@ -19,6 +19,7 @@ import de.tu_darmstadt.stg.yaml.YamlObject;
 import egroum.AUGBuilder;
 import egroum.AUGCollector;
 import egroum.EGroumGraph;
+import mining.UsageExamplePredicate;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
@@ -103,7 +104,7 @@ class CrossProjectStrategy implements DetectionStrategy {
         output.withRunInfo(targetType + "-exampleProjects", exampleProjects.size());
 
         AUGCollector collector = new AUGCollector(new DefaultAUGConfiguration() {{
-            apiClasses = new String[]{targetType.getName(), targetType.getSimpleName()};
+            usageExamplePredicate = UsageExamplePredicate.usageExamplesOf(targetType.getName());
         }});
         for (ExampleProject exampleProject : exampleProjects) {
             for (String srcDir : exampleProject.getSrcDirs()) {
