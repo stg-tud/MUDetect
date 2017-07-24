@@ -19,6 +19,7 @@ import de.tu_darmstadt.stg.yaml.YamlObject;
 import egroum.AUGBuilder;
 import egroum.AUGCollector;
 import egroum.EGroumGraph;
+import mining.MethodUsageExamplePredicate;
 import mining.TypeUsageExamplePredicate;
 import mining.UsageExamplePredicate;
 import org.yaml.snakeyaml.Yaml;
@@ -35,47 +36,51 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-class CrossProjectStrategy implements DetectionStrategy {
+class OnlineCrossProjectStrategy implements DetectionStrategy {
     @Override
     public DetectorOutput detectViolations(DetectorArgs args) throws Exception {
         DetectorOutput.Builder output = createOutput();
+        List<Violation> allViolations = new ArrayList<>();
 
-        Set<Pattern> patterns = new HashSet<>();
-        Collection<String> targetTypeNames = inferTargetTypes(args.getTargetPath());
-        for (String targetTypeName : targetTypeNames) {
-            Type targetType = new Type(targetTypeName);
-            System.out.println(String.format("[MuDetectXProject] Target Type = %s", targetType));
-
-            long startTime = System.currentTimeMillis();
-            Collection<EGroumGraph> trainingExamples = loadTrainingExamples(targetType, args, output);
-            long endTrainingLoadTime = System.currentTimeMillis();
-            output.withRunInfo(targetType + "-trainingLoadTime", endTrainingLoadTime - startTime);
-            output.withRunInfo(targetType + "-numberOfTrainingExamples", trainingExamples.size());
-            output.withRunInfo(targetType + "-numberOfUsagesInTrainingExamples", getTypeUsageCounts(trainingExamples));
-
-            Model model = createMiner().mine(trainingExamples);
-            long endTrainingTime = System.currentTimeMillis();
-            output.withRunInfo(targetType + "-trainingTime", endTrainingTime - endTrainingLoadTime);
-            output.withRunInfo(targetType + "-numberOfPatterns", model.getPatterns().size());
-            output.withRunInfo(targetType + "-maxPatternSupport", model.getMaxPatternSupport());
-
-            patterns.addAll(model.getPatterns());
-        }
-
-        long endTrainingTime = System.currentTimeMillis();
+        long startDetectionLoadTime = System.currentTimeMillis();
         Collection<AUG> targets = loadDetectionTargets(args);
         long endDetectionLoadTime = System.currentTimeMillis();
-        output.withRunInfo("detectionLoadTime", endDetectionLoadTime - endTrainingTime);
+        output.withRunInfo("detectionLoadTime", endDetectionLoadTime - startDetectionLoadTime);
         output.withRunInfo("numberOfTargets", targets.size());
+        
+        for (AUG target : targets) {
+        	Set<Pattern> patterns = new HashSet<>();
+            Collection<String> targetTypeNames = inferTargetTypes(args.getTargetPath());
+            for (String targetTypeName : targetTypeNames) {
+                Type targetType = new Type(targetTypeName);
+                System.out.println(String.format("[MuDetectXProject] Target Type = %s", targetType));
 
-        Model model = () -> patterns;
-        List<Violation> violations = createDetector(model).findViolations(targets);
-        long endDetectionTime = System.currentTimeMillis();
-        output.withRunInfo("detectionTime", endDetectionTime - endDetectionLoadTime);
-        output.withRunInfo("numberOfViolations", violations.size());
-        output.withRunInfo("numberOfExploredAlternatives", AlternativeMappingsOverlapsFinder.numberOfExploredAlternatives);
+                long startTime = System.currentTimeMillis();
+                Collection<EGroumGraph> trainingExamples = loadTrainingExamples(targetType, target, args, output);
+                long endTrainingLoadTime = System.currentTimeMillis();
+                output.withRunInfo(targetType + "-trainingLoadTime", endTrainingLoadTime - startTime);
+                output.withRunInfo(targetType + "-numberOfTrainingExamples", trainingExamples.size());
+                output.withRunInfo(targetType + "-numberOfUsagesInTrainingExamples", getTypeUsageCounts(trainingExamples));
 
-        return output.withFindings(violations, ViolationUtils::toFinding);
+                Model model = createMiner().mine(trainingExamples);
+                long endTrainingTime = System.currentTimeMillis();
+                output.withRunInfo(targetType + "-trainingTime", endTrainingTime - endTrainingLoadTime);
+                output.withRunInfo(targetType + "-numberOfPatterns", model.getPatterns().size());
+                output.withRunInfo(targetType + "-maxPatternSupport", model.getMaxPatternSupport());
+
+                patterns.addAll(model.getPatterns());
+            }
+
+            Model model = () -> patterns;
+            List<Violation> violations = createDetector(model).findViolations(Arrays.asList(target));
+            long endDetectionTime = System.currentTimeMillis();
+            output.withRunInfo("detectionTime", endDetectionTime - endDetectionLoadTime);
+            output.withRunInfo("numberOfViolations", violations.size());
+            output.withRunInfo("numberOfExploredAlternatives", AlternativeMappingsOverlapsFinder.numberOfExploredAlternatives);
+            allViolations.addAll(violations);
+        }
+
+        return output.withFindings(allViolations, ViolationUtils::toFinding);
     }
 
     private class Type {
@@ -99,7 +104,7 @@ class CrossProjectStrategy implements DetectionStrategy {
         }
     }
 
-    private Collection<EGroumGraph> loadTrainingExamples(Type targetType, DetectorArgs args, DetectorOutput.Builder output) throws FileNotFoundException {
+    private Collection<EGroumGraph> loadTrainingExamples(Type targetType, AUG target, DetectorArgs args, DetectorOutput.Builder output) throws FileNotFoundException {
         List<ExampleProject> exampleProjects = getExampleProjects(targetType);
         System.out.println(String.format("[MuDetectXProject] Example Projects = %d", exampleProjects.size()));
         output.withRunInfo(targetType + "-exampleProjects", exampleProjects.size());
@@ -122,10 +127,14 @@ class CrossProjectStrategy implements DetectionStrategy {
                 break;
             }
         }
-        Collection<EGroumGraph> targetTypeExamples = collector.getAUGs();
-        System.out.println(String.format("[MuDetectXProject] Examples = %d", targetTypeExamples.size()));
+        Collection<EGroumGraph> targetExamples = collector.getAUGs();
+        UsageExamplePredicate usageExamplePredicate = MethodUsageExamplePredicate.usageExamplesOf(target);
+        for (EGroumGraph g : targetExamples)
+        	if (!usageExamplePredicate.matches(g))
+        		targetExamples.remove(g);
+        System.out.println(String.format("[MuDetectXProject] Examples = %d", targetExamples.size()));
 
-        return targetTypeExamples;
+        return targetExamples;
     }
 
     private Collection<String> inferTargetTypes(CodePath targetPath) {

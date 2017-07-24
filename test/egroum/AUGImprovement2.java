@@ -3,6 +3,7 @@ package egroum;
 import graphics.DotGraph;
 import java.util.ArrayList;
 
+import mining.TypeUsageExamplePredicate;
 import mining.UsageExamplePredicate;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.hamcrest.core.Is;
@@ -69,19 +70,19 @@ public class AUGImprovement2 {
     	assertThat(gs, is(not(empty())));
     	
     	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
-            usageExamplePredicate = UsageExamplePredicate.usageExamplesOf("java.util");}});
+            usageExamplePredicate = TypeUsageExamplePredicate.usageExamplesOf("java.util");}});
     	assertThat(gs, is(empty()));
     	
     	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
-            usageExamplePredicate = UsageExamplePredicate.usageExamplesOf("java.util.Iterator");}});
+            usageExamplePredicate = TypeUsageExamplePredicate.usageExamplesOf("java.util.Iterator");}});
     	assertThat(gs, is(not(empty())));
     	
     	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
-            usageExamplePredicate = UsageExamplePredicate.usageExamplesOf("java.util.Collection");}});
+            usageExamplePredicate = TypeUsageExamplePredicate.usageExamplesOf("java.util.Collection");}});
     	assertThat(gs, is(not(empty())));
     	
     	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
-            usageExamplePredicate = UsageExamplePredicate.usageExamplesOf("java.util.Collection", "java.util.Iterator");}});
+            usageExamplePredicate = TypeUsageExamplePredicate.usageExamplesOf("java.util.Collection", "java.util.Iterator");}});
     	assertThat(gs, is(not(empty())));
     }
 

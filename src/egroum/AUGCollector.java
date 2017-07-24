@@ -3,8 +3,6 @@ package egroum;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class AUGCollector {
     private final AUGConfiguration config;

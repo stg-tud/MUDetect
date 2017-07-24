@@ -413,6 +413,18 @@ public class EGroumGraph implements Serializable {
 				.collect(Collectors.toSet());
 	}
 
+	public Set<String> getNodeLabels() {
+		return getNodes().stream()
+				.filter(EGroumNode::isMeaningfulAction)
+				.map(EGroumNode::getLabel)
+				.collect(Collectors.toSet());
+//		Set<String> labels = new HashSet<>();
+//		for (EGroumNode node : nodes)
+//			if (node.isMeaningfulAction())
+//				labels.add(node.getLabel());
+//		return labels;
+	}
+
 	private EGroumGraph buildPDG(EGroumNode control, String branch, ASTNode node) {
 		if (node instanceof ArrayAccess)
 			return buildPDG(control, branch, (ArrayAccess) node);

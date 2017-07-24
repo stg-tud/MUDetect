@@ -3,76 +3,16 @@ package mining;
 import egroum.EGroumGraph;
 import org.eclipse.jdt.core.dom.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
-public class UsageExamplePredicate {
-    private final Set<String> fullyQualifiedTypeNames;
-    private final Set<String> simpleTypeNames;
+public abstract class UsageExamplePredicate {
 
     public static UsageExamplePredicate allUsageExamples() {
-        return new UsageExamplePredicate(new String[0]);
+    	return new TypeUsageExamplePredicate(new String[0]);
     }
 
-    public static UsageExamplePredicate usageExamplesOf(String... fullyQualifiedTypeNames) {
-        return new UsageExamplePredicate(fullyQualifiedTypeNames);
-    }
+    protected abstract boolean matchesAnyExample();
 
-    private UsageExamplePredicate(String[] fullyQualifiedTypeNames) {
-        this.fullyQualifiedTypeNames = new HashSet<>(Arrays.asList(fullyQualifiedTypeNames));
-        this.simpleTypeNames = new HashSet<>();
-        for (String fullyQualifiedTypeName : fullyQualifiedTypeNames) {
-            simpleTypeNames.add(fullyQualifiedTypeName.substring(fullyQualifiedTypeName.lastIndexOf('.') + 1));
-        }
-    }
+    public abstract boolean matches(EGroumGraph graph);
 
-    private boolean matchesAnyExample() {
-        return fullyQualifiedTypeNames.isEmpty();
-    }
-
-    public boolean matches(EGroumGraph graph) {
-        return matchesAnyExample() || !Collections.disjoint(graph.getAPIs(), simpleTypeNames);
-    }
-
-    private boolean containing;
-    public boolean matches(ASTNode node) {
-        if (matchesAnyExample()) return true;
-
-        containing = false;
-        node.accept(new ASTVisitor(false) {
-            @Override
-            public boolean visit(MethodInvocation node) {
-                return !isDeclaredByApiClass(node.resolveMethodBinding()) && super.visit(node);
-            }
-
-            @Override
-            public boolean visit(ConstructorInvocation node) {
-                return !isDeclaredByApiClass(node.resolveConstructorBinding()) && super.visit(node);
-            }
-
-            @Override
-            public boolean visit(ClassInstanceCreation node) {
-                return !isDeclaredByApiClass(node.resolveConstructorBinding()) && super.visit(node);
-            }
-
-            private boolean isDeclaredByApiClass(IMethodBinding mb) {
-                if (mb != null) {
-                    String name = mb.getDeclaringClass().getTypeDeclaration().getQualifiedName();
-                    if (fullyQualifiedTypeNames.contains(name)) {
-                        containing = true;
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            @Override
-            public boolean preVisit2(ASTNode node) {
-                return !containing && super.preVisit2(node);
-            }
-        });
-        return containing;
-    }
+    protected boolean containing;
+    public abstract boolean matches(ASTNode node);
 }
