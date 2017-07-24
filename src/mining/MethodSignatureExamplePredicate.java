@@ -36,8 +36,13 @@ public class MethodSignatureExamplePredicate extends UsageExamplePredicate {
     	return true;
     }
 
-	public boolean matches(String type, MethodDeclaration method) {
-		return signatures.contains(type + "." + buildSignature(method));
+	public boolean matches(String path, String type, MethodDeclaration method) {
+		return signatures.contains(getVersionId(path) + "/" + type + "/" + buildSignature(method));
+	}
+
+	private String getVersionId(String path) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	private static String buildSignature(MethodDeclaration method) {

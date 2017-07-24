@@ -267,7 +267,7 @@ class OnlineCrossProjectStrategy implements DetectionStrategy {
     	while (sc.hasNextLine()) {
     		String line = sc.nextLine();
     		String[] parts = line.split("\t");
-    		signatures.add(parts[4] + "." + parts[5]);
+    		signatures.add(parts[1] + "/" + parts[4] + "/" + parts[5]);
     	}
     	sc.close();
 		return signatures.toArray(new String[0]);
