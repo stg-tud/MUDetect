@@ -19,9 +19,12 @@ import de.tu_darmstadt.stg.yaml.YamlObject;
 import egroum.AUGBuilder;
 import egroum.AUGCollector;
 import egroum.EGroumGraph;
+import mining.MethodSignatureExamplePredicate;
 import mining.MethodUsageExamplePredicate;
 import mining.TypeUsageExamplePredicate;
 import mining.UsageExamplePredicate;
+import utils.FileIO;
+
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
@@ -249,10 +252,28 @@ class OnlineCrossProjectStrategy implements DetectionStrategy {
     }
 
     private Collection<AUG> loadDetectionTargets(DetectorArgs args) throws IOException {
-        return new AUGBuilder(new DefaultAUGConfiguration()).build(args.getTargetPath().srcPath, args.getDependencyClassPath());
+    	String[] signatures = getTargetMethodsWithMisuses(args);
+        return new AUGBuilder(
+        			new DefaultAUGConfiguration(){
+        				{usageExamplePredicate = MethodSignatureExamplePredicate.usageExamplesOf(signatures);}
+        			}
+        		).build(args.getTargetPath().srcPath, args.getDependencyClassPath());
     }
 
-    private MuDetect createDetector(Model model) {
+    private String[] getTargetMethodsWithMisuses(DetectorArgs args) {
+    	Set<String> signatures = new HashSet<>();
+    	String content = FileIO.readStringFromFile("checkouts/_examples/index_methods.csv");
+    	Scanner sc = new Scanner(content);
+    	while (sc.hasNextLine()) {
+    		String line = sc.nextLine();
+    		String[] parts = line.split("\t");
+    		signatures.add(parts[4] + "." + parts[5]);
+    	}
+    	sc.close();
+		return signatures.toArray(new String[0]);
+	}
+
+	private MuDetect createDetector(Model model) {
         return new MuDetect(
                 new MinPatternActionsModel(model, 2),
                 new AlternativeMappingsOverlapsFinder(new DefaultOverlapFinderConfig(new DefaultMiningConfiguration())),
