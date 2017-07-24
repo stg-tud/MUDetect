@@ -1,7 +1,6 @@
 package de.tu_darmstadt.stg.mubench;
 
 import com.google.common.collect.Multiset;
-import de.tu_darmstadt.stg.mubench.cli.CodePath;
 import de.tu_darmstadt.stg.mubench.cli.DetectionStrategy;
 import de.tu_darmstadt.stg.mubench.cli.DetectorArgs;
 import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
@@ -20,7 +19,6 @@ import egroum.AUGBuilder;
 import egroum.AUGCollector;
 import egroum.EGroumGraph;
 import mining.TypeUsageExamplePredicate;
-import mining.UsageExamplePredicate;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
@@ -32,80 +30,90 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 class CrossProjectStrategy implements DetectionStrategy {
+    private final Mode mode;
+
+    public static enum Mode {
+        OFFLINE, ONLINE
+    }
+
+    public CrossProjectStrategy(Mode mode) {
+        this.mode = mode;
+    }
+
     @Override
     public DetectorOutput detectViolations(DetectorArgs args) throws Exception {
         DetectorOutput.Builder output = createOutput();
 
-        Set<Pattern> patterns = new HashSet<>();
-        Collection<String> targetTypeNames = inferTargetTypes(args.getTargetPath());
-        for (String targetTypeName : targetTypeNames) {
-            Type targetType = new Type(targetTypeName);
-            System.out.println(String.format("[MuDetectXProject] Target Type = %s", targetType));
+        TargetProject targetProject = TargetProject.find(getIndexFilePath(), args.getTargetPath());
+        Collection<AUG> targets = loadDetectionTargets(args, targetProject);
+        output.withRunInfo("numberOfTargets", targets.size());
 
-            long startTime = System.currentTimeMillis();
-            Collection<EGroumGraph> trainingExamples = loadTrainingExamples(targetType, args, output);
-            long endTrainingLoadTime = System.currentTimeMillis();
-            output.withRunInfo(targetType + "-trainingLoadTime", endTrainingLoadTime - startTime);
-            output.withRunInfo(targetType + "-numberOfTrainingExamples", trainingExamples.size());
-            output.withRunInfo(targetType + "-numberOfUsagesInTrainingExamples", getTypeUsageCounts(trainingExamples));
+        Set<Pattern> patterns = new HashSet<>();
+        Set<String> minedForAPIs = new HashSet<>();
+        for (Misuse misuse : targetProject.getMisuses()) {
+            API api = misuse.getMisusedAPI();
+
+            String logPrefix;
+            TypeUsageExamplePredicate examplePredicate;
+            switch (mode) {
+                case OFFLINE:
+                    if (minedForAPIs.contains(api.getName()))
+                        continue;
+
+                    System.out.println(String.format("[MuDetectXProject] Target API = %s", api));
+                    examplePredicate = TypeUsageExamplePredicate.usageExamplesOf(api.getName());
+                    logPrefix = api.getSimpleName();
+                    minedForAPIs.add(api.getName());
+                    break;
+                case ONLINE:
+
+                    System.out.println(String.format("[MuDetectXProject] Target API = %s, Misuse = %s", api, misuse.getId()));
+                    AUG misuseInstance = findMisuseInstance(misuse, targets);
+                    examplePredicate = SimilarUsageExamplePredicate.examplesSimilarTo(misuseInstance, api);
+                    logPrefix = misuse.getId();
+                    break;
+                default:
+                    throw new IllegalStateException("no such mode: " + mode);
+            }
+
+            Collection<EGroumGraph> trainingExamples = loadTrainingExamples(api, examplePredicate, args, output);
+            output.withRunInfo(logPrefix + "-numberOfTrainingExamples", trainingExamples.size());
+            output.withRunInfo(logPrefix + "-numberOfUsagesInTrainingExamples", getTypeUsageCounts(trainingExamples));
 
             Model model = createMiner().mine(trainingExamples);
-            long endTrainingTime = System.currentTimeMillis();
-            output.withRunInfo(targetType + "-trainingTime", endTrainingTime - endTrainingLoadTime);
-            output.withRunInfo(targetType + "-numberOfPatterns", model.getPatterns().size());
-            output.withRunInfo(targetType + "-maxPatternSupport", model.getMaxPatternSupport());
+            output.withRunInfo(logPrefix + "-numberOfPatterns", model.getPatterns().size());
+            output.withRunInfo(logPrefix + "-maxPatternSupport", model.getMaxPatternSupport());
 
             patterns.addAll(model.getPatterns());
         }
 
-        long endTrainingTime = System.currentTimeMillis();
-        Collection<AUG> targets = loadDetectionTargets(args);
-        long endDetectionLoadTime = System.currentTimeMillis();
-        output.withRunInfo("detectionLoadTime", endDetectionLoadTime - endTrainingTime);
-        output.withRunInfo("numberOfTargets", targets.size());
-
         Model model = () -> patterns;
         List<Violation> violations = createDetector(model).findViolations(targets);
-        long endDetectionTime = System.currentTimeMillis();
-        output.withRunInfo("detectionTime", endDetectionTime - endDetectionLoadTime);
         output.withRunInfo("numberOfViolations", violations.size());
         output.withRunInfo("numberOfExploredAlternatives", AlternativeMappingsOverlapsFinder.numberOfExploredAlternatives);
 
         return output.withFindings(violations, ViolationUtils::toFinding);
     }
 
-    private class Type {
-        private final String typeName;
-
-        Type(String typeName) {
-            this.typeName = typeName;
+    private AUG findMisuseInstance(Misuse misuse, Collection<AUG> targets) {
+        for (AUG target : targets) {
+            if (target.getLocation().getMethodName().equals(misuse.getMethodSignature())) {
+                return target;
+            }
         }
-
-        String getName() {
-            return typeName;
-        }
-
-        String getSimpleName() {
-            return typeName.substring(typeName.lastIndexOf('.') + 1);
-        }
-
-        @Override
-        public String toString() {
-            return typeName;
-        }
+        throw new IllegalStateException("no target for misuse.");
     }
 
-    private Collection<EGroumGraph> loadTrainingExamples(Type targetType, DetectorArgs args, DetectorOutput.Builder output) throws FileNotFoundException {
+    private Collection<EGroumGraph> loadTrainingExamples(API targetType, TypeUsageExamplePredicate examplePredicate, DetectorArgs args, DetectorOutput.Builder output) throws FileNotFoundException {
         List<ExampleProject> exampleProjects = getExampleProjects(targetType);
         System.out.println(String.format("[MuDetectXProject] Example Projects = %d", exampleProjects.size()));
         output.withRunInfo(targetType + "-exampleProjects", exampleProjects.size());
 
         AUGCollector collector = new AUGCollector(new DefaultAUGConfiguration() {{
-            usageExamplePredicate = TypeUsageExamplePredicate.usageExamplesOf(targetType.getName());
+            usageExamplePredicate = examplePredicate;
         }});
         for (ExampleProject exampleProject : exampleProjects) {
             for (String srcDir : exampleProject.getSrcDirs()) {
@@ -118,7 +126,7 @@ class CrossProjectStrategy implements DetectionStrategy {
                     e.printStackTrace(System.err);
                 }
             }
-            if (collector.getAUGs().size() > 5000) {
+            if (collector.getAUGs().size() > 1000) {
                 break;
             }
         }
@@ -128,22 +136,7 @@ class CrossProjectStrategy implements DetectionStrategy {
         return targetTypeExamples;
     }
 
-    private Collection<String> inferTargetTypes(CodePath targetPath) {
-        String targetSrcPath = targetPath.srcPath;
-        try (Stream<String> lines = Files.lines(getIndexFilePath())) {
-            Set<String> targetTypes = lines.map(Project::createProject)
-                    .filter(project -> project.residesIn(targetSrcPath))
-                    .map(Project::getTargetTypeName).collect(Collectors.toSet());
-            if (targetTypes.isEmpty()) {
-                throw new IllegalArgumentException("failed to determine target type for " + targetSrcPath);
-            }
-            return targetTypes;
-        } catch (IOException e) {
-            throw new IllegalStateException("index file missing or corrupted", e);
-        }
-    }
-
-    private List<ExampleProject> getExampleProjects(Type targetType) {
+    private List<ExampleProject> getExampleProjects(API targetType) {
         Path dataFile = Paths.get(getExamplesBasePath().toString(), targetType + ".yml");
         try (InputStream is = new FileInputStream(dataFile.toFile())) {
             return StreamSupport.stream(new Yaml().loadAll(is).spliterator(), false)
@@ -153,11 +146,11 @@ class CrossProjectStrategy implements DetectionStrategy {
         }
     }
 
-    private static class ExampleProject {
+    static class ExampleProject {
         private final String projectPath;
         private final List<String> srcDirs;
 
-        private ExampleProject(String projectPath, List<String> srcDirs) {
+        ExampleProject(String projectPath, List<String> srcDirs) {
             this.projectPath = projectPath;
             this.srcDirs = srcDirs;
         }
@@ -179,8 +172,12 @@ class CrossProjectStrategy implements DetectionStrategy {
         }
     }
 
-    private Path getIndexFilePath() {
-        return Paths.get(getExamplesBasePath().toString(), "index.csv");
+    private Path getIndexFilePath() throws FileNotFoundException {
+        Path path = Paths.get(getExamplesBasePath().toString(), "index.csv");
+        if (!Files.exists(path)) {
+            throw new FileNotFoundException("No index file '" + path + "'.");
+        }
+        return path;
     }
 
     private Path getExamplesBasePath() {
@@ -188,40 +185,7 @@ class CrossProjectStrategy implements DetectionStrategy {
     }
 
     private Path getMuBenchBasePath() {
-        return Paths.get(".");
-    }
-
-    private static class Project {
-        private final String projectId;
-        private final String versionId;
-        private final String targetTypeName;
-
-        private Project(String projectId, String versionId, String targetTypeName) {
-            this.projectId = projectId;
-            this.versionId = versionId;
-            this.targetTypeName = targetTypeName;
-        }
-
-        static Project createProject(String line) {
-            String[] info = line.split("\t");
-            return new Project(info[0], info[1], info[2]);
-        }
-
-        String getProjectId() {
-            return projectId;
-        }
-
-        String getVersionId() {
-            return versionId;
-        }
-
-        String getTargetTypeName() {
-            return targetTypeName;
-        }
-
-        boolean residesIn(String targetSrcPath) {
-            return targetSrcPath.contains(String.format("/%s/%s/", getProjectId(), getVersionId()));
-        }
+        return Paths.get("/Users/svenamann/Documents/PhD/API Misuse Benchmark/MUBench");
     }
 
     private YamlObject getTypeUsageCounts(Collection<EGroumGraph> targets) {
@@ -235,12 +199,14 @@ class CrossProjectStrategy implements DetectionStrategy {
     private AUGMiner createMiner() {
         return new DefaultAUGMiner(new DefaultMiningConfiguration() {{
             occurenceLevel = Level.CROSS_PROJECT;
-            minPatternSupport = 10;
+            minPatternSupport = 5;
         }});
     }
 
-    private Collection<AUG> loadDetectionTargets(DetectorArgs args) throws IOException {
-        return new AUGBuilder(new DefaultAUGConfiguration()).build(args.getTargetPath().srcPath, args.getDependencyClassPath());
+    private Collection<AUG> loadDetectionTargets(DetectorArgs args, TargetProject targetProject) throws IOException {
+        return new AUGBuilder(new DefaultAUGConfiguration() {{
+            usageExamplePredicate = MisuseInstancePredicate.examplesOf(targetProject.getMisuses());
+        }}).build(args.getTargetPath().srcPath, args.getDependencyClassPath());
     }
 
     private MuDetect createDetector(Model model) {

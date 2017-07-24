@@ -16,7 +16,6 @@ import org.apache.bcel.generic.Type;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.*;
 
-import mining.MethodSignatureExamplePredicate;
 import utils.FileIO;
 import utils.JavaASTUtil;
 
@@ -314,9 +313,9 @@ public class EGroumBuilder {
 		HashMap<String, CompilationUnit> cus = new HashMap<>();
 		FileASTRequestor r = new FileASTRequestor() {
 			@Override
-			public void acceptAST(String sourceFilePath, CompilationUnit ast) {
-				if (configuration.usageExamplePredicate.matches(ast))
-					cus.put(sourceFilePath, ast);
+			public void acceptAST(String sourceFilePath, CompilationUnit cu) {
+				if (configuration.usageExamplePredicate.matches(sourceFilePath, cu))
+					cus.put(sourceFilePath, cu);
 			}
 		};
 		@SuppressWarnings("rawtypes")
@@ -375,12 +374,7 @@ public class EGroumBuilder {
 	private ArrayList<EGroumGraph> buildGroums(TypeDeclaration type, String path, String prefix) {
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		for (MethodDeclaration method : type.getMethods())
-			if (configuration.usageExamplePredicate instanceof MethodSignatureExamplePredicate) {
-				if (((MethodSignatureExamplePredicate) configuration.usageExamplePredicate).matches(path, prefix, method)) {
-					EGroumGraph g = buildGroum(method, path, prefix + type.getName().getIdentifier() + ".");
-					groums.add(g);
-				}
-			} else if (configuration.usageExamplePredicate.matches(method)) {
+			if (configuration.usageExamplePredicate.matches(method)) {
 				EGroumGraph g = buildGroum(method, path, prefix + type.getName().getIdentifier() + ".");
 				if (configuration.usageExamplePredicate.matches(g))
 					groums.add(g);

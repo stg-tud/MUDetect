@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TypeUsageExamplePredicate extends UsageExamplePredicate {
+public class TypeUsageExamplePredicate implements UsageExamplePredicate {
     private final Set<String> fullyQualifiedTypeNames;
     private final Set<String> simpleTypeNames;
 
@@ -16,7 +16,7 @@ public class TypeUsageExamplePredicate extends UsageExamplePredicate {
         return new TypeUsageExamplePredicate(fullyQualifiedTypeNames);
     }
 
-    protected TypeUsageExamplePredicate(String[] fullyQualifiedTypeNames) {
+    protected TypeUsageExamplePredicate(String... fullyQualifiedTypeNames) {
         this.fullyQualifiedTypeNames = new HashSet<>(Arrays.asList(fullyQualifiedTypeNames));
         this.simpleTypeNames = new HashSet<>();
         for (String fullyQualifiedTypeName : fullyQualifiedTypeNames) {
@@ -25,17 +25,17 @@ public class TypeUsageExamplePredicate extends UsageExamplePredicate {
     }
 
     @Override
-	protected boolean matchesAnyExample() {
-        return fullyQualifiedTypeNames.isEmpty();
+    public boolean matches(String sourceFilePath, CompilationUnit cu) {
+        return matches(cu);
     }
 
     @Override
-	public boolean matches(EGroumGraph graph) {
-        return matchesAnyExample() || !Collections.disjoint(graph.getAPIs(), simpleTypeNames);
+    public boolean matches(MethodDeclaration methodDeclaration) {
+        return matches((ASTNode) methodDeclaration);
     }
 
-    @Override
-	public boolean matches(ASTNode node) {
+    private boolean containing;
+    private boolean matches(ASTNode node) {
         if (matchesAnyExample()) return true;
 
         containing = false;
@@ -72,5 +72,14 @@ public class TypeUsageExamplePredicate extends UsageExamplePredicate {
             }
         });
         return containing;
+    }
+
+    @Override
+	public boolean matches(EGroumGraph graph) {
+        return matchesAnyExample() || !Collections.disjoint(graph.getAPIs(), simpleTypeNames);
+    }
+
+    private boolean matchesAnyExample() {
+        return fullyQualifiedTypeNames.isEmpty();
     }
 }

@@ -6,7 +6,7 @@ public class MuDetectCrossProjectRunner {
     public static void main(String[] args) throws Exception {
         new MuBenchRunner()
                 .withDetectOnlyStrategy(new ProvidedPatternsStrategy())
-                .withMineAndDetectStrategy(new CrossProjectStrategy())
+                .withMineAndDetectStrategy(new CrossProjectStrategy(CrossProjectStrategy.Mode.OFFLINE))
                 .run(args);
     }
 }

@@ -3,16 +3,29 @@ package mining;
 import egroum.EGroumGraph;
 import org.eclipse.jdt.core.dom.*;
 
-public abstract class UsageExamplePredicate {
-
+public interface UsageExamplePredicate {
     public static UsageExamplePredicate allUsageExamples() {
-    	return new TypeUsageExamplePredicate(new String[0]);
+    	return new UsageExamplePredicate() {
+            @Override
+            public boolean matches(String sourceFilePath, CompilationUnit cu) {
+                return true;
+            }
+
+            @Override
+            public boolean matches(MethodDeclaration methodDeclaration) {
+                return true;
+            }
+
+            @Override
+            public boolean matches(EGroumGraph graph) {
+                return true;
+            }
+
+        };
     }
 
-    protected abstract boolean matchesAnyExample();
+    boolean matches(String sourceFilePath, CompilationUnit cu);
+    boolean matches(MethodDeclaration methodDeclaration);
 
-    public abstract boolean matches(EGroumGraph graph);
-
-    protected boolean containing;
-    public abstract boolean matches(ASTNode node);
+    boolean matches(EGroumGraph graph);
 }
