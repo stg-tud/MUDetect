@@ -109,7 +109,6 @@ class CrossProjectStrategy implements DetectionStrategy {
         List<ExampleProject> exampleProjects = getExampleProjects(targetType);
         System.out.println(String.format("[MuDetectXProject] Example Projects = %d", exampleProjects.size()));
         output.withRunInfo(targetType + "-exampleProjects", exampleProjects.size());
-        int maxNumberOfExamplesPerProject = 1000 / exampleProjects.size();
 
         EGroumBuilder builder = new EGroumBuilder(new DefaultAUGConfiguration() {{
             usageExamplePredicate = examplePredicate;
@@ -136,6 +135,7 @@ class CrossProjectStrategy implements DetectionStrategy {
                 }
             }
             System.out.println(String.format("[MuDetectXProject] Examples from Project = %d", projectExamples.size()));
+            int maxNumberOfExamplesPerProject = 1000 / exampleProjects.size();
             if (projectExamples.size() > maxNumberOfExamplesPerProject) {
                 projectExamples = pickNRandomElements(projectExamples, maxNumberOfExamplesPerProject, new Random(projectName.hashCode()));
                 System.out.println(String.format("[MuDetectXProject] Too many examples, sampling %d.", maxNumberOfExamplesPerProject));
