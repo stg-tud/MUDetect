@@ -200,7 +200,7 @@ class CrossProjectStrategy implements DetectionStrategy {
     }
 
     private Path getMuBenchBasePath() {
-        return Paths.get("/Users/svenamann/Documents/PhD/API Misuse Benchmark/MUBench");
+        return Paths.get(".");
     }
 
     private static <E> List<E> pickNRandomElements(List<E> list, int n, Random r) {
