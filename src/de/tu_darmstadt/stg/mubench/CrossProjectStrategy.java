@@ -16,7 +16,6 @@ import de.tu_darmstadt.stg.mudetect.ranking.*;
 import de.tu_darmstadt.stg.mustudies.UsageUtils;
 import de.tu_darmstadt.stg.yaml.YamlObject;
 import egroum.AUGBuilder;
-import egroum.AUGCollector;
 import egroum.EGroumBuilder;
 import egroum.EGroumGraph;
 import mining.TypeUsageExamplePredicate;
