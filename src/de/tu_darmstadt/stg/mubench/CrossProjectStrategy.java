@@ -17,14 +17,12 @@ import de.tu_darmstadt.stg.mustudies.UsageUtils;
 import de.tu_darmstadt.stg.yaml.YamlObject;
 import egroum.AUGBuilder;
 import egroum.AUGCollector;
+import egroum.EGroumBuilder;
 import egroum.EGroumGraph;
 import mining.TypeUsageExamplePredicate;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -111,26 +109,43 @@ class CrossProjectStrategy implements DetectionStrategy {
         List<ExampleProject> exampleProjects = getExampleProjects(targetType);
         System.out.println(String.format("[MuDetectXProject] Example Projects = %d", exampleProjects.size()));
         output.withRunInfo(targetType + "-exampleProjects", exampleProjects.size());
+        int maxNumberOfExamplesPerProject = 1000 / exampleProjects.size();
 
-        AUGCollector collector = new AUGCollector(new DefaultAUGConfiguration() {{
+        EGroumBuilder builder = new EGroumBuilder(new DefaultAUGConfiguration() {{
             usageExamplePredicate = examplePredicate;
         }});
+        List<EGroumGraph> targetTypeExamples = new ArrayList<>();
         for (ExampleProject exampleProject : exampleProjects) {
+            String projectName = exampleProject.getProjectPath();
+            List<EGroumGraph> projectExamples = new ArrayList<>();
             for (String srcDir : exampleProject.getSrcDirs()) {
+                Path projectSrcPath = Paths.get(exampleProject.getProjectPath(), srcDir);
+                System.out.println(String.format("[MuDetectXProject] Scanning path %s", projectSrcPath));
+                PrintStream originalSysOut = System.out;
                 try {
-                    Path projectSrcPath = Paths.get(exampleProject.getProjectPath(), srcDir);
-                    System.out.println(String.format("[MuDetectXProject] Scanning path %s", projectSrcPath));
-                    collector.collectFrom(exampleProject.getProjectPath(), projectSrcPath, args.getDependencyClassPath());
+                    System.setOut(new PrintStream(new OutputStream() {
+                        @Override
+                        public void write(int arg0) throws IOException {}
+                    }));
+                    projectExamples.addAll(builder.buildBatch(projectSrcPath.toString(), args.getDependencyClassPath()));
                 } catch (Exception e) {
-                    System.err.println("[MuDetectXProject] Parsing failed.");
+                    System.err.print("[MuDetectXProject] Parsing failed: ");
                     e.printStackTrace(System.err);
+                } finally {
+                    System.setOut(originalSysOut);
                 }
             }
-            if (collector.getAUGs().size() > 1000) {
-                break;
+            System.out.println(String.format("[MuDetectXProject] Examples from Project = %d", projectExamples.size()));
+            if (projectExamples.size() > maxNumberOfExamplesPerProject) {
+                projectExamples = pickNRandomElements(projectExamples, maxNumberOfExamplesPerProject, new Random(projectName.hashCode()));
+                System.out.println(String.format("[MuDetectXProject] Too many examples, sampling %d.", maxNumberOfExamplesPerProject));
+            }
+
+            for (EGroumGraph example : projectExamples) {
+                example.setProjectName(projectName);
+                targetTypeExamples.add(example);
             }
         }
-        Collection<EGroumGraph> targetTypeExamples = collector.getAUGs();
         System.out.println(String.format("[MuDetectXProject] Examples = %d", targetTypeExamples.size()));
 
         return targetTypeExamples;
@@ -186,6 +201,16 @@ class CrossProjectStrategy implements DetectionStrategy {
 
     private Path getMuBenchBasePath() {
         return Paths.get("/Users/svenamann/Documents/PhD/API Misuse Benchmark/MUBench");
+    }
+
+    private static <E> List<E> pickNRandomElements(List<E> list, int n, Random r) {
+        int length = list.size();
+        if (length < n) return list;
+
+        for (int i = length - 1; i >= length - n; --i) {
+            Collections.swap(list, i , r.nextInt(i + 1));
+        }
+        return list.subList(length - n, length);
     }
 
     private YamlObject getTypeUsageCounts(Collection<EGroumGraph> targets) {
