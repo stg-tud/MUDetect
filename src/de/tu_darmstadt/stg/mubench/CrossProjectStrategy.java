@@ -70,13 +70,13 @@ class CrossProjectStrategy implements DetectionStrategy {
                     System.out.println(String.format("[MuDetectXProject] Target API = %s, Misuse = %s", api, misuse.getId()));
                     AUG misuseInstance = findMisuseInstance(misuse, targets);
                     examplePredicate = SimilarUsageExamplePredicate.examplesSimilarTo(misuseInstance, api);
-                    logPrefix = misuse.getId();
+                    logPrefix = "M-" + misuse.getId() + "-" + api.getSimpleName();
                     break;
                 default:
                     throw new IllegalStateException("no such mode: " + mode);
             }
 
-            Collection<EGroumGraph> trainingExamples = loadTrainingExamples(api, examplePredicate, args, output);
+            Collection<EGroumGraph> trainingExamples = loadTrainingExamples(api, logPrefix, examplePredicate, args, output);
             output.withRunInfo(logPrefix + "-numberOfTrainingExamples", trainingExamples.size());
             output.withRunInfo(logPrefix + "-numberOfUsagesInTrainingExamples", getTypeUsageCounts(trainingExamples));
 
@@ -104,10 +104,10 @@ class CrossProjectStrategy implements DetectionStrategy {
         throw new IllegalStateException("no target for misuse.");
     }
 
-    private Collection<EGroumGraph> loadTrainingExamples(API targetType, TypeUsageExamplePredicate examplePredicate, DetectorArgs args, DetectorOutput.Builder output) throws FileNotFoundException {
+    private Collection<EGroumGraph> loadTrainingExamples(API targetType, String logPrefix, TypeUsageExamplePredicate examplePredicate, DetectorArgs args, DetectorOutput.Builder output) throws FileNotFoundException {
         List<ExampleProject> exampleProjects = getExampleProjects(targetType);
         System.out.println(String.format("[MuDetectXProject] Example Projects = %d", exampleProjects.size()));
-        output.withRunInfo(targetType + "-exampleProjects", exampleProjects.size());
+        output.withRunInfo(logPrefix + "-exampleProjects", exampleProjects.size());
 
         EGroumBuilder builder = new EGroumBuilder(new DefaultAUGConfiguration() {{
             usageExamplePredicate = examplePredicate;
