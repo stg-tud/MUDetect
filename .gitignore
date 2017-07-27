@@ -124,6 +124,9 @@ buildNumber.properties
 ### Project Specific ###
 output
 /aug-improvement
+/paper-examples
 /log*.txt
 /temp/
 /*.zip
+/findings.yml
+/run.yml
