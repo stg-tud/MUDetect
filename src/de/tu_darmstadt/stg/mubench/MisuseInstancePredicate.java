@@ -52,7 +52,10 @@ public class MisuseInstancePredicate implements UsageExamplePredicate {
 			SingleVariableDeclaration svd = (SingleVariableDeclaration) method.parameters().get(i);
 			if (i > 0)
 				sb.append(", ");
-			sb.append(JavaASTUtil.getSimpleType(svd.getType()));
+            String simpleType = JavaASTUtil.getSimpleType(svd.getType());
+            // remove qualifier from inner types
+            simpleType = simpleType.substring(simpleType.lastIndexOf('.') + 1);
+            sb.append(simpleType);
 		}
 		sb.append(")");
 		return sb.toString();
