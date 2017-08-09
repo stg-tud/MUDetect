@@ -25,7 +25,7 @@ public class AUGImprovement2 {
 
     @Test
     public void aug() throws Exception {
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Example.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0;}});
+    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Example_09_14.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0;}});
     }
 
     @Test

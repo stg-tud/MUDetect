@@ -23,7 +23,8 @@ public class EncodeCastTest {
         assertThat(aug, hasNode(actionNodeWithLabel("List.<cast>")));
     }
 
-    @Test 
+    @Test @Ignore("We don't currently add transitive edges at all. Edges 'around' casts may help to match pre-generics" +
+            "code with post-generics code, but I don't really think there's much need for this.")
     public void addsTransitiveParameterEdgeThroughCast() throws Exception {
         AUG aug = buildAUG("class C {\n" +
                 "  void m(java.util.List l) {\n" +
@@ -35,7 +36,8 @@ public class EncodeCastTest {
         assertThat(aug, hasEdge(actionNodeWithLabel("List.get()"), PARAMETER, actionNodeWithLabel("List.remove()")));
     }
 
-    @Test
+    @Test @Ignore("We don't currently add transitive edges at all. Generally, the cast in this example is strictly" +
+            "required (modulo generics), since otherwise we couldn't call A.m().")
     public void addsTransitiveReceiverEdgeThroughCast() throws Exception {
         AUG aug = buildAUG("class C {\n" +
                 "  void m(java.util.List l) {\n" +

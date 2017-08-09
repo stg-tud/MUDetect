@@ -51,9 +51,7 @@ public class AlternativePatternsIntegrationTest {
         Pattern pattern = somePattern(TestAUGBuilder.buildAUG().withActionNode("JPanel.<init>").withDataNode("JPanel")
                 .withActionNode("add1", "JPanel.add()").withActionNode("add2", "JPanel.add()")
                 .withDataEdge("JPanel.<init>", DEFINITION, "JPanel")
-                .withDataEdge("JPanel.<init>", RECEIVER, "add1")
                 .withDataEdge("JPanel", RECEIVER, "add1")
-                .withDataEdge("JPanel.<init>", RECEIVER, "add2")
                 .withDataEdge("JPanel", RECEIVER, "add2")
                 .withDataEdge("add2", EGroumDataEdge.Type.ORDER, "add1").build());
         AUG target = buildAUG("import javax.swing.JPanel;\n" +
@@ -87,7 +85,6 @@ public class AlternativePatternsIntegrationTest {
                 .withDataNode("IO2", "IndexOutput")
                 .withActionNode("wL()", "IndexOutput.writeLong()")
                 .withDataEdge("IO2", RECEIVER, "wL()")
-                .withDataEdge("gFP()", PARAMETER, "wL()")
                 .withDataEdge("long", PARAMETER, "wL()"));
         AUG target = buildAUG("class C {\n" +
                 "  IndexOutput tvd, tvf, tvx;" +
