@@ -8,9 +8,7 @@ import java.util.Optional;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
-import static egroum.EGroumDataEdge.Type.DEFINITION;
-import static egroum.EGroumDataEdge.Type.ORDER;
-import static egroum.EGroumDataEdge.Type.RECEIVER;
+import static egroum.EGroumDataEdge.Type.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -84,6 +82,28 @@ public class OptionalDefPrefixViolationPredicateTest {
                 .withDataEdge("Object", RECEIVER, "use()");
         TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("use()", "Object")
                 .withEdge("Object", RECEIVER, "use()");
+
+        Optional<Boolean> decision = new OptionalDefPrefixViolationPredicate().apply(overlap.build());
+
+        assertThat(decision, is(Optional.of(false)));
+    }
+
+    @Test
+    public void iterator() throws Exception {
+        TestAUGBuilder pattern = buildAUG().withActionNodes("iterator()", "hasNext()", "next()").withDataNode("Iterator")
+                .withDataEdge("iterator()", DEFINITION, "Iterator")
+                .withDataEdge("Iterator", RECEIVER, "hasNext()")
+                .withDataEdge("Iterator", RECEIVER, "next()")
+                .withCondEdge("iterator()", "rep", "next()")
+                .withCondEdge("hasNext()", "rep", "next()");
+        TestAUGBuilder target = buildAUG().withActionNodes("hasNext()", "next()").withDataNode("Iterator")
+                .withDataEdge("Iterator", RECEIVER, "hasNext()")
+                .withDataEdge("Iterator", RECEIVER, "next()")
+                .withCondEdge("hasNext()", "rep", "next()");
+        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("hasNext()", "next()", "Iterator")
+                .withEdge("Iterator", RECEIVER, "hasNext()")
+                .withEdge("Iterator", RECEIVER, "next()")
+                .withEdge("hasNext()", CONDITION, "next()");
 
         Optional<Boolean> decision = new OptionalDefPrefixViolationPredicate().apply(overlap.build());
 
