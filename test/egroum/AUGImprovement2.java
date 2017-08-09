@@ -24,6 +24,11 @@ public class AUGImprovement2 {
     public TestName name = new TestName();
 
     @Test
+    public void aug() throws Exception {
+    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Example.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0;}});
+    }
+
+    @Test
     public void direct() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
     	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_direct.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
@@ -107,28 +112,36 @@ public class AUGImprovement2 {
 
     @Test
     public void qualifiedName() throws Exception {
-        // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_qualified_name.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    	AUGConfiguration conf = new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}};
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_qualified_name.java", null, "aug-improvement", conf);
     	assertThat(gs.get(0).getNodes().size(), Is.is(9));
-    	assertThat(gs.get(0).getEdges().size(), Is.is(12));
+    	if (conf.buildTransitiveDataEdges)
+    		assertThat(gs.get(0).getEdges().size(), Is.is(12));
+    	else
+    		assertThat(gs.get(0).getEdges().size(), Is.is(10));
     }
 
     @Test
     public void cast() throws Exception {
-        // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_cast.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    	AUGConfiguration conf = new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}};
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_cast.java", null, "aug-improvement", conf);
     	assertThat(gs.get(0).getNodes().size(), Is.is(6));
-    	assertThat(gs.get(0).getEdges().size(), Is.is(8));
+    	if (conf.buildTransitiveDataEdges)
+    		assertThat(gs.get(0).getEdges().size(), Is.is(8));
+    	else
+    		assertThat(gs.get(0).getEdges().size(), Is.is(5));
     	
-    	boolean hasCastParameter = false;
-    	for (EGroumEdge e : gs.get(1).getEdges()) {
-    		if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.PARAMETER 
-    				&& e.source.getAstNodeType() == ASTNode.CAST_EXPRESSION && e.target.getAstNodeType() == ASTNode.METHOD_INVOCATION) {
-    			hasCastParameter = true;
-    			break;
-    		}
+    	if (conf.buildTransitiveDataEdges) {
+	    	boolean hasCastParameter = false;
+	    	for (EGroumEdge e : gs.get(1).getEdges()) {
+	    		if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.PARAMETER 
+	    				&& e.source.getAstNodeType() == ASTNode.CAST_EXPRESSION && e.target.getAstNodeType() == ASTNode.METHOD_INVOCATION) {
+	    			hasCastParameter = true;
+	    			break;
+	    		}
+	    	}
+	    	assertThat(hasCastParameter, Is.is(true));
     	}
-    	assertThat(hasCastParameter, Is.is(true));
     }
 
     @Test
@@ -172,6 +185,7 @@ public class AUGImprovement2 {
     	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_switch.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
     }
 
+    @Ignore
     @Test
     public void itext() throws Exception {
     	EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration());
@@ -191,7 +205,8 @@ public class AUGImprovement2 {
     	EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration());
     	gb.buildBatch("F:/github/repos-IntelliJ/JetBrains/intellij-community/java", null);
     }
-    
+
+    @Ignore
     @Test
     public void closure() throws Exception {
     	EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration(){{removeImplementationCode = 2;}});
@@ -208,16 +223,24 @@ public class AUGImprovement2 {
 
     @Test
     public void nonDeterminism1() throws Exception {
-    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_non_determinism1.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0; keepQualifierEdges = true;}});
+    	AUGConfiguration conf = new AUGConfiguration(){{removeImplementationCode = 0; keepQualifierEdges = true;}};
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_non_determinism1.java", null, "aug-improvement", conf);
     	assertThat(gs.get(0).getNodes().size(), Is.is(8));
-    	assertThat(gs.get(0).getEdges().size(), Is.is(17));
+    	if (conf.buildTransitiveDataEdges)
+    		assertThat(gs.get(0).getEdges().size(), Is.is(17));
+    	else
+    		assertThat(gs.get(0).getEdges().size(), Is.is(12));
     }
 
     @Test
     public void nonDeterminism2() throws Exception {
-    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_non_determinism2.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0; keepQualifierEdges = true;}});
+    	AUGConfiguration conf = new AUGConfiguration(){{removeImplementationCode = 0; keepQualifierEdges = true;}};
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_non_determinism2.java", null, "aug-improvement", conf);
     	assertThat(gs.get(0).getNodes().size(), Is.is(9));
-    	assertThat(gs.get(0).getEdges().size(), Is.is(17));
+    	if (conf.buildTransitiveDataEdges)
+    		assertThat(gs.get(0).getEdges().size(), Is.is(17));
+    	else
+    		assertThat(gs.get(0).getEdges().size(), Is.is(13));
     }
 
     @Test

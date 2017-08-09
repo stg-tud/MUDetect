@@ -446,7 +446,7 @@ public abstract class EGroumNode {
 							Type type = ((EGroumDataEdge) e1).type;
 							if ((e1.source.getAstNodeType() == ASTNode.METHOD_INVOCATION || e1.source.isCoreAction()) && (type == Type.PARAMETER || type == Type.RECEIVER))
 								if (!this.hasInEdge(e1))
-									new EGroumDataEdge(e1.source, this, de.type, de.label);
+									new EGroumDataEdge(e1.source, this, de.type, de.label, true);
 						}
 					}
 					continue;
@@ -466,7 +466,7 @@ public abstract class EGroumNode {
 								if (e2 instanceof EGroumDataEdge) {
 									Type type = ((EGroumDataEdge) e2).type;
 									if (!e2.source.isLiteral() && (type == Type.PARAMETER || type == Type.RECEIVER) && !this.hasInEdge(e2))
-										new EGroumDataEdge(e2.source, this, de.type, de.label);
+										new EGroumDataEdge(e2.source, this, de.type, de.label, true);
 								}
 							}
 							break;

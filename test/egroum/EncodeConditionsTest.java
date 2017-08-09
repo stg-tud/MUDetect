@@ -43,10 +43,12 @@ public class EncodeConditionsTest {
 
     @Test
     public void addNodesForConditionOperatorAndOperandsConnectedByParaEdges() throws Exception {
-        AUG aug = buildAUG("void m(java.util.List l) { if (l.size() > 42) l.get(41); }");
+        AUGConfiguration conf = new AUGConfiguration();
+        AUG aug = buildAUG("void m(java.util.List l) { if (l.size() > 42) l.get(41); }", conf);
 
         assertThat(aug, hasNodes(actionNodeWithLabel("Collection.size()"), actionNodeWithLabel("<r>"), dataNodeWithLabel("int")));
-        assertThat(aug, hasEdge(actionNodeWithLabel("Collection.size()"), PARAMETER, actionNodeWithLabel("<r>")));
+        if (conf.buildTransitiveDataEdges)
+        	assertThat(aug, hasEdge(actionNodeWithLabel("Collection.size()"), PARAMETER, actionNodeWithLabel("<r>")));
         assertThat(aug, hasEdge(dataNodeWithLabel("int"), PARAMETER, actionNodeWithLabel("<r>")));
     }
 

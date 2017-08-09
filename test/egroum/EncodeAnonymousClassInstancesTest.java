@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThat;
 
 public class EncodeAnonymousClassInstancesTest {
     private AUG aug;
+	private AUGConfiguration conf = new AUGConfiguration();
 
     @Before
     public void setUp() throws Exception {
@@ -21,12 +22,13 @@ public class EncodeAnonymousClassInstancesTest {
                 "      new Object();" +
                 "    }" +
                 "  });" +
-                "}");
+                "}", conf );
     }
 
     @Test
     public void addsActionOnInstance() throws Exception {
-        assertThat(aug, hasEdge(actionNodeWithLabel("Runnable.<init>"), PARAMETER, actionNodeWithLabel("SwingUtilities.invokeLater()")));
+        if (conf.buildTransitiveDataEdges)
+        	assertThat(aug, hasEdge(actionNodeWithLabel("Runnable.<init>"), PARAMETER, actionNodeWithLabel("SwingUtilities.invokeLater()")));
         assertThat(aug, hasEdge(dataNodeWithLabel("Runnable"), PARAMETER, actionNodeWithLabel("SwingUtilities.invokeLater()")));
     }
 

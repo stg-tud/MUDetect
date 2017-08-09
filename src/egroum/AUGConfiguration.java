@@ -79,4 +79,9 @@ public class AUGConfiguration {
 	 * Predicate that matches usage examples of interest.
 	 */
 	public UsageExamplePredicate usageExamplePredicate = UsageExamplePredicate.allUsageExamples();
+	
+	/**
+	 * 
+	 */
+	public boolean buildTransitiveDataEdges = false;
 }

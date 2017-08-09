@@ -7,7 +7,7 @@ public abstract class EGroumEdge {
 	protected EGroumNode source;
 	protected EGroumNode target;
 	protected String label;
-	protected boolean isTransitive = true;
+	protected boolean isTransitive = false;
 	
 	public EGroumEdge(EGroumNode source, EGroumNode target) {
 		this.source = source;

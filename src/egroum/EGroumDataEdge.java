@@ -19,6 +19,11 @@ public class EGroumDataEdge extends EGroumEdge {
 		this.label = label;
 	}
 
+	public EGroumDataEdge(EGroumNode source, EGroumNode target, Type type, String label, boolean transitive) {
+		this(source, target, type, label);
+		this.isTransitive = transitive;
+	}
+
 	public Type getType() {
 		return type;
 	}

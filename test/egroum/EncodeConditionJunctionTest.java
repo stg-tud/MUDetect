@@ -13,12 +13,15 @@ public class EncodeConditionJunctionTest {
 
     @Test
     public void encodesDisjunction() throws Exception {
+    	AUGConfiguration conf = new AUGConfiguration() {{ encodeConditionalOperators = true; }};
         AUG aug = buildAUG(
                 "void m(String s) { if (s.isEmpty() || s.contains(\"foo\")) s.getBytes(); }",
-                new AUGConfiguration() {{ encodeConditionalOperators = true; }});
+                conf);
 
-        assertThat(aug, hasEdge(actionNodeWithLabel("String.isEmpty()"), PARAMETER, actionNodeWithLabel("<c>")));
-        assertThat(aug, hasEdge(actionNodeWithLabel("String.contains()"), PARAMETER, actionNodeWithLabel("<c>")));
+        if (conf.buildTransitiveDataEdges) {
+	        assertThat(aug, hasEdge(actionNodeWithLabel("String.isEmpty()"), PARAMETER, actionNodeWithLabel("<c>")));
+	        assertThat(aug, hasEdge(actionNodeWithLabel("String.contains()"), PARAMETER, actionNodeWithLabel("<c>")));
+        }
         assertThat(aug, hasSelEdge(actionNodeWithLabel("<c>"), actionNodeWithLabel("String.getBytes()")));
         assertThat(aug, hasSelEdge(actionNodeWithLabel("String.isEmpty()"), actionNodeWithLabel("String.getBytes()")));
         assertThat(aug, hasSelEdge(actionNodeWithLabel("String.contains()"), actionNodeWithLabel("String.getBytes()")));
@@ -26,12 +29,15 @@ public class EncodeConditionJunctionTest {
 
     @Test
     public void encodesConjunction() throws Exception {
+    	AUGConfiguration conf = new AUGConfiguration() {{ encodeConditionalOperators = true; }};
         AUG aug = buildAUG(
                 "void m(String s) { if (s.isEmpty() && s.contains(\"foo\")) s.getBytes(); }",
-                new AUGConfiguration() {{ encodeConditionalOperators = true; }});
-
-        assertThat(aug, hasEdge(actionNodeWithLabel("String.isEmpty()"), PARAMETER, actionNodeWithLabel("<c>")));
-        assertThat(aug, hasEdge(actionNodeWithLabel("String.contains()"), PARAMETER, actionNodeWithLabel("<c>")));
+                conf);
+        
+        if (conf.buildTransitiveDataEdges) {
+        	assertThat(aug, hasEdge(actionNodeWithLabel("String.isEmpty()"), PARAMETER, actionNodeWithLabel("<c>")));
+        	assertThat(aug, hasEdge(actionNodeWithLabel("String.contains()"), PARAMETER, actionNodeWithLabel("<c>")));
+        }
         assertThat(aug, hasSelEdge(actionNodeWithLabel("<c>"), actionNodeWithLabel("String.getBytes()")));
         assertThat(aug, hasSelEdge(actionNodeWithLabel("String.isEmpty()"), actionNodeWithLabel("String.getBytes()")));
         assertThat(aug, hasSelEdge(actionNodeWithLabel("String.contains()"), actionNodeWithLabel("String.getBytes()")));

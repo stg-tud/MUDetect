@@ -27,14 +27,17 @@ public class EncodeDefinitionsTest {
 
     @Test
     public void encodesTransitiveDefinitionEdgesThroughArithmeticOperator() throws Exception {
+    	AUGConfiguration conf = new AUGConfiguration(){{}};
         AUG aug = buildAUG("double m() {\n" + 
         		"  java.util.List c = new ArrayList();" +
                 "  double d = c.size() + 1f;\n" +
                 "  return d;\n" +
-                "}");
+                "}", conf);
 
         assertThat(aug, hasEdge(actionNodeWithLabel("ArrayList.<init>"), DEFINITION, dataNodeWithLabel("List")));
-        assertThat(aug, hasEdge(actionNodeWithLabel("Collection.size()"), DEFINITION, dataNodeWithLabel("double")));
-        assertThat(aug, not(hasEdge(actionNodeWithLabel("ArrayList.<init>"), DEFINITION, dataNodeWithLabel("double"))));
+        if (conf.buildTransitiveDataEdges)
+        	assertThat(aug, hasEdge(actionNodeWithLabel("Collection.size()"), DEFINITION, dataNodeWithLabel("double")));
+        if (conf.buildTransitiveDataEdges)
+        	assertThat(aug, not(hasEdge(actionNodeWithLabel("ArrayList.<init>"), DEFINITION, dataNodeWithLabel("double"))));
     }
 }

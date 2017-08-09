@@ -16,9 +16,11 @@ public class EncodeConditionNegationTest {
 
     @Test
     public void encodesNegation() throws Exception {
-        AUG aug = buildAUG(NEGATED_CONDITION, new AUGConfiguration() {{ encodeUnaryOperators = true; }});
+    	AUGConfiguration conf = new AUGConfiguration() {{ encodeUnaryOperators = true; }};
+        AUG aug = buildAUG(NEGATED_CONDITION, conf);
 
-        assertThat(aug, hasEdge(actionNodeWithLabel("Collection.isEmpty()"), PARAMETER, actionNodeWithLabel("!")));
+        if (conf.buildTransitiveDataEdges)
+        	assertThat(aug, hasEdge(actionNodeWithLabel("Collection.isEmpty()"), PARAMETER, actionNodeWithLabel("!")));
         assertThat(aug, hasSelEdge(actionNodeWithLabel("Collection.isEmpty()"), actionNodeWithLabel("List.get()")));
         assertThat(aug, hasSelEdge(actionNodeWithLabel("!"), actionNodeWithLabel("List.get()")));
     }

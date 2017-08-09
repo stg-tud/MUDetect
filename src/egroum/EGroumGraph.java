@@ -144,8 +144,6 @@ public class EGroumGraph implements Serializable {
 			removeThisMembers();
 		deleteReferences();
 		deleteAssignmentNodes();
-		if (configuration.removeIndependentControlEdges)
-			deleteIndependentControlEdges();
 		if (configuration.removeTransitiveDefinitionEdgesFromMethodCalls)
 			deleteTransitiveDefinitionEdgesFromMethodCalls();
 		deleteUnreachableNodes();
@@ -2215,6 +2213,15 @@ public class EGroumGraph implements Serializable {
 		for (EGroumNode node : nodes)
 			if (node instanceof EGroumControlNode && node.astNodeType != ASTNode.CATCH_CLAUSE && node.astNodeType != ASTNode.SYNCHRONIZED_STATEMENT)
 				((EGroumControlNode) node).buildConditionClosure();
+		if (configuration.removeIndependentControlEdges)
+			deleteIndependentControlEdges();
+		if (!configuration.buildTransitiveDataEdges) {
+			for (EGroumNode node : nodes) {
+				for (EGroumEdge e : new HashSet<EGroumEdge>(node.inEdges))
+					if (e.isTransitive && e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type != Type.CONDITION)
+						e.delete();
+			}
+		}
 		buildSequentialClosure();
 		doneNodes.clear();
 		pruneTemporaryDataDependence();
