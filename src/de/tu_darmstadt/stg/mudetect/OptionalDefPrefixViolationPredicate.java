@@ -16,7 +16,7 @@ public class OptionalDefPrefixViolationPredicate implements ViolationPredicate {
                 .filter(edge -> connectsToMappedNode(overlap, edge))
                 .collect(Collectors.toSet());
 
-        if (haveSingleMissingSource(missingDirectConnectionEdges, overlap) && haveDefiningSource(missingDirectConnectionEdges)) {
+        if (haveSingleSource(missingDirectConnectionEdges) && haveDefiningSource(missingDirectConnectionEdges)) {
             return Optional.of(false);
         } else {
             return Optional.empty();
@@ -27,10 +27,10 @@ public class OptionalDefPrefixViolationPredicate implements ViolationPredicate {
         return missingDirectConnectionEdges.stream().anyMatch(EGroumEdge::isDef);
     }
 
-    private boolean haveSingleMissingSource(Set<EGroumEdge> missingDirectConnectionEdges, Overlap overlap) {
+    private boolean haveSingleSource(Set<EGroumEdge> missingDirectConnectionEdges) {
         Set<EGroumNode> sourceNodes = missingDirectConnectionEdges.stream()
                 .map(EGroumEdge::getSource).collect(Collectors.toSet());
-        return sourceNodes.size() == 1 && !overlap.mapsNode(sourceNodes.iterator().next());
+        return sourceNodes.size() == 1;
     }
 
     private boolean connectsToMappedNode(Overlap overlap, EGroumEdge edge) {

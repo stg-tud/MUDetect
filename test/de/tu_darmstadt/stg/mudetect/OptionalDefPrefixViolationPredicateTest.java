@@ -89,7 +89,7 @@ public class OptionalDefPrefixViolationPredicateTest {
     }
 
     @Test
-    public void iterator() throws Exception {
+    public void missingDefPrefixWithConditionEdgeIsNoViolation() throws Exception {
         TestAUGBuilder pattern = buildAUG().withActionNodes("iterator()", "hasNext()", "next()").withDataNode("Iterator")
                 .withDataEdge("iterator()", DEFINITION, "Iterator")
                 .withDataEdge("Iterator", RECEIVER, "hasNext()")
@@ -103,6 +103,44 @@ public class OptionalDefPrefixViolationPredicateTest {
         TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("hasNext()", "next()", "Iterator")
                 .withEdge("Iterator", RECEIVER, "hasNext()")
                 .withEdge("Iterator", RECEIVER, "next()")
+                .withEdge("hasNext()", CONDITION, "next()");
+
+        Optional<Boolean> decision = new OptionalDefPrefixViolationPredicate().apply(overlap.build());
+
+        assertThat(decision, is(Optional.of(false)));
+    }
+
+    /**
+     * In the following example, the usage of i2 might be mapped together with the iterator() call that creates i1,
+     * because there is a rep edges from the i1 usage to the i2 usage. In this case only the def edge is missing.
+     * However, this is still only a missing def prefix for the i2 usage.
+     * <pre>
+     *     Iterator i1 = iterator();
+     *     while (i1.hasNext()) {
+     *       Iterator i2 = i1.next();
+     *       while(i2.hasNext()) {
+     *         i2.next();
+     *       }
+     *     }
+     * </pre>
+     */
+    @Test
+    public void missingDefPrefixWithConditionEdgeToOtherDefinitionIsNoViolation() throws Exception {
+        TestAUGBuilder pattern = buildAUG().withActionNodes("iterator()", "hasNext()", "next()").withDataNode("Iterator")
+                .withDataEdge("iterator()", DEFINITION, "Iterator")
+                .withDataEdge("Iterator", RECEIVER, "hasNext()")
+                .withDataEdge("Iterator", RECEIVER, "next()")
+                .withCondEdge("iterator()", "rep", "next()")
+                .withCondEdge("hasNext()", "rep", "next()");
+        TestAUGBuilder target = buildAUG().withActionNodes("iterator()", "hasNext()", "next()").withDataNode("Iterator")
+                .withDataEdge("Iterator", RECEIVER, "hasNext()")
+                .withDataEdge("Iterator", RECEIVER, "next()")
+                .withCondEdge("iterator()", "rep", "next()")
+                .withCondEdge("hasNext()", "rep", "next()");
+        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("iterator()", "hasNext()", "next()", "Iterator")
+                .withEdge("Iterator", RECEIVER, "hasNext()")
+                .withEdge("Iterator", RECEIVER, "next()")
+                .withEdge("iterator()", CONDITION, "next()")
                 .withEdge("hasNext()", CONDITION, "next()");
 
         Optional<Boolean> decision = new OptionalDefPrefixViolationPredicate().apply(overlap.build());
