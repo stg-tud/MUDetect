@@ -1,6 +1,7 @@
 package mining;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
@@ -119,7 +120,7 @@ public class MinerTest {
 		System.out.println(groums);
 		
 		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
-//		print(patterns);
+		print(patterns);
 		
 		assertThat(patterns.size(), is(1));
 		assertThat(patterns.get(0).getRepresentative().getNodes().size(), is(groums.get(0).getNodes().size()));
@@ -131,10 +132,10 @@ public class MinerTest {
 		groums.addAll(EGroumTestUtils.buildGroumsFromFile("test-resources/input/Test_alibaba2_old.java"));
 		
 		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
-//		print(patterns);
+		print(patterns);
 		
-		assertThat(patterns.size(), is(1));
-		assertThat(patterns.get(0).getRepresentative().getNodes().size(), is(groums.get(0).getNodes().size()));
+		assertThat(patterns.size(), is(2));
+		assertThat(patterns.get(0).getRepresentative().getNodes().size(), not(groums.get(0).getNodes().size()));
 	}
 	
 	@Test
@@ -143,9 +144,9 @@ public class MinerTest {
 		groums.addAll(EGroumTestUtils.buildGroumsFromFile("test-resources/input/Test_alibaba2_old.java"));
 		
 		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
-//		print(patterns);
+		print(patterns);
 		
-		assertThat(patterns.size(), is(1));
+		assertThat(patterns.size(), is(2));
 		
 		boolean contains = false;
 		for (Pattern p : patterns) {
@@ -193,7 +194,7 @@ public class MinerTest {
 		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
 
 		print(patterns);
-		assertThat(patterns.size(), is(1)); // DEBUG
+		assertThat(patterns.size(), is(2)); // DEBUG
 	}
 	
 	@Test

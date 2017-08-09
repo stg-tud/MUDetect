@@ -1,3 +1,14 @@
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.RSAPrivateKeySpec;
+
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+
 class Test_alibaba2_new {
 	void pattern(PublicKey publicKey, String text) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, InvalidKeySpecException {
 		Cipher cipher = Cipher.getInstance("RSA");

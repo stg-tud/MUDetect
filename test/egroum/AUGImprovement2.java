@@ -229,7 +229,7 @@ public class AUGImprovement2 {
     	if (conf.buildTransitiveDataEdges)
     		assertThat(gs.get(0).getEdges().size(), Is.is(17));
     	else
-    		assertThat(gs.get(0).getEdges().size(), Is.is(12));
+    		assertThat(gs.get(0).getEdges().size(), Is.is(13));
     }
 
     @Test
@@ -240,7 +240,7 @@ public class AUGImprovement2 {
     	if (conf.buildTransitiveDataEdges)
     		assertThat(gs.get(0).getEdges().size(), Is.is(17));
     	else
-    		assertThat(gs.get(0).getEdges().size(), Is.is(13));
+    		assertThat(gs.get(0).getEdges().size(), Is.is(14));
     }
 
     @Test
