@@ -1108,16 +1108,35 @@ public class EGroumGraph implements Serializable {
 			pdg.clearDefStore();
 			return pdg;
 		}
-		EGroumGraph[] pgs = new EGroumGraph[astNode.arguments().size() + 1];
-		if (astNode.getExpression() != null)
-			pgs[0] = buildArgumentPDG(control, branch, astNode.getExpression());
-		else
-			pgs[0] = new EGroumGraph(context, new EGroumDataNode(
-					null, ASTNode.THIS_EXPRESSION, "this",
-					context.getType(), "this"), configuration);
-		for (int i = 0; i < astNode.arguments().size(); i++)
-			pgs[i + 1] = buildArgumentPDG(control, branch, (Expression) astNode.arguments().get(i));
-		String type = pgs[0].getOnlyOut().dataType;
+		boolean isStatic = false;
+		String type = null;
+		if (astNode.resolveMethodBinding() != null) {
+			IMethodBinding mb = astNode.resolveMethodBinding().getMethodDeclaration();
+			isStatic = Modifier.isStatic(mb.getModifiers());
+		} else if (astNode.getExpression() != null && astNode.getExpression() instanceof SimpleName) {
+			String r = ((SimpleName) astNode.getExpression()).getIdentifier();
+			if (r.length() > 1 && Character.isUpperCase(r.charAt(0)) && !r.equals(r.toUpperCase())) {
+				isStatic = true;
+				type = r;
+			}
+		}
+		EGroumGraph[] pgs;
+		if (isStatic) {
+			pgs = new EGroumGraph[astNode.arguments().size()];
+			for (int i = 0; i < astNode.arguments().size(); i++)
+				pgs[i] = buildArgumentPDG(control, branch, (Expression) astNode.arguments().get(i));
+		} else {
+			pgs = new EGroumGraph[astNode.arguments().size() + 1];
+			if (astNode.getExpression() != null)
+				pgs[0] = buildArgumentPDG(control, branch, astNode.getExpression());
+			else
+				pgs[0] = new EGroumGraph(context, new EGroumDataNode(
+						null, ASTNode.THIS_EXPRESSION, "this",
+						context.getType(), "this"), configuration);
+			for (int i = 0; i < astNode.arguments().size(); i++)
+				pgs[i + 1] = buildArgumentPDG(control, branch, (Expression) astNode.arguments().get(i));
+			type = pgs[0].getOnlyOut().dataType;
+		}
 		HashSet<String> exceptions = null;
 		if (astNode.resolveMethodBinding() != null) {
 			IMethodBinding mb = astNode.resolveMethodBinding().getMethodDeclaration();
@@ -1136,10 +1155,15 @@ public class EGroumGraph implements Serializable {
 				astNode.getName().getIdentifier(), exceptions);
 		context.addMethodTry(node);
 		EGroumGraph pdg = null;
-		pgs[0].mergeSequentialData(node, Type.RECEIVER);
-		if (pgs.length > 0) {
+		if (isStatic) {
+			for (int i = 0; i < pgs.length; i++)
+				pgs[i].mergeSequentialData(node, Type.PARAMETER);
+		} else {
+			pgs[0].mergeSequentialData(node, Type.RECEIVER);
 			for (int i = 1; i < pgs.length; i++)
 				pgs[i].mergeSequentialData(node, Type.PARAMETER);
+		}
+		if (pgs.length > 0) {
 			pdg = new EGroumGraph(context, configuration);
 			pdg.mergeParallel(pgs);
 		} else
