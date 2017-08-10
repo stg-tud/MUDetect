@@ -19,8 +19,10 @@ public class DataEdgeTypePriorityOrder implements BiPredicate<EGroumEdge, EGroum
     static {
         EDGE_TYPE_RELATION.put(RECEIVER, CONDITION);
         EDGE_TYPE_RELATION.put(RECEIVER, PARAMETER);
+        EDGE_TYPE_RELATION.put(RECEIVER, ORDER);
         EDGE_TYPE_RELATION.put(DEFINITION, CONDITION);
         EDGE_TYPE_RELATION.put(DEFINITION, PARAMETER);
+        EDGE_TYPE_RELATION.put(DEFINITION, ORDER);
         EDGE_TYPE_RELATION.put(CONDITION, PARAMETER);
         // THROW
         // FINALLY
