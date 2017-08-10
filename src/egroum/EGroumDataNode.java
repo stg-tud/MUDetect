@@ -4,6 +4,8 @@ import org.eclipse.jdt.core.dom.ASTNode;
 
 import egroum.EGroumDataEdge.Type;
 
+import java.util.Optional;
+
 public class EGroumDataNode extends EGroumNode {
 	protected boolean isField = false, isDeclaration = false;
 	
@@ -72,7 +74,7 @@ public class EGroumDataNode extends EGroumNode {
 	}
 
 	@Override
-	public boolean isAPI() {
+	public Optional<String> getAPI() {
 		String label = getLabel();
 		switch (label) {
 			case "int":
@@ -81,9 +83,13 @@ public class EGroumDataNode extends EGroumNode {
 			case "double":
 			case "short":
 			case "boolean":
-				return false;
+				return Optional.empty();
 			default:
-				return !label.endsWith("[]");
+				if (label.endsWith("[]")) {
+					return Optional.empty();
+				} else {
+					return Optional.of(getLabel());
+				}
 		}
 	}
 

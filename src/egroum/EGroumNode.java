@@ -139,7 +139,7 @@ public abstract class EGroumNode {
 		return JavaASTUtil.isLiteral(astNodeType);
 	}
 
-	abstract public boolean isAPI();
+	abstract public Optional<String> getAPI();
 
 	public void delete() {
 		for (EGroumEdge e : inEdges) {

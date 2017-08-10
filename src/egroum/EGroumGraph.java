@@ -2,11 +2,9 @@ package egroum;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
@@ -399,6 +397,12 @@ public class EGroumGraph implements Serializable {
 			edges.addAll(node.getOutEdges());
 		}
 		return edges;
+	}
+
+	public Set<String> getAPIs() {
+		return getNodes().stream().map(EGroumNode::getAPI)
+				.filter(Optional::isPresent).map(Optional::get)
+				.collect(Collectors.toSet());
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, ASTNode node) {
