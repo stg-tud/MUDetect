@@ -34,9 +34,6 @@ class IntraProjectStrategy extends MuDetectStrategy {
                 new FirstDecisionViolationPredicate(
                         new OptionalDefPrefixViolationPredicate(),
                         new MissingElementViolationPredicate()),
-                new WeightRankingStrategy(new ProductWeightFunction(
-                            new PatternViolationsWeightFunction(),
-                            new PatternSupportWeightFunction()
-                        )));
+                new WeightRankingStrategy(new DefectIndicatorWeightFunction()));
     }
 }
