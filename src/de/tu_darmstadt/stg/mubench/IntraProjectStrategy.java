@@ -37,7 +37,8 @@ class IntraProjectStrategy extends MuDetectStrategy {
                 new WeightRankingStrategy(new ProductWeightFunction(
                             new PatternViolationsWeightFunction(),
                             new ViolationSupportWeightFunction(),
-                            new PatternUniquenessWeightFunction()
+                            new PatternUniquenessWeightFunction(),
+                            new PatternSupportWeightFunction()
                         )));
     }
 }
