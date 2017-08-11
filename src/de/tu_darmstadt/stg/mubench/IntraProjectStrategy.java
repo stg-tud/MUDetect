@@ -38,7 +38,8 @@ class IntraProjectStrategy extends MuDetectStrategy {
                             new PatternViolationsWeightFunction(),
                             new ViolationSupportWeightFunction(),
                             new PatternUniquenessWeightFunction(),
-                            new PatternSupportWeightFunction()
+                            new PatternSupportWeightFunction(),
+                            new OverlapWithoutEdgesToMissingNodesWeightFunction(new ConstantNodeWeightFunction())
                         )));
     }
 }
