@@ -13,42 +13,43 @@ public class PaperExamples {
     @Test
     public void paperExample() throws Exception {
         printGroum("AUG",
-                "void m() {" +
-                "String path = \"/some/path.ext\";" +
-                "if (path != null) {" +
-                "  try {" +
-                "    java.io.FileInputStream fis = new java.io.FileInputStream(path);" +
-                "    return fis.read();" +
-                "  } catch(java.io.FileNotFoundException e) {" +
-                "    handle(e);" +
+                "void m(String file) {" +
+                "  if (file != null) {" +
+                "    try {" +
+                "      java.io.FileInputStream fis = new java.io.FileInputStream(file);" +
+                "      return fis.read();" +
+                "    } catch(java.io.FileNotFoundException e) {" +
+                "      handle(e);" +
+                "    }" +
                 "  }" +
-                "}" +
                 "}");
     }
 
     @Test
-    public void dataNodesMotivation() throws Exception {
-        printGroum("dataNodesMotivation-newO",
-                "void m() {" +
-                "  O o = new O();" +
-                "  o.m();" +
-                "  o.n();" +
+    public void conditionVariations() throws Exception {
+        printGroum("condition-relational-operators",
+                "void m(List l) {" +
+                "  if (l.size() > 0) l.get(0);" +
+                "  else {}" +
                 "}");
-
-        printGroum("dataNodesMotivation-getO",
+        printGroum("condition-relational-operators",
                 "void m() {" +
-                "  O o = getO();" +
-                "  o.m();" +
-                "  o.n();" +
+                "  boolean a = a();" +
+                "  boolean b = b();" +
+                "  if (a && b) m(a, b);" +
                 "}");
     }
 
     @Test
-    public void controlVsDataFlow() throws Exception {
-        printGroum("crtl-vs-data",
+    public void anonymousClassInstances() throws Exception {
+        printGroum("anonymous-class-instance",
                 "void m() {" +
-                "  O o = new O();" +
-                "  o.n();" +
+                "  new Thread(new Runnable() {\n" +
+                "    @Override\n" +
+                "    public void run() {\n" +
+                "      new Object();\n" +
+                "    }\n" +
+                "  }).start();" +
                 "}");
     }
 
