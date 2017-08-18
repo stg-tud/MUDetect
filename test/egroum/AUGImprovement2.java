@@ -29,6 +29,11 @@ public class AUGImprovement2 {
     }
 
     @Test
+    public void alibaba_druid_1() throws Exception {
+    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_alibaba_druid_1.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
+    }
+
+    @Test
     public void direct() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
     	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_direct.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
