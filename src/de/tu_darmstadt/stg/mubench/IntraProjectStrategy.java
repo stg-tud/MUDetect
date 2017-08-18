@@ -2,6 +2,8 @@ package de.tu_darmstadt.stg.mubench;
 
 import de.tu_darmstadt.stg.mubench.cli.DetectorArgs;
 import de.tu_darmstadt.stg.mudetect.*;
+import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.model.Violation;
 import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.mining.AUGMiner;
 import de.tu_darmstadt.stg.mudetect.mining.DefaultAUGMiner;
@@ -13,6 +15,10 @@ import egroum.EGroumGraph;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static de.tu_darmstadt.stg.mudetect.AlternativeViolationPredicate.firstAlternativeViolation;
 
 class IntraProjectStrategy extends MuDetectStrategy {
     @Override
@@ -39,5 +45,11 @@ class IntraProjectStrategy extends MuDetectStrategy {
                         new PatternUniquenessWeightFunction(),
                         new PatternSupportWeightFunction()
                 )));
+    }
+
+    @Override
+    protected List<Violation> findViolations(MuDetect detector, Collection<AUG> targets) {
+        return super.findViolations(detector, targets).stream()
+                .filter(firstAlternativeViolation()).collect(Collectors.toList());
     }
 }
