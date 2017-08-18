@@ -81,4 +81,11 @@ public class EncodeConditionsImplicitTest {
 
         assertThat(aug, not(hasSelEdge(actionNodeWithLabel("<r>"), actionNodeWithLabel("Object.hashCode()"))));
     }
+
+    @Test
+    public void guardDefinition() throws Exception {
+        AUG aug = buildAUG("void m(Object o) { if (o == null) o = new Object(); o.hashCode();}");
+
+        assertThat(aug, hasSelEdge(actionNodeWithLabel("<nullcheck>"), actionNodeWithLabel("Object.<init>")));
+    }
 }
