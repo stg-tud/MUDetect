@@ -262,6 +262,25 @@ public class MinerTest {
 		assertThat(patterns, hasSize(2));
 	}
 
+	@Test
+	public void repeatedConsecutiveCalls() throws Exception {
+		String example = "class C { void m() {" +
+						"  StringBuilder sb = new StringBuilder();" +
+						"  sb.append(\"1\");" +
+						"  sb.append(\"1\");" +
+						"  sb.append(\"1\");" +
+						"  sb.append(\"1\");" +
+						"}}";
+		ArrayList<EGroumGraph> examples = buildGroumsForClasses(new String[]{example, example});
+		List<Pattern> patterns = mineWithMinSupport2(examples);
+
+		assertThat(patterns, hasSize(1));
+		Pattern pattern = patterns.get(0);
+		ArrayList<EGroumNode> patternNodes = pattern.getRepresentative().getNodes();
+		long numberOfAppendCalls = patternNodes.stream().filter(node -> node.getLabel().equals("StringBuilder.append()")).count();
+		assertThat(numberOfAppendCalls, is(1));
+	}
+
 	private void print(Pattern pattern) {
 		MinerTestUtils.print(pattern, testName);
 	}
