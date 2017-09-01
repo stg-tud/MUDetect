@@ -1,17 +1,21 @@
 package mining;
 
+import egroum.EGroumGraph;
+import egroum.EGroumNode;
+import egroum.EGroumTestUtils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static egroum.EGroumTestUtils.buildGroumsForClasses;
+import static mining.MinerTestUtils.mineWithMinSupport2;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
-
-import java.util.*;
-
-import egroum.*;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
 
 public class MinerTest {
 	
@@ -22,7 +26,7 @@ public class MinerTest {
 	public void mineExceptionNodes() {
 		ArrayList<EGroumGraph> groums = EGroumTestUtils.buildGroumsFromFile("test-resources/input/Test_try.java");
 		
-		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
+		List<Pattern> patterns = mineWithMinSupport2(groums);
 		
 		print(patterns.get(0));
 	}
@@ -31,7 +35,7 @@ public class MinerTest {
 	public void mineKeepDataNodes() {
 		ArrayList<EGroumGraph> groums = EGroumTestUtils.buildGroumsFromFile("test-resources/input/Test_keep_data.java");
 		
-		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
+		List<Pattern> patterns = mineWithMinSupport2(groums);
 		
 		print(patterns.get(0));
 	}
@@ -40,7 +44,7 @@ public class MinerTest {
 	public void mineSinglePattern() {
 		ArrayList<EGroumGraph> groums = EGroumTestUtils.buildGroumsFromFile("test-resources/input/Test_mine_single.java");
 		
-		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
+		List<Pattern> patterns = mineWithMinSupport2(groums);
 		
 		assertThat(patterns.size(), is(1));
 		print(patterns.get(0));
@@ -48,11 +52,11 @@ public class MinerTest {
 	
 	@Test
 	public void mineMinimalCode() {
-		ArrayList<EGroumGraph> groums = EGroumTestUtils.buildGroumsForClasses(new String[]{
+		ArrayList<EGroumGraph> groums = buildGroumsForClasses(new String[]{
 				"class C { void m(Object o) { o.hashCode(); } }",
 				"class C { void m(Object o) { o.hashCode(); } }"});
 		
-		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
+		List<Pattern> patterns = mineWithMinSupport2(groums);
 		
 		assertThat(patterns.size(), is(1));
 		print(patterns.get(0));
@@ -60,11 +64,11 @@ public class MinerTest {
 
 	@Test
 	public void mineLargerCode() {
-		ArrayList<EGroumGraph> groums = EGroumTestUtils.buildGroumsForClasses(new String[]{
+		ArrayList<EGroumGraph> groums = buildGroumsForClasses(new String[]{
 				"class C { void m(Object o) { if (o != null) { o.hashCode(); } o.equals(this); } }",
 				"class C { void m(Object o) { if (o != null) { o.hashCode(); } o.equals(this); } }"});
 		
-		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
+		List<Pattern> patterns = mineWithMinSupport2(groums);
 		
 		print(patterns);
 		assertThat(patterns.size(), is(1));
@@ -73,11 +77,11 @@ public class MinerTest {
 
 	@Test
 	public void mineClone() {
-		ArrayList<EGroumGraph> groums = EGroumTestUtils.buildGroumsForClasses(new String[]{
+		ArrayList<EGroumGraph> groums = buildGroumsForClasses(new String[]{
 				"class C { void m(Object o, Object p) {  o = getObj(); o.hashCode(); o.hashCode();} }",
 				"class C { void m(Object o, Object p) {  o.hashCode();} }"});
 		System.out.println(groums);
-		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
+		List<Pattern> patterns = mineWithMinSupport2(groums);
 		
 		print(patterns);
 		assertThat(patterns.size(), is(1));
@@ -86,7 +90,7 @@ public class MinerTest {
 	
 	@Test
 	public void minePattern_aclang2() {
-		ArrayList<EGroumGraph> groums = EGroumTestUtils.buildGroumsForClasses(new String[]{
+		ArrayList<EGroumGraph> groums = buildGroumsForClasses(new String[]{
 				"class NullTextNull extends StrBuilder {\n" + 
 				"  String pattern(Object obj) {\n" + 
 				"    String str = (obj == null ? this.getNullText() : obj.toString());\n" + 
@@ -108,7 +112,7 @@ public class MinerTest {
 		);
 		
 		System.out.println(groums);
-		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
+		List<Pattern> patterns = mineWithMinSupport2(groums);
 		
 		print(patterns);
 	}
@@ -119,7 +123,7 @@ public class MinerTest {
 		groums.addAll(EGroumTestUtils.buildGroumsFromFile("test-resources/input/Test_alibaba2_new.java"));
 		System.out.println(groums);
 		
-		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
+		List<Pattern> patterns = mineWithMinSupport2(groums);
 		print(patterns);
 		
 		assertThat(patterns.size(), is(1));
@@ -131,7 +135,7 @@ public class MinerTest {
 		ArrayList<EGroumGraph> groums = EGroumTestUtils.buildGroumsFromFile("test-resources/input/Test_alibaba2_old.java");
 		groums.addAll(EGroumTestUtils.buildGroumsFromFile("test-resources/input/Test_alibaba2_old.java"));
 		
-		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
+		List<Pattern> patterns = mineWithMinSupport2(groums);
 		print(patterns);
 		
 		assertThat(patterns.size(), is(2));
@@ -143,7 +147,7 @@ public class MinerTest {
 		ArrayList<EGroumGraph> groums = EGroumTestUtils.buildGroumsFromFile("test-resources/input/Test_alibaba2_old.java");
 		groums.addAll(EGroumTestUtils.buildGroumsFromFile("test-resources/input/Test_alibaba2_old.java"));
 		
-		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
+		List<Pattern> patterns = mineWithMinSupport2(groums);
 		print(patterns);
 		
 		assertThat(patterns.size(), is(2));
@@ -187,11 +191,11 @@ public class MinerTest {
 			"  \n" + 
 			"  private boolean canRead(ItemId id) { return true; }\n" + 
 			"}";
-		ArrayList<EGroumGraph> groums = EGroumTestUtils.buildGroumsForClasses(new String[]{targetSource, patternSource});
+		ArrayList<EGroumGraph> groums = buildGroumsForClasses(new String[]{targetSource, patternSource});
 		for (EGroumGraph g : groums)
 			g.toGraphics("temp");
 		
-		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
+		List<Pattern> patterns = mineWithMinSupport2(groums);
 
 		print(patterns);
 		assertThat(patterns.size(), is(2)); // DEBUG
@@ -226,8 +230,8 @@ public class MinerTest {
 			"    return v1D;\n" + 
 			"  }\n" + 
 			"}";
-		ArrayList<EGroumGraph> groums = EGroumTestUtils.buildGroumsForClasses(new String[]{targetSource, patternSource});
-		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
+		ArrayList<EGroumGraph> groums = buildGroumsForClasses(new String[]{targetSource, patternSource});
+		List<Pattern> patterns = mineWithMinSupport2(groums);
 		
 		print(patterns);
 		assertThat(patterns, hasSize(2));
@@ -237,8 +241,8 @@ public class MinerTest {
 	public void mineAlternativeChecks() throws Exception {
 		String firstHasNext = "class C { void m(Collection c) { Iterator i = c.iterator(); if (i.hasNext()) i.next(); } }";
 		String firstIsEmpty = "class C { void n(Collection c) { if (!c.isEmpty()) { Iterator i = c.iterator(); i.next(); } } }";
-		ArrayList<EGroumGraph> augs = EGroumTestUtils.buildGroumsForClasses(new String[]{firstHasNext, firstHasNext, firstIsEmpty, firstIsEmpty});
-		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(augs);
+		ArrayList<EGroumGraph> augs = buildGroumsForClasses(new String[]{firstHasNext, firstHasNext, firstIsEmpty, firstIsEmpty});
+		List<Pattern> patterns = mineWithMinSupport2(augs);
 
 		assertThat(patterns, hasSize(2));
 	}
@@ -247,10 +251,10 @@ public class MinerTest {
 	public void mineAlternativeCond() throws Exception {
 		String iteratorIf = "class C { void m(Iterator i) { if (i.hasNext()) { i.next(); } } }";
 		String iteratorWhile = "class C { void n(Iterator i) { while (i.hasNext()) { i.next(); } } }";
-		ArrayList<EGroumGraph> augs = EGroumTestUtils.buildGroumsForClasses(new String[]{iteratorIf, iteratorIf, iteratorIf, iteratorWhile, iteratorWhile});
+		ArrayList<EGroumGraph> augs = buildGroumsForClasses(new String[]{iteratorIf, iteratorIf, iteratorIf, iteratorWhile, iteratorWhile});
 		for (EGroumGraph aug : augs)
 			System.out.println(aug);
-		List<Pattern> patterns = MinerTestUtils.mineWithMinSupport2(augs);
+		List<Pattern> patterns = mineWithMinSupport2(augs);
 		
 		System.out.println(patterns.size());
 		for (Pattern p : patterns)
