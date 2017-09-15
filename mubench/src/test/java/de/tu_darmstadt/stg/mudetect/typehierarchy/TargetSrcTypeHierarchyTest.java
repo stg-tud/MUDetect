@@ -21,7 +21,7 @@ public class TargetSrcTypeHierarchyTest {
                         !dependencyPath.endsWith("target/test-classes"))
                 .toArray(String[]::new);
         hierarchy = TargetSrcTypeHierarchy.build(
-                "./test/de/tu_darmstadt/stg/mudetect/typehierarchy/testtargets",
+                "src/test/java/de/tu_darmstadt/stg/mudetect/typehierarchy/testtargets",
                 projectDependencyClassPath);
     }
 

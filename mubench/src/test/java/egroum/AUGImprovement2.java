@@ -1,6 +1,8 @@
 package egroum;
 
 import graphics.DotGraph;
+
+import java.net.URL;
 import java.util.ArrayList;
 
 import mining.TypeUsageExamplePredicate;
@@ -25,18 +27,18 @@ public class AUGImprovement2 {
 
     @Test
     public void aug() throws Exception {
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Example_09_14.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0;}});
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Example_09_14.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0;}});
     }
 
     @Test
     public void alibaba_druid_1() throws Exception {
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_alibaba_druid_1.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_alibaba_druid_1.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
     }
 
     @Test
     public void direct() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_direct.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_direct.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
     	int c = 0;
     	for (EGroumNode node : gs.get(0).nodes)
     		if (node instanceof EGroumDataNode && node.getLabel().endsWith("String")) {
@@ -51,7 +53,7 @@ public class AUGImprovement2 {
     @Test
     public void instanceOf() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_instanceof.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_instanceof.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
     	int c = 0;
     	for (EGroumNode node : gs.get(0).nodes)
     		if (node.getLabel().endsWith(".<instanceof>"))
@@ -62,7 +64,7 @@ public class AUGImprovement2 {
     @Test
     public void nullcheck() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_null_check.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_null_check.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
     	int c = 0;
     	for (EGroumNode node : gs.get(0).nodes)
     		if (node.getLabel().equals("<nullcheck>"))
@@ -72,34 +74,53 @@ public class AUGImprovement2 {
 
     @Test
     public void filterAPI() throws Exception {
-    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{}});
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{}});
     	assertThat(gs, is(not(empty())));
     	
-    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
+    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
             usageExamplePredicate = UsageExamplePredicate.allUsageExamples();}});
     	assertThat(gs, is(not(empty())));
     	
-    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
+    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
             usageExamplePredicate = TypeUsageExamplePredicate.usageExamplesOf("java.util");}});
     	assertThat(gs, is(empty()));
     	
-    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
+    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
             usageExamplePredicate = TypeUsageExamplePredicate.usageExamplesOf("java.util.Iterator");}});
     	assertThat(gs, is(not(empty())));
     	
-    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
+    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
             usageExamplePredicate = TypeUsageExamplePredicate.usageExamplesOf("java.util.Collection");}});
     	assertThat(gs, is(not(empty())));
     	
-    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
+    	gs = EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_filter_API.java", null, "aug-improvement", new AUGConfiguration(){{
             usageExamplePredicate = TypeUsageExamplePredicate.usageExamplesOf("java.util.Collection", "java.util.Iterator");}});
     	assertThat(gs, is(not(empty())));
     }
     
     @Test
+    public void constant() throws Exception {
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_constant.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
+    	assertThat(gs.get(0).getNodes().size(), Is.is(16));
+    	assertThat(gs.get(0).getEdges().size(), Is.is(38));
+    	int c = 0;
+    	for (EGroumNode node : gs.get(0).getNodes()) {
+    		if (node.getAstNodeType() == ASTNode.NUMBER_LITERAL && node.getDataType().equals("int") && node.getDataName().equals("0"))
+    			c++;
+    		else if (node.getAstNodeType() == ASTNode.BOOLEAN_LITERAL && node.getDataType().equals("boolean") && node.getDataName().equals("true"))
+    			c++;
+    		else if (node.getAstNodeType() == ASTNode.CHARACTER_LITERAL && node.getDataType().equals("char") && node.getDataName().equals("c"))
+    			c++;
+    		else if (node.getAstNodeType() == ASTNode.STRING_LITERAL && node.getDataType().equals("String") && node.getDataName().equals("s"))
+    			c++;
+    	}
+    	assertThat(c, Is.is(4));
+    }
+
+    @Test
     public void qualifiedName() throws Exception {
     	AUGConfiguration conf = new AUGConfiguration(){{removeImplementationCode = 2; groum = false; buildTransitiveDataEdges = false;}};
-    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_qualified_name.java", null, "aug-improvement", conf);
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_qualified_name.java", null, "aug-improvement", conf);
     	assertThat(gs.get(0).getNodes().size(), Is.is(9));
     	if (conf.buildTransitiveDataEdges)
     		assertThat(gs.get(0).getEdges().size(), Is.is(11));
@@ -110,7 +131,7 @@ public class AUGImprovement2 {
     @Test
     public void cast() throws Exception {
     	AUGConfiguration conf = new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}};
-    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_cast.java", null, "aug-improvement", conf);
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_cast.java", null, "aug-improvement", conf);
     	assertThat(gs.get(0).getNodes().size(), Is.is(6));
     	if (conf.buildTransitiveDataEdges)
     		assertThat(gs.get(0).getEdges().size(), Is.is(8));
@@ -133,42 +154,42 @@ public class AUGImprovement2 {
     @Test
     public void dependentControl() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	/*ArrayList<EGroumGraph> gs = */EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_dependent_control.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    	/*ArrayList<EGroumGraph> gs = */EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_dependent_control.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
     }
 
     @Test
     public void staticCall() throws Exception {
-    	/*ArrayList<EGroumGraph> gs = */EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_alibaba2_old.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    	/*ArrayList<EGroumGraph> gs = */EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_alibaba2_old.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
     }
 
     @Test
     public void operators() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_operators.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_operators.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
     }
 
     @Test
     public void qualifiedType() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_qualifiedType.java", null, "aug-improvement", new AUGConfiguration(){{groum = false;}});
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_qualifiedType.java", null, "aug-improvement", new AUGConfiguration(){{groum = false;}});
     }
 
     @Test
     public void adjustControlEdges() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_adjustControlEdges.java", null, "aug-improvement", new AUGConfiguration(){{groum = false;}});
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_adjustControlEdges.java", null, "aug-improvement", new AUGConfiguration(){{groum = false;}});
     }
 
     @Test
     public void deleteUnusedDataNodes() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_deleteUnusedDataNodes.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_deleteUnusedDataNodes.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
     }
 
     @Test
     public void switchstate() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_switch.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_switch.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
     }
 
     @Ignore
@@ -202,7 +223,7 @@ public class AUGImprovement2 {
     @Ignore
     @Test
     public void nonDeterminism() throws Exception {
-//    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_non_determinism.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0; groum = false;}});
+//    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_non_determinism.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0; groum = false;}});
     	EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration(){{removeImplementationCode = 2;}});
     	gb.buildBatch("T:/repos/closure-compiler/src/", null);
     }
@@ -210,7 +231,7 @@ public class AUGImprovement2 {
     @Test
     public void nonDeterminism1() throws Exception {
     	AUGConfiguration conf = new AUGConfiguration(){{removeImplementationCode = 0; keepQualifierEdges = true;}};
-    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_non_determinism1.java", null, "aug-improvement", conf);
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_non_determinism1.java", null, "aug-improvement", conf);
     	assertThat(gs.get(0).getNodes().size(), Is.is(8));
     	if (conf.buildTransitiveDataEdges)
     		assertThat(gs.get(0).getEdges().size(), Is.is(17));
@@ -221,7 +242,7 @@ public class AUGImprovement2 {
     @Test
     public void nonDeterminism2() throws Exception {
     	AUGConfiguration conf = new AUGConfiguration(){{removeImplementationCode = 0; keepQualifierEdges = true;}};
-    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_non_determinism2.java", null, "aug-improvement", conf);
+    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_non_determinism2.java", null, "aug-improvement", conf);
     	assertThat(gs.get(0).getNodes().size(), Is.is(9));
     	if (conf.buildTransitiveDataEdges)
     		assertThat(gs.get(0).getEdges().size(), Is.is(17));
@@ -231,7 +252,7 @@ public class AUGImprovement2 {
 
     @Test
     public void nonDeterminism3() throws Exception {
-    	/*ArrayList<EGroumGraph> gs = */EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_non_determinism3.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    	/*ArrayList<EGroumGraph> gs = */EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_non_determinism3.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
 //    	Assert.assertThat(gs.get(0).getNodes().size(), Is.is(9));
 //    	Assert.assertThat(gs.get(0).getEdges().size(), Is.is(16));
     }
@@ -239,79 +260,79 @@ public class AUGImprovement2 {
     @Test
     public void equals() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_equals.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0; groum = false;}});
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_equals.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 0; groum = false;}});
     }
 
     @Test
     public void receiver() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_receiver.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_receiver.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
     }
 
     @Test
     public void foreach() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_foreach.java", null, "aug-improvement", new AUGConfiguration(){{}});
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_foreach.java", null, "aug-improvement", new AUGConfiguration(){{}});
     }
 
     @Test
     public void removeConditionalOps() throws Exception {
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_conditional_op.java", null, "aug-improvement");
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_conditional_op.java", null, "aug-improvement");
     }
 
     @Test
     public void collapse1() throws Exception {
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_collapse1.java", null, "aug-improvement");
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_collapse1.java", null, "aug-improvement");
     }
 
     @Test
     public void collapse2() throws Exception {
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_collapse2.java", null, "aug-improvement");
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_collapse2.java", null, "aug-improvement");
     }
 
     @Test
     public void keepData() throws Exception {
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_keep_data.java", null, "aug-improvement");
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_keep_data.java", null, "aug-improvement");
     }
 
     @Test
     public void order() throws Exception {
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_order.java", null, "aug-improvement");
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_order.java", null, "aug-improvement");
     }
 
     @Test
     public void anonymousClass() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_anonymous_class.java", null, "aug-improvement");
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_anonymous_class.java", null, "aug-improvement");
     }
 
     @Test
     public void finallyEdge() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/lucene/1251/lucene.1/review.php
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_finally.java", null, "aug-improvement");
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_finally.java", null, "aug-improvement");
     }
 
     @Test
     public void repeatEdges() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/synthetic/wait-loop/synthetic.wait-loop/review.php
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_control.java", null, "aug-improvement");
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_control.java", null, "aug-improvement");
     }
 
     @Test
     public void syncEdges() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/synthetic/deadlock/synthetic.deadlock/no_findings.php
-    	EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_sync.java", null, "aug-improvement");
+    	EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_sync.java", null, "aug-improvement");
     }
 
     @Test
     public void testTry() throws Exception {
-        EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_try.java", null, "aug-improvement");
+        EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_try.java", null, "aug-improvement");
     }
 
     @Test
     public void tryWithResources() throws Exception {
         // http://www.st.informatik.tu-darmstadt.de/artifacts/mubench/reviews/ex1_detect-only/mudetect-do/synthetic/fisexists/synthetic.fisexists/no_findings.php
-        EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_try_resources.java", null, "aug-improvement");
+        EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_try_resources.java", null, "aug-improvement");
     }
 
     @Test
@@ -322,37 +343,37 @@ public class AUGImprovement2 {
 
     @Test
     public void arrayType() throws Exception {
-        EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_array_type.java", null, "aug-improvement");
+        EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_array_type.java", null, "aug-improvement");
     }
 
     @Test
     public void cme1() throws Exception {
-        EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_cme1.java", new String[]{"test-resources/lib/guava-21.0.jar", "test-resources/lib/closure-compiler-v20170409.jar"}, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
+        EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_cme1.java", new String[]{"test-resources/lib/guava-21.0.jar", "test-resources/lib/closure-compiler-v20170409.jar"}, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
     }
 
     @Test
     public void npe1() throws Exception {
-        EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_npe1.java", new String[]{"test-resources/lib/guava-21.0.jar", "test-resources/lib/closure-compiler-v20170409.jar"}, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
+        EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_npe1.java", new String[]{"test-resources/lib/guava-21.0.jar", "test-resources/lib/closure-compiler-v20170409.jar"}, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
     }
 
     @Test
     public void npe2() throws Exception {
-        EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_npe2.java", new String[]{"test-resources/lib/guava-21.0.jar", "test-resources/lib/closure-compiler-v20170409.jar"}, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
+        EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_npe2.java", new String[]{"test-resources/lib/guava-21.0.jar", "test-resources/lib/closure-compiler-v20170409.jar"}, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
     }
 
     @Test
     public void resolveType() throws Exception {
-        EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_resolve_type.java", new String[]{"test-resources/lib/guava-21.0.jar", "test-resources/lib/closure-compiler-v20170409.jar"}, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
+        EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_resolve_type.java", new String[]{"test-resources/lib/guava-21.0.jar", "test-resources/lib/closure-compiler-v20170409.jar"}, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
     }
 
     @Test
     public void parameterizedType() throws Exception {
-        EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_parameterized_type.java", new String[]{"test-resources/lib/guava-21.0.jar", "test-resources/lib/closure-compiler-v20170409.jar"}, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
+        EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_parameterized_type.java", new String[]{"test-resources/lib/guava-21.0.jar", "test-resources/lib/closure-compiler-v20170409.jar"}, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
     }
 
     @Test
     public void dataNode() throws Exception {
-        EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_data_node.java", null, "aug-improvement");
+        EGroumTestUtils.buildAndPrintGroumsForFile("input/Test_data_node.java", null, "aug-improvement");
     }
 
     @Test

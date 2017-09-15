@@ -2,14 +2,6 @@ package egroum;
 
 import java.util.ArrayList;
 
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-
-import utils.FileIO;
-import utils.JavaASTUtil;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -31,11 +23,13 @@ public class EGroumTestUtils {
 
 	public static ArrayList<EGroumGraph> buildGroumsForClass(String classCode, AUGConfiguration configuration) {
 		EGroumBuilder builder = new EGroumBuilder(configuration);
-		return builder.buildGroums(classCode, "test", "test", null);
+		String projectName = "test";
+		String basePath = getTestFilePath("/") + projectName;
+		return builder.buildGroums(classCode, basePath, projectName, null);
 	}
 
 	public static ArrayList<EGroumGraph> buildGroumsFromFile(String path) {
-		return new EGroumBuilder(new AUGConfiguration(){{removeImplementationCode = 2;}}).build(path, null);
+		return new EGroumBuilder(new AUGConfiguration(){{removeImplementationCode = 2;}}).build(getTestFilePath(path), null);
 	}
 
 	public static ArrayList<EGroumGraph> buildGroumsForClasses(String[] sourceCodes) {
@@ -54,13 +48,14 @@ public class EGroumTestUtils {
 		return groums;
 	}
 
-	public static void buildAndPrintGroumsForFile(String inputPath, String name, String[] classpaths, String outputPath) {
-		buildAndPrintGroumsForFile(inputPath, name, classpaths, outputPath, new AUGConfiguration(){{removeImplementationCode = 2;}});
+	public static void buildAndPrintGroumsForFile(String inputPath, String[] classpaths, String outputPath) {
+		buildAndPrintGroumsForFile(inputPath, classpaths, outputPath, new AUGConfiguration(){{removeImplementationCode = 2;}});
 	}
 
-	public static ArrayList<EGroumGraph> buildAndPrintGroumsForFile(String inputPath, String name, String[] classpaths, String outputPath, AUGConfiguration config) {
+	public static ArrayList<EGroumGraph> buildAndPrintGroumsForFile(String inputPath, String[] classpaths, String outputPath, AUGConfiguration config) {
+		String srcFileName = getTestFilePath(inputPath);
 		EGroumBuilder gb = new EGroumBuilder(config);
-		ArrayList<EGroumGraph> gs = gb.buildBatch(inputPath + "/" + name, classpaths);
+		ArrayList<EGroumGraph> gs = gb.buildBatch(srcFileName, classpaths);
 		for (EGroumGraph g : gs) {
 			String s = g.getName();
 			s = s.replace("\n", "\\l");
@@ -72,5 +67,12 @@ public class EGroumTestUtils {
 			g.toGraphics(s, outputPath);
 		}
 		return gs;
+	}
+
+	private static String getTestFilePath(String relativePath) {
+		if (!relativePath.startsWith("/")) {
+			relativePath = "/" + relativePath;
+		}
+		return EGroumTestUtils.class.getResource(relativePath).getFile();
 	}
 }

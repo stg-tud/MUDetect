@@ -29,10 +29,10 @@ public class MCISGFinderTest {
 
 	@Test
 	public void mineDuplicatedCode() {
-		String inputPath = "test-resources/input", system = "anonymous_class2";
+		String inputPath = "/input", system = "anonymous_class2";
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		for (int i = 0; i < 2; i++)
-			groums.addAll(buildGroums(FileIO.readStringFromFile(inputPath + "/Test_" + system + "_pattern.java")));
+			groums.addAll(buildGroums(FileIO.readStringFromFile(getClass().getResource(inputPath + "/Test_" + system + "_pattern.java").getFile())));
 		
 		if (groums.size() <= 2)
 			for (EGroumGraph g : groums){
@@ -49,7 +49,7 @@ public class MCISGFinderTest {
 		print(patterns);
 		assertThat(patterns.size(), is(1));
 		
-		groums = buildGroums(FileIO.readStringFromFile(inputPath + "/Test_" + system + "_target.java"));
+		groums = buildGroums(FileIO.readStringFromFile(getClass().getResource(inputPath + "/Test_" + system + "_target.java").getFile()));
 		EGroumGraph pattern = new EGroumGraph(patterns.get(0).getRepresentative()).collapse();
 		groums.add(pattern);
 		

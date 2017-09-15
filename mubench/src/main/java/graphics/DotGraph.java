@@ -323,6 +323,7 @@ public class DotGraph {
 	}
 	
 	public void toDotFile(File file) {
+		ensureDirectory(file.getParentFile());
 		try {
 			BufferedWriter fout = new BufferedWriter(new FileWriter(file));
 			fout.append(this.graph.toString());
@@ -335,11 +336,10 @@ public class DotGraph {
 	}
 	
 	public void toGraphics(String file, String type) {
-		Runtime rt = Runtime.getRuntime();
-
-		String[] args = {EXEC_DOT, "-T"+type, file+".dot", "-o", file+"."+type};
+		ensureDirectory(new File(file).getParentFile());
 		try {
-			Process p = rt.exec(args);
+			Runtime rt = Runtime.getRuntime();
+			Process p = rt.exec(new String[]{EXEC_DOT, "-T"+type, file+".dot", "-o", file+"."+type});
 			p.waitFor();
 		}
 		catch (Exception e) {
@@ -348,9 +348,13 @@ public class DotGraph {
 	}
 	
 	public void toPNG(File path, String name) {
-		if (!path.exists()) path.mkdirs();
+		ensureDirectory(path);
 		String targetPath = new File(path, name).getAbsolutePath();
 		toDotFile(new File(targetPath + ".dot"));
 		toGraphics(targetPath, "png");
+	}
+
+	private void ensureDirectory(File path) {
+		if (!path.exists()) path.mkdirs();
 	}
 }

@@ -122,11 +122,11 @@ buildNumber.properties
 .mvn/timing.properties
 
 ### Project Specific ###
-output
-/aug-improvement
-/paper-examples
-/log*.txt
-/temp/
+/mubench/output
+/mubench/aug-improvement
+/mubench/paper-examples
+/mubench/log*.txt
+/mubench/temp/
 /*.zip
-/findings.yml
-/run.yml
+/mubench/findings.yml
+/mubench/run.yml
