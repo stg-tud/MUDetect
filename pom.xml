@@ -179,44 +179,6 @@
 							<goal>single</goal>
 						</goals>
 					</execution>
-					<execution>
-						<id>mudetect-xpo</id>
-						<configuration>
-							<archive>
-								<manifest>
-									<mainClass>de.tu_darmstadt.stg.mubench.MuDetectOnlineCrossProjectRunner</mainClass>
-								</manifest>
-							</archive>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
-							<finalName>MuDetectXProjectOn</finalName>
-							<appendAssemblyId>false</appendAssemblyId>
-						</configuration>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>muminer</id>
-						<configuration>
-							<archive>
-								<manifest>
-									<mainClass>de.tu_darmstadt.stg.mubench.MuMinerRunner</mainClass>
-								</manifest>
-							</archive>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
-							<finalName>MuMiner</finalName>
-							<appendAssemblyId>false</appendAssemblyId>
-						</configuration>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
 				</executions>
 			</plugin>
 		</plugins>
