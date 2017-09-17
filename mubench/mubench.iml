@@ -27,6 +27,7 @@
     <orderEntry type="library" name="Maven: org.eclipse.core:org.eclipse.core.commands:3.6.0" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.equinox:org.eclipse.equinox.common:3.6.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:bcel-findbugs:6.0" level="project" />
+    <orderEntry type="module" module-name="aug" />
     <orderEntry type="library" name="Maven: org.jgrapht:jgrapht-core:0.9.2" level="project" />
     <orderEntry type="library" name="Maven: org.jgrapht:jgrapht-ext:0.9.2" level="project" />
     <orderEntry type="library" name="Maven: org.tinyjee.jgraphx:jgraphx:2.0.0.1" level="project" />

@@ -45,16 +45,11 @@
             <version>6.0</version>
         </dependency>
 
-        <!-- ### JGraphT ################################################## -->
+        <!-- ### AUGs ##################################################### -->
         <dependency>
-            <groupId>org.jgrapht</groupId>
-            <artifactId>jgrapht-core</artifactId>
-            <version>0.9.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jgrapht</groupId>
-            <artifactId>jgrapht-ext</artifactId>
-            <version>0.9.2</version>
+            <groupId>de.tu-darmstadt.stg.mudetect</groupId>
+            <artifactId>aug</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
         <!-- ### MuBench ################################################## -->

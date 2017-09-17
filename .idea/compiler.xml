@@ -6,10 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="aug" />
         <module name="mubench" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="aug" target="1.8" />
       <module name="grouminer" target="1.8" />
       <module name="mubench" target="1.8" />
       <module name="mudetect" target="1.5" />

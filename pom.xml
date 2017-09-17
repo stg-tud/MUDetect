@@ -9,7 +9,8 @@
 
 	<modules>
 		<module>mubench</module>
-	</modules>
+        <module>aug</module>
+    </modules>
 
 	<distributionManagement>
 		<repository>
