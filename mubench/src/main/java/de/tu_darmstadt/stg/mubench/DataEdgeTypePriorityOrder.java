@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mubench;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import de.tu_darmstadt.stg.mudetect.aug.Edge;
 import egroum.EGroumDataEdge;
 import egroum.EGroumEdge;
 
@@ -12,7 +13,7 @@ import java.util.function.BiPredicate;
 
 import static egroum.EGroumDataEdge.Type.*;
 
-public class DataEdgeTypePriorityOrder implements BiPredicate<EGroumEdge, EGroumEdge> {
+public class DataEdgeTypePriorityOrder implements BiPredicate<Edge, Edge> {
     private static final Multimap<EGroumDataEdge.Type, EGroumDataEdge.Type> EDGE_TYPE_RELATION =
             HashMultimap.create();
 
@@ -32,7 +33,7 @@ public class DataEdgeTypePriorityOrder implements BiPredicate<EGroumEdge, EGroum
     }
 
     @Override
-    public boolean test(EGroumEdge edge1, EGroumEdge edge2) {
+    public boolean test(Edge edge1, Edge edge2) {
         if (edge1 instanceof EGroumDataEdge && edge2 instanceof EGroumDataEdge) {
             EGroumDataEdge.Type edge1Type = ((EGroumDataEdge) edge1).getType();
             EGroumDataEdge.Type edge2Type = ((EGroumDataEdge) edge2).getType();

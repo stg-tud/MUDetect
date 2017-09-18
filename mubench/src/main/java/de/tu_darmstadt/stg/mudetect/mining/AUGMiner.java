@@ -1,10 +1,9 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
-import de.tu_darmstadt.stg.mudetect.mining.Model;
-import egroum.EGroumGraph;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 
 import java.util.Collection;
 
 public interface AUGMiner {
-    Model mine(Collection<EGroumGraph> examples);
+    Model mine(Collection<APIUsageExample> examples);
 }

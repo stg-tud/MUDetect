@@ -1,9 +1,9 @@
 package de.tu_darmstadt.stg.mudetect.ranking;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.Overlaps;
-import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,13 +15,13 @@ import static org.junit.Assert.assertThat;
 
 public class PatternViolationsWeightFunctionTest {
 
-    private Pattern aPattern;
+    private APIUsagePattern aPattern;
     private Overlap violation;
     private Overlaps overlaps;
 
     @Before
     public void setup() {
-        AUG aTarget = someAUG();
+        APIUsageExample aTarget = someAUG();
 
         aPattern = somePattern();
 

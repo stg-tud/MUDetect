@@ -1,19 +1,19 @@
 package egroum;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.RECEIVER;
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.*;
 import static egroum.AUGBuilderTestUtils.buildAUG;
-import static egroum.EGroumDataEdge.Type.PARAMETER;
-import static egroum.EGroumDataEdge.Type.RECEIVER;
 import static org.junit.Assert.assertThat;
 
 public class EncodeCastTest {
     @Test
     public void encodesCast() throws Exception {
-        AUG aug = buildAUG("class C {\n" +
+        APIUsageExample aug = buildAUG("class C {\n" +
                 "  void m(Object obj) {\n" +
                 "    java.util.List l = (java.util.List) obj;\n" +
                 "    l.size();\n" +
@@ -25,8 +25,8 @@ public class EncodeCastTest {
 
     @Test 
     public void addsTransitiveParameterEdgeThroughCast() throws Exception {
-    	AUGConfiguration conf = new AUGConfiguration(){{buildTransitiveDataEdges = true;}};
-        AUG aug = buildAUG("class C {\n" +
+        AUGConfiguration conf = new AUGConfiguration(){{buildTransitiveDataEdges = true;}};
+        APIUsageExample aug = buildAUG("class C {\n" +
                 "  void m(java.util.List l) {\n" +
                 "    A a = (A) l.get(0);\n" +
                 "    l.remove(a);\n" +
@@ -39,8 +39,8 @@ public class EncodeCastTest {
 
     @Test 
     public void addsTransitiveReceiverEdgeThroughCast() throws Exception {
-    	AUGConfiguration conf = new AUGConfiguration(){{buildTransitiveDataEdges = true;}};
-        AUG aug = buildAUG("class C {\n" +
+        AUGConfiguration conf = new AUGConfiguration(){{buildTransitiveDataEdges = true;}};
+        APIUsageExample aug = buildAUG("class C {\n" +
                 "  void m(java.util.List l) {\n" +
                 "    A a = (A) l.get(0);\n" +
                 "    a.m();\n" +

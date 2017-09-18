@@ -1,19 +1,21 @@
 package de.tu_darmstadt.stg.mudetect.dot;
 
-import de.tu_darmstadt.stg.mudetect.model.*;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.model.Overlap;
+import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
+import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
+import de.tu_darmstadt.stg.mudetect.model.Violation;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.ORDER;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.extend;
-import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
-import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.instance;
-import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.someOverlap;
+import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.*;
 import static de.tu_darmstadt.stg.mudetect.model.TestViolationBuilder.someViolation;
-import static egroum.EGroumDataEdge.Type.ORDER;
-import static egroum.EGroumDataEdge.Type.PARAMETER;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -21,7 +23,7 @@ import static org.junit.Assert.assertThat;
 public class GenerateTargetEnvironmentDotGraphTest {
     @Test
     public void keepsSingleNode() throws Exception {
-        AUG aug = buildAUG().withActionNode("A").build();
+        APIUsageExample aug = buildAUG().withActionNode("A").build();
         Overlap instance = instance(aug);
 
         String dotGraph = toDotGraph(someViolation(instance));
@@ -31,7 +33,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
 
     @Test
     public void addsSameEdgeOnlyOnce() throws Exception {
-        AUG aug = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B").build();
+        APIUsageExample aug = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B").build();
         Overlap instance = instance(aug);
 
         String dotGraph = toDotGraph(someViolation(instance));

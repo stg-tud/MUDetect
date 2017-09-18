@@ -1,6 +1,10 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
-import de.tu_darmstadt.stg.mudetect.model.Location;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+import de.tu_darmstadt.stg.mudetect.aug.*;
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.patterns.AggregateDataNode;
 import egroum.*;
 import mining.Configuration;
 import mining.Fragment;
@@ -31,11 +35,11 @@ public class DefaultAUGMiner implements AUGMiner {
         });
     }
 
-    public Model mine(Collection<EGroumGraph> groums) {
-        return mine(new ArrayList<>(groums));
+    public Model mine(Collection<APIUsageExample> examples) {
+        return mine(new ArrayList<>(examples));
     }
 
-    public Model mine(ArrayList<EGroumGraph> groums) {
+    public Model mine(ArrayList<APIUsageExample> examples) {
         EGroumNode.numOfNodes = 0;
         Fragment.nextFragmentId = 0;
         Fragment.numofFragments = 0;
@@ -50,7 +54,7 @@ public class DefaultAUGMiner implements AUGMiner {
                 System.setOut(out);
             }
             mining.Miner miner = new mining.Miner("-subgraph-finder-", config);
-            return toModel(miner.mine(groums));
+            return toModel(miner.mine(examples));
         } finally {
             System.setOut(originalOut);
         }
@@ -60,37 +64,38 @@ public class DefaultAUGMiner implements AUGMiner {
         return () -> patterns.stream().map(DefaultAUGMiner::toAUGPattern).collect(Collectors.toSet());
     }
 
-    private static de.tu_darmstadt.stg.mudetect.mining.Pattern toAUGPattern(mining.Pattern pattern) {
-        de.tu_darmstadt.stg.mudetect.mining.Pattern augPattern =
-                new de.tu_darmstadt.stg.mudetect.mining.Pattern(pattern.getFreq());
+    private static APIUsagePattern toAUGPattern(mining.Pattern pattern) {
+        Set<Location> exampleLocations = new HashSet<>();
+        for (Fragment example : pattern.getFragments()) {
+            exampleLocations.add(example.getGraph().getLocation());
+        }
+
+        APIUsagePattern augPattern = new APIUsagePattern(pattern.getFreq(), exampleLocations);
 
         Fragment f = pattern.getRepresentative();
-        List<EGroumNode> nodes = f.getNodes();
+        List<Node> nodes = f.getNodes();
         for (int i = 0; i < nodes.size(); i++) {
-            EGroumNode node = nodes.get(i);
-            augPattern.addVertex(node);
+            Node node = nodes.get(i);
 
-            if (node instanceof EGroumDataNode) {
+            if (node instanceof DataNode) {
+                Multiset<String> values = HashMultiset.create();
                 for (Fragment fragment : pattern.getFragments()) {
-                    augPattern.addLiteral(node, fragment.getNodes().get(i).getDataName());
+                    DataNode eqivalentNode = (DataNode) fragment.getNodes().get(i);
+                    values.add(eqivalentNode.getValue());
                 }
+                node = new AggregateDataNode(values);
             }
+            augPattern.addVertex(node);
         }
-        for (EGroumNode node : f.getNodes()) {
-            for (EGroumEdge e : node.getInEdges()) {
-                if (f.getNodes().contains(e.getSource()))
-                    augPattern.addEdge(e.getSource(), e.getTarget(), e);
+        for (Node node : f.getNodes()) {
+            APIUsageGraph graph = node.getGraph();
+            for (Edge e : graph.incomingEdgesOf(node)) {
+                Node source = graph.getEdgeSource(e);
+                if (f.getNodes().contains(source))
+                    augPattern.addEdge(source, graph.getEdgeTarget(e), e);
             }
-        }
-        for (Fragment example : pattern.getFragments()) {
-            augPattern.addExampleLocation(getLocation(example));
         }
 
         return augPattern;
-    }
-
-    private static Location getLocation(Fragment example) {
-        EGroumGraph graph = example.getGraph();
-        return new Location(graph.getFilePath(), AUGBuilder.getMethodSignature(graph));
     }
 }

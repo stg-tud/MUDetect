@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Function;
 
+import de.tu_darmstadt.stg.mudetect.aug.Node;
 import egroum.EGroumDataEdge;
 import egroum.EGroumDataEdge.Type;
 import egroum.EGroumNode;
@@ -50,7 +51,7 @@ public class ExasFeature {
 	
 	private HashMap<String, Integer> nodeFeatures = new HashMap<>();
 	
-	public ExasFeature(ArrayList<EGroumNode> nodes, Function<EGroumNode, String> nodeToLabel) {
+	public ExasFeature(ArrayList<Node> nodes, Function<Node, String> nodeToLabel) {
 		for (int i = 0; i < nodes.size(); i++) {
 			String label = nodeToLabel.apply(nodes.get(i));
 			if (!nodeFeatures.containsKey(label))

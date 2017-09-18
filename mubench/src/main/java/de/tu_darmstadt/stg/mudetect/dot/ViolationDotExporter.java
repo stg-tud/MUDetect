@@ -1,10 +1,12 @@
 package de.tu_darmstadt.stg.mudetect.dot;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.Node;
+import de.tu_darmstadt.stg.mudetect.aug.dot.AUGDotExporter;
+import de.tu_darmstadt.stg.mudetect.aug.dot.AUGNodeNameProvider;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
-import egroum.EGroumEdge;
-import egroum.EGroumNode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,11 +30,11 @@ public class ViolationDotExporter {
      */
     public String toTargetDotGraph(Violation violation) {
         Overlap overlap = violation.getOverlap();
-        AUG target = overlap.getTarget();
+        APIUsageExample target = overlap.getTarget();
         return toTargetDotGraph(overlap, target, new HashMap<>());
     }
 
-    private String toTargetDotGraph(Overlap instance, AUG target, Map<String, String> graphAttributes) {
+    private String toTargetDotGraph(Overlap instance, APIUsageExample target, Map<String, String> graphAttributes) {
         return new AUGDotExporter(
                 new AUGNodeNameProvider(),
                 new OverlapNodeAttributeProvider(instance, "gray"),
@@ -47,25 +49,27 @@ public class ViolationDotExporter {
      */
     public String toTargetEnvironmentDotGraph(Violation violation) {
         Overlap overlap = violation.getOverlap();
-        AUG targetEnvironment = getTargetEnvironmentAUG(overlap);
+        APIUsageExample targetEnvironment = getTargetEnvironmentAUG(overlap);
         return toTargetDotGraph(overlap, targetEnvironment, new HashMap<String, String>() {{ put("nslimit", "10000"); }});
     }
 
-    private static AUG getTargetEnvironmentAUG(Overlap overlap) {
-        AUG target = overlap.getTarget();
-        AUG envAUG = new AUG(target.getLocation().getMethodName(), target.getLocation().getFilePath());
-        for (EGroumNode mappedTargetNode : overlap.getMappedTargetNodes()) {
+    private static APIUsageExample getTargetEnvironmentAUG(Overlap overlap) {
+        APIUsageExample target = overlap.getTarget();
+        APIUsageExample envAUG = new APIUsageExample(target.getLocation());
+        for (Node mappedTargetNode : overlap.getMappedTargetNodes()) {
             envAUG.addVertex(mappedTargetNode);
-            for (EGroumEdge edge : target.edgesOf(mappedTargetNode)) {
-                envAUG.addVertex(edge.getSource());
-                envAUG.addVertex(edge.getTarget());
+            for (Edge edge : target.edgesOf(mappedTargetNode)) {
+                envAUG.addVertex(target.getEdgeSource(edge));
+                envAUG.addVertex(target.getEdgeTarget(edge));
             }
         }
-        Set<EGroumNode> envNodes = envAUG.vertexSet();
-        for (EGroumNode node : envNodes) {
-            for (EGroumEdge edge : target.edgesOf(node)) {
-                if (envNodes.contains(edge.getSource()) && envNodes.contains(edge.getTarget())) {
-                    envAUG.addEdge(edge.getSource(), edge.getTarget(), edge);
+        Set<Node> envNodes = envAUG.vertexSet();
+        for (Node node : envNodes) {
+            for (Edge edge : target.edgesOf(node)) {
+                Node edgeSource = target.getEdgeSource(edge);
+                Node edgeTarget = target.getEdgeTarget(edge);
+                if (envNodes.contains(edgeSource) && envNodes.contains(edgeTarget)) {
+                    envAUG.addEdge(edgeSource, edgeTarget, edge);
                 }
             }
         }

@@ -1,6 +1,6 @@
 package egroum;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.actionNodeWithLabel;
@@ -11,8 +11,8 @@ import static org.junit.Assert.assertThat;
 
 public class EncodeConditionsImplicitTest {
     @Test
-    public void guard() throws Exception {
-        AUG aug = buildAUG("void m(java.util.List l) {\n" +
+    public void guard() {
+        APIUsageExample aug = buildAUG("void m(java.util.List l) {\n" +
                 "  if (l.isEmpty()) {\n" +
                 "    return;\n" +
                 "  }\n" +
@@ -23,8 +23,8 @@ public class EncodeConditionsImplicitTest {
     }
 
     @Test
-    public void nullGuard() throws Exception {
-        AUG aug = buildAUG("void m(java.util.List l) {\n" +
+    public void nullGuard() {
+        APIUsageExample aug = buildAUG("void m(java.util.List l) {\n" +
                 "  if (l == null) {\n" +
                 "    return;\n" +
                 "  }\n" +
@@ -35,8 +35,8 @@ public class EncodeConditionsImplicitTest {
     }
 
     @Test
-    public void sanitizer() throws Exception {
-        AUG aug = buildAUG("void m(java.util.List l) {\n" +
+    public void sanitizer() {
+        APIUsageExample aug = buildAUG("void m(java.util.List l) {\n" +
                 "  if (l.isEmpty()) {\n" +
                 "    throw new Exception();\n" +
                 "  }\n" +
@@ -47,8 +47,8 @@ public class EncodeConditionsImplicitTest {
     }
 
     @Test
-    public void loopGuardBreak() throws Exception {
-        AUG aug = buildAUG("void m(java.util.List l) {\n" +
+    public void loopGuardBreak() {
+        APIUsageExample aug = buildAUG("void m(java.util.List l) {\n" +
                 "  for (Object o : l) {\n" +
                 "    if (o == null) break;\n" +
                 "    o.hashCode();\n" +
@@ -59,8 +59,8 @@ public class EncodeConditionsImplicitTest {
     }
 
     @Test
-    public void loopGuardContinue() throws Exception {
-        AUG aug = buildAUG("void m(java.util.List l) {\n" +
+    public void loopGuardContinue() {
+        APIUsageExample aug = buildAUG("void m(java.util.List l) {\n" +
                 "  for (Object o : l) {\n" +
                 "    if (o == null) continue;\n" +
                 "    o.hashCode();\n" +
@@ -71,8 +71,8 @@ public class EncodeConditionsImplicitTest {
     }
 
     @Test
-    public void loopGuardAfterLoop() throws Exception {
-        AUG aug = buildAUG("void m(java.util.List l) {\n" +
+    public void loopGuardAfterLoop() {
+        APIUsageExample aug = buildAUG("void m(java.util.List l) {\n" +
                 "  for (Object o : l) {\n" +
                 "    if (o == null) continue;\n" +
                 "  }\n" +
@@ -83,15 +83,15 @@ public class EncodeConditionsImplicitTest {
     }
 
     @Test
-    public void guardDefinition() throws Exception {
-        AUG aug = buildAUG("void m(Object o) { if (o == null) o = new Object(); o.hashCode();}");
+    public void guardDefinition() {
+        APIUsageExample aug = buildAUG("void m(Object o) { if (o == null) o = new Object(); o.hashCode();}");
 
         assertThat(aug, hasSelEdge(actionNodeWithLabel("<nullcheck>"), actionNodeWithLabel("Object.<init>")));
     }
 
     @Test
-    public void guardRedefinition() throws Exception {
-        AUG aug = buildAUG("void m(Object o) { if (o == null) { o = new Object(); o.hashCode();}}");
+    public void guardRedefinition() {
+        APIUsageExample aug = buildAUG("void m(Object o) { if (o == null) { o = new Object(); o.hashCode();}}");
         
         assertThat(aug, hasSelEdge(actionNodeWithLabel("<nullcheck>"), actionNodeWithLabel("Object.<init>")));
         assertThat(aug, hasSelEdge(actionNodeWithLabel("<nullcheck>"), actionNodeWithLabel("Object.hashCode()")));

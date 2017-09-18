@@ -1,14 +1,15 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
-import de.tu_darmstadt.stg.mudetect.mining.Pattern;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 
 import java.util.*;
 import java.util.function.Predicate;
 
 public class Overlaps {
-    private Map<AUG, Set<Overlap>> instancesByTarget = new HashMap<>();
-    private Map<Pattern, Set<Overlap>> violationsByPattern = new HashMap<>();
-    private Map<AUG, Set<Overlap>> violationsByTarget = new HashMap<>();
+    private Map<APIUsageExample, Set<Overlap>> instancesByTarget = new HashMap<>();
+    private Map<APIUsagePattern, Set<Overlap>> violationsByPattern = new HashMap<>();
+    private Map<APIUsageExample, Set<Overlap>> violationsByTarget = new HashMap<>();
     private Set<Overlap> violations = new HashSet<>();
 
     public Set<Overlap> getInstancesInSameTarget(Overlap overlap) {

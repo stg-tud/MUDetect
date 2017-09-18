@@ -4,9 +4,9 @@ import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
 
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.ORDER;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
-import static egroum.EGroumDataEdge.Type.ORDER;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 

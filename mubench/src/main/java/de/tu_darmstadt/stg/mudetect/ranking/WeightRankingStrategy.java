@@ -14,7 +14,7 @@ import java.util.PriorityQueue;
 public class WeightRankingStrategy implements ViolationRankingStrategy {
     private final Comparator<Violation> VIOLATION_COMPARATOR = Comparator
             .comparingDouble(Violation::getConfidence).reversed()
-            .thenComparing(v -> v.getLocation().getMethodName());
+            .thenComparing(v -> v.getLocation().getMethodSignature());
 
     private ViolationWeightFunction weightFunction;
 

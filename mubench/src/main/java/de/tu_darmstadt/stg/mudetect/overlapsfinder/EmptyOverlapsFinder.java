@@ -1,9 +1,9 @@
 package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
 import de.tu_darmstadt.stg.mudetect.OverlapsFinder;
-import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,7 +16,7 @@ public class EmptyOverlapsFinder implements OverlapsFinder {
     }
 
     @Override
-    public List<Overlap> findOverlaps(AUG target, Pattern pattern) {
+    public List<Overlap> findOverlaps(APIUsageExample target, APIUsagePattern pattern) {
         List<Overlap> overlaps = finder.findOverlaps(target, pattern);
         if (overlaps.isEmpty()) {
             return Collections.singletonList(

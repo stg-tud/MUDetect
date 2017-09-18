@@ -1,11 +1,11 @@
 package de.tu_darmstadt.stg.mudetect.ranking;
 
+import de.tu_darmstadt.stg.mudetect.aug.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.Node;
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.Overlaps;
-import de.tu_darmstadt.stg.mudetect.mining.Pattern;
-import egroum.EGroumEdge;
-import egroum.EGroumNode;
 
 import java.util.Set;
 
@@ -29,22 +29,22 @@ public class OverlapWithoutEdgesToMissingNodesWeightFunction implements Violatio
     }
 
     private double getMappedElementsWeight(Overlap violation) {
-        Set<EGroumNode> mappedNodes = violation.getMappedTargetNodes();
-        Set<EGroumEdge> mappedEdges = violation.getMappedTargetEdges();
+        Set<Node> mappedNodes = violation.getMappedTargetNodes();
+        Set<Edge> mappedEdges = violation.getMappedTargetEdges();
         return nodeWeight.getInverseWeight(mappedNodes) + mappedEdges.size();
     }
 
     private double getPatternWeight(Overlap violation) {
-        Pattern pattern = violation.getPattern();
+        APIUsagePattern pattern = violation.getPattern();
         return nodeWeight.getInverseWeight(pattern.vertexSet()) + getNumberOfEdgesBetweenMappedNodes(violation, pattern);
     }
 
-    private long getNumberOfEdgesBetweenMappedNodes(Overlap violation, Pattern pattern) {
-        Set<EGroumNode> missingNodes = violation.getMissingNodes();
+    private long getNumberOfEdgesBetweenMappedNodes(Overlap violation, APIUsagePattern pattern) {
+        Set<Node> missingNodes = violation.getMissingNodes();
         return pattern.edgeSet().stream().filter(patternEdge -> isConnectedTo(patternEdge, missingNodes)).count();
     }
 
-    private boolean isConnectedTo(EGroumEdge patternEdge, Set<EGroumNode> missingNodes) {
+    private boolean isConnectedTo(Edge patternEdge, Set<Node> missingNodes) {
         return !missingNodes.contains(patternEdge.getSource()) && !missingNodes.contains(patternEdge.getTarget());
     }
 }

@@ -1,32 +1,33 @@
 package de.tu_darmstadt.stg.mudetect.matcher;
 
-import egroum.EGroumDataNode;
-import egroum.EGroumEdge;
-import egroum.EGroumNode;
+import de.tu_darmstadt.stg.mudetect.aug.DataNode;
+import de.tu_darmstadt.stg.mudetect.aug.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.Node;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import utils.JavaASTUtil;
 
 import java.util.Optional;
 
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
 import static org.eclipse.jdt.core.dom.InfixExpression.Operator.EQUALS;
 import static org.eclipse.jdt.core.dom.InfixExpression.Operator.NOT_EQUALS;
 
 public class NullCheckNodeLabelProvider implements NodeLabelProvider {
     @Override
-    public Optional<String> apply(EGroumNode node) {
-        if (node instanceof EGroumDataNode && node.getLabel().equals("null")) {
-            if (node.getOutEdges().stream().anyMatch(this::isConditionParameter)) {
+    public Optional<String> apply(Node node) {
+        if (node instanceof DataNode && node.getLabel().equals("null")) {
+            if (node.getGraph().outgoingEdgesOf(node).stream().anyMatch(this::isConditionParameter)) {
                 return Optional.of("null");
             }
         }
         return Optional.empty();
     }
 
-    private boolean isConditionParameter(EGroumEdge edge) {
-        return edge.isParameter() && (targetIs(edge, EQUALS) || targetIs(edge, NOT_EQUALS));
+    private boolean isConditionParameter(Edge edge) {
+        return edge.getType() == PARAMETER && (targetIs(edge, EQUALS) || targetIs(edge, NOT_EQUALS));
     }
 
-    private boolean targetIs(EGroumEdge edge, InfixExpression.Operator equals) {
+    private boolean targetIs(Edge edge, InfixExpression.Operator equals) {
         return edge.getTarget().getLabel().equals(JavaASTUtil.getLabel(equals));
     }
 }

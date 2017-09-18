@@ -1,9 +1,9 @@
 package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
 import de.tu_darmstadt.stg.mudetect.OverlapsFinder;
-import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import org.jmock.Expectations;
 import org.jmock.integration.junit4.JUnitRuleMockery;
 import org.junit.Rule;
@@ -25,8 +25,8 @@ public class EmptyOverlapFinderTest {
 
     @Test
     public void insertsEmptyOverlapIfNoOverlaps() throws Exception {
-        Pattern pattern = somePattern();
-        AUG target = someAUG();
+        APIUsagePattern pattern = somePattern();
+        APIUsageExample target = someAUG();
         OverlapsFinder wrappedFinder = context.mock(OverlapsFinder.class);
         context.checking(new Expectations() {{
             oneOf(wrappedFinder).findOverlaps(target, pattern); will(returnValue(Collections.emptyList()));
@@ -43,8 +43,8 @@ public class EmptyOverlapFinderTest {
     @Test
     public void returnsOriginalOverlapsIfAny() throws Exception {
         Overlap overlap = someOverlap();
-        Pattern pattern = overlap.getPattern();
-        AUG target = overlap.getTarget();
+        APIUsagePattern pattern = overlap.getPattern();
+        APIUsageExample target = overlap.getTarget();
         OverlapsFinder wrappedFinder = context.mock(OverlapsFinder.class);
         context.checking(new Expectations() {{
             oneOf(wrappedFinder).findOverlaps(target, pattern); will(returnValue(Collections.singletonList(overlap)));

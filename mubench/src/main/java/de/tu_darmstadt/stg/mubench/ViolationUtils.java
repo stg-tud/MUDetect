@@ -1,8 +1,9 @@
 package de.tu_darmstadt.stg.mubench;
 
 import de.tu_darmstadt.stg.mubench.cli.DetectorFinding;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.Location;
 import de.tu_darmstadt.stg.mudetect.dot.ViolationDotExporter;
-import de.tu_darmstadt.stg.mudetect.model.Location;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 
 import java.util.Set;
@@ -13,7 +14,7 @@ class ViolationUtils {
 
     static DetectorFinding toFinding(Violation violation) {
         Location location = violation.getLocation();
-        DetectorFinding finding = new DetectorFinding(location.getFilePath(), location.getMethodName());
+        DetectorFinding finding = new DetectorFinding(location.getFilePath(), location.getMethodSignature());
         finding.put("pattern_violation", violationDotExporter.toDotGraph(violation));
         finding.put("target_environment_mapping", violationDotExporter.toTargetEnvironmentDotGraph(violation));
         finding.put("confidence", violation.getConfidence());
@@ -31,8 +32,9 @@ class ViolationUtils {
     }
 
     private static int getStartLine(Violation violation) {
+        APIUsageExample target = violation.getOverlap().getTarget();
         return violation.getOverlap().getMappedTargetNodes().stream()
-                .mapToInt(node -> node.getSourceLineNumber().orElse(Integer.MAX_VALUE))
+                .mapToInt(node -> target.getSourceLineNumber(node).orElse(Integer.MAX_VALUE))
                 .min().orElse(0);
     }
 

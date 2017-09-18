@@ -1,57 +1,58 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
-import egroum.EGroumEdge;
-import egroum.EGroumNode;
-import de.tu_darmstadt.stg.mudetect.mining.Pattern;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.Node;
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import org.jgrapht.graph.DirectedSubgraph;
 
 import java.util.*;
 
 public class Overlap {
 
-    private final DirectedSubgraph<EGroumNode, EGroumEdge> patternOverlap;
-    private final DirectedSubgraph<EGroumNode, EGroumEdge> targetOverlap;
-    private final Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
-    private final Pattern pattern;
+    private final DirectedSubgraph<Node, Edge> patternOverlap;
+    private final DirectedSubgraph<Node, Edge> targetOverlap;
+    private final Map<Node, Node> targetNodeByPatternNode = new HashMap<>();
+    private final APIUsagePattern pattern;
 
-    public Overlap(Pattern pattern, AUG target, Map<EGroumNode, EGroumNode> targetNodeByPatternNode,
-                   Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge) {
+    public Overlap(APIUsagePattern pattern, APIUsageExample target, Map<Node, Node> targetNodeByPatternNode,
+                   Map<Edge, Edge> targetEdgeByPatternEdge) {
         this.pattern = pattern;
 
-        final Set<EGroumNode> targetNodeSet = new HashSet<>(targetNodeByPatternNode.values());
-        final Set<EGroumEdge> targetEdgeSet = new HashSet<>(targetEdgeByPatternEdge.values());
+        final Set<Node> targetNodeSet = new HashSet<>(targetNodeByPatternNode.values());
+        final Set<Edge> targetEdgeSet = new HashSet<>(targetEdgeByPatternEdge.values());
         targetOverlap = new DirectedSubgraph<>(target, targetNodeSet, targetEdgeSet);
 
-        final Set<EGroumNode> patternNodeSet = targetNodeByPatternNode.keySet();
-        final Set<EGroumEdge> patternEdgeSet = targetEdgeByPatternEdge.keySet();
+        final Set<Node> patternNodeSet = targetNodeByPatternNode.keySet();
+        final Set<Edge> patternEdgeSet = targetEdgeByPatternEdge.keySet();
         patternOverlap = new DirectedSubgraph<>(pattern, patternNodeSet, patternEdgeSet);
 
         this.targetNodeByPatternNode.putAll(targetNodeByPatternNode);
     }
 
-    public Pattern getPattern() {
+    public APIUsagePattern getPattern() {
         return pattern;
     }
 
-    public boolean mapsNode(EGroumNode node) {
+    public boolean mapsNode(Node node) {
         return patternOverlap.containsVertex(node) || targetOverlap.containsVertex(node);
     }
 
-    public boolean mapsEdge(EGroumEdge edge) {
+    public boolean mapsEdge(Edge edge) {
         return patternOverlap.containsEdge(edge) || targetOverlap.containsEdge(edge);
     }
 
-    public EGroumNode getMappedTargetNode(EGroumNode patternNode) {
+    public Node getMappedTargetNode(Node patternNode) {
         return targetNodeByPatternNode.get(patternNode);
     }
 
-    public AUG getTarget() { return (AUG) targetOverlap.getBase(); }
+    public APIUsageExample getTarget() { return (APIUsageExample) targetOverlap.getBase(); }
 
-    public Location getLocation() {
+    public de.tu_darmstadt.stg.mudetect.aug.Location getLocation() {
         return getTarget().getLocation();
     }
 
-    public Set<EGroumNode> getMappedTargetNodes() {
+    public Set<Node> getMappedTargetNodes() {
         return targetOverlap.vertexSet();
     }
 
@@ -59,7 +60,7 @@ public class Overlap {
         return getMappedTargetNodes().size();
     }
 
-    public Set<EGroumEdge> getMappedTargetEdges() {
+    public Set<Edge> getMappedTargetEdges() {
         return this.targetOverlap.edgeSet();
     }
 
@@ -69,14 +70,14 @@ public class Overlap {
 
     public int getSize() { return getNodeSize() + getEdgeSize(); }
 
-    public Set<EGroumNode> getMissingNodes() {
-        Set<EGroumNode> patternNodes = new HashSet<>(getPattern().vertexSet());
+    public Set<Node> getMissingNodes() {
+        Set<Node> patternNodes = new HashSet<>(getPattern().vertexSet());
         patternNodes.removeAll(patternOverlap.vertexSet());
         return patternNodes;
     }
 
-    public Set<EGroumEdge> getMissingEdges() {
-        Set<EGroumEdge> patternEdges = new HashSet<>(getPattern().edgeSet());
+    public Set<Edge> getMissingEdges() {
+        Set<Edge> patternEdges = new HashSet<>(getPattern().edgeSet());
         patternEdges.removeAll(patternOverlap.edgeSet());
         return patternEdges;
     }

@@ -1,8 +1,8 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -11,8 +11,8 @@ import static utils.SetUtils.asSet;
 public class ModelTest {
     @Test
     public void computesMaxSupportBySize() throws Exception {
-        Pattern pattern1 = somePattern(3, 5);
-        Pattern pattern2 = somePattern(3, 23);
+        APIUsagePattern pattern1 = somePattern(3, 5);
+        APIUsagePattern pattern2 = somePattern(3, 23);
         Model model = () -> asSet(pattern1, pattern2);
 
         int maxPatternSupport = model.getMaxPatternSupport(3);
@@ -22,8 +22,8 @@ public class ModelTest {
 
     @Test
     public void computesMaxSupportOnPatternsWithSameNodeCount() throws Exception {
-        Pattern pattern1 = somePattern(3, 23);
-        Pattern pattern2 = somePattern(5, 42);
+        APIUsagePattern pattern1 = somePattern(3, 23);
+        APIUsagePattern pattern2 = somePattern(5, 42);
         Model model = () -> asSet(pattern1, pattern2);
 
         int maxPatternSupport = model.getMaxPatternSupport(3);

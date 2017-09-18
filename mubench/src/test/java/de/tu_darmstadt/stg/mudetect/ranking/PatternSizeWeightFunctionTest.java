@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.ranking;
 
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
-import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
@@ -15,8 +15,8 @@ public class PatternSizeWeightFunctionTest {
 
     @Test
     public void weightsLargerPatternMore() throws Exception {
-        Pattern smallerPattern = somePattern(buildAUG().withActionNode("N").build());
-        Pattern largerPattern = somePattern(buildAUG().withActionNodes("N", "M").build());
+        APIUsagePattern smallerPattern = somePattern(buildAUG().withActionNode("N").build());
+        APIUsagePattern largerPattern = somePattern(buildAUG().withActionNodes("N", "M").build());
         Model model = () -> asSet(smallerPattern, largerPattern);
 
         double smallerWeight = new PatternSizeWeightFunction().getWeight(instance(smallerPattern), null, model);
@@ -27,8 +27,8 @@ public class PatternSizeWeightFunctionTest {
 
     @Test
     public void normalizesWeight() throws Exception {
-        Pattern smallerPattern = somePattern(buildAUG().withActionNodes("N", "M").build());
-        Pattern largerPattern = somePattern(buildAUG().withActionNodes("N", "M", "O").build());
+        APIUsagePattern smallerPattern = somePattern(buildAUG().withActionNodes("N", "M").build());
+        APIUsagePattern largerPattern = somePattern(buildAUG().withActionNodes("N", "M", "O").build());
         Model model = () -> asSet(smallerPattern, largerPattern);
 
         double smallerWeight = new PatternSizeWeightFunction().getWeight(instance(smallerPattern), null, model);
@@ -39,9 +39,9 @@ public class PatternSizeWeightFunctionTest {
 
     @Test
     public void smoothesWeight() throws Exception {
-        Pattern smallerPattern = somePattern(buildAUG().withActionNodes("N").build());
-        Pattern largerPattern = somePattern(buildAUG().withActionNodes("N", "M").build());
-        Pattern largestPattern = somePattern(buildAUG().withActionNodes("N", "M", "O").build());
+        APIUsagePattern smallerPattern = somePattern(buildAUG().withActionNodes("N").build());
+        APIUsagePattern largerPattern = somePattern(buildAUG().withActionNodes("N", "M").build());
+        APIUsagePattern largestPattern = somePattern(buildAUG().withActionNodes("N", "M", "O").build());
         Model model = () -> asSet(smallerPattern, largerPattern, largestPattern);
 
         double smallerWeight = new PatternSizeWeightFunction().getWeight(instance(smallerPattern), null, model);

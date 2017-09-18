@@ -1,12 +1,11 @@
 package egroum;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
-import org.hamcrest.Matchers;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 import org.junit.Test;
 
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.*;
 import static egroum.AUGBuilderTestUtils.buildAUG;
-import static egroum.EGroumDataEdge.Type.PARAMETER;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
@@ -15,21 +14,21 @@ public class EncodeConditionsTest {
 
     @Test
     public void addsNodeForConditionPredicate() throws Exception {
-        AUG aug = buildAUG("void m(java.util.List l) { if (l.isEmpty()) l.get(0); }");
+        APIUsageExample aug = buildAUG("void m(java.util.List l) { if (l.isEmpty()) l.get(0); }");
 
         assertThat(aug, hasNode(actionNodeWithLabel("Collection.isEmpty()")));
     }
 
     @Test
     public void addsSelEdgeFromPredicateToGuardedAction() throws Exception {
-        AUG aug = buildAUG("void m(java.util.List l) { if (l.isEmpty()) l.get(0); }");
+        APIUsageExample aug = buildAUG("void m(java.util.List l) { if (l.isEmpty()) l.get(0); }");
 
         assertThat(aug, hasSelEdge(actionNodeWithLabel("Collection.isEmpty()"), actionNodeWithLabel("List.get()")));
     }
 
     @Test
     public void doesNotControlSubsequentAction() throws Exception {
-        AUG aug = buildAUG("void m(java.util.List l) {\n" +
+        APIUsageExample aug = buildAUG("void m(java.util.List l) {\n" +
                 "  if (l.isEmpty())\n" +
                 "    l.add(null);\n" +
                 "  }\n" +
@@ -44,7 +43,7 @@ public class EncodeConditionsTest {
     @Test
     public void addNodesForConditionOperatorAndOperandsConnectedByParaEdges() throws Exception {
         AUGConfiguration conf = new AUGConfiguration();
-        AUG aug = buildAUG("void m(java.util.List l) { if (l.size() > 42) l.get(41); }", conf);
+        APIUsageExample aug = buildAUG("void m(java.util.List l) { if (l.size() > 42) l.get(41); }", conf);
 
         assertThat(aug, hasNodes(actionNodeWithLabel("Collection.size()"), actionNodeWithLabel("<r>"), dataNodeWithLabel("int")));
         if (conf.buildTransitiveDataEdges)
@@ -54,21 +53,21 @@ public class EncodeConditionsTest {
 
     @Test
     public void addsSelEdgeFromOperatorToGuardedAction() throws Exception {
-        AUG aug = buildAUG("void m(java.util.List l) { if (l.size() > 42) l.get(41); }");
+        APIUsageExample aug = buildAUG("void m(java.util.List l) { if (l.size() > 42) l.get(41); }");
 
         assertThat(aug, hasSelEdge(actionNodeWithLabel("<r>"), actionNodeWithLabel("List.get()")));
     }
 
     @Test
     public void addsSelEdgeFromActionOperandToGuardedAction() throws Exception {
-        AUG aug = buildAUG("void m(java.util.List l) { if (l.size() > 42) l.get(41); }");
+        APIUsageExample aug = buildAUG("void m(java.util.List l) { if (l.size() > 42) l.get(41); }");
 
         assertThat(aug, hasSelEdge(actionNodeWithLabel("Collection.size()"), actionNodeWithLabel("List.get()")));
     }
 
     @Test
     public void noSelEdgeFromLiteralOperandToGuardedCondition() throws Exception {
-        AUG aug = buildAUG("void m(java.util.List l) { if (l.size() > 42) l.get(41); }");
+        APIUsageExample aug = buildAUG("void m(java.util.List l) { if (l.size() > 42) l.get(41); }");
 
         assertThat(aug, not(hasSelEdge(actionNodeWithLabel("int"), actionNodeWithLabel("List.get()"))));
     }

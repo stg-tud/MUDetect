@@ -1,8 +1,13 @@
 package egroum;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.Location;
+import de.tu_darmstadt.stg.mudetect.aug.Node;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AUGBuilder {
@@ -12,22 +17,39 @@ public class AUGBuilder {
         this.configuration = configuration;
     }
 
-	public Collection<AUG> build(String sourcePath, String[] classpaths) {
+	public Collection<APIUsageExample> build(String sourcePath, String[] classpaths) {
         return new EGroumBuilder(configuration).buildBatch(sourcePath, classpaths).stream()
                 .map(AUGBuilder::toAUG).collect(Collectors.toList());
     }
 
-    public static AUG toAUG(EGroumGraph groum) {
-        AUG aug = new AUG(getMethodSignature(groum), groum.getFilePath());
+    public Collection<APIUsageExample> build(String source, String basePath, String projectName, String[] classpath) {
+        return new EGroumBuilder(configuration).buildGroums(source, basePath, projectName, classpath).stream()
+                .map(AUGBuilder::toAUG).collect(Collectors.toList());
+    }
+
+    public static APIUsageExample toAUG(EGroumGraph groum) {
+        APIUsageExample aug = new APIUsageExample(
+                new Location(groum.getProjectName(), groum.getFilePath(), getMethodSignature(groum)));
+        Map<EGroumNode, Node> nodeMap = new HashMap<>();
         for (EGroumNode node : groum.getNodes()) {
-            aug.addVertex(node);
+            Node newNode = convert(node);
+            nodeMap.put(node, newNode);
+            aug.addVertex(newNode);
         }
         for (EGroumNode node : groum.getNodes()) {
             for (EGroumEdge edge : node.getInEdges()) {
-                aug.addEdge(edge.getSource(), edge.getTarget(), edge);
+                aug.addEdge(nodeMap.get(edge.getSource()), nodeMap.get(edge.getTarget()), convert(edge));
             }
         }
         return aug;
+    }
+
+    private static Edge convert(EGroumEdge edge) {
+        throw new UnsupportedOperationException();
+    }
+
+    private static Node convert(EGroumNode node) {
+        throw new UnsupportedOperationException();
     }
 
     public static String getMethodSignature(EGroumGraph graph) {

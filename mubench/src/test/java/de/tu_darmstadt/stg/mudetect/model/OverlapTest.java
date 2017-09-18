@@ -1,12 +1,13 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 import org.junit.Test;
 
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.ORDER;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.InstanceTestUtils.contains;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.*;
-import static egroum.EGroumDataEdge.Type.ORDER;
-import static egroum.EGroumDataEdge.Type.PARAMETER;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
@@ -17,7 +18,7 @@ public class OverlapTest {
         TestAUGBuilder builder = buildAUG().withActionNodes("A", "B")
                 .withDataEdge("A", PARAMETER, "B")
                 .withDataEdge("A", ORDER, "B");
-        AUG aug = builder.build();
+        APIUsageExample aug = builder.build();
         Overlap instance = instance(aug);
 
         assertThat(instance, contains(builder.getEdge("A", ORDER, "B")));

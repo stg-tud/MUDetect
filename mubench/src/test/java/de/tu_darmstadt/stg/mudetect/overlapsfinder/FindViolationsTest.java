@@ -1,5 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
+import de.tu_darmstadt.stg.mudetect.aug.ConditionEdge;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
@@ -7,11 +8,14 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static de.tu_darmstadt.stg.mudetect.aug.ConditionEdge.ConditionType.SELECTION;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.CONDITION;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.ORDER;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.assertFindsOverlaps;
 import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.findOverlaps;
-import static egroum.EGroumDataEdge.Type.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static utils.CollectionUtils.only;
@@ -71,11 +75,11 @@ public class FindViolationsTest {
     public void mapsPatternNodeOnlyOnce() throws Exception {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B")
                 .withDataEdge("A", PARAMETER, "B")
-                .withCondEdge("A", "sel", "B");
+                .withCondEdge("A", SELECTION, "B");
 
         TestAUGBuilder target = buildAUG().withActionNode("A1", "A").withActionNode("A2", "A").withActionNode("B")
                 .withDataEdge("A1", PARAMETER, "B")
-                .withCondEdge("A2", "sel", "B");
+                .withCondEdge("A2", SELECTION, "B");
 
         TestOverlapBuilder violation1 = buildOverlap(target, pattern).withNode("A1", "A").withNode("B")
                 .withEdge("A1", "A", PARAMETER, "B", "B");
@@ -89,11 +93,11 @@ public class FindViolationsTest {
     public void mapsTargetNodeOnlyOnce() throws Exception {
         TestAUGBuilder pattern = buildAUG().withActionNode("A1", "A").withActionNode("A2", "A").withActionNode("B")
                 .withDataEdge("A1", PARAMETER, "B")
-                .withCondEdge("A2", "sel", "B");
+                .withCondEdge("A2", SELECTION, "B");
 
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B")
                 .withDataEdge("A", PARAMETER, "B")
-                .withCondEdge("A", "sel", "B");
+                .withCondEdge("A", SELECTION, "B");
 
         List<Overlap> overlaps = findOverlaps(pattern, target);
 
@@ -165,10 +169,10 @@ public class FindViolationsTest {
     public void prioritizesMappableEdges() throws Exception {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A") // the algorithm will start extending from this node
                 .withDataNodes("B", "C", "D", "E", "F")
-                .withCondEdge("B", "sel", "A")
-                .withCondEdge("C", "sel", "A")
-                .withCondEdge("D", "sel", "A")
-                .withCondEdge("E", "sel", "A")
+                .withCondEdge("B", SELECTION, "A")
+                .withCondEdge("C", SELECTION, "A")
+                .withCondEdge("D", SELECTION, "A")
+                .withCondEdge("E", SELECTION, "A")
                 .withDataEdge("F", ORDER, "A") // this is the edge that makes the connection
                 .withDataEdge("F", ORDER, "B")
                 .withDataEdge("F", ORDER, "C")

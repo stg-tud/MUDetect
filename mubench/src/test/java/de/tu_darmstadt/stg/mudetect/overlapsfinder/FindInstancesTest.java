@@ -7,12 +7,13 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.*;
-import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.findOverlaps;
+import static de.tu_darmstadt.stg.mudetect.aug.ConditionEdge.ConditionType.SELECTION;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.*;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.instance;
-import static egroum.EGroumDataEdge.Type.*;
+import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.assertFindsOverlaps;
+import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.findOverlaps;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static utils.CollectionUtils.only;
@@ -183,7 +184,7 @@ public class FindInstancesTest {
     public void handlesMultipleEdgesBetweenTwoNodes() throws Exception {
         assertFindsInstance(buildAUG().withActionNodes("A", "B")
                 .withDataEdge("A", RECEIVER, "B")
-                .withCondEdge("A", "sel", "B"));
+                .withCondEdge("A", SELECTION, "B"));
     }
 
     private void assertFindsInstance(TestAUGBuilder patternAndTargetBuilder) {

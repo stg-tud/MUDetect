@@ -4,11 +4,11 @@ import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
 import org.junit.Test;
 
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.DEFINITION;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.*;
-import static egroum.EGroumDataEdge.Type.DEFINITION;
-import static egroum.EGroumDataEdge.Type.PARAMETER;
 
 public class AlternativeMappingsTest {
     /**

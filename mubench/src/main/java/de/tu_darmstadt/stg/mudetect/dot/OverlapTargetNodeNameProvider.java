@@ -1,10 +1,11 @@
 package de.tu_darmstadt.stg.mudetect.dot;
 
+import de.tu_darmstadt.stg.mudetect.aug.Node;
+import de.tu_darmstadt.stg.mudetect.aug.dot.AUGNodeNameProvider;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import egroum.EGroumNode;
 import org.jgrapht.ext.VertexNameProvider;
 
-class OverlapTargetNodeNameProvider implements VertexNameProvider<EGroumNode> {
+class OverlapTargetNodeNameProvider implements VertexNameProvider<Node> {
     private static final AUGNodeNameProvider TARGET_AUG_NODE_NAME_PROVIDER = new AUGNodeNameProvider();
 
     private final Overlap overlap;
@@ -14,10 +15,10 @@ class OverlapTargetNodeNameProvider implements VertexNameProvider<EGroumNode> {
     }
 
     @Override
-    public String getVertexName(EGroumNode patternNode) {
+    public String getVertexName(Node patternNode) {
         StringBuilder label = new StringBuilder();
         if (overlap.mapsNode(patternNode)) {
-            EGroumNode targetNode = overlap.getMappedTargetNode(patternNode);
+            Node targetNode = overlap.getMappedTargetNode(patternNode);
             label.append(TARGET_AUG_NODE_NAME_PROVIDER.getVertexName(targetNode));
         } else {
             label.append(patternNode.getLabel());

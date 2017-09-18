@@ -1,15 +1,15 @@
 package de.tu_darmstadt.stg.mudetect.matcher;
 
-import egroum.EGroumNode;
+import de.tu_darmstadt.stg.mudetect.aug.Node;
 
 import java.util.Optional;
 import java.util.function.Function;
 
-public interface NodeLabelProvider extends Function<EGroumNode, Optional<String>> {
+public interface NodeLabelProvider extends Function<Node, Optional<String>> {
     @SafeVarargs
-    static Function<EGroumNode, String> firstOrDefaultLabel(Function<EGroumNode, Optional<String>>... gs) {
+    static Function<Node, String> firstOrDefaultLabel(Function<Node, Optional<String>>... gs) {
         return node -> {
-            for (Function<EGroumNode, Optional<String>> getter : gs) {
+            for (Function<Node, Optional<String>> getter : gs) {
                 Optional<String> label = getter.apply(node);
                 if (label.isPresent())
                     return label.get();

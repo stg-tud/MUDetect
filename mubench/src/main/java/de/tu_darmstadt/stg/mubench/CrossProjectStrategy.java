@@ -8,16 +8,18 @@ import de.tu_darmstadt.stg.mudetect.FirstDecisionViolationPredicate;
 import de.tu_darmstadt.stg.mudetect.MissingElementViolationPredicate;
 import de.tu_darmstadt.stg.mudetect.MuDetect;
 import de.tu_darmstadt.stg.mudetect.OptionalDefPrefixViolationPredicate;
-import de.tu_darmstadt.stg.mudetect.mining.*;
-import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.mining.AUGMiner;
+import de.tu_darmstadt.stg.mudetect.mining.DefaultAUGMiner;
+import de.tu_darmstadt.stg.mudetect.mining.MinPatternActionsModel;
+import de.tu_darmstadt.stg.mudetect.mining.Model;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.ranking.*;
 import de.tu_darmstadt.stg.mustudies.UsageUtils;
 import de.tu_darmstadt.stg.yaml.YamlObject;
 import egroum.AUGBuilder;
-import egroum.EGroumBuilder;
-import egroum.EGroumGraph;
 import mining.TypeUsageExamplePredicate;
 import org.yaml.snakeyaml.Yaml;
 
@@ -45,10 +47,10 @@ class CrossProjectStrategy implements DetectionStrategy {
         DetectorOutput.Builder output = createOutput();
 
         TargetProject targetProject = TargetProject.find(getIndexFilePath(), args.getTargetPath());
-        Collection<AUG> targets = loadDetectionTargets(args, targetProject);
+        Collection<APIUsageExample> targets = loadDetectionTargets(args, targetProject);
         output.withRunInfo("numberOfTargets", targets.size());
 
-        Set<Pattern> patterns = new HashSet<>();
+        Set<APIUsagePattern> patterns = new HashSet<>();
         Set<String> minedForAPIs = new HashSet<>();
         for (Misuse misuse : targetProject.getMisuses()) {
             API api = misuse.getMisusedAPI();
@@ -68,7 +70,7 @@ class CrossProjectStrategy implements DetectionStrategy {
                 case ONLINE:
 
                     System.out.println(String.format("[MuDetectXProject] Target API = %s, Misuse = %s", api, misuse.getId()));
-                    AUG misuseInstance = findMisuseInstance(misuse, targets);
+                    APIUsageExample misuseInstance = findMisuseInstance(misuse, targets);
                     examplePredicate = SimilarUsageExamplePredicate.examplesSimilarTo(misuseInstance, api);
                     logPrefix = "M-" + misuse.getId() + "-" + api.getSimpleName();
                     break;
@@ -76,7 +78,7 @@ class CrossProjectStrategy implements DetectionStrategy {
                     throw new IllegalStateException("no such mode: " + mode);
             }
 
-            Collection<EGroumGraph> trainingExamples = loadTrainingExamples(api, logPrefix, examplePredicate, args, output);
+            Collection<APIUsageExample> trainingExamples = loadTrainingExamples(api, logPrefix, examplePredicate, args, output);
             output.withRunInfo(logPrefix + "-numberOfTrainingExamples", trainingExamples.size());
             output.withRunInfo(logPrefix + "-numberOfUsagesInTrainingExamples", getTypeUsageCounts(trainingExamples));
 
@@ -95,27 +97,27 @@ class CrossProjectStrategy implements DetectionStrategy {
         return output.withFindings(violations, ViolationUtils::toFinding);
     }
 
-    private AUG findMisuseInstance(Misuse misuse, Collection<AUG> targets) {
-        for (AUG target : targets) {
-            if (target.getLocation().getMethodName().equals(misuse.getMethodSignature())) {
+    private APIUsageExample findMisuseInstance(Misuse misuse, Collection<APIUsageExample> targets) {
+        for (APIUsageExample target : targets) {
+            if (target.getLocation().getMethodSignature().equals(misuse.getMethodSignature())) {
                 return target;
             }
         }
         throw new IllegalStateException("no target for misuse.");
     }
 
-    private Collection<EGroumGraph> loadTrainingExamples(API targetType, String logPrefix, TypeUsageExamplePredicate examplePredicate, DetectorArgs args, DetectorOutput.Builder output) throws FileNotFoundException {
+    private Collection<APIUsageExample> loadTrainingExamples(API targetType, String logPrefix, TypeUsageExamplePredicate examplePredicate, DetectorArgs args, DetectorOutput.Builder output) throws FileNotFoundException {
         List<ExampleProject> exampleProjects = getExampleProjects(targetType);
         System.out.println(String.format("[MuDetectXProject] Example Projects = %d", exampleProjects.size()));
         output.withRunInfo(logPrefix + "-exampleProjects", exampleProjects.size());
 
-        EGroumBuilder builder = new EGroumBuilder(new DefaultAUGConfiguration() {{
+        AUGBuilder builder = new AUGBuilder(new DefaultAUGConfiguration() {{
             usageExamplePredicate = examplePredicate;
         }});
-        List<EGroumGraph> targetTypeExamples = new ArrayList<>();
+        List<APIUsageExample> targetTypeExamples = new ArrayList<>();
         for (ExampleProject exampleProject : exampleProjects) {
             String projectName = exampleProject.getProjectPath();
-            List<EGroumGraph> projectExamples = new ArrayList<>();
+            List<APIUsageExample> projectExamples = new ArrayList<>();
             for (String srcDir : exampleProject.getSrcDirs()) {
                 Path projectSrcPath = Paths.get(exampleProject.getProjectPath(), srcDir);
                 System.out.println(String.format("[MuDetectXProject] Scanning path %s", projectSrcPath));
@@ -125,7 +127,7 @@ class CrossProjectStrategy implements DetectionStrategy {
                         @Override
                         public void write(int arg0) throws IOException {}
                     }));
-                    projectExamples.addAll(builder.buildBatch(projectSrcPath.toString(), args.getDependencyClassPath()));
+                    projectExamples.addAll(builder.build(projectSrcPath.toString(), args.getDependencyClassPath()));
                 } catch (Exception e) {
                     System.err.print("[MuDetectXProject] Parsing failed: ");
                     e.printStackTrace(System.err);
@@ -140,10 +142,7 @@ class CrossProjectStrategy implements DetectionStrategy {
                 System.out.println(String.format("[MuDetectXProject] Too many examples, sampling %d.", maxNumberOfExamplesPerProject));
             }
 
-            for (EGroumGraph example : projectExamples) {
-                example.setProjectName(projectName);
-                targetTypeExamples.add(example);
-            }
+            targetTypeExamples.addAll(projectExamples);
         }
         System.out.println(String.format("[MuDetectXProject] Examples = %d", targetTypeExamples.size()));
 
@@ -212,7 +211,7 @@ class CrossProjectStrategy implements DetectionStrategy {
         return list.subList(length - n, length);
     }
 
-    private YamlObject getTypeUsageCounts(Collection<EGroumGraph> targets) {
+    private YamlObject getTypeUsageCounts(Collection<APIUsageExample> targets) {
         YamlObject object = new YamlObject();
         for (Multiset.Entry<String> entry : UsageUtils.countNumberOfUsagesPerType(targets).entrySet()) {
             object.put(entry.getElement(), entry.getCount());
@@ -227,7 +226,7 @@ class CrossProjectStrategy implements DetectionStrategy {
         }});
     }
 
-    private Collection<AUG> loadDetectionTargets(DetectorArgs args, TargetProject targetProject) throws IOException {
+    private Collection<APIUsageExample> loadDetectionTargets(DetectorArgs args, TargetProject targetProject) throws IOException {
         return new AUGBuilder(new DefaultAUGConfiguration() {{
             usageExamplePredicate = MisuseInstancePredicate.examplesOf(targetProject.getMisuses());
         }}).build(args.getTargetPath().srcPath, args.getDependencyClassPath());

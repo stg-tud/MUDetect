@@ -1,7 +1,8 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
-import egroum.*;
-import org.eclipse.jdt.core.dom.ASTNode;
+import de.tu_darmstadt.stg.mudetect.aug.*;
+import de.tu_darmstadt.stg.mudetect.aug.Location;
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import utils.JavaASTUtil;
 
 import java.util.*;
@@ -9,8 +10,8 @@ import java.util.*;
 public class TestAUGBuilder {
     private static int randomAUGCount = 0;
 
-    private final Map<String, EGroumNode> nodeMap;
-    private final Set<EGroumEdge> edges;
+    private final Map<String, Node> nodeMap;
+    private final Set<Edge> edges;
     private final String name;
 
     private TestAUGBuilder(String name) {
@@ -25,7 +26,7 @@ public class TestAUGBuilder {
         edges = new LinkedHashSet<>(baseBuilder.edges);
     }
 
-    public static AUG someAUG() {
+    public static APIUsageExample someAUG() {
         return someAUG(getFreshAUGName());
     }
 
@@ -33,8 +34,8 @@ public class TestAUGBuilder {
         return ":AUG-" + (++randomAUGCount) + ":";
     }
 
-    public static AUG someAUG(String name) {
-        return buildAUG(name).withActionNode(getFreshNodeName()).build();
+    public static APIUsageExample someAUG(String name) {
+        return buildAUG(name).withActionNode(getFreshNodeName()).build(APIUsageExample.class);
     }
 
     private static String getFreshNodeName() {
@@ -64,9 +65,17 @@ public class TestAUGBuilder {
 
     public static TestAUGBuilder extend(TestAUGBuilder... baseBuilder) {return new TestAUGBuilder(join(baseBuilder)); }
 
-    static TestAUGBuilder builderFrom(AUG aug) {
-        TestAUGBuilder builder = new TestAUGBuilder(aug.getLocation().getMethodName());
-        for (EGroumNode node : aug.vertexSet()) {
+    static TestAUGBuilder builderFrom(APIUsageExample aug) {
+        return builderFrom(aug, aug.getLocation().getMethodSignature());
+    }
+
+    static TestAUGBuilder builderFrom(APIUsageGraph aug) {
+        return builderFrom(aug, "graph");
+    }
+
+    private static TestAUGBuilder builderFrom(APIUsageGraph aug, String name) {
+        TestAUGBuilder builder = new TestAUGBuilder(name);
+        for (Node node : aug.vertexSet()) {
             builder.withNode(node.getLabel(), node);
         }
         builder.edges.addAll(aug.edgeSet());
@@ -88,16 +97,14 @@ public class TestAUGBuilder {
     }
 
     public TestAUGBuilder withActionNode(String id, String nodeName) {
-        int nodeType;
         if (JavaASTUtil.infixExpressionLables.containsKey(nodeName)) {
             nodeName = JavaASTUtil.infixExpressionLables.get(nodeName);
-            nodeType = ASTNode.INFIX_EXPRESSION;
+            return withNode(id, new InfixOperatorNode(nodeName));
         } else if (nodeName.equals("return")) {
-            nodeType = ASTNode.RETURN_STATEMENT;
+            return withNode(id, new ReturnNode());
         } else {
-            nodeType = ASTNode.METHOD_INVOCATION;
+            return withNode(id, new MethodCallNode(nodeName));
         }
-        return withNode(id, new EGroumActionNode(nodeName, nodeType));
     }
 
     public TestAUGBuilder withDataNodes(String... nodeNames) {
@@ -115,10 +122,10 @@ public class TestAUGBuilder {
     }
 
     public TestAUGBuilder withDataNode(String id, String nodeName) {
-        return withNode(id, new EGroumDataNode(nodeName));
+        return withNode(id, new VariableNode(nodeName));
     }
 
-    public TestAUGBuilder withNode(String id, EGroumNode node) {
+    public TestAUGBuilder withNode(String id, Node node) {
         if (nodeMap.containsKey(id)) {
             throw new IllegalArgumentException("A node with id '" + id + "' already exists.");
         }
@@ -126,25 +133,25 @@ public class TestAUGBuilder {
         return this;
     }
 
-    public TestAUGBuilder withDataEdge(String sourceId, EGroumDataEdge.Type type, String targetId) {
-        edges.add(new EGroumDataEdge(getNode(sourceId), getNode(targetId), type));
+    public TestAUGBuilder withDataEdge(String sourceId, Edge.Type type, String targetId) {
+        edges.add(new BaseDataFlowEdge(getNode(sourceId), getNode(targetId), type));
         return this;
     }
 
-    public TestAUGBuilder withCondEdge(String sourceId, String kind, String targetId) {
-        edges.add(new EGroumDataEdge(getNode(sourceId), getNode(targetId), EGroumDataEdge.Type.CONDITION, kind));
+    public TestAUGBuilder withCondEdge(String sourceId, ConditionEdge.ConditionType kind, String targetId) {
+        edges.add(new ConditionEdge(getNode(sourceId), getNode(targetId), kind));
         return this;
     }
 
-    EGroumNode getNode(String id) {
+    Node getNode(String id) {
         if (!nodeMap.containsKey(id)) {
             throw new IllegalArgumentException("A node with id '" + id + "' does not exist.");
         }
         return nodeMap.get(id);
     }
 
-    EGroumEdge getEdge(String sourceNodeId, EGroumDataEdge.Type type, String targetNodeId) {
-        for (EGroumEdge edge : edges) {
+    Edge getEdge(String sourceNodeId, Edge.Type type, String targetNodeId) {
+        for (Edge edge : edges) {
             if (edge.getSource() == getNode(sourceNodeId) &&
                     edge.getTarget() == getNode(targetNodeId) &&
                     hasType(edge, type)) {
@@ -154,20 +161,30 @@ public class TestAUGBuilder {
         throw new IllegalArgumentException("no such edge");
     }
 
-    private boolean hasType(EGroumEdge edge, EGroumDataEdge.Type type) {
-        return edge.getLabel().equals(EGroumDataEdge.getLabel(type)) ||
-                (type == EGroumDataEdge.Type.CONDITION &&
-                        ("sel".equals(edge.getLabel()) || "rep".equals(edge.getLabel())));
+    private boolean hasType(Edge edge, Edge.Type type) {
+        return edge.getType() == type;
     }
 
-    public AUG build() {
-        AUG aug = new AUG(name, ":aug-file-path:");
-        for (EGroumNode node : nodeMap.values()) {
+    public APIUsageExample build() {
+        return build(APIUsageExample.class);
+    }
+
+    public <T extends APIUsageGraph> T build(Class<T> clazz) {
+        APIUsageGraph aug;
+        if (clazz == APIUsageExample.class) {
+            aug = new APIUsageExample(new Location(name, name, ":aug-file-path:"));
+        } else if (clazz == APIUsagePattern.class) {
+            aug = new APIUsagePattern(42, new HashSet<>());
+        } else {
+            throw new IllegalArgumentException("unsupported AUG type: " + clazz);
+        }
+
+        for (Node node : nodeMap.values()) {
             aug.addVertex(node);
         }
-        for (EGroumEdge edge : edges) {
+        for (Edge edge : edges) {
             aug.addEdge(edge.getSource(), edge.getTarget(), edge);
         }
-        return aug;
+        return (T) aug;
     }
 }

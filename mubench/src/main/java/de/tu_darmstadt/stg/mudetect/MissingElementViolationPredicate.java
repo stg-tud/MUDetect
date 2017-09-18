@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect;
 
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 
 import java.util.Optional;
 
@@ -12,7 +12,7 @@ public class MissingElementViolationPredicate implements ViolationPredicate {
     }
 
     private boolean isMissingElement(Overlap overlap) {
-        Pattern pattern = overlap.getPattern();
+        APIUsagePattern pattern = overlap.getPattern();
         return overlap.getNodeSize() < pattern.getNodeSize() || overlap.getEdgeSize() < pattern.getEdgeSize();
     }
 

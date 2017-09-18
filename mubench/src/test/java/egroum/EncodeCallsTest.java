@@ -1,19 +1,19 @@
 package egroum;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 import org.junit.Test;
 
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.RECEIVER;
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.*;
 import static egroum.AUGBuilderTestUtils.buildAUG;
-import static egroum.EGroumDataEdge.Type.PARAMETER;
-import static egroum.EGroumDataEdge.Type.RECEIVER;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 public class EncodeCallsTest {
     @Test
     public void addsCall() throws Exception {
-        AUG aug = buildAUG("void m(Object o) { o.toString(); }");
+        APIUsageExample aug = buildAUG("void m(Object o) { o.toString(); }");
 
         assertThat(aug, hasEdge(dataNodeWithLabel("Object"), RECEIVER, actionNodeWithLabel("Object.toString()")));
     }
@@ -24,14 +24,14 @@ public class EncodeCallsTest {
      */
     @Test
     public void addsStaticCall() throws Exception {
-        AUG aug = buildAUG("void m() { C.staticMethod(); }");
+        APIUsageExample aug = buildAUG("void m() { C.staticMethod(); }");
 
         assertThat(aug, hasEdge(dataNodeWithLabel("C"), RECEIVER, actionNodeWithLabel("C.staticMethod()")));
     }
 
     @Test
     public void addsConstructorInvocation() throws Exception {
-        AUG aug = buildAUG("void m() { new Object(); }");
+        APIUsageExample aug = buildAUG("void m() { new Object(); }");
 
         assertThat(aug, hasNode(actionNodeWithLabel("Object.<init>")));
     }
@@ -39,7 +39,7 @@ public class EncodeCallsTest {
     @Test
     public void encodesOnlyDirectReceiverEdges() throws Exception {
         AUGConfiguration conf = new AUGConfiguration();
-		AUG aug = buildAUG("void m(java.io.File f) {\n" +
+		APIUsageExample aug = buildAUG("void m(java.io.File f) {\n" +
                 "  java.io.InputStream is = new java.io.FileInputStream(f);\n" +
                 "  is.read();\n" +
                 "}", conf );
@@ -54,7 +54,7 @@ public class EncodeCallsTest {
     @Test
     public void encodesOnlyDirectParameterEdges() throws Exception {
         AUGConfiguration conf = new AUGConfiguration();
-        AUG aug = buildAUG("void m(java.io.File f) {\n" +
+        APIUsageExample aug = buildAUG("void m(java.io.File f) {\n" +
                 "  java.io.InputStream is = new java.io.FileInputStream(f);\n" +
                 "  java.io.Reader r = new InputStreamReader(is);\n" +
                 "}", conf);
@@ -70,7 +70,7 @@ public class EncodeCallsTest {
     @Test
     public void encodesTransitiveParameterEdgesThroughArithmeticOperators() throws Exception {
         AUGConfiguration conf = new AUGConfiguration();
-        AUG aug = buildAUG("Object m(java.util.List l) {\n" +
+        APIUsageExample aug = buildAUG("Object m(java.util.List l) {\n" +
                 "  return l.get(l.size() - 1);\n" +
                 "}", conf);
 
@@ -82,7 +82,7 @@ public class EncodeCallsTest {
     @Test
     public void encodesTransitiveParameterEdgesThroughBooleanOperators() throws Exception {
         AUGConfiguration conf = new AUGConfiguration();
-        AUG aug = buildAUG("boolean m(java.util.List l) {\n" +
+        APIUsageExample aug = buildAUG("boolean m(java.util.List l) {\n" +
                 "  return !l.isEmpty();\n" +
                 "}", conf);
 

@@ -1,23 +1,18 @@
-/**
- * 
- */
 package mining;
+
+import de.tu_darmstadt.stg.mudetect.aug.*;
+import egroum.DenseAUGPredicate;
+import exas.ExasFeature;
+import mining.Configuration.Level;
+import utils.FileIO;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import egroum.*;
-import org.eclipse.jdt.core.dom.ASTNode;
-
-import egroum.EGroumDataEdge.Type;
-import exas.ExasFeature;
-import mining.Configuration.Level;
-import utils.FileIO;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.DEFINITION;
 
 /**
  * @author hoan
@@ -41,44 +36,44 @@ public class Miner {
 		return projectName;
 	}
 
-	public Set<Pattern> mine(ArrayList<EGroumGraph> groums) {
-		groums.removeIf(DenseGroumPredicate::isTooDense);
-		for (EGroumGraph groum : groums) {
-			//groum.deleteUnaryOperationNodes();
-			groum.collapseLiterals();
+	public Set<Pattern> mine(ArrayList<APIUsageExample> augs) {
+		augs.removeIf(DenseAUGPredicate::isTooDense);
+		for (APIUsageExample aug : augs) {
+			//aug.deleteUnaryOperationNodes();
+			collapseLiterals(aug);
 		}
 		HashSet<String> coreLabels = new HashSet<>();
-		HashMap<String, HashSet<EGroumNode>> nodesOfLabel = new HashMap<String, HashSet<EGroumNode>>();
-		for (EGroumGraph groum : groums) {
-			for (EGroumNode node : groum.getNodes()) {
-				node.setGraph(groum);
+		HashMap<String, HashSet<Node>> nodesOfLabel = new HashMap<>();
+		for (APIUsageExample aug : augs) {
+			for (Node node : aug.vertexSet()) {
+				node.setGraph(aug);
 				String label = config.nodeToLabel.apply(node);
-				HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
+				HashSet<Node> nodes = nodesOfLabel.get(label);
 				if (nodes == null)
-					nodes = new HashSet<EGroumNode>();
+					nodes = new HashSet<>();
 				nodes.add(node);
 				nodesOfLabel.put(label, nodes);
-				if (node.getAstNodeType() == ASTNode.METHOD_INVOCATION && node.isCoreAction())
+				if (node instanceof MethodCallNode && node.isCoreAction())
 					coreLabels.add(label);
 			}
 		}
 		Lattice l = new Lattice();
 		l.setStep(1);
 		lattices.add(l);
-		for (String label : new HashSet<String>(nodesOfLabel.keySet())) {
-			HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
+		for (String label : new HashSet<>(nodesOfLabel.keySet())) {
+			HashSet<Node> nodes = nodesOfLabel.get(label);
 			if (nodes.size() < config.minPatternSupport) {
-				for (EGroumNode node : nodes) {
+				for (Node node : nodes) {
 					boolean isDefAction = false;
-					if (node instanceof EGroumActionNode) {
-						for (EGroumEdge e : node.getOutEdges())
-							if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).getType() == Type.DEFINITION) {
+					if (node instanceof ActionNode) {
+						for (Edge e : node.getGraph().outgoingEdgesOf(node))
+							if (e.getType() == DEFINITION) {
 								isDefAction = true;
 								break;
 							}
 					}
 					if (!isDefAction)
-						node.getGraph().delete(node);
+						node.getGraph().removeVertex(node);
 				}
 				nodesOfLabel.remove(label);
 			}
@@ -86,20 +81,17 @@ public class Miner {
 				nodesOfLabel.remove(label);
 		}
 		ArrayList<String> list = new ArrayList<>(nodesOfLabel.keySet());
-		Collections.sort(list, new Comparator<String>() {
-			@Override
-			public int compare(String l1, String l2) {
-				int c1 = nodesOfLabel.get(l1).size(), c2 = nodesOfLabel.get(l2).size();
-				if (c1 != c2)
-					return c2 - c1;
-				return l2.compareTo(l1);
-			}
-		});
+		list.sort((l1, l2) -> {
+            int c1 = nodesOfLabel.get(l1).size(), c2 = nodesOfLabel.get(l2).size();
+            if (c1 != c2)
+                return c2 - c1;
+            return l2.compareTo(l1);
+        });
 		for (String label : list) {
-			HashSet<EGroumNode> nodes = nodesOfLabel.get(label);
+			HashSet<Node> nodes = nodesOfLabel.get(label);
 			HashSet<Fragment> fragments = new HashSet<>();
-			for (EGroumNode node : nodes) {
-				if (node.getAstNodeType() == ASTNode.METHOD_INVOCATION && node.isCoreAction()) {
+			for (Node node : nodes) {
+				if (node instanceof MethodCallNode && node.isCoreAction()) {
 					Fragment f = new Fragment(node, config);
 					fragments.add(f);
 				}
@@ -114,6 +106,26 @@ public class Miner {
 		report();
 
 		return getPatterns();
+	}
+
+	private void collapseLiterals(APIUsageExample aug) {
+		for (Node node : new HashSet<Node>(aug.vertexSet())) {
+			HashMap<String, ArrayList<Node>> labelLiterals = new HashMap<>();
+			for (Node n : aug.incomingNodesOf(node)) {
+				if (n instanceof LiteralNode) {
+					String label = n.getLabel();
+					ArrayList<Node> lits = labelLiterals.computeIfAbsent(label, k -> new ArrayList<>());
+					lits.add(n);
+				}
+			}
+			for (String label : labelLiterals.keySet()) {
+				ArrayList<Node> lits = labelLiterals.get(label);
+				if (lits.size() > 0) {
+					for (int i = 1; i < lits.size(); i++)
+						aug.removeVertex(lits.get(i));
+				}
+			}
+		}
 	}
 
 	private void report() {
@@ -131,8 +143,9 @@ public class Miner {
 					rf.toGraphics(patternDir.getAbsolutePath(), rf.getId() + "");
 					StringBuilder sb = new StringBuilder();
 					for (Fragment f : p.getFragments()) {
-						String fileName = f.getGraph().getFilePath();
-						String name = f.getGraph().getName();
+						APIUsageExample graph = f.getGraph();
+						String fileName = graph.getLocation().getFilePath();
+						String name = graph.getLocation().getMethodSignature();
 						sb.append(fileName + "," + name + "\n");
 						/*String[] parts = name.split(",");
 						sb.append("https://github.com/" + projectName + "/commit/"
@@ -160,27 +173,23 @@ public class Miner {
 	private void extend(Pattern pattern) {
 		int patternSize = 0;
 		if (pattern.getSize() >= config.maxPatternSize)
-			for(EGroumNode node : pattern.getRepresentative().getNodes())
+			for(Node node : pattern.getRepresentative().getNodes())
 				if(node.isCoreAction())
 					patternSize++;
 		if(patternSize >= config.maxPatternSize) {
 			pattern.add2Lattice(lattices);
 			return;
 		}
-		HashMap<String, HashMap<Fragment, HashSet<ArrayList<EGroumNode>>>> labelFragmentExtendableNodes = new HashMap<>();
+		HashMap<String, HashMap<Fragment, HashSet<ArrayList<Node>>>> labelFragmentExtendableNodes = new HashMap<>();
 		for (Fragment f : pattern.getFragments()) {
-			HashMap<String, HashSet<ArrayList<EGroumNode>>> xns = f.extend();
+			HashMap<String, HashSet<ArrayList<Node>>> xns = f.extend();
 			for (String label : xns.keySet()) {
-				HashMap<Fragment, HashSet<ArrayList<EGroumNode>>> fens = labelFragmentExtendableNodes.get(label);
-				if (fens == null) {
-					fens = new HashMap<>();
-					labelFragmentExtendableNodes.put(label, fens);
-				}
+				HashMap<Fragment, HashSet<ArrayList<Node>>> fens = labelFragmentExtendableNodes.computeIfAbsent(label, k -> new HashMap<>());
 				fens.put(f, xns.get(label));
 			}
 		}
-		for (String label : new HashSet<String>(labelFragmentExtendableNodes.keySet())) {
-			HashMap<Fragment, HashSet<ArrayList<EGroumNode>>> fens = labelFragmentExtendableNodes.get(label);
+		for (String label : new HashSet<>(labelFragmentExtendableNodes.keySet())) {
+			HashMap<Fragment, HashSet<ArrayList<Node>>> fens = labelFragmentExtendableNodes.get(label);
 			if (fens.size() < config.minPatternSupport)
 				labelFragmentExtendableNodes.remove(label);
 		}
@@ -189,10 +198,10 @@ public class Miner {
 		String xlabel = "";
 		boolean extensible = false;
 		for (String label : labelFragmentExtendableNodes.keySet()) {
-			HashMap<Fragment, HashSet<ArrayList<EGroumNode>>> fens = labelFragmentExtendableNodes.get(label);
+			HashMap<Fragment, HashSet<ArrayList<Node>>> fens = labelFragmentExtendableNodes.get(label);
 			HashSet<Fragment> xfs = new HashSet<>();
 			for (Fragment f : fens.keySet()) {
-				for (ArrayList<EGroumNode> ens : fens.get(f)) {
+				for (ArrayList<Node> ens : fens.get(f)) {
 					Fragment xf = new Fragment(f, ens);
 					xfs.add(xf);
 				}
@@ -286,11 +295,7 @@ public class Miner {
 		HashMap<Integer, HashSet<Fragment>> buckets = new HashMap<>();
 		for (Fragment f : fragments) {
 			int h = f.getVectorHashCode();
-			HashSet<Fragment> bucket = buckets.get(h);
-			if (bucket == null) {
-				bucket = new HashSet<>();
-				buckets.put(h, bucket);
-			}
+			HashSet<Fragment> bucket = buckets.computeIfAbsent(h, k -> new HashSet<>());
 			bucket.add(f);
 		}
 		HashSet<HashSet<Fragment>> groups = new HashSet<>();
@@ -321,13 +326,13 @@ public class Miner {
 
 	private int computeFrequency(HashSet<Fragment> fragments) {
 		HashSet<String> projectNames = new HashSet<>();
-		HashMap<EGroumGraph, ArrayList<Fragment>> fragmentsOfGraph = new HashMap<EGroumGraph, ArrayList<Fragment>>();
+		HashMap<APIUsageGraph, ArrayList<Fragment>> fragmentsOfGraph = new HashMap<>();
 		for (Fragment f : fragments) {
-			EGroumGraph g = f.getGraph();
-			projectNames.add(g.getProjectName());
+			APIUsageExample g = f.getGraph();
+			projectNames.add(g.getLocation().getProjectName());
 			ArrayList<Fragment> fs = fragmentsOfGraph.get(g);
 			if (fs == null)
-				fs = new ArrayList<Fragment>();
+				fs = new ArrayList<>();
 			fs.add(f);
 			fragmentsOfGraph.put(g, fs);
 		}
@@ -336,7 +341,7 @@ public class Miner {
 		if (config.occurenceLevel == Level.CROSS_METHOD)
 			return fragmentsOfGraph.size();
 		int freq = 0;
-		for (EGroumGraph g : fragmentsOfGraph.keySet()) {
+		for (APIUsageGraph g : fragmentsOfGraph.keySet()) {
 			ArrayList<Fragment> fs = fragmentsOfGraph.get(g);
 			int i = 0;
 			while (i < fs.size()) {

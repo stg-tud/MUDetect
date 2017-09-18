@@ -1,22 +1,25 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageGraph;
+import de.tu_darmstadt.stg.mudetect.aug.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
-import egroum.EGroumEdge;
+
+import java.util.HashSet;
 
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
 
 public class TestPatternBuilder {
-    public static Pattern somePattern() {
+    public static APIUsagePattern somePattern() {
         return somePattern(someAUG());
     }
 
-    public static Pattern somePattern(int support) {
+    public static APIUsagePattern somePattern(int support) {
         return somePattern(someAUG(), support);
     }
 
-    public static Pattern somePattern(int nodeCount, int support) {
+    public static APIUsagePattern somePattern(int nodeCount, int support) {
         String[] nodeNames = new String[nodeCount];
         for (int i = 0; i < nodeCount; i++) {
             nodeNames[i] = Integer.toString(i);
@@ -24,24 +27,24 @@ public class TestPatternBuilder {
         return TestPatternBuilder.somePattern(buildAUG().withActionNodes(nodeNames), support);
     }
 
-    public static Pattern somePattern(AUG patternAUG) {
+    public static APIUsagePattern somePattern(APIUsageGraph patternAUG) {
         return somePattern(patternAUG, 1);
     }
 
-    public static Pattern somePattern(AUG patternAUG, int support) {
-        Pattern pattern = new Pattern(support);
+    public static APIUsagePattern somePattern(APIUsageGraph patternAUG, int support) {
+        APIUsagePattern pattern = new APIUsagePattern(support, new HashSet<>());
         patternAUG.vertexSet().forEach(pattern::addVertex);
-        for (EGroumEdge edge : patternAUG.edgeSet()) {
+        for (Edge edge : patternAUG.edgeSet()) {
             pattern.addEdge(edge.getSource(), edge.getTarget(), edge);
         }
         return pattern;
     }
 
-    public static Pattern somePattern(TestAUGBuilder builder) {
-        return somePattern(builder.build());
+    public static APIUsagePattern somePattern(TestAUGBuilder builder) {
+        return somePattern(builder.build(APIUsagePattern.class));
     }
 
-    public static Pattern somePattern(TestAUGBuilder builder, int support) {
-        return somePattern(builder.build(), support);
+    public static APIUsagePattern somePattern(TestAUGBuilder builder, int support) {
+        return somePattern(builder.build(APIUsagePattern.class), support);
     }
 }

@@ -9,12 +9,12 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.DEFINITION;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.contains;
-import static egroum.EGroumDataEdge.Type.DEFINITION;
-import static egroum.EGroumDataEdge.Type.PARAMETER;
 import static org.junit.Assert.assertThat;
 
 public class ParameterMappingTest {

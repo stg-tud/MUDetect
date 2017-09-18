@@ -5,15 +5,14 @@ import de.tu_darmstadt.stg.mubench.cli.DetectionStrategy;
 import de.tu_darmstadt.stg.mubench.cli.DetectorArgs;
 import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
 import de.tu_darmstadt.stg.mudetect.MuDetect;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.mining.AUGMiner;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
-import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import de.tu_darmstadt.stg.mustudies.UsageUtils;
 import de.tu_darmstadt.stg.yaml.YamlObject;
 import egroum.AUGBuilder;
-import egroum.EGroumGraph;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -24,11 +23,11 @@ import static de.tu_darmstadt.stg.mudetect.AlternativeViolationPredicate.firstAl
 
 abstract class MuDetectStrategy implements DetectionStrategy {
 
-    abstract Collection<EGroumGraph> loadTrainingExamples(DetectorArgs args, DetectorOutput.Builder output) throws IOException;
+    abstract Collection<de.tu_darmstadt.stg.mudetect.aug.APIUsageExample> loadTrainingExamples(DetectorArgs args, DetectorOutput.Builder output) throws IOException;
 
     abstract AUGMiner createMiner();
 
-    private Collection<AUG> loadDetectionTargets(DetectorArgs args) throws IOException {
+    private Collection<APIUsageExample> loadDetectionTargets(DetectorArgs args) throws IOException {
         return new AUGBuilder(new DefaultAUGConfiguration()).build(args.getTargetPath().srcPath, args.getDependencyClassPath());
     }
 
@@ -39,7 +38,7 @@ abstract class MuDetectStrategy implements DetectionStrategy {
         DetectorOutput.Builder output = createOutput();
 
         long startTime = System.currentTimeMillis();
-        Collection<EGroumGraph> trainingExamples = loadTrainingExamples(args, output);
+        Collection<de.tu_darmstadt.stg.mudetect.aug.APIUsageExample> trainingExamples = loadTrainingExamples(args, output);
         long endTrainingLoadTime = System.currentTimeMillis();
         output.withRunInfo("trainingLoadTime", endTrainingLoadTime - startTime);
         output.withRunInfo("numberOfTrainingExamples", trainingExamples.size());
@@ -51,7 +50,7 @@ abstract class MuDetectStrategy implements DetectionStrategy {
         output.withRunInfo("numberOfPatterns", model.getPatterns().size());
         output.withRunInfo("maxPatternSupport", model.getMaxPatternSupport());
 
-        Collection<AUG> targets = loadDetectionTargets(args);
+        Collection<APIUsageExample> targets = loadDetectionTargets(args);
         long endDetectionLoadTime = System.currentTimeMillis();
         output.withRunInfo("detectionLoadTime", endDetectionLoadTime - endTrainingTime);
         output.withRunInfo("numberOfTargets", targets.size());
@@ -66,7 +65,7 @@ abstract class MuDetectStrategy implements DetectionStrategy {
         return output.withFindings(violations, ViolationUtils::toFinding);
     }
 
-    private YamlObject getTypeUsageCounts(Collection<EGroumGraph> targets) {
+    private YamlObject getTypeUsageCounts(Collection<de.tu_darmstadt.stg.mudetect.aug.APIUsageExample> targets) {
         YamlObject object = new YamlObject();
         for (Multiset.Entry<String> entry : UsageUtils.countNumberOfUsagesPerType(targets).entrySet()) {
             object.put(entry.getElement(), entry.getCount());

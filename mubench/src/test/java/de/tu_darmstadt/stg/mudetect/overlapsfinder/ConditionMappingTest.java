@@ -6,11 +6,12 @@ import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
+import static de.tu_darmstadt.stg.mudetect.aug.ConditionEdge.ConditionType.SELECTION;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.instance;
 import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.findsOverlaps;
-import static egroum.EGroumDataEdge.Type.PARAMETER;
 import static org.junit.Assert.assertThat;
 
 public class ConditionMappingTest {
@@ -28,7 +29,7 @@ public class ConditionMappingTest {
     @Test
     public void mapsEqualConditions() throws Exception {
         TestAUGBuilder target = buildAUG().withActionNodes("A", "<").withDataNodes("int", "long")
-                .withCondEdge("<", "sel", "A").withDataEdge("int", PARAMETER, "<").withDataEdge("long", PARAMETER, "<");
+                .withCondEdge("<", SELECTION, "A").withDataEdge("int", PARAMETER, "<").withDataEdge("long", PARAMETER, "<");
         Overlap instance = instance(target);
 
         assertThat(overlapsFinder, findsOverlaps(target, target, instance));
@@ -37,9 +38,9 @@ public class ConditionMappingTest {
     @Test
     public void skipsEntireConditionOnDifferentArguments() throws Exception {
         TestAUGBuilder target = buildAUG().withActionNodes("A", "<").withDataNodes("int", "float")
-                .withCondEdge("<", "sel", "A").withDataEdge("int", PARAMETER, "<").withDataEdge("float", PARAMETER, "<");
+                .withCondEdge("<", SELECTION, "A").withDataEdge("int", PARAMETER, "<").withDataEdge("float", PARAMETER, "<");
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "<").withDataNodes("int", "long")
-                .withCondEdge("<", "sel", "A").withDataEdge("int", PARAMETER, "<").withDataEdge("long", PARAMETER, "<");
+                .withCondEdge("<", SELECTION, "A").withDataEdge("int", PARAMETER, "<").withDataEdge("long", PARAMETER, "<");
         Overlap overlap = buildOverlap(target, pattern).withNode("A").build();
 
         assertThat(overlapsFinder, findsOverlaps(target, pattern, overlap));

@@ -1,19 +1,19 @@
 package de.tu_darmstadt.stg.mudetect.ranking;
 
-import egroum.EGroumNode;
+import de.tu_darmstadt.stg.mudetect.aug.Node;
 
 import java.util.Collection;
 
 public interface NodeWeightFunction {
-    double getWeight(EGroumNode node);
+    double getWeight(Node node);
 
-    default double getWeight(Collection<EGroumNode> nodes) {
+    default double getWeight(Collection<Node> nodes) {
         return nodes.stream().mapToDouble(this::getWeight).sum();
     }
 
-    default double getInverseWeight(EGroumNode node) {
+    default double getInverseWeight(Node node) {
         return 1 / getWeight(node);
     }
 
-    default double getInverseWeight(Collection<EGroumNode> nodes) { return nodes.stream().mapToDouble(this::getInverseWeight).sum(); }
+    default double getInverseWeight(Collection<Node> nodes) { return nodes.stream().mapToDouble(this::getInverseWeight).sum(); }
 }

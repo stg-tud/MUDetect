@@ -18,7 +18,7 @@ public class Violation implements Comparable<Violation> {
         return overlap;
     }
 
-    public Location getLocation() {
+    public de.tu_darmstadt.stg.mudetect.aug.Location getLocation() {
         return overlap.getLocation();
     }
 

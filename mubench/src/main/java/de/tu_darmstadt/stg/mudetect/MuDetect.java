@@ -1,12 +1,11 @@
 package de.tu_darmstadt.stg.mudetect;
 
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.model.*;
-import egroum.EGroumNode;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
-import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MuDetect {
 
@@ -28,16 +27,16 @@ public class MuDetect {
         this.alternativePatternInstancePredicate = new AlternativePatternInstancePredicate();
     }
 
-    public List<Violation> findViolations(Collection<AUG> targets) {
+    public List<Violation> findViolations(Collection<APIUsageExample> targets) {
         final Overlaps overlaps = findOverlaps(targets, model.getPatterns());
         overlaps.removeViolationIf(violation -> isAlternativePatternInstance(violation, overlaps));
         return rankingStrategy.rankViolations(overlaps, model);
     }
 
-    private Overlaps findOverlaps(Collection<AUG> targets, Set<Pattern> patterns) {
+    private Overlaps findOverlaps(Collection<APIUsageExample> targets, Set<APIUsagePattern> patterns) {
         Overlaps overlaps = new Overlaps();
-        for (AUG target : targets) {
-            for (Pattern pattern : patterns) {
+        for (APIUsageExample target : targets) {
+            for (APIUsagePattern pattern : patterns) {
                 for (Overlap overlap : overlapsFinder.findOverlaps(target, pattern)) {
                     if (violationPredicate.apply(overlap).orElse(false)) {
                         overlaps.addViolation(overlap);

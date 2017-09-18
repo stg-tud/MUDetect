@@ -1,17 +1,18 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
-import egroum.EGroumDataEdge;
-import egroum.EGroumEdge;
-import egroum.EGroumNode;
-import de.tu_darmstadt.stg.mudetect.mining.Pattern;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageGraph;
+import de.tu_darmstadt.stg.mudetect.aug.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.Node;
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.builderFrom;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
-import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 
 public class TestOverlapBuilder {
 
@@ -19,45 +20,45 @@ public class TestOverlapBuilder {
         return instance(someAUG());
     }
 
-    public static Overlap emptyOverlap(Pattern pattern) {
-        return emptyOverlap(pattern, pattern);
+    public static Overlap emptyOverlap(APIUsagePattern pattern) {
+        return emptyOverlap(pattern, someAUG());
     }
 
-    public static Overlap emptyOverlap(AUG pattern) {
-        return emptyOverlap(somePattern(pattern), pattern);
+    public static Overlap emptyOverlap(APIUsageExample example) {
+        return emptyOverlap(somePattern(example), example);
     }
 
     public static Overlap emptyOverlap(TestAUGBuilder pattern) {
-        return emptyOverlap(pattern.build());
+        return emptyOverlap(pattern.build(APIUsagePattern.class));
     }
 
-    public static Overlap instance(AUG aug) {
+    public static Overlap instance(APIUsageGraph aug) {
         return someOverlap(aug, aug.vertexSet(), aug.edgeSet());
     }
 
-    public static Overlap someOverlap(AUG pattern, Set<EGroumNode> vertexSubset, Set<EGroumEdge> edgeSubset) {
-        Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
-        for (EGroumNode node : vertexSubset) {
+    public static Overlap someOverlap(APIUsageGraph pattern, Set<Node> vertexSubset, Set<Edge> edgeSubset) {
+        Map<Node, Node> targetNodeByPatternNode = new HashMap<>();
+        for (Node node : vertexSubset) {
             targetNodeByPatternNode.put(node, node);
         }
-        Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge = new HashMap<>();
-        for (EGroumEdge edge : edgeSubset) {
+        Map<Edge, Edge> targetEdgeByPatternEdge = new HashMap<>();
+        for (Edge edge : edgeSubset) {
             targetEdgeByPatternEdge.put(edge, edge);
         }
-        return new Overlap(somePattern(pattern), pattern, targetNodeByPatternNode, targetEdgeByPatternEdge);
+        return new Overlap(somePattern(pattern), builderFrom(pattern).build(), targetNodeByPatternNode, targetEdgeByPatternEdge);
     }
 
-    public static Overlap emptyOverlap(Pattern pattern, AUG target) {
+    public static Overlap emptyOverlap(APIUsagePattern pattern, APIUsageExample target) {
         return new Overlap(pattern, target, new HashMap<>(), new HashMap<>());
     }
 
-    public static Overlap someOverlap(Pattern pattern, AUG target) {
-        HashMap<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
-        Set<EGroumNode> patternNodes = pattern.vertexSet();
+    public static Overlap someOverlap(APIUsagePattern pattern, APIUsageExample target) {
+        HashMap<Node, Node> targetNodeByPatternNode = new HashMap<>();
+        Set<Node> patternNodes = pattern.vertexSet();
         if (patternNodes.isEmpty()) {
             throw new IllegalArgumentException("need at least one pattern node to build some overlap");
         }
-        Set<EGroumNode> targetNodes = target.vertexSet();
+        Set<Node> targetNodes = target.vertexSet();
         if (targetNodes.isEmpty()) {
             throw new IllegalArgumentException("need at least one target node to build some overlap");
         }
@@ -77,7 +78,7 @@ public class TestOverlapBuilder {
         return buildOverlap(targetAndPatternAUGBuilder, targetAndPatternAUGBuilder);
     }
 
-    public static TestOverlapBuilder buildOverlap(Pattern pattern, AUG target) {
+    public static TestOverlapBuilder buildOverlap(APIUsagePattern pattern, APIUsageExample target) {
         return buildOverlap(builderFrom(target), builderFrom(pattern));
     }
 
@@ -87,8 +88,8 @@ public class TestOverlapBuilder {
 
     private final TestAUGBuilder targetAUGBuilder;
     private final TestAUGBuilder patternAUGBuilder;
-    private final Map<EGroumNode, EGroumNode> targetNodeByPatternNode = new HashMap<>();
-    private final Map<EGroumEdge, EGroumEdge> targetEdgeByPatternEdge = new HashMap<>();
+    private final Map<Node, Node> targetNodeByPatternNode = new HashMap<>();
+    private final Map<Edge, Edge> targetEdgeByPatternEdge = new HashMap<>();
 
     private TestOverlapBuilder(TestAUGBuilder targetAUGBuilder, TestAUGBuilder patternAUGBuilder) {
         this.targetAUGBuilder = targetAUGBuilder;
@@ -107,11 +108,11 @@ public class TestOverlapBuilder {
     }
 
     public TestOverlapBuilder withNode(String targetNodeId, String patternNodeId) {
-        EGroumNode targetNode = targetAUGBuilder.getNode(targetNodeId);
+        Node targetNode = targetAUGBuilder.getNode(targetNodeId);
         if (targetNodeByPatternNode.containsValue(targetNode)) {
             throw new IllegalArgumentException("Target node '" + targetNodeId + "' is already mapped.");
         }
-        EGroumNode patternNode = patternAUGBuilder.getNode(patternNodeId);
+        Node patternNode = patternAUGBuilder.getNode(patternNodeId);
         if (targetNodeByPatternNode.containsKey(patternNode)) {
             throw new IllegalArgumentException("Pattern node '" + patternNodeId + "' is already mapped.");
         }
@@ -119,7 +120,7 @@ public class TestOverlapBuilder {
         return this;
     }
 
-    public TestOverlapBuilder withEdge(String targetSourceNodeId, String patternSourceNodeId, EGroumDataEdge.Type type, String targetTargetNodeId, String patternTargetNodeId) {
+    public TestOverlapBuilder withEdge(String targetSourceNodeId, String patternSourceNodeId, Edge.Type type, String targetTargetNodeId, String patternTargetNodeId) {
         if (!maps(targetSourceNodeId, patternSourceNodeId)) {
             throw new IllegalArgumentException("not mapped '" + targetSourceNodeId + "'<->'" + patternSourceNodeId + "'");
         }
@@ -136,7 +137,7 @@ public class TestOverlapBuilder {
         return targetNodeByPatternNode.get(patternAUGBuilder.getNode(patternNodeId)) == targetAUGBuilder.getNode(targetNodeId);
     }
 
-    public TestOverlapBuilder withEdge(String targetAndPatternSourceNodeId, EGroumDataEdge.Type type, String targetAndPatternTargetNodeId) {
+    public TestOverlapBuilder withEdge(String targetAndPatternSourceNodeId, Edge.Type type, String targetAndPatternTargetNodeId) {
         return withEdge(targetAndPatternSourceNodeId, targetAndPatternSourceNodeId, type, targetAndPatternTargetNodeId, targetAndPatternTargetNodeId);
     }
 

@@ -1,17 +1,17 @@
 package egroum;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 import org.junit.Before;
 import org.junit.Test;
 
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.CONTAINS;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.*;
 import static egroum.AUGBuilderTestUtils.buildAUG;
-import static egroum.EGroumDataEdge.Type.CONTAINS;
-import static egroum.EGroumDataEdge.Type.PARAMETER;
 import static org.junit.Assert.assertThat;
 
 public class EncodeAnonymousClassInstancesTest {
-    private AUG aug;
+    private APIUsageExample aug;
 	private AUGConfiguration conf = new AUGConfiguration();
 
     @Before

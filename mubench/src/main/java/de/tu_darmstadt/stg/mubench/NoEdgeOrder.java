@@ -1,12 +1,12 @@
 package de.tu_darmstadt.stg.mubench;
 
-import egroum.EGroumEdge;
+import de.tu_darmstadt.stg.mudetect.aug.Edge;
 
 import java.util.function.BiPredicate;
 
-public class NoEdgeOrder implements BiPredicate<EGroumEdge, EGroumEdge> {
+public class NoEdgeOrder implements BiPredicate<Edge, Edge> {
     @Override
-    public boolean test(EGroumEdge edge1, EGroumEdge edge2) {
+    public boolean test(Edge edge1, Edge edge2) {
         return false;
     }
 }

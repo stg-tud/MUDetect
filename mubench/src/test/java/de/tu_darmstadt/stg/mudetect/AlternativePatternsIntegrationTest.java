@@ -1,29 +1,21 @@
 package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.matcher.SubtypeDataNodeMatcher;
-import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
-import de.tu_darmstadt.stg.mudetect.typehierarchy.TypeHierarchy;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
+import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.ranking.NoRankingStrategy;
-import de.tu_darmstadt.stg.mudetect.ranking.PatternSupportWeightFunction;
-import de.tu_darmstadt.stg.mudetect.ranking.WeightRankingStrategy;
-import egroum.EGroumDataEdge;
+import de.tu_darmstadt.stg.mudetect.typehierarchy.TypeHierarchy;
 import org.junit.Test;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.*;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static egroum.AUGBuilderTestUtils.buildAUG;
-import static egroum.EGroumDataEdge.Type.DEFINITION;
-import static egroum.EGroumDataEdge.Type.PARAMETER;
-import static egroum.EGroumDataEdge.Type.RECEIVER;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -33,8 +25,8 @@ public class AlternativePatternsIntegrationTest {
 
     @Test
     public void matchesSubtypes() throws Exception {
-        Pattern pattern = buildPattern("void p(Object o) { o.hashCode(); }", 2);
-        AUG target = buildAUG("void t(Integer i) { i.hashCode(); }");
+        APIUsagePattern pattern = buildPattern("void p(Object o) { o.hashCode(); }", 2);
+        APIUsageExample target = buildAUG("void t(Integer i) { i.hashCode(); }");
         TypeHierarchy typeHierarchy = new TypeHierarchy() {{ addSupertype("Integer", "Object"); }};
         MuDetect detector = new MuDetect(() -> asSet(pattern),
                 new AlternativeMappingsOverlapsFinder(new SubtypeDataNodeMatcher(typeHierarchy).or(new EquallyLabelledNodeMatcher())),
@@ -48,13 +40,13 @@ public class AlternativePatternsIntegrationTest {
 
     @Test
     public void multipleCallViolations() throws Exception {
-        Pattern pattern = somePattern(TestAUGBuilder.buildAUG().withActionNode("JPanel.<init>").withDataNode("JPanel")
+        APIUsagePattern pattern = somePattern(TestAUGBuilder.buildAUG().withActionNode("JPanel.<init>").withDataNode("JPanel")
                 .withActionNode("add1", "JPanel.add()").withActionNode("add2", "JPanel.add()")
                 .withDataEdge("JPanel.<init>", DEFINITION, "JPanel")
                 .withDataEdge("JPanel", RECEIVER, "add1")
                 .withDataEdge("JPanel", RECEIVER, "add2")
-                .withDataEdge("add2", EGroumDataEdge.Type.ORDER, "add1").build());
-        AUG target = buildAUG("import javax.swing.JPanel;\n" +
+                .withDataEdge("add2", ORDER, "add1").build());
+        APIUsageExample target = buildAUG("import javax.swing.JPanel;\n" +
                 "class C {\n" +
                 "  void m() {\n" +
                 "    JPanel controlPanel = new JPanel();\n"+
@@ -76,7 +68,7 @@ public class AlternativePatternsIntegrationTest {
 
     @Test
     public void mappingToWrongDataNode() throws Exception {
-        Pattern pattern = somePattern(TestAUGBuilder.buildAUG()
+        APIUsagePattern pattern = somePattern(TestAUGBuilder.buildAUG()
                 .withDataNode("IO1", "IndexOutput")
                 .withActionNode("gFP()", "IndexOutput.getFilePointer()")
                 .withDataEdge("IO1", RECEIVER, "gFP()")
@@ -86,7 +78,7 @@ public class AlternativePatternsIntegrationTest {
                 .withActionNode("wL()", "IndexOutput.writeLong()")
                 .withDataEdge("IO2", RECEIVER, "wL()")
                 .withDataEdge("long", PARAMETER, "wL()"));
-        AUG target = buildAUG("class C {\n" +
+        APIUsageExample target = buildAUG("class C {\n" +
                 "  IndexOutput tvd, tvf, tvx;" +
                 "  void addRawDocuments(TermVectorsReader reader, int[] tvdLengths, int[] tvfLengths, int numDocs) throws IOException {\n" +
                 "    long tvdPosition = tvd.getFilePointer();\n" +
@@ -119,7 +111,7 @@ public class AlternativePatternsIntegrationTest {
         assertThat(violations, is(empty()));
     }
 
-    private Pattern buildPattern(String method, int support) {
+    private APIUsagePattern buildPattern(String method, int support) {
         return somePattern(buildAUG(method), support);
     }
 }

@@ -1,11 +1,11 @@
 package de.tu_darmstadt.stg.mudetect.matcher;
 
-import egroum.EGroumDataNode;
-import egroum.EGroumNode;
+import de.tu_darmstadt.stg.mudetect.aug.DataNode;
+import de.tu_darmstadt.stg.mudetect.aug.Node;
 
 public class AllDataNodeMatcher implements NodeMatcher {
     @Override
-    public boolean test(EGroumNode targetNode, EGroumNode patternNode) {
-        return targetNode instanceof EGroumDataNode && patternNode instanceof EGroumDataNode;
+    public boolean test(Node targetNode, Node patternNode) {
+        return targetNode instanceof DataNode && patternNode instanceof DataNode;
     }
 }

@@ -1,6 +1,6 @@
 package egroum;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.actionNodeWithLabel;
@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThat;
 public class EncodeSynchronizationTest {
     @Test
     public void addsSynchronizeEdge() throws Exception {
-        AUG aug = buildAUG("void m(Object o) {" +
+        APIUsageExample aug = buildAUG("void m(Object o) {" +
                 "  synchronized (o) {" +
                 "    o.equals();" +
                 "  }" +

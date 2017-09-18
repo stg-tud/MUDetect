@@ -1,22 +1,23 @@
 package de.tu_darmstadt.stg.mudetect.stresstests;
 
-import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
-import de.tu_darmstadt.stg.mudetect.model.AUG;
-import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
-import egroum.EGroumDataEdge;
+import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.aug.ConditionEdge.ConditionType.SELECTION;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.DEFINITION;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
-import static egroum.AUGBuilder.toAUG;
+import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static egroum.EGroumTestUtils.buildGroumsForClass;
 
 public class EqualsMethodsTest {
     @Test(timeout = 60000)
     public void equalsMethod() throws Exception {
-        AUG target = toAUG(buildGroumsForClass("import java.io.IOException;\n" +
+        APIUsageExample target = buildGroumsForClass("import java.io.IOException;\n" +
                 "import java.text.Collator;\n" +
                 "\n" +
                 "import org.apache.lucene.index.IndexReader;\n" +
@@ -64,7 +65,7 @@ public class EqualsMethodsTest {
                 "      return false;\n" +
                 "    return true;\n" +
                 "  }\n" +
-                "}").get(0));
+                "}").iterator().next();
 
         TestAUGBuilder patternAUG = buildAUG("pattern")
                 .withActionNode("eq", "Object.equals()")
@@ -79,21 +80,21 @@ public class EqualsMethodsTest {
                 .withDataNode("b6", "boolean")
                 .withDataNode("b7", "boolean")
                 .withDataNode("b8", "boolean")
-                .withDataEdge("b1", EGroumDataEdge.Type.PARAMETER, "r1")
-                .withCondEdge("b2", "sel", "r1")
-                .withCondEdge("b2", "sel", "eq")
-                .withCondEdge("b3", "sel", "r1")
-                .withCondEdge("b3", "sel", "eq")
-                .withCondEdge("b3", "sel", "r2")
-                .withCondEdge("b4", "sel", "r1")
-                .withCondEdge("b4", "sel", "eq")
-                .withCondEdge("b4", "sel", "r2")
-                .withCondEdge("b4", "sel", "r3")
-                .withDataEdge("b5", EGroumDataEdge.Type.PARAMETER, "r2")
-                .withDataEdge("b6", EGroumDataEdge.Type.PARAMETER, "r3")
-                .withDataEdge("eq", EGroumDataEdge.Type.DEFINITION, "b7")
-                .withDataEdge("eq", EGroumDataEdge.Type.DEFINITION, "b8");
-        Pattern pattern = somePattern(patternAUG);
+                .withDataEdge("b1", PARAMETER, "r1")
+                .withCondEdge("b2", SELECTION, "r1")
+                .withCondEdge("b2", SELECTION, "eq")
+                .withCondEdge("b3", SELECTION, "r1")
+                .withCondEdge("b3", SELECTION, "eq")
+                .withCondEdge("b3", SELECTION, "r2")
+                .withCondEdge("b4", SELECTION, "r1")
+                .withCondEdge("b4", SELECTION, "eq")
+                .withCondEdge("b4", SELECTION, "r2")
+                .withCondEdge("b4", SELECTION, "r3")
+                .withDataEdge("b5", PARAMETER, "r2")
+                .withDataEdge("b6", PARAMETER, "r3")
+                .withDataEdge("eq", DEFINITION, "b7")
+                .withDataEdge("eq", DEFINITION, "b8");
+        APIUsagePattern pattern = somePattern(patternAUG);
 
         new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher()).findOverlaps(target, pattern);
     }

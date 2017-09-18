@@ -1,11 +1,11 @@
 package egroum;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 import org.junit.Test;
 
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.*;
 import static egroum.AUGBuilderTestUtils.buildAUG;
-import static egroum.EGroumDataEdge.Type.PARAMETER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 
@@ -14,7 +14,7 @@ public class EncodeConditionJunctionTest {
     @Test
     public void encodesDisjunction() throws Exception {
     	AUGConfiguration conf = new AUGConfiguration() {{ encodeConditionalOperators = true; }};
-        AUG aug = buildAUG(
+        APIUsageExample aug = buildAUG(
                 "void m(String s) { if (s.isEmpty() || s.contains(\"foo\")) s.getBytes(); }",
                 conf);
 
@@ -30,7 +30,7 @@ public class EncodeConditionJunctionTest {
     @Test
     public void encodesConjunction() throws Exception {
     	AUGConfiguration conf = new AUGConfiguration() {{ encodeConditionalOperators = true; }};
-        AUG aug = buildAUG(
+        APIUsageExample aug = buildAUG(
                 "void m(String s) { if (s.isEmpty() && s.contains(\"foo\")) s.getBytes(); }",
                 conf);
         
@@ -45,7 +45,7 @@ public class EncodeConditionJunctionTest {
 
     @Test
     public void ignoreJunctions() throws Exception {
-        AUG aug = buildAUG(
+        APIUsageExample aug = buildAUG(
                 "void m(String s) { if (s.isEmpty() || s.contains(\"foo\") && s.startsWith(\"bar\")) s.getBytes(); }",
                 new AUGConfiguration() {{ encodeConditionalOperators = false; }});
 

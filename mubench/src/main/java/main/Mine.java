@@ -3,19 +3,19 @@
  */
 package main;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
+import de.tu_darmstadt.stg.mudetect.aug.DataNode;
+import de.tu_darmstadt.stg.mudetect.aug.Node;
+import egroum.AUGBuilder;
 import egroum.AUGConfiguration;
-import egroum.EGroumBuilder;
-import egroum.EGroumDataNode;
-import egroum.EGroumNode;
 import mining.Anomaly;
 import mining.Configuration;
 import mining.Fragment;
 import mining.Miner;
 import utils.FileIO;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * @author hoan
@@ -32,9 +32,9 @@ public class Mine {
 //		String path = "T:/repos/closure-compiler/src", name = "closure";
 //		String path = "input/Test2.java", name = "";
 //		String path = "test/input/Test_mine.java", name = "";
-		EGroumBuilder gb = new EGroumBuilder(new AUGConfiguration(){{removeImplementationCode = 2;}});
+		AUGBuilder gb = new AUGBuilder(new AUGConfiguration(){{removeImplementationCode = 2;}});
 		Miner miner = new Miner(name, new Configuration(){{outputPath = "T:/usage-patterns/patterns";}});
-		miner.mine(new ArrayList<>(gb.buildBatch(path, null)));
+		miner.mine(new ArrayList<>(gb.build(path, null)));
 		ArrayList<Anomaly> anomalies = miner.anomalies;
 		Collections.sort(anomalies, new Comparator<Anomaly>() {
 
@@ -61,10 +61,10 @@ public class Mine {
 				len = f.getNodes().size();
 				break;
 			}
-			ArrayList<EGroumNode> nodes = a.getPattern().getNodes();
+			ArrayList<Node> nodes = a.getPattern().getNodes();
 			boolean missDataNodes = true;
 			for (int i = len; i < nodes.size(); i++)
-				if (!(nodes.get(i) instanceof EGroumDataNode)) {
+				if (!(nodes.get(i) instanceof DataNode)) {
 					missDataNodes = false;
 					break;
 				}

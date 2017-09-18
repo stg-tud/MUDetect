@@ -1,10 +1,8 @@
 package egroum;
 
-import graphics.DotGraph;
-
-import java.net.URL;
-import java.util.ArrayList;
-
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.dot.DisplayAUGDotExporter;
+import egroum.EGroumDataEdge.Type;
 import mining.TypeUsageExamplePredicate;
 import mining.UsageExamplePredicate;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -14,11 +12,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 
-import egroum.EGroumDataEdge.Type;
+import java.util.ArrayList;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static egroum.EGroumTestUtils.buildGroumForMethod;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class AUGImprovement2 {
@@ -393,8 +390,7 @@ public class AUGImprovement2 {
     }
 
     private void printGroum(String code) {
-        EGroumGraph aug = EGroumTestUtils.buildGroumForMethod(code);
-        String s = new DotGraph(aug).getGraph();
-        System.out.println(s);
+        APIUsageExample aug = buildGroumForMethod(code);
+        System.out.println(new DisplayAUGDotExporter().toDotGraph(aug));
     }
 }

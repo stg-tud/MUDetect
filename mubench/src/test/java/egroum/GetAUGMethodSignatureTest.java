@@ -2,7 +2,6 @@ package egroum;
 
 import org.junit.Test;
 
-import static egroum.EGroumTestUtils.buildGroumForMethod;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -69,5 +68,9 @@ public class GetAUGMethodSignatureTest {
 
         // we currently generate one GROUM that includes the code of both methods
         assertThat(methodName, is("m()"));
+    }
+
+    private static EGroumGraph buildGroumForMethod(String code) {
+        return new EGroumBuilder(new AUGConfiguration()).buildGroums(code, "", "test", null).get(0);
     }
 }

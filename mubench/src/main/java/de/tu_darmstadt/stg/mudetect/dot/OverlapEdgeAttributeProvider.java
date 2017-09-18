@@ -1,7 +1,8 @@
 package de.tu_darmstadt.stg.mudetect.dot;
 
+import de.tu_darmstadt.stg.mudetect.aug.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.dot.AUGEdgeAttributeProvider;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import egroum.EGroumEdge;
 
 import java.util.Map;
 
@@ -15,7 +16,7 @@ class OverlapEdgeAttributeProvider extends AUGEdgeAttributeProvider {
     }
 
     @Override
-    public Map<String, String> getComponentAttributes(EGroumEdge edge) {
+    public Map<String, String> getComponentAttributes(Edge edge) {
         final Map<String, String> attributes = super.getComponentAttributes(edge);
         if (!violation.mapsEdge(edge)) {
             attributes.put("color", unmappedNodeColor);

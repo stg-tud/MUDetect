@@ -4,14 +4,13 @@ import de.tu_darmstadt.stg.mudetect.OverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
-import egroum.EGroumDataEdge;
 import org.junit.Test;
 
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.RECEIVER;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.findsOverlaps;
-import static egroum.EGroumDataEdge.Type.PARAMETER;
-import static egroum.EGroumDataEdge.Type.RECEIVER;
 import static org.junit.Assert.assertThat;
 
 public class PrioritizingEdgesForOverlapFindingTest {
@@ -19,7 +18,7 @@ public class PrioritizingEdgesForOverlapFindingTest {
     public void prioritizesEdge() throws Exception {
         OverlapsFinder overlapsFinder = new AlternativeMappingsOverlapsFinder(new AlternativeMappingsOverlapsFinder.Config() {{
             nodeMatcher = new EquallyLabelledNodeMatcher();
-            edgeOrder = (e1, e2) -> ((EGroumDataEdge) e1).getType() == RECEIVER;
+            edgeOrder = (e1, e2) -> e1.getType() == RECEIVER;
         }});
         TestAUGBuilder target = buildAUG().withActionNode("O.equals()").withDataNode("O")
                 .withDataEdge("O", RECEIVER, "O.equals()").withDataEdge("O", PARAMETER, "O.equals()");

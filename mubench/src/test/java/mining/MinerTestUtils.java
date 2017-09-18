@@ -1,59 +1,50 @@
 package mining;
 
-import egroum.EGroumGraph;
-import egroum.EGroumNode;
-import org.junit.rules.TestName;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.dot.DisplayAUGDotExporter;
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.mining.AUGMiner;
+import de.tu_darmstadt.stg.mudetect.mining.DefaultAUGMiner;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
 
 import static egroum.EGroumTestUtils.buildGroumsForMethods;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 class MinerTestUtils {
-
-    static List<Pattern> mineWithMinSupport(ArrayList<EGroumGraph> groums, int minSupport) {
-        Miner miner = new Miner("test", new Configuration() {{ minPatternSupport = minSupport; maxPatternSize = 300; }});
-        return new ArrayList<>(miner.mine(groums));
-    }
-    
-    static List<Pattern> mineWithMinSupport2(ArrayList<EGroumGraph> groums) {
-        Miner miner = new Miner("test", new Configuration() {{ minPatternSupport = 2; maxPatternSize = 300; }});
-        return new ArrayList<>(miner.mine(groums));
+    private static List<APIUsagePattern> mine(Collection<APIUsageExample> examples, Configuration config) {
+        AUGMiner miner = new DefaultAUGMiner(config);
+        return new ArrayList<>(miner.mine(examples).getPatterns());
     }
 
-    static List<Pattern> mineMethodsWithMinSupport2(String... sourceCodes) {
+    static List<APIUsagePattern> mineMethods(Configuration config, String... sourceCodes) {
+        return mine(buildGroumsForMethods(sourceCodes), config);
+    }
+
+    static List<APIUsagePattern> mineWithMinSupport(Collection<APIUsageExample> examples, int minSupport) {
+        Configuration config = new Configuration() {{
+            minPatternSupport = minSupport;
+            maxPatternSize = 300;
+        }};
+        return mine(examples, config);
+    }
+
+    static List<APIUsagePattern> mineWithMinSupport2(Collection<APIUsageExample> examples) {
+        return mineWithMinSupport(examples, 2);
+    }
+
+    static List<APIUsagePattern> mineMethodsWithMinSupport2(String... sourceCodes) {
         return mineWithMinSupport2(buildGroumsForMethods(sourceCodes));
     }
 
-    static List<Pattern> mineMethods(Configuration conf, String... sourceCodes) {
-		return mine(conf, buildGroumsForMethods(sourceCodes));
-	}
-
-    static List<Pattern> mine(Configuration conf, ArrayList<EGroumGraph> groums) {
-        Miner miner = new Miner("test", conf);
-        return new ArrayList<>(miner.mine(groums));
-	}
-
-	static void print(List<Pattern> patterns, TestName testName) {
-        System.err.println("Test '" + testName.getMethodName() + "':");
-        for (Pattern pattern : patterns) {
-            HashSet<EGroumNode> set = new HashSet<>(pattern.getRepresentative().getNodes());
-            assertThat(set.size(), is(pattern.getRepresentative().getNodes().size()));
-            EGroumGraph g = new EGroumGraph(pattern.getRepresentative());
-            System.err.println(" - Support=" + pattern.getFreq());
-            System.err.println(" - Patter=" + g);
-            File dir = new File("temp/" + pattern.getId() + "/");
-            dir.mkdirs();
-            g.toGraphics(dir.getAbsolutePath());
-        }
+    static void print(APIUsagePattern pattern) {
+        System.out.println(new DisplayAUGDotExporter().toDotGraph(pattern));
     }
 
-    static void print(Pattern pattern, TestName testName) {
-        print(Collections.singletonList(pattern), testName);
+    static void print(List<APIUsagePattern> patterns) {
+        for (APIUsagePattern pattern : patterns) {
+            print(pattern);
+        }
     }
 }

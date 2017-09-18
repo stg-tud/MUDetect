@@ -1,23 +1,18 @@
 package egroum;
 
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.*;
+import org.apache.bcel.generic.Type;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.dom.*;
+import utils.FileIO;
+import utils.JavaASTUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.ClassFormatException;
-import org.apache.bcel.classfile.ClassParser;
-import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.dom.*;
-
-import utils.FileIO;
-import utils.JavaASTUtil;
 
 public class EGroumBuilder {
     private final AUGConfiguration configuration;
@@ -342,6 +337,9 @@ public class EGroumBuilder {
 			for (int i = 0 ; i < cu.types().size(); i++)
 				if (cu.types().get(i) instanceof TypeDeclaration)
 					groums.addAll(buildGroums((TypeDeclaration) cu.types().get(i), path, ""));
+		}
+		for (EGroumGraph groum : groums) {
+			groum.setProjectName(dir.getAbsolutePath());
 		}
 		return groums;
 	}

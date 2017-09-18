@@ -1,15 +1,15 @@
 package egroum;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 
 import static egroum.EGroumTestUtils.buildGroumForMethod;
 
 public class AUGBuilderTestUtils {
-    public static AUG buildAUG(String code) {
-        return AUGBuilder.toAUG(buildGroumForMethod(code));
+    public static APIUsageExample buildAUG(String code) {
+        return buildGroumForMethod(code);
     }
 
-    static AUG buildAUG(String code, AUGConfiguration configuration) {
-        return AUGBuilder.toAUG(buildGroumForMethod(code, configuration));
+    static APIUsageExample buildAUG(String code, AUGConfiguration configuration) {
+        return buildGroumForMethod(code, configuration);
     }
 }

@@ -1,21 +1,19 @@
 package egroum;
 
-import de.tu_darmstadt.stg.mudetect.model.AUG;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 import org.junit.Test;
 
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.DEFINITION;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.RECEIVER;
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.*;
 import static egroum.AUGBuilderTestUtils.buildAUG;
-import static egroum.EGroumDataEdge.Type.DEFINITION;
-import static egroum.EGroumDataEdge.Type.RECEIVER;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
-
-import org.junit.Ignore;
 
 public class EncodeLoopsTest {
     @Test
     public void addsRepeatEdge() throws Exception {
-        AUG aug = buildAUG("void m(java.util.Stack s) {" +
+        APIUsageExample aug = buildAUG("void m(java.util.Stack s) {" +
                 "  while(!s.isEmpty()) {" +
                 "    s.pop();" +
                 "  }" +
@@ -26,7 +24,7 @@ public class EncodeLoopsTest {
 
     @Test
     public void loopDoesNotControlAfterLoop() throws Exception {
-        AUG aug = buildAUG("void m(java.util.Stack s) {\n" +
+        APIUsageExample aug = buildAUG("void m(java.util.Stack s) {\n" +
                 "  while(!s.isEmpty()) {\n" +
                 "    s.pop();\n" +
                 "  }\n" +
@@ -38,7 +36,7 @@ public class EncodeLoopsTest {
     
     @Test
     public void encodesForeach() throws Exception {
-        AUG aug = buildAUG("void m(java.lang.Iterable it) {\n" +
+        APIUsageExample aug = buildAUG("void m(java.lang.Iterable it) {\n" +
                 "  for (Object o : it) {\n" +
                 "    o.hashCode();\n" +
                 "  }\n" +

@@ -1,5 +1,6 @@
 package mining;
 
+import de.tu_darmstadt.stg.mudetect.aug.Node;
 import egroum.EGroumNode;
 
 import java.util.function.Function;
@@ -33,7 +34,7 @@ public class Configuration {
     /**
      * Function that maps nodes to labels used in the mining.
      */
-    public Function<EGroumNode, String> nodeToLabel = EGroumNode::getLabel;
+    public Function<Node, String> nodeToLabel = Node::getLabel;
     
     public enum Level {WITHIN_METHOD, CROSS_METHOD, CROSS_PROJECT}
     /**

@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.matcher;
 
+import de.tu_darmstadt.stg.mudetect.aug.Node;
 import de.tu_darmstadt.stg.mudetect.typehierarchy.TypeHierarchy;
-import egroum.EGroumNode;
 
 public class SubtypeDataNodeMatcher implements NodeMatcher {
 
@@ -12,7 +12,7 @@ public class SubtypeDataNodeMatcher implements NodeMatcher {
     }
 
     @Override
-    public boolean test(EGroumNode targetNode, EGroumNode patternNode) {
+    public boolean test(Node targetNode, Node patternNode) {
         return typeHierarchy.isA(targetNode.getLabel(), patternNode.getLabel());
     }
 }

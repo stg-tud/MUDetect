@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.ranking;
 
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageGraph;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
-import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.Overlaps;
 
@@ -16,7 +16,7 @@ public class PatternSizeWeightFunction implements ViolationWeightFunction {
     }
 
     private int getMaxPatternWeight(Model model) {
-        return model.getPatterns().stream().mapToInt(AUG::getNodeSize).max().orElse(Integer.MAX_VALUE);
+        return model.getPatterns().stream().mapToInt(APIUsageGraph::getNodeSize).max().orElse(Integer.MAX_VALUE);
     }
 
     @Override

@@ -1,9 +1,9 @@
 package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
 import de.tu_darmstadt.stg.mudetect.OverlapsFinder;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
-import de.tu_darmstadt.stg.mudetect.mining.Pattern;
-import de.tu_darmstadt.stg.mudetect.model.AUG;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
@@ -11,7 +11,6 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.junit.matchers.IsCollectionContaining;
 
 import java.util.List;
 
@@ -23,8 +22,8 @@ import static org.junit.Assert.assertThat;
 class OverlapsFinderTestUtils {
     @Deprecated
     static List<Overlap> findOverlaps(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder) {
-        AUG target = targetBuilder.build();
-        Pattern pattern = somePattern(patternBuilder);
+        APIUsageExample target = targetBuilder.build();
+        APIUsagePattern pattern = somePattern(patternBuilder);
         return createDefaultFinder().findOverlaps(target, pattern);
     }
 
@@ -55,8 +54,8 @@ class OverlapsFinderTestUtils {
     }
 
     static Matcher<OverlapsFinder> findsOverlaps(TestAUGBuilder targetBuilder, TestAUGBuilder patternBuilder, Overlap... expectedOverlaps) {
-        AUG target = targetBuilder.build();
-        Pattern pattern = somePattern(patternBuilder);
+        APIUsageExample target = targetBuilder.build();
+        APIUsagePattern pattern = somePattern(patternBuilder);
         //noinspection RedundantTypeArguments compiler fails to infer this
         Matcher<List<Overlap>> overlapsMatcher = Matchers.<List<Overlap>>allOf(
                 hasSize(expectedOverlaps.length),

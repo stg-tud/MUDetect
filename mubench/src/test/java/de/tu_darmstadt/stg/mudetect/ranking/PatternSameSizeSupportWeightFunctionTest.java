@@ -1,21 +1,21 @@
 package de.tu_darmstadt.stg.mudetect.ranking;
 
+import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.mining.Pattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
+import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
-import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static utils.SetUtils.asSet;
 
 public class PatternSameSizeSupportWeightFunctionTest {
-    private Pattern pattern;
+    private APIUsagePattern pattern;
     private Model model;
     private Overlap violation;
 
@@ -41,7 +41,7 @@ public class PatternSameSizeSupportWeightFunctionTest {
 
     @Test
     public void calculatesPatternSupportWeight_equallySizedPatternWithLargerSupport() throws Exception {
-        Pattern pattern2 = somePattern(pattern, pattern.getSupport() * 2);
+        APIUsagePattern pattern2 = somePattern(pattern, pattern.getSupport() * 2);
         model = () -> asSet(pattern, pattern2);
         ViolationWeightFunction weightFunction = new PatternSameSizeSupportWeightFunction();
 
@@ -52,7 +52,7 @@ public class PatternSameSizeSupportWeightFunctionTest {
 
     @Test
     public void calculatesPatternSupportWeight_equallySizedPatternWithSmallerSupport() throws Exception {
-        Pattern pattern2 = somePattern(pattern, 1);
+        APIUsagePattern pattern2 = somePattern(pattern, 1);
         model = () -> asSet(pattern, pattern2);
         ViolationWeightFunction weightFunction = new PatternSameSizeSupportWeightFunction();
 

@@ -1,11 +1,18 @@
 package egroum;
 
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageGraph;
+import de.tu_darmstadt.stg.mudetect.aug.Node;
+import de.tu_darmstadt.stg.mudetect.aug.dot.AUGDotExporter;
+import de.tu_darmstadt.stg.mudetect.aug.dot.AUGEdgeAttributeProvider;
+import de.tu_darmstadt.stg.mudetect.aug.dot.AUGNodeAttributeProvider;
+import de.tu_darmstadt.stg.mudetect.aug.dot.DisplayAUGDotExporter;
 import graphics.DotGraph;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 
 import java.io.File;
+import java.io.IOException;
 
 import static egroum.EGroumTestUtils.buildGroumForMethod;
 
@@ -13,22 +20,22 @@ public class EGroumBuilderTest {
 	@Rule public TestName name = new TestName();
 	
 	@Test
-	public void reassignment() {
+	public void reassignment() throws IOException, InterruptedException {
 		print(buildGroumForMethod("void m(int i) { if (i < 0) { i = -i; m(i); } }"));
 	}
 	
 	@Test
-	public void alternativeReassignments() {
+	public void alternativeReassignments() throws IOException, InterruptedException {
 		print(buildGroumForMethod("void m(int i) { if (i < 0)	i = -i;	else i++; m(i); }"));
 	}
 	
 	@Test
-	public void controlChars() {
+	public void controlChars() throws IOException, InterruptedException {
 		print(buildGroumForMethod("String cc() { return \" \\n \\t \\b \\f \\\\ \\\" \"; }"));
 	}
 	
 	@Test
-	public void controlInstructions() {
+	public void controlInstructions() throws IOException, InterruptedException {
 		print(buildGroumForMethod("void m() {"
 				+ " while(true) {"
 				+ "  if (1 == 2) continue;"
@@ -49,9 +56,8 @@ public class EGroumBuilderTest {
 				"}"));
 	}
 
-    private void print(EGroumGraph groum) {
-		DotGraph dotGraph = new DotGraph(groum);
-		System.out.println(dotGraph.getGraph());
-		dotGraph.toPNG(new File("output"), name.getMethodName());
+    private void print(APIUsageGraph groum) throws IOException, InterruptedException {
+        DisplayAUGDotExporter exporter = new DisplayAUGDotExporter();
+        exporter.toPNGFile(groum, new File("output", name.getMethodName()));
 	}
 }
