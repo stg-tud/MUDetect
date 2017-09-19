@@ -1,4 +1,4 @@
-package tests;
+package main;
 
 import de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilder;
 import de.tu_darmstadt.stg.mudetect.src2aug.AUGConfiguration;
