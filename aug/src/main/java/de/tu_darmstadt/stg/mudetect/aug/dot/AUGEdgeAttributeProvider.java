@@ -1,5 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.aug.dot;
 
+import de.tu_darmstadt.stg.mudetect.aug.DataFlowEdge;
 import de.tu_darmstadt.stg.mudetect.aug.DataNode;
 import de.tu_darmstadt.stg.mudetect.aug.Edge;
 import org.jgrapht.ext.ComponentAttributeProvider;
@@ -12,7 +13,7 @@ public class AUGEdgeAttributeProvider implements ComponentAttributeProvider<Edge
     public Map<String, String> getComponentAttributes(Edge edge) {
         final LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
         String style;
-        if (edge instanceof DataNode) {
+        if (edge instanceof DataFlowEdge) {
             style = edge.isDirect() ? "solid" : "dotted";
         } else {
             style = edge.isDirect() ? "bold" : "dashed";

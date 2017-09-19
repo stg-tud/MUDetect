@@ -22,15 +22,15 @@ import static de.tu_darmstadt.stg.mudetect.aug.ConditionEdge.ConditionType.SELEC
 import static org.hamcrest.core.AllOf.allOf;
 
 public class AUGTestUtils {
-    public static Matcher<APIUsageExample> isEqual(APIUsageExample expected) {
+    public static Matcher<? super APIUsageGraph> isEqual(APIUsageGraph expected) {
         Set<String> expectedNodeLabels = getNodeLabels(expected);
         Set<String> expectedEdgeLabels = getEdgeLabels(expected);
 
-        return new BaseMatcher<APIUsageExample>() {
+        return new BaseMatcher<APIUsageGraph>() {
             @Override
             public boolean matches(Object item) {
-                if (item instanceof APIUsageExample) {
-                    APIUsageExample actual = (APIUsageExample) item;
+                if (item instanceof APIUsageGraph) {
+                    APIUsageGraph actual = (APIUsageGraph) item;
                     return getNodeLabels(actual).equals(expectedNodeLabels) &&
                             getEdgeLabels(actual).equals(expectedEdgeLabels);
                 }
@@ -44,7 +44,7 @@ public class AUGTestUtils {
         };
     }
 
-    private static Set<String> getNodeLabels(APIUsageExample expected) {
+    private static Set<String> getNodeLabels(APIUsageGraph expected) {
         Set<String> expectedNodeLabels = expected.vertexSet().stream()
                 .map(Node::getLabel).collect(Collectors.toSet());
         if (expectedNodeLabels.size() < expected.getNodeSize()) {
@@ -53,7 +53,7 @@ public class AUGTestUtils {
         return expectedNodeLabels;
     }
 
-    private static Set<String> getEdgeLabels(APIUsageExample aug) {
+    private static Set<String> getEdgeLabels(APIUsageGraph aug) {
         Set<String> expectedEdgeLabels = aug.edgeSet().stream()
                 .map(AUGTestUtils::getEdgeLabel).collect(Collectors.toSet());
         if (expectedEdgeLabels.size() < aug.getEdgeSize()) {
@@ -66,13 +66,13 @@ public class AUGTestUtils {
         return edge.getSource().getLabel() + "--(" + edge.getLabel() + ")-->" + edge.getTarget().getLabel();
     }
 
-    public static Matcher<? super APIUsageExample> hasNode(Matcher<? super Node> matcher) {
+    public static Matcher<? super APIUsageGraph> hasNode(Matcher<? super Node> matcher) {
         return new AUGElementMatcher<>(AbstractBaseGraph::vertexSet, matcher);
     }
 
     @SafeVarargs
-    public static Matcher<? super APIUsageExample> hasNodes(Matcher<? super Node>... matchers) {
-        List<Matcher<? super APIUsageExample>> all = new ArrayList<>(matchers.length);
+    public static Matcher<? super APIUsageGraph> hasNodes(Matcher<? super Node>... matchers) {
+        List<Matcher<? super APIUsageGraph>> all = new ArrayList<>(matchers.length);
 
         for (Matcher<? super Node> matcher : matchers) {
             all.add(hasNode(matcher));
@@ -151,17 +151,17 @@ public class AUGTestUtils {
         };
     }
 
-    public static Matcher<? super APIUsageExample> hasSelEdge(Matcher<? super Node> sourceMatcher,
+    public static Matcher<? super APIUsageGraph> hasSelEdge(Matcher<? super Node> sourceMatcher,
                                                               Matcher<? super Node> targetMatcher) {
         return hasEdge(new ConditionEdgeMatcher(sourceMatcher, SELECTION, targetMatcher));
     }
 
-    public static Matcher<? super APIUsageExample> hasRepeatEdge(Matcher<? super Node> sourceMatcher,
+    public static Matcher<? super APIUsageGraph> hasRepeatEdge(Matcher<? super Node> sourceMatcher,
                                                                  Matcher<? super Node> targetMatcher) {
         return hasEdge(new ConditionEdgeMatcher(sourceMatcher, REPETITION, targetMatcher));
     }
 
-    public static Matcher<? super APIUsageExample> hasSynchronizeEdge(Matcher<? super Node> sourceMatcher,
+    public static Matcher<? super APIUsageGraph> hasSynchronizeEdge(Matcher<? super Node> sourceMatcher,
                                                                       Matcher<? super Node> targetMatcher) {
         return hasEdge(new EdgeMatcher(sourceMatcher, Edge.Type.SYNCHRONIZE, targetMatcher));
     }
@@ -171,31 +171,31 @@ public class AUGTestUtils {
         return hasEdge(new EdgeMatcher(sourceMatcher, Edge.Type.CONDITION, targetMatcher));
     }
 
-    public static Matcher<? super APIUsageExample> hasEdge(final Matcher<? super Node> sourceMatcher,
+    public static Matcher<? super APIUsageGraph> hasEdge(final Matcher<? super Node> sourceMatcher,
                                                            final Edge.Type edgeType,
                                                            final Matcher<? super Node> targetMatcher) {
         return hasEdge(new EdgeMatcher(sourceMatcher, edgeType, targetMatcher));
     }
 
-    private static Matcher<? super APIUsageExample> hasEdge(Matcher<? super Edge> matcher) {
+    private static Matcher<? super APIUsageGraph> hasEdge(Matcher<? super Edge> matcher) {
         return new AUGElementMatcher<>(AbstractBaseGraph::edgeSet, matcher);
     }
 
-    private static class AUGElementMatcher<E> extends BaseMatcher<APIUsageExample> {
+    private static class AUGElementMatcher<E> extends BaseMatcher<APIUsageGraph> {
         private final static AUGDotExporter augDotExporter = new AUGDotExporter(
                 Node::getLabel, new AUGNodeAttributeProvider(), new AUGEdgeAttributeProvider());
 
-        private final Function<APIUsageExample, Set<E>> selector;
+        private final Function<APIUsageGraph, Set<E>> selector;
         private final Matcher<? super E> elementMatcher;
 
-        AUGElementMatcher(Function<APIUsageExample, Set<E>> selector, Matcher<? super E> elementMatcher) {
+        AUGElementMatcher(Function<APIUsageGraph, Set<E>> selector, Matcher<? super E> elementMatcher) {
             this.selector = selector;
             this.elementMatcher = elementMatcher;
         }
 
         @Override
         public boolean matches(Object item) {
-            return item instanceof APIUsageExample && Matchers.hasItem(elementMatcher).matches(selector.apply((APIUsageExample) item));
+            return item instanceof APIUsageGraph && Matchers.hasItem(elementMatcher).matches(selector.apply((APIUsageGraph) item));
         }
 
         @Override
@@ -206,8 +206,8 @@ public class AUGTestUtils {
 
         @Override
         public void describeMismatch(Object item, Description description) {
-            if (item instanceof APIUsageExample) {
-                description.appendText("was AUG: ").appendText(augDotExporter.toDotGraph((APIUsageExample) item));
+            if (item instanceof APIUsageGraph) {
+                description.appendText("was AUG: ").appendText(augDotExporter.toDotGraph((APIUsageGraph) item));
             } else {
                 super.describeMismatch(item, description);
             }
@@ -240,7 +240,7 @@ public class AUGTestUtils {
 
         @Override
         public void describeTo(Description description) {
-            description.appendText("a ").appendValue(type).appendText(" edge from ");
+            description.appendText("a ").appendValue(type.getLabel()).appendText(" edge from ");
             description.appendDescriptionOf(sourceMatcher).appendText(" to ").appendDescriptionOf(targetMatcher);
         }
     }

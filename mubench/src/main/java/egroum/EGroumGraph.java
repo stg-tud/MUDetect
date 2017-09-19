@@ -450,8 +450,6 @@ public class EGroumGraph implements Serializable {
 					(VariableDeclarationStatement) node);
 		if (node instanceof WhileStatement)
 			return buildPDG(control, branch, (WhileStatement) node);
-		if (node instanceof WhileStatement)
-			return buildPDG(control, branch, (WhileStatement) node);
 		return new EGroumGraph(context, configuration);
 	}
 
@@ -1093,9 +1091,8 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			MethodDeclaration astNode) {
-		EGroumGraph pdg = new EGroumGraph(context, configuration);
 		// skip
-		return pdg;
+		return new EGroumGraph(context, configuration);
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, LabeledStatement astNode) {
@@ -1499,10 +1496,9 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			CharacterLiteral astNode) {
-		EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
+		return new EGroumGraph(context, new EGroumDataNode(
 				astNode, astNode.getNodeType(), astNode.getEscapedValue(), "char",
 				astNode.getEscapedValue()), configuration);
-		return pdg;
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
@@ -1568,10 +1564,9 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch,
 			BooleanLiteral astNode) {
-		EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
+		return new EGroumGraph(context, new EGroumDataNode(
 				astNode, astNode.getNodeType(), astNode.toString(), "boolean",
 				astNode.toString()), configuration);
-		return pdg;
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, Block astNode) {
@@ -1586,16 +1581,15 @@ public class EGroumGraph implements Serializable {
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, List<?> list) {
 		EGroumGraph g = new EGroumGraph(context, configuration);
-		for (int i = 0; i < list.size(); i++) {
-			Object s = list.get(i);
+		for (Object s : list) {
 			if (s instanceof EmptyStatement) continue;
 			EGroumGraph pdg = buildPDG(control, branch, (ASTNode) s);
 			if (!pdg.isEmpty()) {
 				g.mergeSequential(pdg);
 			}
-			if (list.get(i) instanceof ReturnStatement 
-					|| list.get(i) instanceof ThrowStatement 
-					|| list.get(i).toString().startsWith("System.exit(")
+			if (s instanceof ReturnStatement
+					|| s instanceof ThrowStatement
+					|| s.toString().startsWith("System.exit(")
 					) {
 				g.clearDefStore();
 				return g;
@@ -1784,7 +1778,7 @@ public class EGroumGraph implements Serializable {
 		clearDefStore();
 	}
 
-	public void delete(EGroumNode node) {
+	private void delete(EGroumNode node) {
 		if (statementSinks.contains(node))
 			for (EGroumEdge e : node.inEdges)
 				if (e instanceof EGroumDataEdge) {
@@ -1929,8 +1923,7 @@ public class EGroumGraph implements Serializable {
 					pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, "this." + name, type, name, true, false), Type.QUALIFIER);
 					return pdg;
 				} else {
-					EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, "this." + name, type, name, true, false), configuration);
-					return pdg;
+					return new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, "this." + name, type, name, true, false), configuration);
 				}
 			}
 			if (configuration.keepQualifierEdges) {
@@ -1938,8 +1931,7 @@ public class EGroumGraph implements Serializable {
 				pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, "this." + name, "UNKNOWN", name, true, false), Type.QUALIFIER);
 				return pdg;
 			} else {
-				EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, "this." + name, "UNKNOWN", name, true, false), configuration);
-				return pdg;
+				return new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, "this." + name, "UNKNOWN", name, true, false), configuration);
 			}
 		} else {
 			EGroumGraph pdg = buildArgumentPDG(control, branch, astNode.getExpression());
@@ -1971,8 +1963,7 @@ public class EGroumGraph implements Serializable {
 				return pdg;
 			}
 			else {
-				EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, "this." + name, type, name, true, false), configuration);
-				return pdg;
+				return new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, "this." + name, type, name, true, false), configuration);
 			}
 		}
 		if (configuration.keepQualifierEdges) {
@@ -1980,8 +1971,7 @@ public class EGroumGraph implements Serializable {
 			pdg.mergeSequentialData(new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, astNode.toString(), context.getSuperType() + "." + name, name, true, false), Type.QUALIFIER);
 			return pdg;
 		} else {
-			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, astNode.toString(), context.getSuperType() + "." + name, name, true, false), configuration);
-			return pdg;
+			return new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.SIMPLE_NAME, astNode.toString(), context.getSuperType() + "." + name, name, true, false), configuration);
 		}
 	}
 
@@ -1990,10 +1980,9 @@ public class EGroumGraph implements Serializable {
 		String type = context.getType();
 		if (astNode.resolveTypeBinding() != null)
 			type = astNode.resolveTypeBinding().getTypeDeclaration().getName();
-		EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
+		return new EGroumGraph(context, new EGroumDataNode(
 				astNode, astNode.getNodeType(), "this", type,
 				"this"), configuration);
-		return pdg;
 	}
 
 	private void mergeSequential(EGroumGraph pdg) {
@@ -2096,7 +2085,7 @@ public class EGroumGraph implements Serializable {
 	}
 
 	private void adjustBreakNodes(String id) {
-		for (EGroumNode node : new HashSet<EGroumNode>(breaks)) {
+		for (EGroumNode node : new HashSet<>(breaks)) {
 			if ((node.key == null && id == null) || node.key.equals(id)) {
 				sinks.add(node);
 				statementSinks.add(node);
@@ -2146,24 +2135,9 @@ public class EGroumGraph implements Serializable {
 	private boolean isEmpty() {
 		return nodes.isEmpty();
 	}
-	
-	public EGroumGraph collapse() {
-		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
-			for (EGroumEdge e : node.outEdges) {
-				if (e.target.getLabel().equals(node.getLabel()) && e.isDirect()) {
-					for (EGroumEdge e1 : node.inEdges)
-						if (!e.target.hasInEdge(e1) && e1 instanceof EGroumDataEdge)
-							new EGroumDataEdge(e1.source, e.target, ((EGroumDataEdge) e1).type, ((EGroumDataEdge) e1).label);
-					delete(node);
-					break;
-				}
-			}
-		}
-		return this;
-	}
 
-	public void buildClosure() {
-		HashSet<EGroumNode> doneNodes = new HashSet<EGroumNode>();
+	private void buildClosure() {
+		HashSet<EGroumNode> doneNodes = new HashSet<>();
 		for (EGroumNode node : nodes)
 			if (!doneNodes.contains(node))
 				node.buildDataClosure(doneNodes);
@@ -2172,7 +2146,7 @@ public class EGroumGraph implements Serializable {
 				((EGroumControlNode) node).buildConditionClosure();
 		if (!configuration.buildTransitiveDataEdges) {
 			for (EGroumNode node : nodes) {
-				for (EGroumEdge e : new HashSet<EGroumEdge>(node.inEdges))
+				for (EGroumEdge e : new HashSet<>(node.inEdges))
 					if (e.isTransitive && e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type != Type.CONDITION)
 						e.delete();
 			}
@@ -2188,7 +2162,7 @@ public class EGroumGraph implements Serializable {
 
 	private void buildSequentialClosure() {
 		HashMap<EGroumNode, HashSet<EGroumNode>> preNodesOfNode = new HashMap<>();
-		preNodesOfNode.put(entryNode, new HashSet<EGroumNode>());
+		preNodesOfNode.put(entryNode, new HashSet<>());
 		HashSet<EGroumNode> visitedNodes = new HashSet<>();
 		visitedNodes.add(entryNode);
 		for (EGroumNode node : nodes) {
@@ -2265,7 +2239,7 @@ public class EGroumGraph implements Serializable {
 	}
 
 	private void deleteOperators() {
-		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
+		for (EGroumNode node : new HashSet<>(nodes)) {
 			if (node.astNodeType != ASTNode.INFIX_EXPRESSION)
 				continue;
 			if ((!configuration.encodeArithmeticOperators && node.getLabel().equals("<a>"))
@@ -2381,7 +2355,7 @@ public class EGroumGraph implements Serializable {
 	}
 
 	private void deleteTemporaryDataNodes() {
-		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
+		for (EGroumNode node : new HashSet<>(nodes)) {
 			if (node.isDefinition()) {
 				EGroumDataNode dn = (EGroumDataNode) node;
 				ArrayList<EGroumNode> refs = dn.getReferences();
@@ -2422,7 +2396,7 @@ public class EGroumGraph implements Serializable {
 	}
 
 	private void deleteReferences() {
-		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
+		for (EGroumNode node : new HashSet<>(nodes)) {
 			if (node instanceof EGroumDataNode) {
 				boolean isRef = false;
 				for (EGroumEdge e : node.inEdges) {
@@ -2444,10 +2418,10 @@ public class EGroumGraph implements Serializable {
 	}
 
 	private void deleteEmptyStatementNodes() {
-		for (EGroumNode node : new HashSet<EGroumNode>(statementNodes)) {
+		for (EGroumNode node : new HashSet<>(statementNodes)) {
 			if (node.isEmptyNode()) {
 				int index = node.control.getOutEdgeIndex(node);
-				for (EGroumEdge out : new HashSet<EGroumEdge>(node.outEdges)) {
+				for (EGroumEdge out : new HashSet<>(node.outEdges)) {
 					if (out.target.control != node.control) {
 						out.source.outEdges.remove(out);
 						out.source = node.control;
@@ -2456,18 +2430,8 @@ public class EGroumGraph implements Serializable {
 					}
 				}
 				delete(node);
-				node = null;
 			}
 		}
-	}
-
-	@SuppressWarnings("unused")
-	private void addDefinitions() {
-		HashMap<EGroumNode, HashMap<String, EGroumNode>> defs = new HashMap<>();
-		defs.put(null, new HashMap<String, EGroumNode>());
-		for (EGroumNode node : new HashSet<EGroumNode>(this.dataSources))
-			if (this.dataSources.contains(node) && !((EGroumDataNode) node).isException())
-				addDefinitions((EGroumDataNode) node, defs);
 	}
 
 	private void addDefinitions(EGroumDataNode node, HashMap<EGroumNode, HashMap<String, EGroumNode>> defs) {
@@ -2491,11 +2455,7 @@ public class EGroumGraph implements Serializable {
 					qualDefs.removeAll(qualDef.getDefinitions());
 			}
 			for (EGroumNode qualDef : qualDefs) {
-				HashMap<String, EGroumNode> ds = defs.get(qualDef);
-				if (ds == null) {
-					ds = new HashMap<>();
-					defs.put(qualDef, ds);
-				}
+				HashMap<String, EGroumNode> ds = defs.computeIfAbsent(qualDef, k -> new HashMap<>());
 				EGroumNode def = ds.get(node.key);
 				if (def == null) {
 					def = new EGroumDataNode(null, node.astNodeType, node.key, node.dataType, node.dataName, node.dataValue, node.isField, true, node.encodeLevel);
@@ -2512,9 +2472,9 @@ public class EGroumGraph implements Serializable {
 		}
 	}
 
-	public void cleanUp() {
+	private void cleanUp() {
 		clearDefStore();
-		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
+		for (EGroumNode node : new HashSet<>(nodes))
 			node.astNode = null;
 	}
 
@@ -2529,25 +2489,25 @@ public class EGroumGraph implements Serializable {
 	}
 
 	private void deleteNonCoreActionNodes() {
-		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
+		for (EGroumNode node : new HashSet<>(nodes))
 			if (node.astNodeType != ASTNode.METHOD_INVOCATION)
 				delete(node);
 	}
 
 	private void deleteDataNodes() {
-		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
+		for (EGroumNode node : new HashSet<>(nodes))
 			if (node instanceof EGroumDataNode)
 				delete(node);
 	}
 
-	public void deleteControlNodes() {
-		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
+	private void deleteControlNodes() {
+		for (EGroumNode node : new HashSet<>(nodes))
 			if (node instanceof EGroumEntryNode || node instanceof EGroumControlNode)
 				delete(node);
 	}
 
 	private void deleteUnusedDataNodes() {
-		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
+		for (EGroumNode node : new HashSet<>(nodes)) {
 			if (node instanceof EGroumDataNode) {
 				if (node.outEdges.isEmpty()) {
 					LinkedList<EGroumNode> q = new LinkedList<>();
@@ -2565,7 +2525,7 @@ public class EGroumGraph implements Serializable {
 		}
 	}
 
-	public void deleteUnreachableNodes() {
+	private void deleteUnreachableNodes() {
 		HashSet<EGroumNode> reachableNodes = new HashSet<>();
 		LinkedList<EGroumNode> q = new LinkedList<>();
 		q.add(entryNode);
@@ -2579,12 +2539,12 @@ public class EGroumGraph implements Serializable {
 				if (!reachableNodes.contains(next))
 					q.add(next);
 		}
-		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
+		for (EGroumNode node : new HashSet<>(nodes))
 			if (!reachableNodes.contains(node))
 				delete(node);
 	}
 
-	public void deleteAssignmentNodes() {
+	private void deleteAssignmentNodes() {
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
 			if (node.isAssignment()) {
 				for (EGroumEdge ie : node.getInEdges()) {
@@ -2598,38 +2558,6 @@ public class EGroumGraph implements Serializable {
 				if (!(node.control instanceof EGroumControlNode) || ((EGroumControlNode) node.control).controlsAnotherNode(node))
 					delete(node);
 			}
-	}
-
-	public void deleteUnaryOperationNodes() {
-		for (EGroumNode node : new HashSet<EGroumNode>(nodes))
-			if (node.astNodeType == ASTNode.PREFIX_EXPRESSION || node.astNodeType == ASTNode.POSTFIX_EXPRESSION)
-				node.delete();
-	}
-	
-	public void collapseLiterals() {
-		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
-			HashMap<String, ArrayList<EGroumNode>> labelLiterals = new HashMap<>();
-			for (EGroumNode n : node.getInNodes()) {
-				if (n.isLiteral()) {
-					String label = n.getLabel();
-					ArrayList<EGroumNode> lits = labelLiterals.get(label);
-					if (lits == null) {
-						lits = new ArrayList<>();
-						labelLiterals.put(label, lits);
-					}
-					lits.add(n);
-				}
-			}
-			for (String label : labelLiterals.keySet()) {
-				ArrayList<EGroumNode> lits = labelLiterals.get(label);
-				if (lits.size() > 0) {
-//					EGroumDataNode lit = (EGroumDataNode) lits.get(1);
-//					lit.dataName = lit.dataName + "*";
-					for (int i = 1; i < lits.size(); i++)
-						lits.get(i).delete();
-				}
-			}
-		}
 	}
 
 	public void toGraphics(String path){

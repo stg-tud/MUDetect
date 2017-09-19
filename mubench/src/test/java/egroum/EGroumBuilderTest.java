@@ -1,12 +1,7 @@
 package egroum;
 
 import de.tu_darmstadt.stg.mudetect.aug.APIUsageGraph;
-import de.tu_darmstadt.stg.mudetect.aug.Node;
-import de.tu_darmstadt.stg.mudetect.aug.dot.AUGDotExporter;
-import de.tu_darmstadt.stg.mudetect.aug.dot.AUGEdgeAttributeProvider;
-import de.tu_darmstadt.stg.mudetect.aug.dot.AUGNodeAttributeProvider;
 import de.tu_darmstadt.stg.mudetect.aug.dot.DisplayAUGDotExporter;
-import graphics.DotGraph;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;

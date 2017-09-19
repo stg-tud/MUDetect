@@ -68,6 +68,10 @@ public class AUGDotExporter {
     }
 
     public void toDotFile(APIUsageGraph aug, File file) throws IOException {
+        if (!file.getPath().endsWith(".dot")) {
+            file = new File(file.getPath() + ".dot");
+        }
+        file = file.getAbsoluteFile();
         ensureDirectory(file.getParentFile());
         try (BufferedWriter fout = new BufferedWriter(new FileWriter(file))) {
             fout.append(toDotGraph(aug));
@@ -76,8 +80,10 @@ public class AUGDotExporter {
     }
 
     public void toPNGFile(APIUsageGraph aug, File file) throws IOException, InterruptedException {
-        ensureDirectory(file.getParentFile());
-        String nameWithoutExtension = Files.getNameWithoutExtension(file.getAbsolutePath());
+        file = file.getAbsoluteFile();
+        File directory = file.getParentFile();
+        ensureDirectory(directory);
+        String nameWithoutExtension = new File(directory, Files.getNameWithoutExtension(file.getPath())).getPath();
         toDotFile(aug, new File(nameWithoutExtension + ".dot"));
         Runtime rt = Runtime.getRuntime();
         Process p = rt.exec(new String[]{EXEC_DOT, "-T"+ "png", nameWithoutExtension +".dot", "-o", nameWithoutExtension +"."+ "png"});

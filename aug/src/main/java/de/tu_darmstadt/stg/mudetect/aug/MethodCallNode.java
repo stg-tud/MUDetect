@@ -21,6 +21,9 @@ public class MethodCallNode extends InvokationNode implements ActionNode {
 
     @Override
     public Optional<String> getAPI() {
-        return Optional.of(getLabel().split("\\.")[0]);
+        if (getLabel().contains("."))
+            return Optional.of(getLabel().split("\\.")[0]);
+        else
+            return Optional.empty();
     }
 }

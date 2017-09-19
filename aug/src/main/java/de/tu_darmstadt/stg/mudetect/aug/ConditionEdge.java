@@ -6,7 +6,17 @@ public class ConditionEdge extends BaseEdge implements ControlFlowEdge {
     private final ConditionType conditionType;
 
     public enum ConditionType {
-        SELECTION, REPETITION
+        SELECTION("sel"), REPETITION("rep");
+
+        private final String label;
+
+        ConditionType(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
     }
 
     public ConditionEdge(Node source, Node target, ConditionType conditionType) {
@@ -16,5 +26,10 @@ public class ConditionEdge extends BaseEdge implements ControlFlowEdge {
 
     public ConditionType getConditionType() {
         return conditionType;
+    }
+
+    @Override
+    public String getLabel() {
+        return getConditionType().getLabel();
     }
 }

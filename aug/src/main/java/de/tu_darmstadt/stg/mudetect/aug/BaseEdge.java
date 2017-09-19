@@ -26,4 +26,9 @@ public class BaseEdge implements Edge {
     public Type getType() {
         return type;
     }
+
+    @Override
+    public String toString() {
+        return getSource() + "-(" + getLabel() + ")->" + getTarget();
+    }
 }

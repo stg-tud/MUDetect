@@ -1,5 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.aug;
 
+import java.util.Optional;
+
 public interface DataNode extends Node {
     @Override
     default boolean isCoreAction() {
@@ -20,4 +22,24 @@ public interface DataNode extends Node {
      * @return the data's type name
      */
     String getType();
+
+    @Override
+    default Optional<String> getAPI() {
+        String dataType = getType();
+        switch (dataType) {
+            case "int":
+            case "long":
+            case "float":
+            case "double":
+            case "short":
+            case "boolean":
+                return Optional.empty();
+            default:
+                if (dataType.endsWith("[]")) {
+                    return Optional.empty();
+                } else {
+                    return Optional.of(getLabel());
+                }
+        }
+    }
 }

@@ -74,8 +74,10 @@ public class DefaultAUGMiner implements AUGMiner {
 
         Fragment f = pattern.getRepresentative();
         List<Node> nodes = f.getNodes();
+        Map<Node, Node> nodeMap = new HashMap<>();
         for (int i = 0; i < nodes.size(); i++) {
             Node node = nodes.get(i);
+            Node newNode = node;
 
             if (node instanceof DataNode) {
                 Multiset<String> values = HashMultiset.create();
@@ -83,16 +85,17 @@ public class DefaultAUGMiner implements AUGMiner {
                     DataNode eqivalentNode = (DataNode) fragment.getNodes().get(i);
                     values.add(eqivalentNode.getValue());
                 }
-                node = new AggregateDataNode(values);
+                newNode = new AggregateDataNode(((DataNode) node).getType(), values);
             }
-            augPattern.addVertex(node);
+            nodeMap.put(node, newNode);
+            augPattern.addVertex(newNode);
         }
         for (Node node : f.getNodes()) {
             APIUsageGraph graph = node.getGraph();
             for (Edge e : graph.incomingEdgesOf(node)) {
                 Node source = graph.getEdgeSource(e);
                 if (f.getNodes().contains(source))
-                    augPattern.addEdge(source, graph.getEdgeTarget(e), e);
+                    augPattern.addEdge(nodeMap.get(source), nodeMap.get(graph.getEdgeTarget(e)), e);
             }
         }
 

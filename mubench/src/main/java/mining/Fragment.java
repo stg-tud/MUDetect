@@ -528,7 +528,7 @@ public class Fragment {
 							}
 							if (!hasThrow) {
 								HashSet<Node> defs = new HashSet<>();
-								if (node instanceof SimpleNameNode)
+								if (node instanceof VariableNode)
 									defs.add(null);
 								else
 									for (Edge e : graph.incomingEdgesOf(node))

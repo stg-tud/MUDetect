@@ -61,7 +61,7 @@ public class DefaultAUGMinerTest {
         Set<APIUsagePattern> patterns = minePatterns(groums);
 
         APIUsagePattern pattern = first(patterns);
-        assertThat(node("String", pattern).getValues(), contains("l1", "l2"));
+        assertThat(node("String", pattern).getDataNames(), contains("l1", "l2"));
     }
 
     @Test
@@ -74,7 +74,7 @@ public class DefaultAUGMinerTest {
         Set<APIUsagePattern> patterns = minePatterns(groums);
 
         APIUsagePattern pattern = first(patterns);
-        assertThat(node("String", pattern).getValues(), containsInAnyOrder("literal", "s"));
+        assertThat(node("String", pattern).getDataNames(), containsInAnyOrder("literal", "s"));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class DefaultAUGMinerTest {
         Set<APIUsagePattern> patterns = minePatterns(groums);
 
         APIUsagePattern pattern = first(patterns);
-        assertThat(node("String", pattern).getValues(), contains("s", "s"));
+        assertThat(node("String", pattern).getDataNames(), contains("s", "s"));
     }
 
     private Set<APIUsagePattern> minePatterns(Collection<APIUsageExample> groums) {

@@ -1,16 +1,47 @@
 package egroum;
 
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
-import de.tu_darmstadt.stg.mudetect.aug.Edge;
-import de.tu_darmstadt.stg.mudetect.aug.Location;
-import de.tu_darmstadt.stg.mudetect.aug.Node;
+import de.tu_darmstadt.stg.mudetect.aug.*;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.Assignment;
+import utils.JavaASTUtil;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static de.tu_darmstadt.stg.mudetect.aug.ConditionEdge.ConditionType.REPETITION;
+import static de.tu_darmstadt.stg.mudetect.aug.ConditionEdge.ConditionType.SELECTION;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.*;
+
 public class AUGBuilder {
+    private static final Set<String> ASSIGNMENT_OPERATORS = new HashSet<>();
+    private static final Set<String> UNARY_OPERATORS = new HashSet<>();
+    private static final Set<Integer> LITERAL_AST_NODE_TYPES = new HashSet<>();
+
+    static {
+        ASSIGNMENT_OPERATORS.add("+");
+        ASSIGNMENT_OPERATORS.add("-");
+        ASSIGNMENT_OPERATORS.add("*");
+        ASSIGNMENT_OPERATORS.add("/");
+        ASSIGNMENT_OPERATORS.add("&");
+        ASSIGNMENT_OPERATORS.add("|");
+        ASSIGNMENT_OPERATORS.add("^");
+        ASSIGNMENT_OPERATORS.add("%");
+        ASSIGNMENT_OPERATORS.add(">>");
+        ASSIGNMENT_OPERATORS.add("<<");
+        ASSIGNMENT_OPERATORS.add(">>>");
+
+        UNARY_OPERATORS.add("!");
+        UNARY_OPERATORS.add("+");
+        UNARY_OPERATORS.add("-");
+
+        LITERAL_AST_NODE_TYPES.add(ASTNode.BOOLEAN_LITERAL);
+        LITERAL_AST_NODE_TYPES.add(ASTNode.CHARACTER_LITERAL);
+        LITERAL_AST_NODE_TYPES.add(ASTNode.NULL_LITERAL);
+        LITERAL_AST_NODE_TYPES.add(ASTNode.NUMBER_LITERAL);
+        LITERAL_AST_NODE_TYPES.add(ASTNode.STRING_LITERAL);
+        LITERAL_AST_NODE_TYPES.add(ASTNode.TYPE_LITERAL);
+    }
+
     private final AUGConfiguration configuration;
 
     public AUGBuilder(AUGConfiguration configuration) {
@@ -38,18 +69,105 @@ public class AUGBuilder {
         }
         for (EGroumNode node : groum.getNodes()) {
             for (EGroumEdge edge : node.getInEdges()) {
-                aug.addEdge(nodeMap.get(edge.getSource()), nodeMap.get(edge.getTarget()), convert(edge));
+                Node source = nodeMap.get(edge.getSource());
+                Node target = nodeMap.get(edge.getTarget());
+                aug.addEdge(source, target, convert(edge, source, target));
             }
         }
         return aug;
     }
 
-    private static Edge convert(EGroumEdge edge) {
-        throw new UnsupportedOperationException();
+    private static Edge convert(EGroumEdge edge, Node source, Node target) {
+        if (edge instanceof EGroumDataEdge) {
+            switch (((EGroumDataEdge) edge).getType()) {
+                case RECEIVER:
+                    return new BaseDataFlowEdge(source, target, RECEIVER);
+                case PARAMETER:
+                    return new BaseDataFlowEdge(source, target, PARAMETER);
+                case ORDER:
+                    return new BaseDataFlowEdge(source, target, ORDER);
+                case DEFINITION:
+                    return new BaseDataFlowEdge(source, target, DEFINITION);
+                case QUALIFIER:
+                    return new BaseDataFlowEdge(source, target, QUALIFIER);
+                case CONDITION:
+                    String label = edge.getLabel();
+                    switch (label) {
+                        case "sel":
+                            return new ConditionEdge(source, target, SELECTION);
+                        case "rep":
+                            return new ConditionEdge(source, target, REPETITION);
+                        case "syn":
+                            return new BaseControlFlowEdge(source, target, SYNCHRONIZE);
+                        default:
+                            if (source instanceof ExceptionDataNode) {
+                                return new BaseControlFlowEdge(source, target, EXCEPTION_HANDLING);
+                            }
+                            throw new IllegalArgumentException("unsupported type of condition edge: " + label);
+                    }
+                case THROW:
+                    return new BaseControlFlowEdge(source, target, THROW);
+                case FINALLY:
+                    return new BaseControlFlowEdge(source, target, FINALLY);
+                case CONTAINS:
+                    return new BaseControlFlowEdge(source, target, CONTAINS);
+            }
+        }
+        throw new IllegalArgumentException("unsupported edge type: " + edge.getLabel());
     }
 
     private static Node convert(EGroumNode node) {
-        throw new UnsupportedOperationException();
+        if (node instanceof EGroumDataNode) {
+            if (((EGroumDataNode) node).isException()) {
+                return new ExceptionDataNode(node.getDataType(), node.getDataName());
+            } else if (node.astNodeType == ASTNode.SIMPLE_NAME) {
+                return new VariableNode(node.getDataType(), node.getDataName());
+            } else if (LITERAL_AST_NODE_TYPES.contains(node.astNodeType)) {
+                return new LiteralNode(node.getDataType(), node.getDataName());
+            } else if (node.getLabel().endsWith("()")) {
+                // encoding of the methods of anonymous class instances
+                return new AnonymousClassMethod(node.getLabel());
+            } else {
+                return new ObjectDataNode(node.getDataType());
+            }
+        } else if (node instanceof EGroumActionNode) {
+            String label = node.getLabel();
+            if (label.endsWith("()")) {
+                // TODO split declaring type and signature
+                return new MethodCallNode(label);
+            } else if (label.endsWith("<init>")) {
+                // TODO split declaring type and signature
+                return new ConstructorCallNode(label);
+            } else if (label.startsWith("{") && label.endsWith("}")) {
+                return new ArrayCreationNode(label.substring(1, label.length() - 1));
+            } else if (label.endsWith("<cast>")) {
+                return new CastNode(label.split("\\.")[0]);
+            } else if (JavaASTUtil.infixExpressionLables.containsValue(label)) {
+                // TODO capture non-generalized operator
+                return new InfixOperatorNode(label);
+            } else if (ASSIGNMENT_OPERATORS.contains(label)) {
+                // this happens because we transform operators such as += and -= into and = and the respective
+                // operation, but to not apply the operator abstraction afterwards, i.e., this is actually a bug
+                // in the transformation.
+                // TODO ensure consistent handling of operators
+                return new InfixOperatorNode(label);
+            } else if (UNARY_OPERATORS.contains(label)) {
+                return new UnaryOperatorNode(label);
+            } else if (label.equals("=")) {
+                return new AssignmentNode();
+            } else if (label.equals("<nullcheck>")) {
+                return new NullCheckNode();
+            } else if (label.equals("break")) {
+                return new BreakNode();
+            } else if (label.equals("continue")) {
+                return new ContinueNode();
+            } else if (label.equals("return")) {
+                return new ReturnNode();
+            } else if (label.equals("throw")) {
+                return new ThrowNode();
+            }
+        }
+        throw new IllegalArgumentException("unsupported node: " + node);
     }
 
     public static String getMethodSignature(EGroumGraph graph) {

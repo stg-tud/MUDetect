@@ -17,7 +17,8 @@ public class FirstAlternativeNodeLabelProviderTest {
         Function<Node, String> getter = NodeLabelProvider.firstOrDefaultLabel(
                 node -> Optional.of(":alternative:")
         );
-        VariableNode node = new VariableNode(":label:");
+        // TODO check whether we need the second parameter here (also subsequent tests)
+        VariableNode node = new VariableNode(":label:", null);
 
         assertThat(getter.apply(node), is(":alternative:"));
     }
@@ -28,7 +29,7 @@ public class FirstAlternativeNodeLabelProviderTest {
                 node -> Optional.of(":first:"),
                 node -> Optional.of(":second:")
         );
-        VariableNode node = new VariableNode(":label:");
+        VariableNode node = new VariableNode(":label:", null);
 
         assertThat(getter.apply(node), is(":first:"));
     }
@@ -38,7 +39,7 @@ public class FirstAlternativeNodeLabelProviderTest {
         Function<Node, String> getter = NodeLabelProvider.firstOrDefaultLabel(
                 node -> Optional.empty()
         );
-        VariableNode node = new VariableNode(":label:");
+        VariableNode node = new VariableNode(":label:", null);
 
         assertThat(getter.apply(node), is(":label:"));
     }

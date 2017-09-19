@@ -12,6 +12,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.tu_darmstadt.stg.mudetect.aug.*;
+
+import egroum.DenseAUGPredicate;
+import mining.Configuration.Level;
+import utils.FileIO;
+
 import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.DEFINITION;
 
 /**

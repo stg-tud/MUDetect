@@ -18,6 +18,7 @@ import static egroum.EGroumTestUtils.buildGroumForMethod;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
+@Ignore("takes too long...")
 public class AUGImprovement2 {
     @Rule
     public TestName name = new TestName();

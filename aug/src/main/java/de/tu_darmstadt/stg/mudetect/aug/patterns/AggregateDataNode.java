@@ -5,19 +5,21 @@ import de.tu_darmstadt.stg.mudetect.aug.BaseNode;
 import de.tu_darmstadt.stg.mudetect.aug.DataNode;
 
 public class AggregateDataNode extends BaseNode implements DataNode {
-    private Multiset<String> values;
+    private final String dataType;
+    private Multiset<String> dataNames;
 
-    public AggregateDataNode(Multiset<String> values) {
-        this.values = values;
+    public AggregateDataNode(String dataType, Multiset<String> dataNames) {
+        this.dataType = dataType;
+        this.dataNames = dataNames;
     }
 
-    public Multiset<String> getValues() {
-        return values;
+    public Multiset<String> getDataNames() {
+        return dataNames;
     }
 
     @Override
     public String getLabel() {
-        return "<data>";
+        return dataType;
     }
 
     @Override

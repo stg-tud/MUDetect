@@ -2,7 +2,27 @@ package de.tu_darmstadt.stg.mudetect.aug;
 
 public interface Edge {
     enum Type {
-        RECEIVER, PARAMETER, DEFINITION, THROW, SYNCHRONIZE, CONDITION, ORDER, CONTAINS, FINALLY;
+        RECEIVER("recv"),
+        PARAMETER("para"),
+        DEFINITION("def"),
+        THROW("throw"),
+        SYNCHRONIZE("syn"),
+        CONDITION("cond"),
+        ORDER("order"),
+        CONTAINS("contains"),
+        FINALLY("finally"),
+        QUALIFIER("qual"),
+        EXCEPTION_HANDLING("cond");
+
+        private final String label;
+
+        Type(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
     }
 
     Node getSource();
@@ -16,6 +36,6 @@ public interface Edge {
     }
 
     default String getLabel() {
-        return getType().toString();
+        return getType().getLabel();
     }
 }

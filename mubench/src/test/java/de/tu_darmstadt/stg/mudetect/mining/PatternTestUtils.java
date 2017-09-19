@@ -1,6 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageGraph;
 import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.hamcrest.BaseMatcher;
@@ -12,11 +13,11 @@ import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern
 
 public class PatternTestUtils {
     public static Matcher<APIUsagePattern> isPattern(TestAUGBuilder builder, int support) {
-        return isPattern(builder.build(), support);
+        return isPattern(builder.build(APIUsagePattern.class), support);
     }
 
-    public static Matcher<APIUsagePattern> isPattern(APIUsageExample aug, int support) {
-        Matcher<APIUsageExample> augMatcher = isEqual(aug);
+    public static Matcher<APIUsagePattern> isPattern(APIUsagePattern aug, int support) {
+        Matcher<? super APIUsageGraph> augMatcher = isEqual(aug);
         return new BaseMatcher<APIUsagePattern>() {
             @Override
             public boolean matches(Object item) {

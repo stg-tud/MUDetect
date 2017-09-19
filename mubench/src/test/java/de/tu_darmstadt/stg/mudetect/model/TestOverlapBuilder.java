@@ -1,9 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageGraph;
-import de.tu_darmstadt.stg.mudetect.aug.Edge;
-import de.tu_darmstadt.stg.mudetect.aug.Node;
+import de.tu_darmstadt.stg.mudetect.aug.*;
+import de.tu_darmstadt.stg.mudetect.aug.Location;
 import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 
 import java.util.HashMap;
@@ -38,14 +36,17 @@ public class TestOverlapBuilder {
 
     public static Overlap someOverlap(APIUsageGraph pattern, Set<Node> vertexSubset, Set<Edge> edgeSubset) {
         Map<Node, Node> targetNodeByPatternNode = new HashMap<>();
+        APIUsageExample target = new APIUsageExample(new Location("test", "/test", "test()"));
         for (Node node : vertexSubset) {
             targetNodeByPatternNode.put(node, node);
+            target.addVertex(node);
         }
         Map<Edge, Edge> targetEdgeByPatternEdge = new HashMap<>();
         for (Edge edge : edgeSubset) {
             targetEdgeByPatternEdge.put(edge, edge);
+            target.addEdge(edge.getSource(), edge.getTarget(), edge);
         }
-        return new Overlap(somePattern(pattern), builderFrom(pattern).build(), targetNodeByPatternNode, targetEdgeByPatternEdge);
+        return new Overlap(somePattern(pattern), target, targetNodeByPatternNode, targetEdgeByPatternEdge);
     }
 
     public static Overlap emptyOverlap(APIUsagePattern pattern, APIUsageExample target) {

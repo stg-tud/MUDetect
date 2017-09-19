@@ -33,4 +33,13 @@ public abstract class BaseNode implements Node, NodeWithLocation {
     public int getSourceLineNumber() {
         return sourceLineNumber;
     }
+
+    @Override
+    public String toString() {
+        String type = getClass().getSimpleName();
+        if (type.endsWith("Node")) {
+            type = type.substring(0, type.length() - 4);
+        }
+        return type + ":" + getLabel();
+    }
 }

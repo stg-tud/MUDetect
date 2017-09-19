@@ -122,7 +122,8 @@ public class TestAUGBuilder {
     }
 
     public TestAUGBuilder withDataNode(String id, String nodeName) {
-        return withNode(id, new VariableNode(nodeName));
+        // TODO check whether we need the second parameter here
+        return withNode(id, new VariableNode(nodeName, null));
     }
 
     public TestAUGBuilder withNode(String id, Node node) {
@@ -172,7 +173,7 @@ public class TestAUGBuilder {
     public <T extends APIUsageGraph> T build(Class<T> clazz) {
         APIUsageGraph aug;
         if (clazz == APIUsageExample.class) {
-            aug = new APIUsageExample(new Location(name, name, ":aug-file-path:"));
+            aug = new APIUsageExample(new Location(name, ":aug-file-path:", name));
         } else if (clazz == APIUsagePattern.class) {
             aug = new APIUsagePattern(42, new HashSet<>());
         } else {

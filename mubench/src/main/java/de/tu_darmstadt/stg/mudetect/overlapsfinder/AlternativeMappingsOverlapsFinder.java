@@ -235,6 +235,9 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
         }
 
         private Edge tryGetCorrespondingDirectEdgeFromTarget(Edge possiblyIndirectEdge) {
+            if (possiblyIndirectEdge == null) {
+                return null;
+            }
             Set<Node> intermediateNodes = new HashSet<>();
             Node edgeSource = target.getEdgeSource(possiblyIndirectEdge);
             Node edgeTarget = target.getEdgeTarget(possiblyIndirectEdge);
