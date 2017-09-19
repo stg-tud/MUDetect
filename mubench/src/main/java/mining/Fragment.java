@@ -1,17 +1,10 @@
 package mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.*;
-import exas.ExasFeature;
-import graphics.DotGraph;
+import de.tu_darmstadt.stg.mudetect.src2aug.DotGraph;
 
 import java.io.File;
 import java.util.*;
-
-import org.eclipse.jdt.core.dom.ASTNode;
-
-import egroum.EGroumActionNode;
-import egroum.EGroumControlNode;
-import egroum.EGroumDataNode;
 
 import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.DEFINITION;
 import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.THROW;
@@ -345,12 +338,12 @@ public class Fragment {
 		for(Node node : nodes) {
 			id++;
 			ids.put(node, id);
-			if(node instanceof EGroumControlNode)
-				graph.append(dg.addNode(id, node.getLabel(), DotGraph.SHAPE_DIAMOND, null, null, null));
-			else if (node instanceof EGroumActionNode)
+			if(node instanceof DataNode)
+				graph.append(dg.addNode(id, node.getLabel(), DotGraph.SHAPE_ELLIPSE, null, null, null));
+			else if (node instanceof ActionNode)
 				graph.append(dg.addNode(id, node.getLabel(), DotGraph.SHAPE_BOX, null, null, null));
 			else
-				graph.append(dg.addNode(id, node.getLabel(), DotGraph.SHAPE_ELLIPSE, null, null, null));
+				graph.append(dg.addNode(id, node.getLabel(), DotGraph.SHAPE_DIAMOND, null, null, null));
 		}
 		// add edges
 		for(Node node : nodes) {
@@ -470,7 +463,7 @@ public class Fragment {
 							}
 							if (found) {
 								for (Node next : ins) {
-									if (next.isCoreAction() || (config.extendSourceDataNodes && next instanceof EGroumDataNode))
+									if (next.isCoreAction() || (config.extendSourceDataNodes && next instanceof DataNode))
 										add(node, next, lens);
 								}
 							}

@@ -12,12 +12,12 @@ import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.DEFINITION;
 import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
-import static egroum.EGroumTestUtils.buildGroumsForClass;
+import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUGsForClass;
 
 public class EqualsMethodsTest {
     @Test(timeout = 60000)
     public void equalsMethod() throws Exception {
-        APIUsageExample target = buildGroumsForClass("import java.io.IOException;\n" +
+        APIUsageExample target = buildAUGsForClass("import java.io.IOException;\n" +
                 "import java.text.Collator;\n" +
                 "\n" +
                 "import org.apache.lucene.index.IndexReader;\n" +

@@ -19,7 +19,7 @@ import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFi
 import de.tu_darmstadt.stg.mudetect.ranking.*;
 import de.tu_darmstadt.stg.mustudies.UsageUtils;
 import de.tu_darmstadt.stg.yaml.YamlObject;
-import egroum.AUGBuilder;
+import de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilder;
 import mining.TypeUsageExamplePredicate;
 import org.yaml.snakeyaml.Yaml;
 

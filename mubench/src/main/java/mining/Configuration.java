@@ -1,7 +1,6 @@
 package mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.Node;
-import egroum.EGroumNode;
 
 import java.util.function.Function;
 

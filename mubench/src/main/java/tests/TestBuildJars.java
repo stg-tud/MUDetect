@@ -1,7 +1,7 @@
 package tests;
 
-import egroum.AUGConfiguration;
-import egroum.EGroumBuilder;
+import de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilder;
+import de.tu_darmstadt.stg.mudetect.src2aug.AUGConfiguration;
 
 public class TestBuildJars {
 	String i;
@@ -15,7 +15,7 @@ public class TestBuildJars {
 	}
 	
 	public static void main(String[] args) {
-		EGroumBuilder b = new EGroumBuilder(new AUGConfiguration());
+		AUGBuilder b = new AUGBuilder(new AUGConfiguration());
 		b.build("", new String[]{});
 	}
 

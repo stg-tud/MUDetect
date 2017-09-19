@@ -5,7 +5,6 @@ import com.google.common.collect.Multiset;
 import de.tu_darmstadt.stg.mudetect.aug.*;
 import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.aug.patterns.AggregateDataNode;
-import egroum.*;
 import mining.Configuration;
 import mining.Fragment;
 
@@ -39,8 +38,7 @@ public class DefaultAUGMiner implements AUGMiner {
         return mine(new ArrayList<>(examples));
     }
 
-    public Model mine(ArrayList<APIUsageExample> examples) {
-        EGroumNode.numOfNodes = 0;
+    private Model mine(ArrayList<APIUsageExample> examples) {
         Fragment.nextFragmentId = 0;
         Fragment.numofFragments = 0;
 

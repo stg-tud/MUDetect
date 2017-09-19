@@ -8,7 +8,6 @@ import de.tu_darmstadt.stg.mudetect.aug.dot.AUGEdgeAttributeProvider;
 import de.tu_darmstadt.stg.mudetect.aug.dot.AUGNodeAttributeProvider;
 import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import egroum.EGroumDataNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -244,7 +243,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
             for (Edge outEdge: target.outgoingEdgesOf(edgeSource)) {
                 Node outEdgeTarget = target.getEdgeTarget(outEdge);
                 if (outEdge instanceof DataFlowEdge &&
-                            (!(edgeSource instanceof EGroumDataNode) || outEdgeTarget instanceof EGroumDataNode))
+                            (!(edgeSource instanceof DataNode) || outEdgeTarget instanceof DataNode))
                         intermediateNodes.add(outEdgeTarget);
                 }
                 for (Edge inEdge : target.incomingEdgesOf(edgeTarget)) {

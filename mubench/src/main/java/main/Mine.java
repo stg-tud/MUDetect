@@ -5,8 +5,8 @@ package main;
 
 import de.tu_darmstadt.stg.mudetect.aug.DataNode;
 import de.tu_darmstadt.stg.mudetect.aug.Node;
-import egroum.AUGBuilder;
-import egroum.AUGConfiguration;
+import de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilder;
+import de.tu_darmstadt.stg.mudetect.src2aug.AUGConfiguration;
 import mining.Anomaly;
 import mining.Configuration;
 import mining.Fragment;

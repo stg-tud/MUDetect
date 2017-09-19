@@ -1,6 +1,6 @@
 package de.tu_darmstadt.stg.mubench;
 
-import egroum.AUGConfiguration;
+import de.tu_darmstadt.stg.mudetect.src2aug.AUGConfiguration;
 
 class DefaultAUGConfiguration extends AUGConfiguration {
     {

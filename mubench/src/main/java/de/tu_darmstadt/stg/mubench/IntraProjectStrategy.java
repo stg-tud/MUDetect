@@ -10,9 +10,7 @@ import de.tu_darmstadt.stg.mudetect.mining.DefaultAUGMiner;
 import de.tu_darmstadt.stg.mudetect.mining.MinPatternActionsModel;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
 import de.tu_darmstadt.stg.mudetect.ranking.*;
-import egroum.AUGBuilder;
-import egroum.EGroumBuilder;
-import egroum.EGroumGraph;
+import de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilder;
 
 import java.io.IOException;
 import java.util.Collection;

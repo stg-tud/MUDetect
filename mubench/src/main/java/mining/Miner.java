@@ -14,7 +14,7 @@ import java.util.Set;
 
 import de.tu_darmstadt.stg.mudetect.aug.*;
 
-import egroum.DenseAUGPredicate;
+import de.tu_darmstadt.stg.mudetect.src2aug.DenseAUGPredicate;
 import mining.Configuration.Level;
 import utils.FileIO;
 

@@ -15,7 +15,7 @@ import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.*;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
-import static egroum.AUGBuilderTestUtils.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUG;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;

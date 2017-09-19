@@ -15,7 +15,7 @@ import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.RECEIVER;
 import static de.tu_darmstadt.stg.mudetect.mining.PatternTestUtils.isPattern;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
-import static egroum.EGroumTestUtils.buildGroumsForClass;
+import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUGsForClass;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
@@ -24,7 +24,7 @@ import static utils.CollectionUtils.first;
 public class DefaultAUGMinerTest {
     @Test
     public void findsPattern() throws Exception {
-        Collection<APIUsageExample> groums = buildGroumsForClass("class A {" +
+        Collection<APIUsageExample> groums = buildAUGsForClass("class A {" +
                 "  void m(C c) { c.foo(); }" +
                 "  void n(C c) { c.foo(); }" +
                 "}");
@@ -38,7 +38,7 @@ public class DefaultAUGMinerTest {
 
     @Test
     public void findsDataNode() throws Exception {
-        Collection<APIUsageExample> groums = buildGroumsForClass("class A {" +
+        Collection<APIUsageExample> groums = buildAUGsForClass("class A {" +
                 "  void m(C c) { c.foo(\"literal\"); }" +
                 "  void n(C c) { c.foo(\"literal\"); }" +
                 "}");
@@ -53,7 +53,7 @@ public class DefaultAUGMinerTest {
 
     @Test
     public void findsDataLiterals() throws Exception {
-        Collection<APIUsageExample> groums = buildGroumsForClass("class A {" +
+        Collection<APIUsageExample> groums = buildAUGsForClass("class A {" +
                 "  void m(C c) { c.foo(\"l1\"); }" +
                 "  void n(C c) { c.foo(\"l2\"); }" +
                 "}");
@@ -66,7 +66,7 @@ public class DefaultAUGMinerTest {
 
     @Test
     public void includesDataTypeInLiterals() throws Exception {
-        Collection<APIUsageExample> groums = buildGroumsForClass("class A {" +
+        Collection<APIUsageExample> groums = buildAUGsForClass("class A {" +
                 "  void m(C c, String s) { c.foo(s); }" +
                 "  void n(C c) { c.foo(\"literal\"); }" +
                 "}");
@@ -79,7 +79,7 @@ public class DefaultAUGMinerTest {
 
     @Test
     public void includesVariableNodeOccurrencesInLiterals() throws Exception {
-        Collection<APIUsageExample> groums = buildGroumsForClass("class A {" +
+        Collection<APIUsageExample> groums = buildAUGsForClass("class A {" +
                 "  void m(C c, String s) { c.foo(s); }" +
                 "  void n(C c, String s) { c.foo(s); }" +
                 "}");

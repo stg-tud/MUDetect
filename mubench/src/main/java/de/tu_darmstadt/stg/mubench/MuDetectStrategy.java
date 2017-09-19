@@ -12,7 +12,7 @@ import de.tu_darmstadt.stg.mudetect.model.Violation;
 import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import de.tu_darmstadt.stg.mustudies.UsageUtils;
 import de.tu_darmstadt.stg.yaml.YamlObject;
-import egroum.AUGBuilder;
+import de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilder;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -38,7 +38,7 @@ abstract class MuDetectStrategy implements DetectionStrategy {
         DetectorOutput.Builder output = createOutput();
 
         long startTime = System.currentTimeMillis();
-        Collection<de.tu_darmstadt.stg.mudetect.aug.APIUsageExample> trainingExamples = loadTrainingExamples(args, output);
+        Collection<APIUsageExample> trainingExamples = loadTrainingExamples(args, output);
         long endTrainingLoadTime = System.currentTimeMillis();
         output.withRunInfo("trainingLoadTime", endTrainingLoadTime - startTime);
         output.withRunInfo("numberOfTrainingExamples", trainingExamples.size());
@@ -65,7 +65,7 @@ abstract class MuDetectStrategy implements DetectionStrategy {
         return output.withFindings(violations, ViolationUtils::toFinding);
     }
 
-    private YamlObject getTypeUsageCounts(Collection<de.tu_darmstadt.stg.mudetect.aug.APIUsageExample> targets) {
+    private YamlObject getTypeUsageCounts(Collection<APIUsageExample> targets) {
         YamlObject object = new YamlObject();
         for (Multiset.Entry<String> entry : UsageUtils.countNumberOfUsagesPerType(targets).entrySet()) {
             object.put(entry.getElement(), entry.getCount());

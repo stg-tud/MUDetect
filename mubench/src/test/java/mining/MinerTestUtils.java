@@ -6,11 +6,11 @@ import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.mining.AUGMiner;
 import de.tu_darmstadt.stg.mudetect.mining.DefaultAUGMiner;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
-import static egroum.EGroumTestUtils.buildGroumsForMethods;
+import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUGsForMethods;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 class MinerTestUtils {
     private static List<APIUsagePattern> mine(Collection<APIUsageExample> examples, Configuration config) {
@@ -35,7 +35,7 @@ class MinerTestUtils {
     }
 
     static List<APIUsagePattern> mineMethodsWithMinSupport2(String... sourceCodes) {
-        return mineWithMinSupport2(buildGroumsForMethods(sourceCodes));
+        return mineWithMinSupport2(buildAUGsForMethods(sourceCodes));
     }
 
     static void print(APIUsagePattern pattern) {

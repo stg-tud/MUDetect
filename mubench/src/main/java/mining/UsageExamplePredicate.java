@@ -1,6 +1,6 @@
 package mining;
 
-import egroum.EGroumGraph;
+import de.tu_darmstadt.stg.mudetect.src2aug.EGroumGraph;
 import org.eclipse.jdt.core.dom.*;
 
 public interface UsageExamplePredicate {
@@ -27,5 +27,10 @@ public interface UsageExamplePredicate {
     boolean matches(String sourceFilePath, CompilationUnit cu);
     boolean matches(MethodDeclaration methodDeclaration);
 
+    /**
+     * This is only here, because we need a check during the src2aug transformation, which uses EGroum as an
+     * intermediate state.
+     */
+    @Deprecated
     boolean matches(EGroumGraph graph);
 }

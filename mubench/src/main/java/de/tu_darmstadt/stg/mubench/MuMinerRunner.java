@@ -3,15 +3,11 @@ package de.tu_darmstadt.stg.mubench;
 import de.tu_darmstadt.stg.mubench.cli.*;
 import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.Location;
-import egroum.AUGBuilder;
-import egroum.AUGConfiguration;
-import egroum.EGroumBuilder;
-import egroum.EGroumGraph;
+import de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilder;
 import mining.*;
 
 import java.io.FileNotFoundException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MuMinerRunner {
     public static void main(String[] args) throws Exception {

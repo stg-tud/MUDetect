@@ -4,9 +4,6 @@ import de.tu_darmstadt.stg.mudetect.aug.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.MethodCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.Node;
 import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
-import egroum.EGroumEdge;
-import egroum.EGroumNode;
-import org.eclipse.jdt.core.dom.ASTNode;
 
 import java.util.Set;
 import java.util.stream.Collectors;

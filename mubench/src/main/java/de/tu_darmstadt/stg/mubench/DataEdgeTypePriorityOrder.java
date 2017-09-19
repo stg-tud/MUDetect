@@ -3,18 +3,14 @@ package de.tu_darmstadt.stg.mubench;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import de.tu_darmstadt.stg.mudetect.aug.Edge;
-import egroum.EGroumDataEdge;
-import egroum.EGroumEdge;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.BiPredicate;
 
-import static egroum.EGroumDataEdge.Type.*;
+import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.*;
+
 
 public class DataEdgeTypePriorityOrder implements BiPredicate<Edge, Edge> {
-    private static final Multimap<EGroumDataEdge.Type, EGroumDataEdge.Type> EDGE_TYPE_RELATION =
+    private static final Multimap<Edge.Type, Edge.Type> EDGE_TYPE_RELATION =
             HashMultimap.create();
 
     static {
@@ -34,11 +30,8 @@ public class DataEdgeTypePriorityOrder implements BiPredicate<Edge, Edge> {
 
     @Override
     public boolean test(Edge edge1, Edge edge2) {
-        if (edge1 instanceof EGroumDataEdge && edge2 instanceof EGroumDataEdge) {
-            EGroumDataEdge.Type edge1Type = ((EGroumDataEdge) edge1).getType();
-            EGroumDataEdge.Type edge2Type = ((EGroumDataEdge) edge2).getType();
-            return EDGE_TYPE_RELATION.containsKey(edge1Type) && EDGE_TYPE_RELATION.containsEntry(edge1Type, edge2Type);
-        }
-        return false;
+        Edge.Type edge1Type = edge1.getType();
+        Edge.Type edge2Type = edge2.getType();
+        return EDGE_TYPE_RELATION.containsKey(edge1Type) && EDGE_TYPE_RELATION.containsEntry(edge1Type, edge2Type);
     }
 }

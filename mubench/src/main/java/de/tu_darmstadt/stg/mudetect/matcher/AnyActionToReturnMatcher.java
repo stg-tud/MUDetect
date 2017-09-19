@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.matcher;
 
+import de.tu_darmstadt.stg.mudetect.aug.ActionNode;
 import de.tu_darmstadt.stg.mudetect.aug.Node;
-import egroum.EGroumActionNode;
 
 /**
  * When a pattern contains a return (action) node, we interpret this to say that the returned value, i.e., the data node
@@ -11,6 +11,6 @@ import egroum.EGroumActionNode;
 public class AnyActionToReturnMatcher implements NodeMatcher {
     @Override
     public boolean test(Node targetNode, Node patternNode) {
-        return targetNode instanceof EGroumActionNode && patternNode.getLabel().equals("return");
+        return targetNode instanceof ActionNode && patternNode.getLabel().equals("return");
     }
 }

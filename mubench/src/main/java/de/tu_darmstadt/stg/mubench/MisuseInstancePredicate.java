@@ -1,6 +1,6 @@
 package de.tu_darmstadt.stg.mubench;
 
-import egroum.EGroumGraph;
+import de.tu_darmstadt.stg.mudetect.src2aug.EGroumGraph;
 import mining.UsageExamplePredicate;
 import utils.JavaASTUtil;
 
