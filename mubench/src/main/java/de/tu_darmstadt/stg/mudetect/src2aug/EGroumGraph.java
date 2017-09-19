@@ -1,8 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.src2aug;
 
 import org.eclipse.jdt.core.dom.*;
-import org.eclipse.jdt.core.dom.InfixExpression.Operator;
-import utils.JavaASTUtil;
+import de.tu_darmstadt.stg.mudetect.utils.JavaASTUtil;
 
 import java.io.File;
 import java.io.Serializable;

@@ -3,7 +3,7 @@ package de.tu_darmstadt.stg.mudetect.model;
 import de.tu_darmstadt.stg.mudetect.aug.*;
 import de.tu_darmstadt.stg.mudetect.aug.Location;
 import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
-import utils.JavaASTUtil;
+import de.tu_darmstadt.stg.mudetect.utils.JavaASTUtil;
 
 import java.util.*;
 

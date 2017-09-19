@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.*;
-import static utils.SetUtils.asSet;
+import static de.tu_darmstadt.stg.mudetect.utils.SetUtils.asSet;
 
 public class MinPatternActionsModelTest {
     @Test

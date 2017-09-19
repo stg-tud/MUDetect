@@ -1,4 +1,4 @@
-package utils;
+package de.tu_darmstadt.stg.mudetect.utils;
 
 /**
  * @author hoan

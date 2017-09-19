@@ -1,4 +1,4 @@
-package utils;
+package de.tu_darmstadt.stg.mudetect.utils;
 
 import java.io.File;
 import java.util.Map;
@@ -15,7 +15,7 @@ import org.eclipse.jdt.core.dom.Name;
 public class TypeResolveVisitor extends ASTVisitor {
 
 	public static void main(String[] args) {
-		File file = new File("src/utils/TypeResolveVisitor.java");
+		File file = new File("src/main/java/de/tu_darmstadt/stg/mudetect/utils/TypeResolveVisitor.java");
 		String name = file.getName();
 		String source = FileIO.readStringFromFile(file.getAbsolutePath());
 		@SuppressWarnings("rawtypes")

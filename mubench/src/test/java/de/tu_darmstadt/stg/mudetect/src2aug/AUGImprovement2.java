@@ -2,8 +2,8 @@ package de.tu_darmstadt.stg.mudetect.src2aug;
 
 import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.dot.DisplayAUGDotExporter;
-import mining.TypeUsageExamplePredicate;
-import mining.UsageExamplePredicate;
+import de.tu_darmstadt.stg.mudetect.mining.TypeUsageExamplePredicate;
+import de.tu_darmstadt.stg.mudetect.mining.UsageExamplePredicate;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.hamcrest.core.Is;
 import org.junit.Ignore;

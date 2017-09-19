@@ -12,7 +12,7 @@ import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static utils.SetUtils.asSet;
+import static de.tu_darmstadt.stg.mudetect.utils.SetUtils.asSet;
 
 public class PatternSameSizeSupportWeightFunctionTest {
     private APIUsagePattern pattern;

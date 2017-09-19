@@ -1,6 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.src2aug;
 
-import mining.UsageExamplePredicate;
+import de.tu_darmstadt.stg.mudetect.mining.UsageExamplePredicate;
 
 public class AUGConfiguration {
     /**

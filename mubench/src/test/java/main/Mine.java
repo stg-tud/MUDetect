@@ -7,11 +7,11 @@ import de.tu_darmstadt.stg.mudetect.aug.DataNode;
 import de.tu_darmstadt.stg.mudetect.aug.Node;
 import de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilder;
 import de.tu_darmstadt.stg.mudetect.src2aug.AUGConfiguration;
-import mining.Anomaly;
-import mining.Configuration;
-import mining.Fragment;
-import mining.Miner;
-import utils.FileIO;
+import de.tu_darmstadt.stg.mudetect.mining.Anomaly;
+import de.tu_darmstadt.stg.mudetect.mining.Configuration;
+import de.tu_darmstadt.stg.mudetect.mining.Fragment;
+import de.tu_darmstadt.stg.mudetect.mining.Miner;
+import de.tu_darmstadt.stg.mudetect.utils.FileIO;
 
 import java.util.ArrayList;
 import java.util.Collections;

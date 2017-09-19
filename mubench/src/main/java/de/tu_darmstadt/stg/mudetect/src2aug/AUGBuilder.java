@@ -2,7 +2,7 @@ package de.tu_darmstadt.stg.mudetect.src2aug;
 
 import de.tu_darmstadt.stg.mudetect.aug.*;
 import org.eclipse.jdt.core.dom.ASTNode;
-import utils.JavaASTUtil;
+import de.tu_darmstadt.stg.mudetect.utils.JavaASTUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;

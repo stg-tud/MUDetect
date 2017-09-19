@@ -8,7 +8,7 @@ import org.junit.Test;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.someOverlap;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static utils.SetUtils.asSet;
+import static de.tu_darmstadt.stg.mudetect.utils.SetUtils.asSet;
 
 public class ProductWeightFunctionTest {
     @Test

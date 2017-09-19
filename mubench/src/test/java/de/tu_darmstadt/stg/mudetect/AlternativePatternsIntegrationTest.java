@@ -19,7 +19,7 @@ import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUG;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static utils.SetUtils.asSet;
+import static de.tu_darmstadt.stg.mudetect.utils.SetUtils.asSet;
 
 public class AlternativePatternsIntegrationTest {
 

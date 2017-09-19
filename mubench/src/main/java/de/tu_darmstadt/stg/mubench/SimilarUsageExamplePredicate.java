@@ -3,7 +3,7 @@ package de.tu_darmstadt.stg.mubench;
 import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.Node;
 import de.tu_darmstadt.stg.mudetect.src2aug.EGroumGraph;
-import mining.TypeUsageExamplePredicate;
+import de.tu_darmstadt.stg.mudetect.mining.TypeUsageExamplePredicate;
 
 import java.util.Collections;
 import java.util.Set;

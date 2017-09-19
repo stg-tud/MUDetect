@@ -22,7 +22,7 @@ import org.eclipse.jdt.core.dom.SuperFieldAccess;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
-import utils.JavaASTUtil;
+import de.tu_darmstadt.stg.mudetect.utils.JavaASTUtil;
 
 public class EGroumBuildingContext {
 	public static HashMap<String, HashMap<String, String>> typeFieldType = new HashMap<>();

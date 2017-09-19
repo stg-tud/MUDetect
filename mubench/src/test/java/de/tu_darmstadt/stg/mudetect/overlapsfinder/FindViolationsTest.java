@@ -1,6 +1,5 @@
 package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
-import de.tu_darmstadt.stg.mudetect.aug.ConditionEdge;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
@@ -18,7 +17,7 @@ import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtil
 import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.findOverlaps;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static utils.CollectionUtils.only;
+import static de.tu_darmstadt.stg.mudetect.utils.CollectionUtils.only;
 
 public class FindViolationsTest {
     @Test

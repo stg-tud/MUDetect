@@ -1,7 +1,7 @@
 /**
  * 
  */
-package mining;
+package de.tu_darmstadt.stg.mudetect.mining;
 
 import java.util.ArrayList;
 import java.util.HashSet;

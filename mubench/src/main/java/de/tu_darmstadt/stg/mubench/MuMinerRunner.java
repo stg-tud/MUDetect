@@ -3,8 +3,10 @@ package de.tu_darmstadt.stg.mubench;
 import de.tu_darmstadt.stg.mubench.cli.*;
 import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.Location;
+import de.tu_darmstadt.stg.mudetect.mining.Anomaly;
+import de.tu_darmstadt.stg.mudetect.mining.Fragment;
+import de.tu_darmstadt.stg.mudetect.mining.Miner;
 import de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilder;
-import mining.*;
 
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -29,7 +31,7 @@ public class MuMinerRunner {
         }
 
         private ArrayList<Anomaly> detectAnomalies(Collection<APIUsageExample> augs) {
-            mining.Miner miner = new mining.Miner("-project-name-", new DefaultMiningConfiguration());
+            Miner miner = new Miner("-project-name-", new DefaultMiningConfiguration());
             miner.mine(new ArrayList<>(augs));
             return miner.anomalies;
         }

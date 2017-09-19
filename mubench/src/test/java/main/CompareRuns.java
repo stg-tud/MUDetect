@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import utils.FileIO;
+import de.tu_darmstadt.stg.mudetect.utils.FileIO;
 
 public class CompareRuns {
 

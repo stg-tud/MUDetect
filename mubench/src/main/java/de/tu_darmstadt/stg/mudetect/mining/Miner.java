@@ -1,4 +1,7 @@
-package mining;
+/**
+ * 
+ */
+package de.tu_darmstadt.stg.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.*;
 import egroum.DenseAUGPredicate;
@@ -15,8 +18,7 @@ import java.util.Set;
 import de.tu_darmstadt.stg.mudetect.aug.*;
 
 import de.tu_darmstadt.stg.mudetect.src2aug.DenseAUGPredicate;
-import mining.Configuration.Level;
-import utils.FileIO;
+import de.tu_darmstadt.stg.mudetect.utils.FileIO;
 
 import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.DEFINITION;
 
@@ -342,9 +344,9 @@ public class Miner {
 			fs.add(f);
 			fragmentsOfGraph.put(g, fs);
 		}
-		if (config.occurenceLevel == Level.CROSS_PROJECT)
+		if (config.occurenceLevel == Configuration.Level.CROSS_PROJECT)
 			return projectNames.size();
-		if (config.occurenceLevel == Level.CROSS_METHOD)
+		if (config.occurenceLevel == Configuration.Level.CROSS_METHOD)
 			return fragmentsOfGraph.size();
 		int freq = 0;
 		for (APIUsageGraph g : fragmentsOfGraph.keySet()) {

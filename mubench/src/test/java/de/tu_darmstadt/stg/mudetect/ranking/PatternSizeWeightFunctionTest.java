@@ -9,7 +9,7 @@ import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.instance;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static utils.SetUtils.asSet;
+import static de.tu_darmstadt.stg.mudetect.utils.SetUtils.asSet;
 
 public class PatternSizeWeightFunctionTest {
 

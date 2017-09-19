@@ -1,4 +1,4 @@
-package mining;
+package de.tu_darmstadt.stg.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.Node;
@@ -12,7 +12,6 @@ import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUGsForClasses;
 import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUGsFromFile;
-import static mining.MinerTestUtils.mineWithMinSupport2;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasSize;
@@ -34,7 +33,7 @@ public class MinerTest {
 	public void mineExceptionNodes() {
 		Collection<APIUsageExample> groums = buildAUGsFromFile("input/Test_try.java");
 		
-		List<APIUsagePattern> patterns = mineWithMinSupport2(groums);
+		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
 		
 		print(patterns.get(0));
 	}
@@ -43,7 +42,7 @@ public class MinerTest {
 	public void mineKeepDataNodes() {
 		Collection<APIUsageExample> groums = buildAUGsFromFile("input/Test_keep_data.java");
 		
-		List<APIUsagePattern> patterns = mineWithMinSupport2(groums);
+		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
 		
 		print(patterns.get(0));
 	}
@@ -52,7 +51,7 @@ public class MinerTest {
 	public void mineSinglePattern() {
 		Collection<APIUsageExample> groums = buildAUGsFromFile("input/Test_mine_single.java");
 		
-		List<APIUsagePattern> patterns = mineWithMinSupport2(groums);
+		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
 		
 		assertThat(patterns.size(), is(1));
 		print(patterns.get(0));
@@ -64,7 +63,7 @@ public class MinerTest {
 				"class C { void m(Object o) { o.hashCode(); } }",
 				"class C { void m(Object o) { o.hashCode(); } }"});
 		
-		List<APIUsagePattern> patterns = mineWithMinSupport2(groums);
+		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
 		
 		assertThat(patterns.size(), is(1));
 		print(patterns.get(0));
@@ -76,7 +75,7 @@ public class MinerTest {
 				"class C { void m(Object o) { if (o != null) { o.hashCode(); } o.equals(this); } }",
 				"class C { void m(Object o) { if (o != null) { o.hashCode(); } o.equals(this); } }"});
 		
-		List<APIUsagePattern> patterns = mineWithMinSupport2(groums);
+		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
 		
 		print(patterns);
 		assertThat(patterns.size(), is(1));
@@ -89,7 +88,7 @@ public class MinerTest {
 				"class C { void m(Object o, Object p) {  o = getObj(); o.hashCode(); o.hashCode();} }",
 				"class C { void m(Object o, Object p) {  o.hashCode();} }"});
 		System.out.println(groums);
-		List<APIUsagePattern> patterns = mineWithMinSupport2(groums);
+		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
 		
 		print(patterns);
 		assertThat(patterns.size(), is(1));
@@ -120,7 +119,7 @@ public class MinerTest {
 		);
 		
 		System.out.println(groums);
-		List<APIUsagePattern> patterns = mineWithMinSupport2(groums);
+		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
 		
 		print(patterns);
 	}
@@ -131,7 +130,7 @@ public class MinerTest {
 		groums.addAll(buildAUGsFromFile("input/Test_alibaba2_new.java"));
 		System.out.println(groums);
 		
-		List<APIUsagePattern> patterns = mineWithMinSupport2(groums);
+		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
 		print(patterns);
 		
 		assertThat(patterns.size(), is(1));
@@ -143,7 +142,7 @@ public class MinerTest {
 		Collection<APIUsageExample> groums = buildAUGsFromFile("input/Test_alibaba2_old.java");
 		groums.addAll(buildAUGsFromFile("input/Test_alibaba2_old.java"));
 		
-		List<APIUsagePattern> patterns = mineWithMinSupport2(groums);
+		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
 		print(patterns);
 		
 		assertThat(patterns.size(), is(2));
@@ -155,7 +154,7 @@ public class MinerTest {
 		Collection<APIUsageExample> groums = buildAUGsFromFile("input/Test_alibaba2_old.java");
 		groums.addAll(buildAUGsFromFile("input/Test_alibaba2_old.java"));
 		
-		List<APIUsagePattern> patterns = mineWithMinSupport2(groums);
+		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
 		print(patterns);
 		
 		assertThat(patterns.size(), is(2));
@@ -200,7 +199,7 @@ public class MinerTest {
 			"  private boolean canRead(ItemId id) { return true; }\n" + 
 			"}";
 		Collection<APIUsageExample> groums = buildAUGsForClasses(new String[]{targetSource, patternSource});
-		List<APIUsagePattern> patterns = mineWithMinSupport2(groums);
+		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
 
 		print(patterns);
 		assertThat(patterns.size(), is(1));
@@ -236,7 +235,7 @@ public class MinerTest {
 			"  }\n" + 
 			"}";
 		Collection<APIUsageExample> groums = buildAUGsForClasses(new String[]{targetSource, patternSource});
-		List<APIUsagePattern> patterns = mineWithMinSupport2(groums);
+		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
 		
 //		assertThat(patterns, hasSize(2));
 		print(patterns);
@@ -248,7 +247,7 @@ public class MinerTest {
 		String firstHasNext = "class C { void m(Collection c) { Iterator i = c.iterator(); if (i.hasNext()) i.next(); } }";
 		String firstIsEmpty = "class C { void n(Collection c) { if (!c.isEmpty()) { Iterator i = c.iterator(); i.next(); } } }";
 		Collection<APIUsageExample> augs = buildAUGsForClasses(new String[]{firstHasNext, firstHasNext, firstIsEmpty, firstIsEmpty});
-		List<APIUsagePattern> patterns = mineWithMinSupport2(augs);
+		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(augs);
 
 		assertThat(patterns, hasSize(2));
 	}
@@ -263,7 +262,7 @@ public class MinerTest {
 						"  sb.append(\"1\");" +
 						"}}";
 		Collection<APIUsageExample> examples = buildAUGsForClasses(new String[]{example, example});
-		List<APIUsagePattern> patterns = mineWithMinSupport2(examples);
+		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(examples);
 
 		assertThat(patterns, hasSize(1));
 		APIUsagePattern pattern = patterns.get(0);

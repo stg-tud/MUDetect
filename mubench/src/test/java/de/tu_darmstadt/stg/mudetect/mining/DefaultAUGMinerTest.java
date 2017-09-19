@@ -5,7 +5,6 @@ import de.tu_darmstadt.stg.mudetect.aug.Node;
 import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.aug.patterns.AggregateDataNode;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
-import mining.Configuration;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -19,7 +18,7 @@ import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUGs
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
-import static utils.CollectionUtils.first;
+import static de.tu_darmstadt.stg.mudetect.utils.CollectionUtils.first;
 
 public class DefaultAUGMinerTest {
     @Test

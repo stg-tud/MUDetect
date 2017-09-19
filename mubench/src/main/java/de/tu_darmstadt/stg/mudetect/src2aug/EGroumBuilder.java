@@ -5,8 +5,8 @@ import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.Type;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.*;
-import utils.FileIO;
-import utils.JavaASTUtil;
+import de.tu_darmstadt.stg.mudetect.utils.FileIO;
+import de.tu_darmstadt.stg.mudetect.utils.JavaASTUtil;
 
 import java.io.File;
 import java.io.IOException;

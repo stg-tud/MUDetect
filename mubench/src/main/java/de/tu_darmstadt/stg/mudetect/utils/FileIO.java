@@ -1,7 +1,7 @@
 /**
  * 
  */
-package utils;
+package de.tu_darmstadt.stg.mudetect.utils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

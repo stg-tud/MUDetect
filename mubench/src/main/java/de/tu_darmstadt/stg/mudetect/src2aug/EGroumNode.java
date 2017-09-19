@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import utils.JavaASTUtil;
+import de.tu_darmstadt.stg.mudetect.utils.JavaASTUtil;
 
 import static de.tu_darmstadt.stg.mudetect.src2aug.EGroumDataEdge.Type.*;
 

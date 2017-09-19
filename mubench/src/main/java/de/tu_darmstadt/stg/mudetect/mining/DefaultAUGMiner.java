@@ -5,8 +5,6 @@ import com.google.common.collect.Multiset;
 import de.tu_darmstadt.stg.mudetect.aug.*;
 import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.aug.patterns.AggregateDataNode;
-import mining.Configuration;
-import mining.Fragment;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -51,18 +49,18 @@ public class DefaultAUGMiner implements AUGMiner {
             if (out != null) {
                 System.setOut(out);
             }
-            mining.Miner miner = new mining.Miner("-subgraph-finder-", config);
+            Miner miner = new Miner("-subgraph-finder-", config);
             return toModel(miner.mine(examples));
         } finally {
             System.setOut(originalOut);
         }
     }
 
-    private Model toModel(Set<mining.Pattern> patterns) {
+    private Model toModel(Set<Pattern> patterns) {
         return () -> patterns.stream().map(DefaultAUGMiner::toAUGPattern).collect(Collectors.toSet());
     }
 
-    private static APIUsagePattern toAUGPattern(mining.Pattern pattern) {
+    private static APIUsagePattern toAUGPattern(Pattern pattern) {
         Set<Location> exampleLocations = new HashSet<>();
         for (Fragment example : pattern.getFragments()) {
             exampleLocations.add(example.getGraph().getLocation());

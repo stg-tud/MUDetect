@@ -16,7 +16,7 @@ import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtil
 import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.findOverlaps;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static utils.CollectionUtils.only;
+import static de.tu_darmstadt.stg.mudetect.utils.CollectionUtils.only;
 
 public class FindInstancesTest {
     @Test

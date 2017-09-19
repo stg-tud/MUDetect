@@ -14,7 +14,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
-import utils.FileIO;
+import de.tu_darmstadt.stg.mudetect.utils.FileIO;
 
 public class TestParser {
 	private static ASTParser parser;

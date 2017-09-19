@@ -1,4 +1,4 @@
-package mining;
+package de.tu_darmstadt.stg.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.Node;
 
