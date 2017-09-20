@@ -14,4 +14,9 @@ abstract class OperatorNode extends BaseNode implements ActionNode {
     public String getLabel() {
         return operator;
     }
+
+    @Override
+    public boolean isCoreAction() {
+        return false;
+    }
 }

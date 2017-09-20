@@ -8,4 +8,9 @@ public class ContinueNode extends BaseNode implements ActionNode {
     public String getLabel() {
         return "<continue>";
     }
+
+    @Override
+    public boolean isCoreAction() {
+        return true;
+    }
 }

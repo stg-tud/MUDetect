@@ -8,4 +8,9 @@ public class BreakNode extends BaseNode implements ActionNode {
     public String getLabel() {
         return "<break>";
     }
+
+    @Override
+    public boolean isCoreAction() {
+        return true;
+    }
 }

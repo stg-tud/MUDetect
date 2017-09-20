@@ -21,4 +21,9 @@ public class CastNode extends BaseNode implements ActionNode {
     public Optional<String> getAPI() {
         return Optional.of(targetType);
     }
+
+    @Override
+    public boolean isCoreAction() {
+        return false;
+    }
 }

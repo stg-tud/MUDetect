@@ -7,6 +7,6 @@ public class ConstructorCallNode extends MethodCallNode {
 
     @Override
     public boolean isCoreAction() {
-        return false;
+        return true;
     }
 }

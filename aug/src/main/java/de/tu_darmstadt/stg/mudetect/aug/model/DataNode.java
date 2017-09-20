@@ -3,11 +3,6 @@ package de.tu_darmstadt.stg.mudetect.aug.model;
 import java.util.Optional;
 
 public interface DataNode extends Node {
-    @Override
-    default boolean isCoreAction() {
-        return false;
-    }
-
     /**
      * @return the data's symbolic name, i.e., variable or field name
      */

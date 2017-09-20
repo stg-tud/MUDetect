@@ -8,4 +8,9 @@ public class ReturnNode extends BaseNode implements ActionNode {
     public String getLabel() {
         return "return";
     }
+
+    @Override
+    public boolean isCoreAction() {
+        return true;
+    }
 }

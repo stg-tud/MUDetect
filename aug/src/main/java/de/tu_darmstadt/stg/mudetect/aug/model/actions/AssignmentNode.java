@@ -8,4 +8,9 @@ public class AssignmentNode extends BaseNode implements ActionNode {
     public String getLabel() {
         return "=";
     }
+
+    @Override
+    public boolean isCoreAction() {
+        return true;
+    }
 }
