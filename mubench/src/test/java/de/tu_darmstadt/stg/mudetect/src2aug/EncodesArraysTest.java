@@ -11,15 +11,22 @@ import static org.junit.Assert.assertThat;
 public class EncodesArraysTest {
     @Test
     public void addsArrayCreation() throws Exception {
-        APIUsageExample aug = AUGBuilderTestUtils.buildAUG("void m() { int[] is = new int[42]; }");
+        APIUsageExample aug = buildAUG("void m() { int[] is = new int[42]; }");
 
         assertThat(aug, hasNode(actionNodeWithLabel("{int}")));
     }
 
     @Test
     public void addsArrayCreationInitializer() throws Exception {
-        APIUsageExample aug = AUGBuilderTestUtils.buildAUG("void m() { int[] is = new int[] { 1, 2 }; }");
+        APIUsageExample aug = buildAUG("void m() { int[] is = new int[] { 1, 2 }; }");
 
         assertThat(aug, hasNode(actionNodeWithLabel("{int}")));
+    }
+
+    @Test
+    public void addsArrayAccess() throws Exception {
+        APIUsageExample aug = buildAUG("int m(int[] is) { return is[0]; }");
+
+        assertThat(aug, hasNode(actionNodeWithLabel("int[].arrayget()")));
     }
 }

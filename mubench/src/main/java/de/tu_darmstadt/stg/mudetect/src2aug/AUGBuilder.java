@@ -137,7 +137,10 @@ public class AUGBuilder {
             }
         } else if (node instanceof EGroumActionNode) {
             String label = node.getLabel();
-            if (label.endsWith("()")) {
+            if (label.endsWith(".arrayget()")) {
+                // TODO split declaring type and signature
+                return new ArrayAccessNode(label);
+            } else if (label.endsWith("()")) {
                 // TODO split declaring type and signature
                 return new MethodCallNode(label);
             } else if (label.endsWith("<init>")) {
