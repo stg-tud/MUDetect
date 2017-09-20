@@ -118,7 +118,8 @@ public class Miner {
 	}
 
 	private void collapseLiterals(APIUsageExample aug) {
-		for (Node node : new HashSet<Node>(aug.vertexSet())) {
+		Set<Node> toRemove = new HashSet<>();
+		for (Node node : aug.vertexSet()) {
 			HashMap<String, ArrayList<Node>> labelLiterals = new HashMap<>();
 			for (Node n : aug.incomingNodesOf(node)) {
 				if (n instanceof LiteralNode) {
@@ -131,9 +132,12 @@ public class Miner {
 				ArrayList<Node> lits = labelLiterals.get(label);
 				if (lits.size() > 0) {
 					for (int i = 1; i < lits.size(); i++)
-						aug.removeVertex(lits.get(i));
+						toRemove.add(lits.get(i));
 				}
 			}
+		}
+		for (Node node : toRemove) {
+			aug.removeVertex(node);
 		}
 	}
 
