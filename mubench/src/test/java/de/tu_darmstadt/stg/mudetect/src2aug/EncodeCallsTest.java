@@ -37,6 +37,14 @@ public class EncodeCallsTest {
     }
 
     @Test
+    public void addsSuperConstructorCall() throws Exception {
+        APIUsageExample aug = buildAUG("C() { super(); }");
+
+        // TODO this label seems unintuitive, should be something like Object.<sinit>()?
+        assertThat(aug, hasNode(actionNodeWithLabel("Object()")));
+    }
+
+    @Test
     public void encodesOnlyDirectReceiverEdges() throws Exception {
         AUGConfiguration conf = new AUGConfiguration();
 		APIUsageExample aug = buildAUG("void m(java.io.File f) {\n" +

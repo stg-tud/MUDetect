@@ -140,6 +140,9 @@ public class AUGBuilder {
             if (label.endsWith(".arrayget()")) {
                 // TODO split declaring type and signature
                 return new ArrayAccessNode(label);
+            } else if (node.astNodeType == ASTNode.SUPER_CONSTRUCTOR_INVOCATION) {
+                // TODO ensure this is only type name
+                return new SuperConstructorCallNode(label);
             } else if (label.endsWith("()")) {
                 // TODO split declaring type and signature
                 return new MethodCallNode(label);
