@@ -1,8 +1,8 @@
 package de.tu_darmstadt.stg.mudetect.aug.model;
 
 public abstract class BaseEdge implements Edge {
-    private final Node source;
-    private final Node target;
+    private Node source;
+    private Node target;
     private final Type type;
     private APIUsageGraph graph;
 
@@ -12,11 +12,21 @@ public abstract class BaseEdge implements Edge {
         this.type = type;
     }
 
+    /**
+     * Try fetching this information from the corresponding graph, because this would allow us to get rid of these
+     * fields and to safely reuse edges between multiple graphs, instead of cloning them.
+     */
+    @Deprecated
     @Override
     public Node getSource() {
         return source;
     }
 
+    /**
+     * Try fetching this information from the corresponding graph, because this would allow us to get rid of these
+     * fields and to safely reuse edges between multiple graphs, instead of cloning them.
+     */
+    @Deprecated
     @Override
     public Node getTarget() {
         return target;
@@ -25,6 +35,23 @@ public abstract class BaseEdge implements Edge {
     @Override
     public Type getType() {
         return type;
+    }
+
+    @Override
+    public Edge clone() {
+        try {
+            return (Edge) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("All edges must be cloneable.", e);
+        }
+    }
+
+    @Override
+    public Edge clone(Node newSourceNode, Node newTargetNode) {
+        BaseEdge clone = (BaseEdge) clone();
+        clone.source = newSourceNode;
+        clone.target = newTargetNode;
+        return clone;
     }
 
     @Override

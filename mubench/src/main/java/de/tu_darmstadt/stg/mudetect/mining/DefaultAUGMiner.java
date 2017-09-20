@@ -73,8 +73,7 @@ public class DefaultAUGMiner implements AUGMiner {
         Map<Node, Node> nodeMap = new HashMap<>();
         for (int i = 0; i < nodes.size(); i++) {
             Node node = nodes.get(i);
-            Node newNode = node;
-
+            Node newNode;
             if (node instanceof DataNode) {
                 Multiset<String> values = HashMultiset.create();
                 for (Fragment fragment : pattern.getFragments()) {
@@ -82,16 +81,23 @@ public class DefaultAUGMiner implements AUGMiner {
                     values.add(eqivalentNode.getValue());
                 }
                 newNode = new AggregateDataNode(((DataNode) node).getType(), values);
+            } else {
+                newNode = node.clone();
             }
+            newNode.setGraph(augPattern);
             nodeMap.put(node, newNode);
             augPattern.addVertex(newNode);
         }
-        for (Node node : f.getNodes()) {
-            APIUsageGraph graph = node.getGraph();
+        APIUsageGraph graph = f.getGraph();
+        for (Node node : nodes) {
             for (Edge e : graph.incomingEdgesOf(node)) {
                 Node source = graph.getEdgeSource(e);
-                if (f.getNodes().contains(source))
-                    augPattern.addEdge(nodeMap.get(source), nodeMap.get(graph.getEdgeTarget(e)), e);
+                if (nodeMap.containsKey(source)) {
+                    Node newSourceNode = nodeMap.get(source);
+                    Node newTargetNode = nodeMap.get(graph.getEdgeTarget(e));
+                    Edge newEdge = e.clone(newSourceNode, newTargetNode);
+                    augPattern.addEdge(newSourceNode, newTargetNode, newEdge);
+                }
             }
         }
 

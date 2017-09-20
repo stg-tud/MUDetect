@@ -36,6 +36,15 @@ public abstract class BaseNode implements Node {
     }
 
     @Override
+    public Node clone() {
+        try {
+            return (Node) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("All nodes must be cloneable", e);
+        }
+    }
+
+    @Override
     public String toString() {
         String type = getClass().getSimpleName();
         if (type.endsWith("Node")) {

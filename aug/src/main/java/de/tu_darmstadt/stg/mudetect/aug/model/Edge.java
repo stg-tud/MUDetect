@@ -1,6 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.aug.model;
 
-public interface Edge {
+public interface Edge extends Cloneable {
     enum Type {
         RECEIVER("recv"),
         PARAMETER("para"),
@@ -42,4 +42,8 @@ public interface Edge {
     default String getLabel() {
         return getType().getLabel();
     }
+
+    Edge clone();
+
+    Edge clone(Node newSourceNode, Node newTargetNode);
 }
