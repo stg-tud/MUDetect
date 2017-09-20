@@ -69,6 +69,7 @@ public class AUGBuilder {
         Map<EGroumNode, Node> nodeMap = new HashMap<>();
         for (EGroumNode node : groum.getNodes()) {
             Node newNode = convert(node);
+            newNode.setGraph(aug);
             nodeMap.put(node, newNode);
             aug.addVertex(newNode);
         }
