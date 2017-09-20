@@ -1,5 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.aug;
 
+import de.tu_darmstadt.stg.mudetect.aug.actions.MethodCallNode;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import java.util.Optional;

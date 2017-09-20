@@ -1,6 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.*;
+import de.tu_darmstadt.stg.mudetect.aug.data.VariableNode;
 import de.tu_darmstadt.stg.mudetect.src2aug.DotGraph;
 
 import java.io.File;

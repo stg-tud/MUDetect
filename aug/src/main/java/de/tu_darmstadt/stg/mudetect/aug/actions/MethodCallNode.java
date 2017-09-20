@@ -1,8 +1,11 @@
-package de.tu_darmstadt.stg.mudetect.aug;
+package de.tu_darmstadt.stg.mudetect.aug.actions;
+
+import de.tu_darmstadt.stg.mudetect.aug.ActionNode;
+import de.tu_darmstadt.stg.mudetect.aug.BaseNode;
 
 import java.util.Optional;
 
-public class MethodCallNode extends InvokationNode implements ActionNode {
+public class MethodCallNode extends BaseNode implements ActionNode {
     private final String methodSignature;
 
     public MethodCallNode(String methodSignature) {

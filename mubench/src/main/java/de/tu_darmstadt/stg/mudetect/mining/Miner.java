@@ -17,6 +17,8 @@ import java.util.Set;
 
 import de.tu_darmstadt.stg.mudetect.aug.*;
 
+import de.tu_darmstadt.stg.mudetect.aug.actions.MethodCallNode;
+import de.tu_darmstadt.stg.mudetect.aug.data.LiteralNode;
 import de.tu_darmstadt.stg.mudetect.src2aug.DenseAUGPredicate;
 import de.tu_darmstadt.stg.mudetect.utils.FileIO;
 

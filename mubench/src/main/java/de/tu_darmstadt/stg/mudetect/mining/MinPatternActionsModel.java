@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.Edge;
-import de.tu_darmstadt.stg.mudetect.aug.MethodCallNode;
+import de.tu_darmstadt.stg.mudetect.aug.actions.MethodCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.Node;
 import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 

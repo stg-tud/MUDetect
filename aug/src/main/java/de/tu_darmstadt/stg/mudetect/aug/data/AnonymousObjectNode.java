@@ -1,9 +1,12 @@
-package de.tu_darmstadt.stg.mudetect.aug;
+package de.tu_darmstadt.stg.mudetect.aug.data;
 
-public class ObjectDataNode extends BaseNode implements DataNode {
+import de.tu_darmstadt.stg.mudetect.aug.BaseNode;
+import de.tu_darmstadt.stg.mudetect.aug.DataNode;
+
+public class AnonymousObjectNode extends BaseNode implements DataNode {
     private final String dataType;
 
-    public ObjectDataNode(String dataType) {
+    public AnonymousObjectNode(String dataType) {
         this.dataType = dataType;
     }
 

@@ -1,9 +1,12 @@
-package de.tu_darmstadt.stg.mudetect.aug;
+package de.tu_darmstadt.stg.mudetect.aug.data;
 
-public class AnonymousClassMethod extends BaseNode implements DataNode {
+import de.tu_darmstadt.stg.mudetect.aug.BaseNode;
+import de.tu_darmstadt.stg.mudetect.aug.DataNode;
+
+public class AnonymousClassMethodNode extends BaseNode implements DataNode {
     private final String methodSignature;
 
-    public AnonymousClassMethod(String methodSignature) {
+    public AnonymousClassMethodNode(String methodSignature) {
         this.methodSignature = methodSignature;
     }
 

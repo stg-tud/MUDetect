@@ -1,6 +1,8 @@
 package de.tu_darmstadt.stg.mudetect.src2aug;
 
 import de.tu_darmstadt.stg.mudetect.aug.*;
+import de.tu_darmstadt.stg.mudetect.aug.actions.*;
+import de.tu_darmstadt.stg.mudetect.aug.data.*;
 import org.eclipse.jdt.core.dom.ASTNode;
 import de.tu_darmstadt.stg.mudetect.utils.JavaASTUtil;
 
@@ -99,7 +101,7 @@ public class AUGBuilder {
                         case "syn":
                             return new BaseControlFlowEdge(source, target, SYNCHRONIZE);
                         default:
-                            if (source instanceof ExceptionDataNode) {
+                            if (source instanceof ExceptionNode) {
                                 return new BaseControlFlowEdge(source, target, EXCEPTION_HANDLING);
                             }
                             throw new IllegalArgumentException("unsupported type of condition edge: " + label);
@@ -118,16 +120,16 @@ public class AUGBuilder {
     private static Node convert(EGroumNode node) {
         if (node instanceof EGroumDataNode) {
             if (((EGroumDataNode) node).isException()) {
-                return new ExceptionDataNode(node.getDataType(), node.getDataName());
+                return new ExceptionNode(node.getDataType(), node.getDataName());
             } else if (node.astNodeType == ASTNode.SIMPLE_NAME) {
                 return new VariableNode(node.getDataType(), node.getDataName());
             } else if (LITERAL_AST_NODE_TYPES.contains(node.astNodeType)) {
                 return new LiteralNode(node.getDataType(), node.getDataName());
             } else if (node.getLabel().endsWith("()")) {
                 // encoding of the methods of anonymous class instances
-                return new AnonymousClassMethod(node.getLabel());
+                return new AnonymousClassMethodNode(node.getLabel());
             } else {
-                return new ObjectDataNode(node.getDataType());
+                return new AnonymousObjectNode(node.getDataType());
             }
         } else if (node instanceof EGroumActionNode) {
             String label = node.getLabel();

@@ -2,6 +2,10 @@ package de.tu_darmstadt.stg.mudetect.model;
 
 import de.tu_darmstadt.stg.mudetect.aug.*;
 import de.tu_darmstadt.stg.mudetect.aug.Location;
+import de.tu_darmstadt.stg.mudetect.aug.actions.InfixOperatorNode;
+import de.tu_darmstadt.stg.mudetect.aug.actions.MethodCallNode;
+import de.tu_darmstadt.stg.mudetect.aug.actions.ReturnNode;
+import de.tu_darmstadt.stg.mudetect.aug.data.VariableNode;
 import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.utils.JavaASTUtil;
 

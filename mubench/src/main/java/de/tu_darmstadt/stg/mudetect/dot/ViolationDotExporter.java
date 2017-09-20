@@ -4,7 +4,7 @@ import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.Node;
 import de.tu_darmstadt.stg.mudetect.aug.dot.AUGDotExporter;
-import de.tu_darmstadt.stg.mudetect.aug.dot.AUGNodeNameProvider;
+import de.tu_darmstadt.stg.mudetect.aug.dot.AUGNodeLabelProvider;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 
@@ -36,7 +36,7 @@ public class ViolationDotExporter {
 
     private String toTargetDotGraph(Overlap instance, APIUsageExample target, Map<String, String> graphAttributes) {
         return new AUGDotExporter(
-                new AUGNodeNameProvider(),
+                new AUGNodeLabelProvider(),
                 new OverlapNodeAttributeProvider(instance, "gray"),
                 new OverlapEdgeAttributeProvider(instance, "gray"))
                 .toDotGraph(target, graphAttributes);

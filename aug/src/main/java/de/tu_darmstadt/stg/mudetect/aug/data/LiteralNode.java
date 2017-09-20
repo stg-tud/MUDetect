@@ -1,22 +1,25 @@
-package de.tu_darmstadt.stg.mudetect.aug;
+package de.tu_darmstadt.stg.mudetect.aug.data;
 
-public class VariableNode extends BaseNode implements DataNode {
+import de.tu_darmstadt.stg.mudetect.aug.BaseNode;
+import de.tu_darmstadt.stg.mudetect.aug.DataNode;
+
+public class LiteralNode extends BaseNode implements DataNode {
     private final String dataType;
     private final String dataName;
 
-    public VariableNode(String dataType, String dataName) {
+    public LiteralNode(String dataType, String dataName) {
         this.dataType = dataType;
         this.dataName = dataName;
     }
 
     @Override
     public String getName() {
-        return dataName;
+        return null;
     }
 
     @Override
     public String getValue() {
-        return null;
+        return dataName;
     }
 
     @Override

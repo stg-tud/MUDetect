@@ -9,7 +9,9 @@ public interface Node {
 
     APIUsageGraph getGraph();
 
-    boolean isCoreAction();
+    default boolean isCoreAction() {
+        return false;
+    }
 
     String getLabel();
 

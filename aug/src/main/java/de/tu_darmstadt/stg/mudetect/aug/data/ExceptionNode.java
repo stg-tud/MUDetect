@@ -1,10 +1,13 @@
-package de.tu_darmstadt.stg.mudetect.aug;
+package de.tu_darmstadt.stg.mudetect.aug.data;
 
-public class ExceptionDataNode extends BaseNode implements DataNode {
+import de.tu_darmstadt.stg.mudetect.aug.BaseNode;
+import de.tu_darmstadt.stg.mudetect.aug.DataNode;
+
+public class ExceptionNode extends BaseNode implements DataNode {
     private final String dataType;
     private final String dataName;
 
-    public ExceptionDataNode(String dataType, String dataName) {
+    public ExceptionNode(String dataType, String dataName) {
         this.dataType = dataType;
         this.dataName = dataName;
     }

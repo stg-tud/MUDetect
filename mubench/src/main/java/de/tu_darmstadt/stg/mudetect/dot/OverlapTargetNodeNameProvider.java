@@ -1,12 +1,12 @@
 package de.tu_darmstadt.stg.mudetect.dot;
 
 import de.tu_darmstadt.stg.mudetect.aug.Node;
-import de.tu_darmstadt.stg.mudetect.aug.dot.AUGNodeNameProvider;
+import de.tu_darmstadt.stg.mudetect.aug.dot.AUGNodeLabelProvider;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import org.jgrapht.ext.VertexNameProvider;
 
 class OverlapTargetNodeNameProvider implements VertexNameProvider<Node> {
-    private static final AUGNodeNameProvider TARGET_AUG_NODE_NAME_PROVIDER = new AUGNodeNameProvider();
+    private static final AUGNodeLabelProvider TARGET_AUG_NODE_NAME_PROVIDER = new AUGNodeLabelProvider();
 
     private final Overlap overlap;
 
