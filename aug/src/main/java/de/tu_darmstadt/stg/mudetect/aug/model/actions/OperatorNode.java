@@ -6,7 +6,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.BaseNode;
 abstract class OperatorNode extends BaseNode implements ActionNode {
     private final String operator;
 
-    public OperatorNode(String operator) {
+    OperatorNode(String operator) {
         this.operator = operator;
     }
 

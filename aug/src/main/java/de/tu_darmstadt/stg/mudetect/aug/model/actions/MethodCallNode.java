@@ -12,6 +12,10 @@ public class MethodCallNode extends BaseNode implements ActionNode {
         this.declaringTypeAndMethodSignature = declaringTypeAndMethodSignature;
     }
 
+    public MethodCallNode(String declaringTypeName, String methodSignature) {
+        this(declaringTypeName + "." + methodSignature);
+    }
+
     @Override
     public boolean isCoreAction() {
         return !getMethodSignature().startsWith("get");

@@ -165,6 +165,8 @@ public class AUGBuilder {
                 return new AssignmentNode();
             } else if (label.equals("<nullcheck>")) {
                 return new NullCheckNode();
+            } else if (label.endsWith("<instanceof>")) {
+                return new TypeCheckNode(label.split("\\.")[0]);
             } else if (label.equals("break")) {
                 return new BreakNode();
             } else if (label.equals("continue")) {
