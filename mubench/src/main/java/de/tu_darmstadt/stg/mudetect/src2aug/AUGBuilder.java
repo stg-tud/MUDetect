@@ -142,6 +142,9 @@ public class AUGBuilder {
             if (label.endsWith(".arrayget()")) {
                 // TODO split declaring type and signature
                 return new ArrayAccessNode(label, node.getSourceLineNumber().orElse(-1));
+            } else if (label.endsWith(".arrayset()")) {
+                // TODO split declaring type and signature
+                return new ArrayAssignmentNode(label, node.getSourceLineNumber().orElse(-1));
             } else if (node.astNodeType == ASTNode.SUPER_CONSTRUCTOR_INVOCATION) {
                 // TODO ensure this is only type name
                 return new SuperConstructorCallNode(label, node.getSourceLineNumber().orElse(-1));

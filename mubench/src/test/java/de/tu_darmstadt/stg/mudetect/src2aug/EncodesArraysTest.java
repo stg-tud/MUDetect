@@ -29,4 +29,11 @@ public class EncodesArraysTest {
 
         assertThat(aug, hasNode(actionNodeWithLabel("int[].arrayget()")));
     }
+
+    @Test
+    public void addsArrayAssignment() throws Exception {
+        APIUsageExample aug = buildAUG("void m(int[] is, int i) { is[0] = i; }");
+
+        assertThat(aug, hasNode(actionNodeWithLabel("int[].arrayset()")));
+    }
 }
