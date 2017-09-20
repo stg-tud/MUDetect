@@ -139,48 +139,48 @@ public class AUGBuilder {
             String label = node.getLabel();
             if (label.endsWith(".arrayget()")) {
                 // TODO split declaring type and signature
-                return new ArrayAccessNode(label);
+                return new ArrayAccessNode(label, node.getSourceLineNumber().orElse(-1));
             } else if (node.astNodeType == ASTNode.SUPER_CONSTRUCTOR_INVOCATION) {
                 // TODO ensure this is only type name
-                return new SuperConstructorCallNode(label);
+                return new SuperConstructorCallNode(label, node.getSourceLineNumber().orElse(-1));
             } else if (node.astNodeType == ASTNode.SUPER_METHOD_INVOCATION) {
                 // TODO split declaring type and signature
-                return new SuperMethodCallNode(label);
+                return new SuperMethodCallNode(label, node.getSourceLineNumber().orElse(-1));
             } else if (label.endsWith("()")) {
                 // TODO split declaring type and signature
-                return new MethodCallNode(label);
+                return new MethodCallNode(label, node.getSourceLineNumber().orElse(-1));
             } else if (label.endsWith("<init>")) {
                 // TODO split declaring type and signature
-                return new ConstructorCallNode(label);
+                return new ConstructorCallNode(label, node.getSourceLineNumber().orElse(-1));
             } else if (label.startsWith("{") && label.endsWith("}")) {
-                return new ArrayCreationNode(label.substring(1, label.length() - 1));
+                return new ArrayCreationNode(label.substring(1, label.length() - 1), node.getSourceLineNumber().orElse(-1));
             } else if (label.endsWith("<cast>")) {
-                return new CastNode(label.split("\\.")[0]);
+                return new CastNode(label.split("\\.")[0], node.getSourceLineNumber().orElse(-1));
             } else if (JavaASTUtil.infixExpressionLables.containsValue(label)) {
                 // TODO capture non-generalized operator
-                return new InfixOperatorNode(label);
+                return new InfixOperatorNode(label, node.getSourceLineNumber().orElse(-1));
             } else if (ASSIGNMENT_OPERATORS.contains(label)) {
                 // this happens because we transform operators such as += and -= into and = and the respective
                 // operation, but to not apply the operator abstraction afterwards, i.e., this is actually a bug
                 // in the transformation.
                 // TODO ensure consistent handling of operators
-                return new InfixOperatorNode(label);
+                return new InfixOperatorNode(label, node.getSourceLineNumber().orElse(-1));
             } else if (UNARY_OPERATORS.contains(label)) {
-                return new UnaryOperatorNode(label);
+                return new UnaryOperatorNode(label, node.getSourceLineNumber().orElse(-1));
             } else if (label.equals("=")) {
-                return new AssignmentNode();
+                return new AssignmentNode(node.getSourceLineNumber().orElse(-1));
             } else if (label.equals("<nullcheck>")) {
-                return new NullCheckNode();
+                return new NullCheckNode(node.getSourceLineNumber().orElse(-1));
             } else if (label.endsWith("<instanceof>")) {
-                return new TypeCheckNode(label.split("\\.")[0]);
+                return new TypeCheckNode(label.split("\\.")[0], node.getSourceLineNumber().orElse(-1));
             } else if (label.equals("break")) {
-                return new BreakNode();
+                return new BreakNode(node.getSourceLineNumber().orElse(-1));
             } else if (label.equals("continue")) {
-                return new ContinueNode();
+                return new ContinueNode(node.getSourceLineNumber().orElse(-1));
             } else if (label.equals("return")) {
-                return new ReturnNode();
+                return new ReturnNode(node.getSourceLineNumber().orElse(-1));
             } else if (label.equals("throw")) {
-                return new ThrowNode();
+                return new ThrowNode(node.getSourceLineNumber().orElse(-1));
             }
         }
         throw new IllegalArgumentException("unsupported node: " + node);

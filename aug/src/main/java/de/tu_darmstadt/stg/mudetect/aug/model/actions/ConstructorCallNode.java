@@ -5,6 +5,10 @@ public class ConstructorCallNode extends MethodCallNode {
         super(methodSignature);
     }
 
+    public ConstructorCallNode(String methodSignature, int sourceLineNumber) {
+        super(methodSignature, sourceLineNumber);
+    }
+
     @Override
     public boolean isCoreAction() {
         return true;

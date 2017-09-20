@@ -5,6 +5,10 @@ public class ArrayCreationNode extends ConstructorCallNode {
         super("{" + baseType + "}");
     }
 
+    public ArrayCreationNode(String baseType, int sourceLineNumber) {
+        super("{" + baseType + "}", sourceLineNumber);
+    }
+
     @Override
     public boolean isCoreAction() {
         return false;

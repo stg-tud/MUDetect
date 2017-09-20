@@ -14,8 +14,6 @@ public class APIUsageExample extends APIUsageGraph {
     }
 
     public Optional<Integer> getSourceLineNumber(Node node) {
-        return node instanceof NodeWithLocation
-                ? Optional.of(((NodeWithLocation) node).getSourceLineNumber())
-                : Optional.empty();
+        return node instanceof BaseNode ? ((BaseNode) node).getSourceLineNumber() : Optional.empty();
     }
 }

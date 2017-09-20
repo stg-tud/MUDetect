@@ -5,6 +5,10 @@ public class TypeCheckNode extends MethodCallNode {
         super(targetTypeName, "<instanceof>");
     }
 
+    public TypeCheckNode(String targetTypeName, int sourceLineNumber) {
+        super(targetTypeName, "<instanceof>", sourceLineNumber);
+    }
+
     @Override
     public boolean isCoreAction() {
         return false;

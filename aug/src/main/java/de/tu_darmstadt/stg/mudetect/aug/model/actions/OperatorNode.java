@@ -10,6 +10,11 @@ abstract class OperatorNode extends BaseNode implements ActionNode {
         this.operator = operator;
     }
 
+    OperatorNode(String operator, int sourceLineNumber) {
+        super(sourceLineNumber);
+        this.operator = operator;
+    }
+
     @Override
     public String getLabel() {
         return operator;

@@ -1,6 +1,8 @@
 package de.tu_darmstadt.stg.mudetect.aug.model;
 
-public abstract class BaseNode implements Node, NodeWithLocation {
+import java.util.Optional;
+
+public abstract class BaseNode implements Node {
     private static int nextNodeId = 0;
 
     private final int id;
@@ -29,9 +31,8 @@ public abstract class BaseNode implements Node, NodeWithLocation {
         return aug;
     }
 
-    @Override
-    public int getSourceLineNumber() {
-        return sourceLineNumber;
+    protected Optional<Integer> getSourceLineNumber() {
+        return sourceLineNumber > -1 ? Optional.of(sourceLineNumber) : Optional.empty();
     }
 
     @Override

@@ -5,6 +5,10 @@ public class NullCheckNode extends InfixOperatorNode {
         super("<nullcheck>");
     }
 
+    public NullCheckNode(int sourceLineNumber) {
+        super("<nullcheck>", sourceLineNumber);
+    }
+
     @Override
     public boolean isCoreAction() {
         return false;
