@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>aug</artifactId>
-    <name>API-Usage Graph</name>
+    <name>API-Usage Graphs</name>
 
     <dependencies>
         <!-- ### JGraphT ################################################## -->
