@@ -5,7 +5,11 @@ import de.tu_darmstadt.stg.mudetect.aug.Location;
 import de.tu_darmstadt.stg.mudetect.aug.actions.InfixOperatorNode;
 import de.tu_darmstadt.stg.mudetect.aug.actions.MethodCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.actions.ReturnNode;
+import de.tu_darmstadt.stg.mudetect.aug.controlflow.ConditionEdge;
+import de.tu_darmstadt.stg.mudetect.aug.controlflow.RepetitionEdge;
+import de.tu_darmstadt.stg.mudetect.aug.controlflow.SelectionEdge;
 import de.tu_darmstadt.stg.mudetect.aug.data.VariableNode;
+import de.tu_darmstadt.stg.mudetect.aug.dataflow.BaseDataFlowEdge;
 import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.utils.JavaASTUtil;
 
@@ -144,7 +148,14 @@ public class TestAUGBuilder {
     }
 
     public TestAUGBuilder withCondEdge(String sourceId, ConditionEdge.ConditionType kind, String targetId) {
-        edges.add(new ConditionEdge(getNode(sourceId), getNode(targetId), kind));
+        switch(kind) {
+            case SELECTION:
+                edges.add(new SelectionEdge(getNode(sourceId), getNode(targetId)));
+                break;
+            case REPETITION:
+                edges.add(new RepetitionEdge(getNode(sourceId), getNode(targetId)));
+                break;
+        }
         return this;
     }
 

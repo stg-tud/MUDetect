@@ -1,12 +1,12 @@
 package de.tu_darmstadt.stg.mudetect.aug;
 
-public class BaseEdge implements Edge {
+public abstract class BaseEdge implements Edge {
     private final Node source;
     private final Node target;
     private final Type type;
     private APIUsageGraph graph;
 
-    BaseEdge(Node source, Node target, Type type) {
+    protected BaseEdge(Node source, Node target, Type type) {
         this.source = source;
         this.target = target;
         this.type = type;

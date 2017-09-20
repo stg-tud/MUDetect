@@ -29,6 +29,10 @@ public interface Edge {
 
     Node getTarget();
 
+    /**
+     * Use the edge's class type instead.
+     */
+    @Deprecated
     Type getType();
 
     default boolean isDirect() {

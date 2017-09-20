@@ -1,8 +1,12 @@
-package de.tu_darmstadt.stg.mudetect.aug;
+package de.tu_darmstadt.stg.mudetect.aug.controlflow;
+
+import de.tu_darmstadt.stg.mudetect.aug.BaseEdge;
+import de.tu_darmstadt.stg.mudetect.aug.ControlFlowEdge;
+import de.tu_darmstadt.stg.mudetect.aug.Node;
 
 import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.CONDITION;
 
-public class ConditionEdge extends BaseEdge implements ControlFlowEdge {
+public abstract class ConditionEdge extends BaseEdge implements ControlFlowEdge {
     private final ConditionType conditionType;
 
     public enum ConditionType {
@@ -19,11 +23,15 @@ public class ConditionEdge extends BaseEdge implements ControlFlowEdge {
         }
     }
 
-    public ConditionEdge(Node source, Node target, ConditionType conditionType) {
+    protected ConditionEdge(Node source, Node target, ConditionType conditionType) {
         super(source, target, CONDITION);
         this.conditionType = conditionType;
     }
 
+    /**
+     * Use the edge's class type instead.
+     */
+    @Deprecated
     public ConditionType getConditionType() {
         return conditionType;
     }

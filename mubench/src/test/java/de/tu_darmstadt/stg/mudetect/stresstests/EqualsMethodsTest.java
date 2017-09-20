@@ -7,7 +7,7 @@ import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.aug.ConditionEdge.ConditionType.SELECTION;
+import static de.tu_darmstadt.stg.mudetect.aug.controlflow.ConditionEdge.ConditionType.SELECTION;
 import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.DEFINITION;
 import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;

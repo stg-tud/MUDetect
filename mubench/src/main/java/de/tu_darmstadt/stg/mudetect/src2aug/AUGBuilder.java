@@ -1,16 +1,19 @@
 package de.tu_darmstadt.stg.mudetect.src2aug;
 
-import de.tu_darmstadt.stg.mudetect.aug.*;
+import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.Location;
+import de.tu_darmstadt.stg.mudetect.aug.Node;
 import de.tu_darmstadt.stg.mudetect.aug.actions.*;
+import de.tu_darmstadt.stg.mudetect.aug.controlflow.*;
 import de.tu_darmstadt.stg.mudetect.aug.data.*;
-import org.eclipse.jdt.core.dom.ASTNode;
+import de.tu_darmstadt.stg.mudetect.aug.dataflow.*;
 import de.tu_darmstadt.stg.mudetect.utils.JavaASTUtil;
+import org.eclipse.jdt.core.dom.ASTNode;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static de.tu_darmstadt.stg.mudetect.aug.ConditionEdge.ConditionType.REPETITION;
-import static de.tu_darmstadt.stg.mudetect.aug.ConditionEdge.ConditionType.SELECTION;
 import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.*;
 
 public class AUGBuilder {
@@ -82,36 +85,36 @@ public class AUGBuilder {
         if (edge instanceof EGroumDataEdge) {
             switch (((EGroumDataEdge) edge).getType()) {
                 case RECEIVER:
-                    return new BaseDataFlowEdge(source, target, RECEIVER);
+                    return new ReceiverEdge(source, target);
                 case PARAMETER:
-                    return new BaseDataFlowEdge(source, target, PARAMETER);
+                    return new ParameterEdge(source, target);
                 case ORDER:
-                    return new BaseDataFlowEdge(source, target, ORDER);
+                    return new OrderEdge(source, target);
                 case DEFINITION:
-                    return new BaseDataFlowEdge(source, target, DEFINITION);
+                    return new DefinitionEdge(source, target);
                 case QUALIFIER:
-                    return new BaseDataFlowEdge(source, target, QUALIFIER);
+                    return new QualifierEdge(source, target);
                 case CONDITION:
                     String label = edge.getLabel();
                     switch (label) {
                         case "sel":
-                            return new ConditionEdge(source, target, SELECTION);
+                            return new SelectionEdge(source, target);
                         case "rep":
-                            return new ConditionEdge(source, target, REPETITION);
+                            return new RepetitionEdge(source, target);
                         case "syn":
-                            return new BaseControlFlowEdge(source, target, SYNCHRONIZE);
+                            return new SynchronizationEdge(source, target);
                         default:
                             if (source instanceof ExceptionNode) {
-                                return new BaseControlFlowEdge(source, target, EXCEPTION_HANDLING);
+                                return new ExceptionHandlingEdge(source, target);
                             }
                             throw new IllegalArgumentException("unsupported type of condition edge: " + label);
                     }
                 case THROW:
-                    return new BaseControlFlowEdge(source, target, THROW);
+                    return new ThrowEdge(source, target);
                 case FINALLY:
-                    return new BaseControlFlowEdge(source, target, FINALLY);
+                    return new FinallyEdge(source, target);
                 case CONTAINS:
-                    return new BaseControlFlowEdge(source, target, CONTAINS);
+                    return new ContainsEdge(source, target);
             }
         }
         throw new IllegalArgumentException("unsupported edge type: " + edge.getLabel());

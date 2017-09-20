@@ -6,8 +6,8 @@ import java.util.function.Function;
 
 import de.tu_darmstadt.stg.mudetect.aug.Node;
 
-import static de.tu_darmstadt.stg.mudetect.aug.ConditionEdge.ConditionType.REPETITION;
-import static de.tu_darmstadt.stg.mudetect.aug.ConditionEdge.ConditionType.SELECTION;
+import static de.tu_darmstadt.stg.mudetect.aug.controlflow.ConditionEdge.ConditionType.REPETITION;
+import static de.tu_darmstadt.stg.mudetect.aug.controlflow.ConditionEdge.ConditionType.SELECTION;
 import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.*;
 
 public class ExasFeature {

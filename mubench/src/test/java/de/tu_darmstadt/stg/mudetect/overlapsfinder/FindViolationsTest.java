@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.aug.ConditionEdge.ConditionType.SELECTION;
+import static de.tu_darmstadt.stg.mudetect.aug.controlflow.ConditionEdge.ConditionType.SELECTION;
 import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.CONDITION;
 import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.ORDER;
 import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
