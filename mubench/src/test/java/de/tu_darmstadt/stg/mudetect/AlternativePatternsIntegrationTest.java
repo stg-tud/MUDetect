@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
-import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.matcher.SubtypeDataNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.*;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.*;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUG;
 import static org.hamcrest.Matchers.empty;

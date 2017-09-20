@@ -1,14 +1,14 @@
 package de.tu_darmstadt.stg.mudetect.matcher;
 
-import de.tu_darmstadt.stg.mudetect.aug.DataNode;
-import de.tu_darmstadt.stg.mudetect.aug.Edge;
-import de.tu_darmstadt.stg.mudetect.aug.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.DataNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import de.tu_darmstadt.stg.mudetect.utils.JavaASTUtil;
 
 import java.util.Optional;
 
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
 import static org.eclipse.jdt.core.dom.InfixExpression.Operator.EQUALS;
 import static org.eclipse.jdt.core.dom.InfixExpression.Operator.NOT_EQUALS;
 

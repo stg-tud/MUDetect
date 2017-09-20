@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.dot;
 
-import de.tu_darmstadt.stg.mudetect.aug.Edge;
-import de.tu_darmstadt.stg.mudetect.aug.dot.AUGEdgeAttributeProvider;
+import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGEdgeAttributeProvider;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 
 import java.util.Map;

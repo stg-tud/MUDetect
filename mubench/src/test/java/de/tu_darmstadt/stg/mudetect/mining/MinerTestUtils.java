@@ -1,11 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
-import de.tu_darmstadt.stg.mudetect.aug.dot.DisplayAUGDotExporter;
-import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
-import de.tu_darmstadt.stg.mudetect.mining.AUGMiner;
-import de.tu_darmstadt.stg.mudetect.mining.Configuration;
-import de.tu_darmstadt.stg.mudetect.mining.DefaultAUGMiner;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 
 import java.util.*;
 

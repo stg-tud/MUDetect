@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
-import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.model.*;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
 

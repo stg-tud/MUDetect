@@ -1,13 +1,13 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
-import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
 
 import java.util.Set;
 
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.SYNCHRONIZE;
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.THROW;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.SYNCHRONIZE;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.THROW;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;

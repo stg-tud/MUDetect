@@ -1,6 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.matcher;
 
-import de.tu_darmstadt.stg.mudetect.aug.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 
 import java.util.Optional;
 import java.util.function.Function;

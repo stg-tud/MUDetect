@@ -1,8 +1,8 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageGraph;
-import de.tu_darmstadt.stg.mudetect.aug.Edge;
-import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
+import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 
 import java.util.HashSet;

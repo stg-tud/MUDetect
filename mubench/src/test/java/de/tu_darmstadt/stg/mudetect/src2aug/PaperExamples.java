@@ -1,8 +1,8 @@
 package de.tu_darmstadt.stg.mudetect.src2aug;
 
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
-import de.tu_darmstadt.stg.mudetect.aug.Node;
-import de.tu_darmstadt.stg.mudetect.aug.dot.DisplayAUGDotExporter;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.dot.DisplayAUGDotExporter;
 import org.junit.Test;
 
 import java.io.File;

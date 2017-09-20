@@ -3,8 +3,8 @@
  */
 package main;
 
-import de.tu_darmstadt.stg.mudetect.aug.DataNode;
-import de.tu_darmstadt.stg.mudetect.aug.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.DataNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilder;
 import de.tu_darmstadt.stg.mudetect.src2aug.AUGConfiguration;
 import de.tu_darmstadt.stg.mudetect.mining.Anomaly;

@@ -5,7 +5,7 @@ import de.tu_darmstadt.stg.mubench.cli.DetectionStrategy;
 import de.tu_darmstadt.stg.mubench.cli.DetectorArgs;
 import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
 import de.tu_darmstadt.stg.mudetect.MuDetect;
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.mining.AUGMiner;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
@@ -23,7 +23,7 @@ import static de.tu_darmstadt.stg.mudetect.AlternativeViolationPredicate.firstAl
 
 abstract class MuDetectStrategy implements DetectionStrategy {
 
-    abstract Collection<de.tu_darmstadt.stg.mudetect.aug.APIUsageExample> loadTrainingExamples(DetectorArgs args, DetectorOutput.Builder output) throws IOException;
+    abstract Collection<APIUsageExample> loadTrainingExamples(DetectorArgs args, DetectorOutput.Builder output) throws IOException;
 
     abstract AUGMiner createMiner();
 

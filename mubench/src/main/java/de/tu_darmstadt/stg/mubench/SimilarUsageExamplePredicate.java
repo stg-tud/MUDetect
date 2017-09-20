@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mubench;
 
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
-import de.tu_darmstadt.stg.mudetect.aug.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.src2aug.EGroumGraph;
 import de.tu_darmstadt.stg.mudetect.mining.TypeUsageExamplePredicate;
 

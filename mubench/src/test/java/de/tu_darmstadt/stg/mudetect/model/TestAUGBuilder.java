@@ -1,16 +1,16 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
-import de.tu_darmstadt.stg.mudetect.aug.*;
-import de.tu_darmstadt.stg.mudetect.aug.Location;
-import de.tu_darmstadt.stg.mudetect.aug.actions.InfixOperatorNode;
-import de.tu_darmstadt.stg.mudetect.aug.actions.MethodCallNode;
-import de.tu_darmstadt.stg.mudetect.aug.actions.ReturnNode;
-import de.tu_darmstadt.stg.mudetect.aug.controlflow.ConditionEdge;
-import de.tu_darmstadt.stg.mudetect.aug.controlflow.RepetitionEdge;
-import de.tu_darmstadt.stg.mudetect.aug.controlflow.SelectionEdge;
-import de.tu_darmstadt.stg.mudetect.aug.data.VariableNode;
-import de.tu_darmstadt.stg.mudetect.aug.dataflow.BaseDataFlowEdge;
-import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.model.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.Location;
+import de.tu_darmstadt.stg.mudetect.aug.model.actions.InfixOperatorNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.actions.ReturnNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.RepetitionEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.SelectionEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.data.VariableNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.BaseDataFlowEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.utils.JavaASTUtil;
 
 import java.util.*;

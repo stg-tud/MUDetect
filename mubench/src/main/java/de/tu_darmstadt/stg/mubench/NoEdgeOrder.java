@@ -1,6 +1,6 @@
 package de.tu_darmstadt.stg.mubench;
 
-import de.tu_darmstadt.stg.mudetect.aug.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 
 import java.util.function.BiPredicate;
 

@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.ranking;
 
-import de.tu_darmstadt.stg.mudetect.aug.actions.MethodCallNode;
-import de.tu_darmstadt.stg.mudetect.aug.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 
 public class CallNodeDoubleWeightFunction implements NodeWeightFunction {
     @Override

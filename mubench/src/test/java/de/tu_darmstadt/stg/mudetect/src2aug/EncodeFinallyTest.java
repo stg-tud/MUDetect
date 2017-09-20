@@ -1,9 +1,9 @@
 package de.tu_darmstadt.stg.mudetect.src2aug;
 
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.FINALLY;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.FINALLY;
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.actionNodeWithLabel;
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.hasEdge;
 import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUG;

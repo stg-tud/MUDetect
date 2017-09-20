@@ -1,14 +1,14 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
-import de.tu_darmstadt.stg.mudetect.aug.*;
-import de.tu_darmstadt.stg.mudetect.aug.data.VariableNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.data.VariableNode;
 import de.tu_darmstadt.stg.mudetect.src2aug.DotGraph;
 
 import java.io.File;
 import java.util.*;
 
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.DEFINITION;
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.THROW;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.DEFINITION;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.THROW;
 
 /**
  * @author Nguyen Anh Hoan

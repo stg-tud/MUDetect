@@ -1,20 +1,21 @@
 package de.tu_darmstadt.stg.mudetect.src2aug;
 
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
-import de.tu_darmstadt.stg.mudetect.aug.Edge;
-import de.tu_darmstadt.stg.mudetect.aug.Location;
-import de.tu_darmstadt.stg.mudetect.aug.Node;
-import de.tu_darmstadt.stg.mudetect.aug.actions.*;
-import de.tu_darmstadt.stg.mudetect.aug.controlflow.*;
-import de.tu_darmstadt.stg.mudetect.aug.data.*;
-import de.tu_darmstadt.stg.mudetect.aug.dataflow.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.model.Location;
+import de.tu_darmstadt.stg.mudetect.aug.model.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.actions.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.data.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.DefinitionEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.QualifierEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ReceiverEdge;
 import de.tu_darmstadt.stg.mudetect.utils.JavaASTUtil;
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.*;
 
 public class AUGBuilder {
     private static final Set<String> ASSIGNMENT_OPERATORS = new HashSet<>();

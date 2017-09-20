@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.src2aug;
 
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
-import de.tu_darmstadt.stg.mudetect.aug.dot.DisplayAUGDotExporter;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.dot.DisplayAUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.mining.TypeUsageExamplePredicate;
 import de.tu_darmstadt.stg.mudetect.mining.UsageExamplePredicate;
 import org.eclipse.jdt.core.dom.ASTNode;

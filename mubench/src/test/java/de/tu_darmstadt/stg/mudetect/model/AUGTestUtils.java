@@ -1,10 +1,10 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
-import de.tu_darmstadt.stg.mudetect.aug.*;
-import de.tu_darmstadt.stg.mudetect.aug.controlflow.ConditionEdge;
-import de.tu_darmstadt.stg.mudetect.aug.dot.AUGDotExporter;
-import de.tu_darmstadt.stg.mudetect.aug.dot.AUGEdgeAttributeProvider;
-import de.tu_darmstadt.stg.mudetect.aug.dot.AUGNodeAttributeProvider;
+import de.tu_darmstadt.stg.mudetect.aug.model.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGDotExporter;
+import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGEdgeAttributeProvider;
+import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGNodeAttributeProvider;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -18,8 +18,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static de.tu_darmstadt.stg.mudetect.aug.controlflow.ConditionEdge.ConditionType.REPETITION;
-import static de.tu_darmstadt.stg.mudetect.aug.controlflow.ConditionEdge.ConditionType.SELECTION;
+import static de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge.ConditionType.REPETITION;
+import static de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge.ConditionType.SELECTION;
 import static org.hamcrest.core.AllOf.allOf;
 
 public class AUGTestUtils {

@@ -2,9 +2,9 @@ package de.tu_darmstadt.stg.mudetect.mining;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
-import de.tu_darmstadt.stg.mudetect.aug.*;
-import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
-import de.tu_darmstadt.stg.mudetect.aug.patterns.AggregateDataNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.model.patterns.AggregateDataNode;
 
 import java.io.IOException;
 import java.io.OutputStream;

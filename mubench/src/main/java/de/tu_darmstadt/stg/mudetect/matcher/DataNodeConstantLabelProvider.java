@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.matcher;
 
-import de.tu_darmstadt.stg.mudetect.aug.DataNode;
-import de.tu_darmstadt.stg.mudetect.aug.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.DataNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 
 import java.util.Optional;
 

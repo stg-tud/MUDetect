@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
-import de.tu_darmstadt.stg.mudetect.aug.dot.DisplayAUGDotExporter;
-import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.model.dot.DisplayAUGDotExporter;
+import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;

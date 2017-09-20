@@ -6,8 +6,8 @@ import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.RECEIVER;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.RECEIVER;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.findsOverlaps;

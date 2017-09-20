@@ -2,11 +2,11 @@ package de.tu_darmstadt.stg.mubench;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import de.tu_darmstadt.stg.mudetect.aug.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 
 import java.util.function.BiPredicate;
 
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.*;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.*;
 
 
 public class DataEdgeTypePriorityOrder implements BiPredicate<Edge, Edge> {

@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.src2aug;
 
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageGraph;
-import de.tu_darmstadt.stg.mudetect.aug.dot.DisplayAUGDotExporter;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
+import de.tu_darmstadt.stg.mudetect.aug.model.dot.DisplayAUGDotExporter;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;

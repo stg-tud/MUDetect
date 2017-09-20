@@ -1,17 +1,17 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
-import de.tu_darmstadt.stg.mudetect.aug.Node;
-import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
-import de.tu_darmstadt.stg.mudetect.aug.patterns.AggregateDataNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.model.patterns.AggregateDataNode;
 import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Set;
 
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.RECEIVER;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.RECEIVER;
 import static de.tu_darmstadt.stg.mudetect.mining.PatternTestUtils.isPattern;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUGsForClass;

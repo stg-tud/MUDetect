@@ -1,6 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.src2aug;
 
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 
 import java.util.ArrayList;
 import java.util.Collection;

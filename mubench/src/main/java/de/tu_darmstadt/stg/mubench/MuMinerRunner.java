@@ -1,8 +1,8 @@
 package de.tu_darmstadt.stg.mubench;
 
 import de.tu_darmstadt.stg.mubench.cli.*;
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
-import de.tu_darmstadt.stg.mudetect.aug.Location;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.Location;
 import de.tu_darmstadt.stg.mudetect.mining.Anomaly;
 import de.tu_darmstadt.stg.mudetect.mining.Fragment;
 import de.tu_darmstadt.stg.mudetect.mining.Miner;

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Function;
 
-import de.tu_darmstadt.stg.mudetect.aug.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 
-import static de.tu_darmstadt.stg.mudetect.aug.controlflow.ConditionEdge.ConditionType.REPETITION;
-import static de.tu_darmstadt.stg.mudetect.aug.controlflow.ConditionEdge.ConditionType.SELECTION;
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.*;
+import static de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge.ConditionType.REPETITION;
+import static de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge.ConditionType.SELECTION;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.*;
 
 public class ExasFeature {
 	public static final int MAX_LENGTH = 4 * 2 - 1;

@@ -1,14 +1,14 @@
 package de.tu_darmstadt.stg.mudetect.src2aug;
 
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageGraph;
-import de.tu_darmstadt.stg.mudetect.aug.DataNode;
-import de.tu_darmstadt.stg.mudetect.aug.Edge;
-import de.tu_darmstadt.stg.mudetect.aug.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
+import de.tu_darmstadt.stg.mudetect.aug.model.DataNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.*;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.*;
 
 public class DenseAUGPredicate implements Predicate<APIUsageGraph> {
     private static final int MAX_BRANCHES = 100;

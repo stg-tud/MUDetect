@@ -1,15 +1,15 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
-import de.tu_darmstadt.stg.mudetect.aug.Edge;
-import de.tu_darmstadt.stg.mudetect.aug.actions.MethodCallNode;
-import de.tu_darmstadt.stg.mudetect.aug.Node;
-import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.SYNCHRONIZE;
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.THROW;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.SYNCHRONIZE;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.THROW;
 
 public class MinPatternActionsModel implements Model {
 

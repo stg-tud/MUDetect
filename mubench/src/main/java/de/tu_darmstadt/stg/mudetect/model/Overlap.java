@@ -1,9 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.model;
 
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
-import de.tu_darmstadt.stg.mudetect.aug.Edge;
-import de.tu_darmstadt.stg.mudetect.aug.Node;
-import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.model.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 import org.jgrapht.graph.DirectedSubgraph;
 
 import java.util.*;
@@ -48,7 +46,7 @@ public class Overlap {
 
     public APIUsageExample getTarget() { return (APIUsageExample) targetOverlap.getBase(); }
 
-    public de.tu_darmstadt.stg.mudetect.aug.Location getLocation() {
+    public de.tu_darmstadt.stg.mudetect.aug.model.Location getLocation() {
         return getTarget().getLocation();
     }
 

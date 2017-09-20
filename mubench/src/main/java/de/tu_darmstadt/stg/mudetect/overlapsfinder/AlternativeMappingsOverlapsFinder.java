@@ -2,12 +2,12 @@ package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
 import de.tu_darmstadt.stg.mubench.NoEdgeOrder;
 import de.tu_darmstadt.stg.mudetect.OverlapsFinder;
-import de.tu_darmstadt.stg.mudetect.aug.*;
-import de.tu_darmstadt.stg.mudetect.aug.controlflow.ConditionEdge;
-import de.tu_darmstadt.stg.mudetect.aug.dot.AUGDotExporter;
-import de.tu_darmstadt.stg.mudetect.aug.dot.AUGEdgeAttributeProvider;
-import de.tu_darmstadt.stg.mudetect.aug.dot.AUGNodeAttributeProvider;
-import de.tu_darmstadt.stg.mudetect.aug.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.model.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGDotExporter;
+import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGEdgeAttributeProvider;
+import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGNodeAttributeProvider;
+import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -6,8 +6,8 @@ import org.junit.Test;
 
 import java.util.Optional;
 
-import static de.tu_darmstadt.stg.mudetect.aug.controlflow.ConditionEdge.ConditionType.REPETITION;
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.*;
+import static de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge.ConditionType.REPETITION;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.*;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static org.hamcrest.CoreMatchers.is;
