@@ -1,12 +1,12 @@
 package de.tu_darmstadt.stg.mudetect.aug.model.actions;
 
 public class ArrayAssignmentNode extends MethodCallNode {
-    public ArrayAssignmentNode(String declaringTypeAndMethodSignature) {
-        super(declaringTypeAndMethodSignature);
+    public ArrayAssignmentNode(String arrayTypeName) {
+        super(arrayTypeName, "arrayset()");
     }
 
-    public ArrayAssignmentNode(String declaringTypeAndMethodSignature, int sourceLineNumber) {
-        super(declaringTypeAndMethodSignature, sourceLineNumber);
+    public ArrayAssignmentNode(String arrayTypeName, int sourceLineNumber) {
+        super(arrayTypeName, "arrayset()", sourceLineNumber);
     }
 
     @Override

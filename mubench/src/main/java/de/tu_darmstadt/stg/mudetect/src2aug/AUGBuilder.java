@@ -141,23 +141,23 @@ public class AUGBuilder {
         } else if (node instanceof EGroumActionNode) {
             String label = node.getLabel();
             if (label.endsWith(".arrayget()")) {
-                // TODO split declaring type and signature
-                return new ArrayAccessNode(label, node.getSourceLineNumber().orElse(-1));
+                String[] labelParts = split(label);
+                return new ArrayAccessNode(labelParts[0], node.getSourceLineNumber().orElse(-1));
             } else if (label.endsWith(".arrayset()")) {
-                // TODO split declaring type and signature
-                return new ArrayAssignmentNode(label, node.getSourceLineNumber().orElse(-1));
+                String[] labelParts = split(label);
+                return new ArrayAssignmentNode(labelParts[0], node.getSourceLineNumber().orElse(-1));
             } else if (node.astNodeType == ASTNode.SUPER_CONSTRUCTOR_INVOCATION) {
-                // TODO ensure this is only type name
-                return new SuperConstructorCallNode(label, node.getSourceLineNumber().orElse(-1));
+                String typeName = label.substring(0, label.length() - 2); // remove "()" from "Supertype()"
+                return new SuperConstructorCallNode(typeName, node.getSourceLineNumber().orElse(-1));
             } else if (node.astNodeType == ASTNode.SUPER_METHOD_INVOCATION) {
-                // TODO split declaring type and signature
-                return new SuperMethodCallNode(label, node.getSourceLineNumber().orElse(-1));
+                String[] labelParts = split(label);
+                return new SuperMethodCallNode(labelParts[0], labelParts[1], node.getSourceLineNumber().orElse(-1));
             } else if (label.endsWith("()")) {
-                // TODO split declaring type and signature
-                return new MethodCallNode(label, node.getSourceLineNumber().orElse(-1));
+                String[] labelParts = split(label);
+                return new MethodCallNode(labelParts[0], labelParts[1], node.getSourceLineNumber().orElse(-1));
             } else if (label.endsWith("<init>")) {
-                // TODO split declaring type and signature
-                return new ConstructorCallNode(label, node.getSourceLineNumber().orElse(-1));
+                String[] labelParts = split(label);
+                return new ConstructorCallNode(labelParts[0], node.getSourceLineNumber().orElse(-1));
             } else if (label.startsWith("{") && label.endsWith("}")) {
                 return new ArrayCreationNode(label.substring(1, label.length() - 1), node.getSourceLineNumber().orElse(-1));
             } else if (label.endsWith("<cast>")) {
@@ -190,6 +190,14 @@ public class AUGBuilder {
             }
         }
         throw new IllegalArgumentException("unsupported node: " + node);
+    }
+
+    private static String[] split(String declaringTypeAndSignatureLabel) {
+        int endOfDeclaringTypeName = declaringTypeAndSignatureLabel.lastIndexOf('.');
+        return new String[]{
+                declaringTypeAndSignatureLabel.substring(0, endOfDeclaringTypeName),
+                declaringTypeAndSignatureLabel.substring(endOfDeclaringTypeName + 1)
+        };
     }
 
     public static String getMethodSignature(EGroumGraph graph) {

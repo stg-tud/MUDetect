@@ -104,14 +104,19 @@ public class TestAUGBuilder {
         return withActionNode(nodeName, nodeName);
     }
 
-    public TestAUGBuilder withActionNode(String id, String nodeName) {
+    public TestAUGBuilder withActionNode(String id, final String nodeName) {
         if (JavaASTUtil.infixExpressionLables.containsKey(nodeName)) {
-            nodeName = JavaASTUtil.infixExpressionLables.get(nodeName);
-            return withNode(id, new InfixOperatorNode(nodeName));
+            String abstractOperatorName = JavaASTUtil.infixExpressionLables.get(nodeName);
+            return withNode(id, new InfixOperatorNode(abstractOperatorName));
         } else if (nodeName.equals("return")) {
             return withNode(id, new ReturnNode());
         } else {
-            return withNode(id, new MethodCallNode(nodeName));
+            return withNode(id, new MethodCallNode("", nodeName) {
+                @Override
+                public String getLabel() {
+                    return nodeName;
+                }
+            });
         }
     }
 

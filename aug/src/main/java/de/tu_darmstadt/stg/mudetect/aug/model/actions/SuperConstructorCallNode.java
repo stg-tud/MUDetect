@@ -1,11 +1,16 @@
 package de.tu_darmstadt.stg.mudetect.aug.model.actions;
 
 public class SuperConstructorCallNode extends ConstructorCallNode {
-    public SuperConstructorCallNode(String methodSignature) {
-        super(methodSignature);
+    public SuperConstructorCallNode(String superTypeName) {
+        super(superTypeName);
     }
 
-    public SuperConstructorCallNode(String methodSignature, int sourceLineNumber) {
-        super(methodSignature, sourceLineNumber);
+    public SuperConstructorCallNode(String superTypeName, int sourceLineNumber) {
+        super(superTypeName, sourceLineNumber);
+    }
+
+    @Override
+    public String getLabel() {
+        return getDeclaringTypeName() + "()";
     }
 }

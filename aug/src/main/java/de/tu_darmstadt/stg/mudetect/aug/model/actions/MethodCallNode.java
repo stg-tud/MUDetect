@@ -6,23 +6,19 @@ import de.tu_darmstadt.stg.mudetect.aug.model.BaseNode;
 import java.util.Optional;
 
 public class MethodCallNode extends BaseNode implements ActionNode {
-    private final String declaringTypeAndMethodSignature;
-
-    public MethodCallNode(String declaringTypeAndMethodSignature) {
-        this.declaringTypeAndMethodSignature = declaringTypeAndMethodSignature;
-    }
+    private final String declaringTypeName;
+    private final String methodSignature;
+    private String labelCache = null;
 
     public MethodCallNode(String declaringTypeName, String methodSignature) {
-        this(declaringTypeName + "." + methodSignature);
-    }
-
-    public MethodCallNode(String declaringTypeAndMethodSignature, int sourceLineNumber) {
-        super(sourceLineNumber);
-        this.declaringTypeAndMethodSignature = declaringTypeAndMethodSignature;
+        this.declaringTypeName = declaringTypeName;
+        this.methodSignature = methodSignature;
     }
 
     public MethodCallNode(String declaringTypeName, String methodSignature, int sourceLineNumber) {
-        this(declaringTypeName + "." + methodSignature, sourceLineNumber);
+        super(sourceLineNumber);
+        this.declaringTypeName = declaringTypeName;
+        this.methodSignature = methodSignature;
     }
 
     @Override
@@ -32,24 +28,26 @@ public class MethodCallNode extends BaseNode implements ActionNode {
 
     @Override
     public String getLabel() {
-        return declaringTypeAndMethodSignature;
+        if (labelCache == null) {
+            labelCache = getDeclaringTypeName() + "." + getMethodSignature();
+        }
+        return labelCache;
     }
 
     @Override
     public Optional<String> getAPI() {
-        String declaringType = getDeclaringType();
+        String declaringType = getDeclaringTypeName();
         if (!declaringType.isEmpty())
             return Optional.of(declaringType);
         else
             return Optional.empty();
     }
 
-    private String getDeclaringType() {
-        return getLabel().substring(0, getLabel().length() - getMethodSignature().length());
+    public String getMethodSignature() {
+        return methodSignature;
     }
 
-    private String getMethodSignature() {
-        int endOfDeclaringTypeName = getLabel().indexOf('.');
-        return getLabel().substring(endOfDeclaringTypeName + 1);
+    public String getDeclaringTypeName() {
+        return declaringTypeName;
     }
 }
