@@ -105,10 +105,11 @@ public class AUGBuilder {
                             return new RepetitionEdge(source, target);
                         case "syn":
                             return new SynchronizationEdge(source, target);
+                        case "cond":
+                            // assuming here that all remaining "cond" edges are exception handling ones, not sure this
+                            // holds, but I can't think of any case that isn't handled by the above cases.
+                            return new ExceptionHandlingEdge(source, target);
                         default:
-                            if (source instanceof ExceptionNode) {
-                                return new ExceptionHandlingEdge(source, target);
-                            }
                             throw new IllegalArgumentException("unsupported type of condition edge: " + label);
                     }
                 case THROW:
