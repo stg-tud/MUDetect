@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 class ViolationUtils {
     private static final ViolationDotExporter violationDotExporter = new ViolationDotExporter();
+    public static final String CHECKOUTS_PATH_SUFFIX = "checkouts/";
 
     static DetectorFinding toFinding(Violation violation) {
         Location location = violation.getLocation();
@@ -27,8 +28,17 @@ class ViolationUtils {
 
     private static Set<String> getPatternInstanceLocations(Violation violation) {
         return violation.getOverlap().getPattern().getExampleLocations().stream()
-                .map(Object::toString).map(loc -> loc.split("checkouts/")[1]).distinct().limit(5)
+                .map(ViolationUtils::getLocationString).distinct().limit(5)
                 .collect(Collectors.toSet());
+    }
+
+    private static String getLocationString(Location loc) {
+        String filePath = loc.getFilePath();
+        int startOfCheckoutsSubPath = filePath.indexOf(CHECKOUTS_PATH_SUFFIX);
+        if (startOfCheckoutsSubPath > -1) {
+            startOfCheckoutsSubPath += CHECKOUTS_PATH_SUFFIX.length() - 1;
+        }
+        return filePath.substring(startOfCheckoutsSubPath + 1) + "#" + loc.getMethodSignature();
     }
 
     private static int getStartLine(Violation violation) {
