@@ -363,12 +363,14 @@ public class Fragment {
 		return dg;
 	}
 
-	public void delete() {
+	void delete() {
 		this.genFragment = null;
 		this.graph = null;
-		this.nodes.clear();
+		if (nodes != null)
+			this.nodes.clear();
 		this.nodes = null;
-		this.vector.clear();
+		if (vector != null)
+			this.vector.clear();
 		this.vector = null;
 		numofFragments--;
 	}
