@@ -124,7 +124,8 @@ public class AUGBuilder {
 
     private static Node convert(EGroumNode node) {
         if (node instanceof EGroumDataNode) {
-            if (((EGroumDataNode) node).isException()) {
+            // TODO there's Exception nodes in catch blocks without incoming THROW edges
+            if (((EGroumDataNode) node).isException() || node.getLabel().endsWith("Exception") || node.getLabel().endsWith("Error")) {
                 return new ExceptionNode(node.getDataType(), node.getDataName());
             } else if (node.astNodeType == ASTNode.SIMPLE_NAME) {
                 return new VariableNode(node.getDataType(), node.getDataName());
