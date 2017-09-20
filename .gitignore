@@ -125,7 +125,7 @@ buildNumber.properties
 /mubench/output
 /mubench/aug-improvement
 /mubench/paper-examples
-/mubench/log*.txt
+log*.txt
 /mubench/temp/
 /*.zip
 /mubench/findings.yml
