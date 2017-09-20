@@ -18,6 +18,13 @@ public class EncodeCallsTest {
         assertThat(aug, hasEdge(dataNodeWithLabel("Object"), RECEIVER, actionNodeWithLabel("Object.toString()")));
     }
 
+    @Test
+    public void addsSuperCall() throws Exception {
+        APIUsageExample aug = buildAUG("@override public boolean equals(Object other) { return super.equals(other); }");
+
+        assertThat(aug, hasNode(actionNodeWithLabel("Object.equals()")));
+    }
+
     /**
      * I'm not sure we want static calls to have a receiver, because this makes them indistinguishable from instance
      * calls.

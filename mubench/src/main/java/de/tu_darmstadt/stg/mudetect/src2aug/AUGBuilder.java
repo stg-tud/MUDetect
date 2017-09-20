@@ -143,6 +143,9 @@ public class AUGBuilder {
             } else if (node.astNodeType == ASTNode.SUPER_CONSTRUCTOR_INVOCATION) {
                 // TODO ensure this is only type name
                 return new SuperConstructorCallNode(label);
+            } else if (node.astNodeType == ASTNode.SUPER_METHOD_INVOCATION) {
+                // TODO split declaring type and signature
+                return new SuperMethodCallNode(label);
             } else if (label.endsWith("()")) {
                 // TODO split declaring type and signature
                 return new MethodCallNode(label);
