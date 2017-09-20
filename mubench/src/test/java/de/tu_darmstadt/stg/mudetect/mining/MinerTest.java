@@ -1,6 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.DisplayAUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
@@ -270,5 +271,15 @@ public class MinerTest {
 		Collection<Node> patternNodes = pattern.vertexSet();
 		long numberOfAppendCalls = patternNodes.stream().filter(node -> node.getLabel().equals("AbstractStringBuilder.append()")).count();
 		assertThat(numberOfAppendCalls, is(1L));
+	}
+
+	private void print(APIUsageGraph graph) {
+		System.out.println(new DisplayAUGDotExporter().toDotGraph(graph));
+	}
+
+	private void print(Collection<? extends APIUsageGraph> graphs) {
+		for (APIUsageGraph graph : graphs) {
+			print(graph);
+		}
 	}
 }
