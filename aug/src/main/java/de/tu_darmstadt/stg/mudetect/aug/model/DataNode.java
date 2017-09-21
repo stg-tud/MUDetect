@@ -28,6 +28,7 @@ public interface DataNode extends Node {
             case "double":
             case "short":
             case "boolean":
+            case "null":
                 return Optional.empty();
             default:
                 if (dataType.endsWith("[]")) {
