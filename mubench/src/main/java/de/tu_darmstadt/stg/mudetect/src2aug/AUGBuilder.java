@@ -1,9 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.src2aug;
 
-import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
-import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
-import de.tu_darmstadt.stg.mudetect.aug.model.Location;
-import de.tu_darmstadt.stg.mudetect.aug.model.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.*;
@@ -63,7 +60,7 @@ public class AUGBuilder {
                 .map(AUGBuilder::toAUG).collect(Collectors.toList());
     }
 
-    public static APIUsageExample toAUG(EGroumGraph groum) {
+    private static APIUsageExample toAUG(EGroumGraph groum) {
         APIUsageExample aug = new APIUsageExample(
                 new Location(groum.getProjectName(), groum.getFilePath(), getMethodSignature(groum)));
         Map<EGroumNode, Node> nodeMap = new HashMap<>();
@@ -84,6 +81,17 @@ public class AUGBuilder {
     }
 
     private static Edge convert(EGroumEdge edge, Node source, Node target) {
+        Edge newEdge = convertDirectEdge(edge, source, target);
+        if (!edge.isDirect()) {
+            // TODO the transitive edge should not wrap its 'newEdge', but the new edge for the corresponding direct
+            // edge. But neither do we know this edge here, nor whether it has even been created yet. Therefore, we
+            // cheat, which is currently functionally equivalent.
+            newEdge = new TransitiveEdge(source, target, newEdge);
+        }
+        return newEdge;
+    }
+
+    private static Edge convertDirectEdge(EGroumEdge edge, Node source, Node target) {
         if (edge instanceof EGroumDataEdge) {
             switch (((EGroumDataEdge) edge).getType()) {
                 case RECEIVER:
