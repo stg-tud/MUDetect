@@ -111,12 +111,17 @@ public class TestAUGBuilder {
         } else if (nodeName.equals("return")) {
             return withNode(id, new ReturnNode());
         } else {
-            return withNode(id, new MethodCallNode("", nodeName) {
-                @Override
-                public String getLabel() {
-                    return nodeName;
-                }
-            });
+            if (nodeName.contains(".")) {
+                String[] nameParts = nodeName.split("\\.");
+                return withNode(id, new MethodCallNode(nameParts[0], nameParts[1]));
+            } else {
+                return withNode(id, new MethodCallNode("", nodeName) {
+                    @Override
+                    public String getLabel() {
+                        return nodeName;
+                    }
+                });
+            }
         }
     }
 

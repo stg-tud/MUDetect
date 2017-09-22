@@ -10,9 +10,7 @@ import org.junit.Test;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.ORDER;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class AUGTest {
@@ -39,6 +37,13 @@ public class AUGTest {
         APIUsageExample aug = buildAUG().withDataNode("null").build();
 
         assertThat(aug.getAPIs(), is(empty()));
+    }
+
+    @Test
+    public void collectsAPIsFromActionNodes() throws Exception {
+        APIUsageExample aug = buildAUG().withActionNode("API.method()").build();
+
+        assertThat(aug.getAPIs(), contains("API"));
     }
 
     private Matcher<APIUsageExample> containsEdge(Edge edge) {
