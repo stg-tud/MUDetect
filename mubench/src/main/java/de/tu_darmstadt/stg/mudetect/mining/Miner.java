@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.actions.ConstructorCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.LiteralNode;
 import de.tu_darmstadt.stg.mudetect.src2aug.DenseAUGPredicate;
@@ -62,7 +63,7 @@ public class Miner {
 					nodes = new HashSet<>();
 				nodes.add(node);
 				nodesOfLabel.put(label, nodes);
-				if (node.isCoreAction())
+				if (shouldStartMiningFrom(node))
 					coreLabels.add(label);
 			}
 		}
@@ -100,10 +101,8 @@ public class Miner {
 			HashSet<Node> nodes = nodesOfLabel.get(label);
 			HashSet<Fragment> fragments = new HashSet<>();
 			for (Node node : nodes) {
-				if (node instanceof MethodCallNode && node.isCoreAction()) {
-					Fragment f = new Fragment(node, config);
-					fragments.add(f);
-				}
+				Fragment f = new Fragment(node, config);
+				fragments.add(f);
 			}
 			Pattern p = new Pattern(fragments, fragments.size());
 			extend(p);
@@ -115,6 +114,10 @@ public class Miner {
 		report();
 
 		return getPatterns();
+	}
+
+	private boolean shouldStartMiningFrom(Node node) {
+		return node.isCoreAction() && node instanceof MethodCallNode && !(node instanceof ConstructorCallNode);
 	}
 
 	private void collapseLiterals(APIUsageExample aug) {
