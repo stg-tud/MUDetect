@@ -8,7 +8,8 @@ import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.*;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.RECEIVER;
 
 public class DenseAUGPredicate implements Predicate<APIUsageGraph> {
     private static final int MAX_BRANCHES = 100;
@@ -39,11 +40,15 @@ public class DenseAUGPredicate implements Predicate<APIUsageGraph> {
 
     private long getMaxNumberOfEqualOutEdges(APIUsageGraph graph, Node node) {
         return graph.outgoingEdgesOf(node).stream().filter(this::isDirectReceiverOrParameterEdge)
-                .collect(Collectors.groupingBy(Edge::getLabel, Collectors.counting()))
+                .collect(Collectors.groupingBy(edge -> edgeAndTargetId(graph, edge), Collectors.counting()))
                 .values().stream().mapToLong(l -> l).max().orElse(0);
     }
 
     private boolean isDirectReceiverOrParameterEdge(Edge succ) {
         return succ.isDirect() && (succ.getType() == RECEIVER || succ.getType() == PARAMETER);
+    }
+
+    private String edgeAndTargetId(APIUsageGraph graph, Edge edge) {
+        return edge.getLabel() + "->" + graph.getEdgeTarget(edge).getLabel();
     }
 }
