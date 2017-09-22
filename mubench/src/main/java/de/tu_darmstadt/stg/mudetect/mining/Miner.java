@@ -62,7 +62,7 @@ public class Miner {
 					nodes = new HashSet<>();
 				nodes.add(node);
 				nodesOfLabel.put(label, nodes);
-				if (node instanceof MethodCallNode && node.isCoreAction())
+				if (node.isCoreAction())
 					coreLabels.add(label);
 			}
 		}
