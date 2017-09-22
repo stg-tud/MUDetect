@@ -37,7 +37,7 @@ public class MethodCallNode extends BaseNode implements ActionNode {
     @Override
     public Optional<String> getAPI() {
         String declaringType = getDeclaringTypeName();
-        if (!declaringType.isEmpty())
+        if (!declaringType.isEmpty() && !declaringType.endsWith("[]"))
             return Optional.of(declaringType);
         else
             return Optional.empty();

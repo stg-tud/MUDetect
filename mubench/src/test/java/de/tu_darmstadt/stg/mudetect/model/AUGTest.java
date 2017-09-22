@@ -46,6 +46,13 @@ public class AUGTest {
         assertThat(aug.getAPIs(), contains("API"));
     }
 
+    @Test
+    public void excludesArraysFromAPIs() throws Exception {
+        APIUsageExample aug = buildAUG().withDataNode("A[]").withActionNode("B[].length").build();
+
+        assertThat(aug.getAPIs(), is(empty()));
+    }
+
     private Matcher<APIUsageExample> containsEdge(Edge edge) {
         return new BaseMatcher<APIUsageExample>() {
             @Override
