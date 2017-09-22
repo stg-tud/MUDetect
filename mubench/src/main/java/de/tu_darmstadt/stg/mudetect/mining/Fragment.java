@@ -110,10 +110,7 @@ public class Fragment {
 	public int getId() {
 		return id;
 	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	
+
 	public Fragment getGenFragment() {
 		return genFragment;
 	}
@@ -153,10 +150,7 @@ public class Fragment {
 	public void setVector(HashMap<Integer, Integer> vector) {
 		this.vector = vector;
 	}
-	public void setId() {
-		this.id = nextFragmentId++;
-		//return this.id;
-	}
+
 	/**
 	 * @return the graph
 	 */
