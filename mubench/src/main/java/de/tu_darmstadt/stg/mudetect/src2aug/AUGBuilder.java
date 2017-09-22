@@ -12,9 +12,12 @@ import de.tu_darmstadt.stg.mudetect.utils.JavaASTUtil;
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class AUGBuilder {
+    private static final Logger LOGGER = Logger.getLogger(AUGBuilder.class.getSimpleName());
+
     private static final Set<String> ASSIGNMENT_OPERATORS = new HashSet<>();
     private static final Set<String> UNARY_OPERATORS = new HashSet<>();
     private static final Set<Integer> LITERAL_AST_NODE_TYPES = new HashSet<>();
@@ -61,6 +64,7 @@ public class AUGBuilder {
     }
 
     private static APIUsageExample toAUG(EGroumGraph groum) {
+        LOGGER.info("Converting to AUG: " + groum.getFilePath() + " " + groum.getName());
         APIUsageExample aug = new APIUsageExample(
                 new Location(groum.getProjectName(), groum.getFilePath(), getMethodSignature(groum)));
         Map<EGroumNode, Node> nodeMap = new HashMap<>();
@@ -148,26 +152,30 @@ public class AUGBuilder {
             }
         } else if (node instanceof EGroumActionNode) {
             String label = node.getLabel();
-            if (label.endsWith(".arrayget()")) {
+            if (label.startsWith("{") && label.endsWith("}")) {
+                return new ArrayCreationNode(label.substring(1, label.length() - 1), node.getSourceLineNumber().orElse(-1));
+            } else if (label.endsWith(".arrayget()")) {
                 String[] labelParts = split(label);
                 return new ArrayAccessNode(labelParts[0], node.getSourceLineNumber().orElse(-1));
             } else if (label.endsWith(".arrayset()")) {
                 String[] labelParts = split(label);
                 return new ArrayAssignmentNode(labelParts[0], node.getSourceLineNumber().orElse(-1));
-            } else if (node.astNodeType == ASTNode.SUPER_CONSTRUCTOR_INVOCATION) {
-                String typeName = label.substring(0, label.length() - 2); // remove "()" from "Supertype()"
-                return new SuperConstructorCallNode(typeName, node.getSourceLineNumber().orElse(-1));
+            } else if (node.astNodeType == ASTNode.METHOD_INVOCATION) {
+                String[] labelParts = split(label);
+                return new MethodCallNode(labelParts[0], labelParts[1], node.getSourceLineNumber().orElse(-1));
             } else if (node.astNodeType == ASTNode.SUPER_METHOD_INVOCATION) {
                 String[] labelParts = split(label);
                 return new SuperMethodCallNode(labelParts[0], labelParts[1], node.getSourceLineNumber().orElse(-1));
-            } else if (label.endsWith("()")) {
-                String[] labelParts = split(label);
-                return new MethodCallNode(labelParts[0], labelParts[1], node.getSourceLineNumber().orElse(-1));
-            } else if (label.endsWith("<init>")) {
+            } else if (node.astNodeType == ASTNode.CLASS_INSTANCE_CREATION) {
                 String[] labelParts = split(label);
                 return new ConstructorCallNode(labelParts[0], node.getSourceLineNumber().orElse(-1));
-            } else if (label.startsWith("{") && label.endsWith("}")) {
-                return new ArrayCreationNode(label.substring(1, label.length() - 1), node.getSourceLineNumber().orElse(-1));
+            } else if (node.astNodeType == ASTNode.CONSTRUCTOR_INVOCATION) {
+                /* constructor name for "this()" calls look like "Type()" */
+                String typeName = label.substring(0, label.length() - 2); // remove "()"
+                return new ConstructorCallNode(typeName, node.getSourceLineNumber().orElse(-1));
+            } else if (node.astNodeType == ASTNode.SUPER_CONSTRUCTOR_INVOCATION) {
+                String typeName = label.substring(0, label.length() - 2); // remove "()" from "Supertype()"
+                return new SuperConstructorCallNode(typeName, node.getSourceLineNumber().orElse(-1));
             } else if (label.endsWith("<cast>")) {
                 return new CastNode(label.split("\\.")[0], node.getSourceLineNumber().orElse(-1));
             } else if (JavaASTUtil.infixExpressionLables.containsValue(label)) {
