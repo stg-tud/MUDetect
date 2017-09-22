@@ -90,6 +90,12 @@ public class Miner {
 			if (!coreLabels.contains(label))
 				nodesOfLabel.remove(label);
 		}
+
+		// Freezing the example graphs, to allow caching of hash values, which is relatively expensive to compute.
+		for (APIUsageExample aug : augs) {
+			aug.freeze();
+		}
+
 		ArrayList<String> list = new ArrayList<>(nodesOfLabel.keySet());
 		list.sort((l1, l2) -> {
             int c1 = nodesOfLabel.get(l1).size(), c2 = nodesOfLabel.get(l2).size();
