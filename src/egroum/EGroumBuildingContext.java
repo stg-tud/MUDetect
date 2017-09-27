@@ -78,7 +78,10 @@ public class EGroumBuildingContext {
 				String type = JavaASTUtil.getSimpleType(f.getType());
 				for (int j = 0; j < f.fragments().size(); j++) {
 					VariableDeclarationFragment vdf = (VariableDeclarationFragment) f.fragments().get(j);
-					buildFieldType(vdf.getName().getIdentifier(), type);
+					String dimensions = "";
+					for (int k = 0; k < vdf.getExtraDimensions(); k++)
+						dimensions += "[]";
+					buildFieldType(vdf.getName().getIdentifier(), type + dimensions);
 				}
 			}
 		}
@@ -96,7 +99,10 @@ public class EGroumBuildingContext {
 			String type = JavaASTUtil.getSimpleType(f.getType());
 			for (int i = 0; i < f.fragments().size(); i++) {
 				VariableDeclarationFragment vdf = (VariableDeclarationFragment) f.fragments().get(i);
-				buildFieldType(vdf.getName().getIdentifier(), type);
+				String dimensions = "";
+				for (int j = 0; j < vdf.getExtraDimensions(); j++)
+					dimensions += "[]";
+				buildFieldType(vdf.getName().getIdentifier(), type + dimensions);
 			}
 		}
 		ASTNode p = td.getParent();

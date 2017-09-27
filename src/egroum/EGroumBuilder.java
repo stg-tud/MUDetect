@@ -145,7 +145,10 @@ public class EGroumBuilder {
 		String type = JavaASTUtil.getSimpleType(f.getType());
 		for (int j = 0; j < f.fragments().size(); j++) {
 			VariableDeclarationFragment vdf = (VariableDeclarationFragment) f.fragments().get(j);
-			fieldTypes.put(vdf.getName().getIdentifier(), type);
+			String dimensions = "";
+			for (int i = 0; i < vdf.getExtraDimensions(); i++)
+				dimensions += "[]";
+			fieldTypes.put(vdf.getName().getIdentifier(), type + dimensions);
 		}
 	}
 

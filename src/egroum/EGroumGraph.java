@@ -842,6 +842,8 @@ public class EGroumGraph implements Serializable {
 			SingleVariableDeclaration astNode) {
 		SimpleName name = astNode.getName();
 		String type = JavaASTUtil.getSimpleType(astNode.getType());
+		for (int i = 0; i < astNode.getExtraDimensions(); i++)
+			type += "[]";
 		context.addLocalVariable(name.getIdentifier(), "" + name.getStartPosition(), type);
 		EGroumDataNode node = new EGroumDataNode(name, name.getNodeType(),
 				"" + name.getStartPosition(), type,
