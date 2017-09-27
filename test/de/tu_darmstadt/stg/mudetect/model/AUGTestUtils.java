@@ -67,6 +67,10 @@ public class AUGTestUtils {
         return new AUGElementMatcher<>(AbstractBaseGraph::vertexSet, matcher);
     }
 
+    public static Matcher<? super AUG> notHaveNode(Matcher<? super EGroumNode> matcher) {
+        return new AUGElementNotMatcher<>(AbstractBaseGraph::vertexSet, matcher);
+    }
+
     @SafeVarargs
     public static Matcher<? super AUG> hasNodes(Matcher<? super EGroumNode>... matchers) {
         List<Matcher<? super AUG>> all = new ArrayList<>(matchers.length);
@@ -151,6 +155,39 @@ public class AUGTestUtils {
         @Override
         public void describeTo(Description description) {
             description.appendText("an AUG containing ");
+            description.appendDescriptionOf(elementMatcher);
+        }
+
+        @Override
+        public void describeMismatch(Object item, Description description) {
+            if (item instanceof AUG) {
+                description.appendText("was AUG: ").appendText(augDotExporter.toDotGraph((AUG) item));
+            } else {
+                super.describeMismatch(item, description);
+            }
+        }
+    }
+
+    private static class AUGElementNotMatcher<E> extends BaseMatcher<AUG> {
+        private final static AUGDotExporter augDotExporter = new AUGDotExporter(
+                EGroumNode::getLabel, new AUGNodeAttributeProvider(), new AUGEdgeAttributeProvider());
+
+        private final Function<AUG, Set<E>> selector;
+        private final Matcher<? super E> elementMatcher;
+
+        AUGElementNotMatcher(Function<AUG, Set<E>> selector, Matcher<? super E> elementMatcher) {
+            this.selector = selector;
+            this.elementMatcher = elementMatcher;
+        }
+
+        @Override
+        public boolean matches(Object item) {
+            return item instanceof AUG && !Matchers.hasItem(elementMatcher).matches(selector.apply((AUG) item));
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("an AUG not containing ");
             description.appendDescriptionOf(elementMatcher);
         }
 

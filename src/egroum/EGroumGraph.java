@@ -130,8 +130,7 @@ public class EGroumGraph implements Serializable {
 			statementSinks.addAll(context.popTry());
 		adjustControlEdges();
 		context.removeScope();
-		if (!configuration.encodeConditionalOperators)
-			deleteConditionalOperators();
+		deleteOperators();
 		if (configuration.collapseTemporaryDataNodes)
 			deleteTemporaryDataNodes();
 		else if (configuration.collapseTemporaryDataNodesIncomingToControlNodes)
@@ -2347,9 +2346,13 @@ public class EGroumGraph implements Serializable {
 		}
 	}
 
-	private void deleteConditionalOperators() {
+	private void deleteOperators() {
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
-			if (node.astNodeType == ASTNode.INFIX_EXPRESSION && node.getLabel().equals("<c>")) {
+			if (node.astNodeType != ASTNode.INFIX_EXPRESSION)
+				continue;
+			if ((!configuration.encodeArithmeticOperators && node.getLabel().equals("<a>"))
+					|| (!configuration.encodeBitwiseOperators && node.getLabel().equals("<b>"))
+					|| (!configuration.encodeConditionalOperators && node.getLabel().equals("<c>"))) {
 				HashSet<EGroumNode> delNodes = new HashSet<>();
 				for (EGroumEdge e1 : node.outEdges) {
 					if (e1.target.isAssignment() && e1 instanceof EGroumDataEdge && ((EGroumDataEdge) e1).type == Type.PARAMETER) {

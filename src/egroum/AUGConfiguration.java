@@ -42,6 +42,18 @@ public class AUGConfiguration {
      * combined.
      */
     public boolean encodeConditionalOperators = false;
+
+    /**
+     * Whether to encode conditional operators (&& and ||) in AUGs. The conditional operators are only used to combine
+     * atomic conditions. We do not aim to find problems in arithmetic logic and they only introduce variance.
+     */
+    public boolean encodeArithmeticOperators = false;
+
+    /**
+     * Whether to encode bitwise operators in AUGs. The conditional operators are only used to combine
+     * atomic conditions. We do not aim to find problems in bitwise logic and they only introduce variance.
+     */
+    public boolean encodeBitwiseOperators = false;
     
     /**
      * The level to go for removing the members, methods and fields, of this object
