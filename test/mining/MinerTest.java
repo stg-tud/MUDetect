@@ -277,8 +277,8 @@ public class MinerTest {
 		assertThat(patterns, hasSize(1));
 		Pattern pattern = patterns.get(0);
 		ArrayList<EGroumNode> patternNodes = pattern.getRepresentative().getNodes();
-		long numberOfAppendCalls = patternNodes.stream().filter(node -> node.getLabel().equals("StringBuilder.append()")).count();
-		assertThat(numberOfAppendCalls, is(1));
+		long numberOfAppendCalls = patternNodes.stream().filter(node -> node.getLabel().equals("AbstractStringBuilder.append()")).count();
+		assertThat(numberOfAppendCalls, is(1L));
 	}
 
 	private void print(Pattern pattern) {
