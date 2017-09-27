@@ -1595,11 +1595,13 @@ public class EGroumGraph implements Serializable {
 		SimpleName name = astNode.getException().getName();
 		String type = JavaASTUtil.getSimpleType(astNode.getException().getType());
 		context.addLocalVariable(name.getIdentifier(), "" + name.getStartPosition(), type);
-		EGroumDataNode cn = new EGroumDataNode(name, name.getNodeType(),
+		EGroumDataNode en = new EGroumDataNode(name, name.getNodeType(),
 				"" + name.getStartPosition(), type, name.getIdentifier(), false, true);
 		EGroumGraph pdg = new EGroumGraph(context, configuration);
-		pdg.mergeSequentialData(cn, Type.DEFINITION);
-		pdg.mergeSequentialData(new EGroumDataNode(null, cn.astNodeType, cn.key, cn.dataType, cn.dataName), Type.REFERENCE);
+		pdg.mergeSequentialData(en, Type.DEFINITION);
+		pdg.mergeSequentialData(new EGroumDataNode(null, en.astNodeType, en.key, en.dataType, en.dataName), Type.REFERENCE);
+		EGroumActionNode cn = new EGroumActionNode(control, branch, null, ASTNode.METHOD_INVOCATION, null, type + ".<catch>", type + ".<catch>");
+		pdg.mergeSequentialData(cn, Type.PARAMETER);
 		EGroumControlNode node = new EGroumControlNode(control, branch,
 				astNode, astNode.getNodeType());
 		pdg.mergeSequentialData(node, Type.CONDITION);
@@ -1621,7 +1623,7 @@ public class EGroumGraph implements Serializable {
 				nodes = context.getTrys(JavaASTUtil.getSimpleType(astNode.getException().getType()), triedMethods);
 		}
 		for (EGroumActionNode n : nodes) {
-			new EGroumDataEdge(n, cn, Type.THROW);
+			new EGroumDataEdge(n, en, Type.THROW);
 		}
 		context.removeScope();
 		return pdg;
