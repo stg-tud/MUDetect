@@ -110,6 +110,20 @@ public class AUGTestUtils {
         };
     }
 
+    public static Matcher<? super EGroumNode> dataNodeWithName(String label) {
+        return new BaseMatcher<EGroumNode>() {
+            @Override
+            public boolean matches(Object item) {
+                return item instanceof EGroumDataNode && ((EGroumDataNode) item).getDataName().equals(label);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("a ").appendValue(label).appendText(" data node");
+            }
+        };
+    }
+
     public static Matcher<? super AUG> hasSelEdge(Matcher<? super EGroumNode> sourceMatcher,
                                                   Matcher<? super EGroumNode> targetMatcher) {
         return hasEdge(new EdgeMatcher(sourceMatcher, "sel", targetMatcher));

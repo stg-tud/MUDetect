@@ -10,11 +10,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class EncodeConstantTest {
 
     @Test
-    public void encodeConstantTest() throws Exception {;
+    public void encodeConstantTest() throws Exception {
     	AUGConfiguration conf = new AUGConfiguration();
         AUG aug = buildAUG(
                 "void m(String s) { if (s.length() < Integer.MAX_VALUE) s.getBytes(); }",
                 conf);
-        assertThat(aug, hasNode(dataNodeWithLabel("int")));
+        assertThat(aug, hasNode(dataNodeWithName("2147483647")));
     }
 }
