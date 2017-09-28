@@ -388,6 +388,8 @@ public abstract class EGroumNode {
 			return "rep";
 		if (astNodeType == ASTNode.SYNCHRONIZED_STATEMENT)
 			return "syn";
+		if (astNodeType == ASTNode.CATCH_CLAUSE)
+			return "hdl";
 		return null;
 	}
 

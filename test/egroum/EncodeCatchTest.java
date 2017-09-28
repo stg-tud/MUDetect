@@ -24,6 +24,6 @@ public class EncodeCatchTest {
                 "}");
         
         assertThat(aug, hasEdge(actionNodeWithLabel("List.contains()"), THROW, dataNodeWithLabel("ClassCastException")));
-        assertThat(aug, hasEdge(actionNodeWithLabel("ClassCastException.<catch>"), CONDITION, actionNodeWithLabel("List.clear()")));
+        assertThat(aug, hasHandleEdge(actionNodeWithLabel("ClassCastException.<catch>"), actionNodeWithLabel("List.clear()")));
     }
 }
