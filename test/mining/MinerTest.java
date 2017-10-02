@@ -12,6 +12,7 @@ import java.util.List;
 
 import static egroum.EGroumTestUtils.buildGroumsForClasses;
 import static mining.MinerTestUtils.mineWithMinSupport2;
+import static mining.MinerTestUtils.mineWithMinSupport;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasSize;
@@ -21,6 +22,16 @@ public class MinerTest {
 	
 	@Rule
 	public TestName testName = new TestName();
+	
+	@Test
+	public void mineOrderedNodesOfSameReceiver() {
+		ArrayList<EGroumGraph> groums = EGroumTestUtils.buildGroumsFromFile("test-resources/input/Test_mine_ordered_nodes_of_same_receiver.java");
+		
+		List<Pattern> patterns = mineWithMinSupport(groums, 10);
+		
+//		assertThat(patterns.size(), is(1));
+		print(patterns);
+	}
 	
 	@Test
 	public void mineExceptionNodes() {

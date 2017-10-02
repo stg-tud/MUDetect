@@ -15,6 +15,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 class MinerTestUtils {
+
+    static List<Pattern> mineWithMinSupport(ArrayList<EGroumGraph> groums, int minSupport) {
+        Miner miner = new Miner("test", new Configuration() {{ minPatternSupport = minSupport; maxPatternSize = 300; }});
+        return new ArrayList<>(miner.mine(groums));
+    }
+    
     static List<Pattern> mineWithMinSupport2(ArrayList<EGroumGraph> groums) {
         Miner miner = new Miner("test", new Configuration() {{ minPatternSupport = 2; maxPatternSize = 300; }});
         return new ArrayList<>(miner.mine(groums));
