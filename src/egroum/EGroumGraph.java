@@ -2389,15 +2389,59 @@ public class EGroumGraph implements Serializable {
 	
 	private void removeThisMembers() {
 		for (EGroumNode node : new HashSet<EGroumNode>(nodes)) {
-			if (node instanceof EGroumDataNode && (node.key.startsWith("this") || node.key.startsWith("super"))) {
-				String[] parts = node.key.split("\\.");
-				if ((parts[0].equals("this") || parts[0].equals("super")) && parts.length <= configuration.removeImplementationCode) {
+			if (node instanceof EGroumDataNode) {
+				if (node.key.startsWith("this") || node.key.startsWith("super")) {
+					String[] parts = node.key.split("\\.");
+					if ((parts[0].equals("this") || parts[0].equals("super")) && parts.length <= configuration.removeImplementationCode) {
+						for (EGroumEdge e : new HashSet<EGroumEdge>(node.outEdges))
+							if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.RECEIVER)
+								delete(e.target);
+					}
+				} else if (configuration.removeImplementationCode >= 2 && isInClosure((EGroumDataNode) node)) {
 					for (EGroumEdge e : new HashSet<EGroumEdge>(node.outEdges))
 						if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.RECEIVER)
 							delete(e.target);
 				}
 			}
 		}
+	}
+
+	private boolean isInClosure(EGroumDataNode node) {
+		if (node.isDeclaration)
+			return false;
+		if (node.isField)
+			return false;
+		if (node.astNode == null)
+			return false;
+		if (!(node.astNode instanceof SimpleName))
+			return false;
+		IBinding b = ((SimpleName)(node.astNode)).resolveBinding();
+		if (b == null || !(b instanceof IVariableBinding))
+			return false;
+		IVariableBinding vb = (IVariableBinding) b;
+		vb = vb.getVariableDeclaration();
+		String vbKey = vb.getKey();
+		MethodDeclaration md = getContainingMethod(node);
+		if (md == null)
+			return false;
+		IMethodBinding mb = md.resolveBinding();
+		if (mb == null)
+			return false;
+		mb = mb.getMethodDeclaration();
+		String mbKey = mb.getKey();
+		return !vbKey.startsWith(mbKey);
+	}
+
+	private MethodDeclaration getContainingMethod(EGroumNode node) {
+		return getContainingMethod(node.astNode);
+	}
+
+	private MethodDeclaration getContainingMethod(ASTNode node) {
+		if (node == null)
+			return null;
+		if (node instanceof MethodDeclaration)
+			return (MethodDeclaration) node;
+		return getContainingMethod(node.getParent());
 	}
 
 	private void deleteTemporaryDataNodesIncomingToControlNodes() {
