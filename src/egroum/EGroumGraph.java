@@ -148,6 +148,8 @@ public class EGroumGraph implements Serializable {
 		deleteUnreachableNodes();
 		deleteControlNodes();
 		deleteUnusedDataNodes();
+		if (configuration.removeIndependentControlEdges)
+			deleteIndependentControlEdges();
 		if (configuration.groum) {
 			deleteDataNodes();
 			deleteNonCoreActionNodes();
@@ -196,26 +198,39 @@ public class EGroumGraph implements Serializable {
 				continue;
 			for (EGroumEdge e : new HashSet<EGroumEdge>(node.inEdges)) {
 				if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == Type.CONDITION) {
+					if (e.isExceptionHandling())
+						continue;
 					if (e.source instanceof EGroumDataNode && ((EGroumDataNode) e.source).isException())
 						continue;
-					HashSet<EGroumNode> closure = e.source.buildTransitiveParameterClosure(), inter = new HashSet<>(closure);
-					inter.retainAll(node.buildTransitiveParameterClosure());
-//					if (inter.isEmpty()) {
-//						EGroumNode def = null;
-//						for (EGroumEdge out : node.outEdges)
-//							if (out instanceof EGroumDataEdge && !e.isTransitive && ((EGroumDataEdge) e).type == Type.DEFINITION)
-//								def = out.target;
-//						if (def != null) {
-//							for (EGroumNode n : closure) {
-//								if (n.getDataName().equals(def.getDataName())) {
-//									inter.add(def);
-//									break;
-//								}
-//							}
-//						}
-//					}
-					if (inter.isEmpty())
-						e.delete();
+					HashSet<EGroumNode> closure = e.source.buildTransitiveParameterClosure(), 
+							inter = new HashSet<>(closure),
+							closure2 = node.buildTransitiveParameterClosure();
+					inter.retainAll(closure2);
+					if (inter.isEmpty()) {
+						HashSet<String> names = new HashSet<>();
+						for (EGroumNode n : closure)
+							names.add(n.key);
+						names.remove(null);
+						for (EGroumEdge out : node.outEdges) {
+							if (out instanceof EGroumDataEdge && !out.isTransitive && ((EGroumDataEdge) out).type == Type.DEFINITION) {
+								if (names.contains(out.target.key)) {
+									inter.add(out.target);
+									break;
+								}
+							}
+						}
+						if (inter.isEmpty()) {
+							for (EGroumNode n : closure2) {
+								if (names.contains(n.key)) {
+									inter.add(n);
+									break;
+								}
+							}
+							if (inter.isEmpty()) {
+								e.delete();
+							}
+						}
+					}
 				}
 			}
 		}
@@ -2254,8 +2269,6 @@ public class EGroumGraph implements Serializable {
 		for (EGroumNode node : nodes)
 			if (node instanceof EGroumControlNode && node.astNodeType != ASTNode.CATCH_CLAUSE && node.astNodeType != ASTNode.SYNCHRONIZED_STATEMENT)
 				((EGroumControlNode) node).buildConditionClosure();
-		if (configuration.removeIndependentControlEdges)
-			deleteIndependentControlEdges();
 		if (!configuration.buildTransitiveDataEdges) {
 			for (EGroumNode node : nodes) {
 				for (EGroumEdge e : new HashSet<EGroumEdge>(node.inEdges))

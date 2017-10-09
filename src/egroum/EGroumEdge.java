@@ -72,4 +72,8 @@ public abstract class EGroumEdge {
 	public String toString() {
 		return source + "-" + getLabel() +"->" + target;
 	}
+
+	public boolean isExceptionHandling() {
+		return label.equals("hdl");
+	}
 }

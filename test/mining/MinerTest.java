@@ -209,7 +209,7 @@ public class MinerTest {
 		List<Pattern> patterns = mineWithMinSupport2(groums);
 
 		print(patterns);
-		assertThat(patterns.size(), is(2)); // DEBUG
+		assertThat(patterns.size(), is(1));
 	}
 	
 	@Test

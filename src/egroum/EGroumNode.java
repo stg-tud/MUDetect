@@ -417,7 +417,7 @@ public abstract class EGroumNode {
 			for (EGroumEdge e : node.inEdges) {
 				if (e instanceof EGroumDataEdge && !parameterTransitiveNodes.contains(e.source)) {
 					EGroumDataEdge de = (EGroumDataEdge) e;
-					if (de.type == Type.PARAMETER || de.type == Type.QUALIFIER || de.type == Type.RECEIVER || de.type == Type.REFERENCE)
+					if (de.type == Type.PARAMETER || de.type == Type.QUALIFIER || de.type == Type.RECEIVER || de.type == Type.REFERENCE || de.type == Type.DEFINITION)
 						nodes.add(de.source);
 				}
 			}
