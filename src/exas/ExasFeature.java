@@ -14,18 +14,18 @@ public class ExasFeature {
 	static {
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONDITION), edgeFeatures.size());
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.DEFINITION),  edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(Type.ORDER), edgeFeatures.size());
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.PARAMETER), edgeFeatures.size());
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.QUALIFIER), edgeFeatures.size());
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.RECEIVER), edgeFeatures.size());
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.REFERENCE), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.ORDER), edgeFeatures.size());
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.THROW), edgeFeatures.size());
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.FINALLY), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONTAINS), edgeFeatures.size());
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONDITION, "sel"), edgeFeatures.size());
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONDITION, "rep"), edgeFeatures.size());
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONDITION, "syn"), edgeFeatures.size());
 		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONDITION, "hdl"), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONTAINS), edgeFeatures.size());
 		edgeFeatures.put("_control_", edgeFeatures.size());
 	}
 	

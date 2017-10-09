@@ -30,7 +30,7 @@ public class EGroumDataEdge extends EGroumEdge {
 
 	@Override
 	public String getLabel() {
-		return getLabel(type, label);
+		return getLabel(type);
 	}
 
 	@Override
