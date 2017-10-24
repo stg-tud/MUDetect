@@ -95,35 +95,16 @@ public class AUGImprovement2 {
             usageExamplePredicate = TypeUsageExamplePredicate.usageExamplesOf("java.util.Collection", "java.util.Iterator");}});
     	assertThat(gs, is(not(empty())));
     }
-
-    @Test
-    public void constant() throws Exception {
-    	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_constant.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
-    	assertThat(gs.get(0).getNodes().size(), Is.is(16));
-    	assertThat(gs.get(0).getEdges().size(), Is.is(38));
-    	int c = 0;
-    	for (EGroumNode node : gs.get(0).getNodes()) {
-    		if (node.getAstNodeType() == ASTNode.NUMBER_LITERAL && node.getDataType().equals("int") && node.getDataName().equals("0"))
-    			c++;
-    		else if (node.getAstNodeType() == ASTNode.BOOLEAN_LITERAL && node.getDataType().equals("boolean") && node.getDataName().equals("true"))
-    			c++;
-    		else if (node.getAstNodeType() == ASTNode.CHARACTER_LITERAL && node.getDataType().equals("char") && node.getDataName().equals("c"))
-    			c++;
-    		else if (node.getAstNodeType() == ASTNode.STRING_LITERAL && node.getDataType().equals("String") && node.getDataName().equals("s"))
-    			c++;
-    	}
-    	assertThat(c, Is.is(4));
-    }
-
+    
     @Test
     public void qualifiedName() throws Exception {
-    	AUGConfiguration conf = new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}};
+    	AUGConfiguration conf = new AUGConfiguration(){{removeImplementationCode = 2; groum = false; buildTransitiveDataEdges = false;}};
     	ArrayList<EGroumGraph> gs = EGroumTestUtils.buildAndPrintGroumsForFile("test-resources/input", "Test_qualified_name.java", null, "aug-improvement", conf);
     	assertThat(gs.get(0).getNodes().size(), Is.is(9));
     	if (conf.buildTransitiveDataEdges)
-    		assertThat(gs.get(0).getEdges().size(), Is.is(12));
+    		assertThat(gs.get(0).getEdges().size(), Is.is(11));
     	else
-    		assertThat(gs.get(0).getEdges().size(), Is.is(10));
+    		assertThat(gs.get(0).getEdges().size(), Is.is(8));
     }
 
     @Test

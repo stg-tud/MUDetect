@@ -110,16 +110,44 @@ public class AUGTestUtils {
         };
     }
 
-    public static Matcher<? super EGroumNode> dataNodeWithName(String label) {
+    public static Matcher<? super EGroumNode> dataNodeWithType(String type) {
         return new BaseMatcher<EGroumNode>() {
             @Override
             public boolean matches(Object item) {
-                return item instanceof EGroumDataNode && ((EGroumDataNode) item).getDataName().equals(label);
+                return item instanceof EGroumDataNode && ((EGroumDataNode) item).getDataType().equals(type);
             }
 
             @Override
             public void describeTo(Description description) {
-                description.appendText("a ").appendValue(label).appendText(" data node");
+                description.appendText("a ").appendValue(type).appendText(" data node");
+            }
+        };
+    }
+
+    public static Matcher<? super EGroumNode> dataNodeWithName(String name) {
+        return new BaseMatcher<EGroumNode>() {
+            @Override
+            public boolean matches(Object item) {
+                return item instanceof EGroumDataNode && ((EGroumDataNode) item).getDataName().equals(name);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("a ").appendValue(name).appendText(" data node");
+            }
+        };
+    }
+
+    public static Matcher<? super EGroumNode> dataNodeWithValue(String value) {
+        return new BaseMatcher<EGroumNode>() {
+            @Override
+            public boolean matches(Object item) {
+                return item instanceof EGroumConstantNode && ((EGroumConstantNode) item).getDataValue().equals(value);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("a ").appendValue(value).appendText(" data node");
             }
         };
     }

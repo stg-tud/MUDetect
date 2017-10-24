@@ -10,11 +10,32 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class EncodeConstantTest {
 
     @Test
-    public void encodeConstantTest() throws Exception {
-    	AUGConfiguration conf = new AUGConfiguration();
+    public void encodeConstantTest0() throws Exception {
+    	AUGConfiguration conf = new AUGConfiguration(){{encodeConstants = 0;}};
         AUG aug = buildAUG(
                 "void m(String s) { if (s.length() < Integer.MAX_VALUE) s.getBytes(); }",
                 conf);
-        assertThat(aug, hasNode(dataNodeWithName("2147483647")));
+        assertThat(aug, hasNode(dataNodeWithLabel("int")));
+        assertThat(aug, hasNode(dataNodeWithType("int")));
+    }
+
+    @Test
+    public void encodeConstantTest1() throws Exception {
+    	AUGConfiguration conf = new AUGConfiguration(){{encodeConstants = 1;}};
+        AUG aug = buildAUG(
+                "void m(String s) { if (s.length() < Integer.MAX_VALUE) s.getBytes(); }",
+                conf);
+        assertThat(aug, hasNode(dataNodeWithLabel("Integer.MAX_VALUE")));
+        assertThat(aug, hasNode(dataNodeWithName("Integer.MAX_VALUE")));
+    }
+
+    @Test
+    public void encodeConstantTest2() throws Exception {
+    	AUGConfiguration conf = new AUGConfiguration(){{encodeConstants = 2;}};
+        AUG aug = buildAUG(
+                "void m(String s) { if (s.length() < Integer.MAX_VALUE) s.getBytes(); }",
+                conf);
+        assertThat(aug, hasNode(dataNodeWithLabel(String.valueOf(Integer.MAX_VALUE))));
+        assertThat(aug, hasNode(dataNodeWithValue(String.valueOf(Integer.MAX_VALUE))));
     }
 }

@@ -423,4 +423,8 @@ public class JavaASTUtil {
 	public static String getAssignOperator(Operator operator) {
 		return assignmentLabels.get(operator.toString());
 	}
+
+	public static boolean isConstant(int modifiers) {
+		return Modifier.isFinal(modifiers) && Modifier.isStatic(modifiers);
+	}
 }

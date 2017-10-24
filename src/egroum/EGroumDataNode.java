@@ -27,7 +27,7 @@ public class EGroumDataNode extends EGroumNode {
 		this.isField = isField;
 		this.isDeclaration = isDeclaration;
 	}
-
+	
 	public EGroumDataNode(EGroumDataNode node) {
 		this(node.astNode, node.astNodeType, node.key, node.dataType, node.dataName, node.isField, node.isDeclaration);
 	}

@@ -62,6 +62,15 @@ public class AUGConfiguration {
      * 2 - Remove immediate members and their members
      */
     public int removeImplementationCode = 0;
+    
+    /**
+     * The level of encoding constants
+     * 0 - use types
+     * 1 - use names
+     * 2 - use values
+     */
+    public int encodeConstants = 1;
+    
     /**
      * 
      */
