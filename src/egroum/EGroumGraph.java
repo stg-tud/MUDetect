@@ -1254,8 +1254,8 @@ public class EGroumGraph implements Serializable {
 		EGroumGraph rg = buildArgumentPDG(control, branch, astNode.getRightOperand());
 		connectDependence(lg, rg);
 		InfixExpression.Operator op = astNode.getOperator();
-//		if (op == Operator.CONDITIONAL_AND || op == Operator.CONDITIONAL_OR)
-//			connectControl(lg, rg, "sel");
+		if (op == Operator.CONDITIONAL_AND || op == Operator.CONDITIONAL_OR)
+			connectControl(lg, rg, "sel");
 		String label = JavaASTUtil.buildLabel(op);
 		EGroumActionNode node = new EGroumActionNode(control, branch, astNode, astNode.getNodeType(), null, label, label);
 		lg.mergeSequentialData(node, Type.PARAMETER);
@@ -1269,8 +1269,8 @@ public class EGroumGraph implements Serializable {
 				tmp.mergeSequentialData(node, Type.PARAMETER);
 				egs[2+i] = tmp;
 				connectDependence(egs[1+i], egs[2+i]);
-//				if (op == Operator.CONDITIONAL_AND || op == Operator.CONDITIONAL_OR)
-//					connectControl(egs[1+i], egs[2+i], "sel");
+				if (op == Operator.CONDITIONAL_AND || op == Operator.CONDITIONAL_OR)
+					connectControl(egs[1+i], egs[2+i], "sel");
 			}
 			pdg.mergeParallel(egs);
 		}
@@ -1287,11 +1287,18 @@ public class EGroumGraph implements Serializable {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private void connectControl(EGroumGraph lg, EGroumGraph rg, String label) {
-		for (EGroumNode sink : lg.statementNodes) {
-			for (EGroumNode source : rg.statementNodes) {
-				new EGroumDataEdge(sink, source, Type.CONDITION, label);
+		if (lg.statementNodes.isEmpty()) {
+			for (EGroumNode sink : lg.sinks) {
+				for (EGroumNode source : rg.statementNodes) {
+					new EGroumDataEdge(sink, source, Type.CONDITION, label);
+				}
+			}
+		} else {
+			for (EGroumNode sink : lg.statementNodes) {
+				for (EGroumNode source : rg.statementNodes) {
+					new EGroumDataEdge(sink, source, Type.CONDITION, label);
+				}
 			}
 		}
 	}

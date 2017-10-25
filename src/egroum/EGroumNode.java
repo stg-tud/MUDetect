@@ -455,7 +455,7 @@ public abstract class EGroumNode {
 				}
 				if (!(e.source instanceof EGroumDataNode))
 					continue;
-				if (this instanceof EGroumActionNode && de.type != Type.RECEIVER && de.type != Type.PARAMETER)
+				if (this instanceof EGroumActionNode && de.type != Type.RECEIVER && de.type != Type.PARAMETER && de.type != Type.CONDITION)
 					continue;
 				if (this instanceof EGroumDataNode && de.type != Type.QUALIFIER)
 					continue;

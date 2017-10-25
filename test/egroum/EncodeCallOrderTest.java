@@ -5,8 +5,9 @@ import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.actionNodeWithLabel;
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.hasEdge;
+import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.notHaveEdge;
 import static egroum.AUGBuilderTestUtils.buildAUG;
-import static egroum.EGroumDataEdge.Type.ORDER;
+import static egroum.EGroumDataEdge.Type.*;
 import static org.junit.Assert.assertThat;
 
 public class EncodeCallOrderTest {
@@ -17,9 +18,12 @@ public class EncodeCallOrderTest {
                 "  l.get(0);\n" +
                 "  l.clear();\n" +
                 "}");
-
+        
         assertThat(aug, hasEdge(actionNodeWithLabel("Collection.add()"), ORDER, actionNodeWithLabel("List.get()")));
         assertThat(aug, hasEdge(actionNodeWithLabel("Collection.add()"), ORDER, actionNodeWithLabel("Collection.clear()")));
         assertThat(aug, hasEdge(actionNodeWithLabel("List.get()"), ORDER, actionNodeWithLabel("Collection.clear()")));
+        assertThat(aug, notHaveEdge(actionNodeWithLabel("Collection.add()"), CONDITION, actionNodeWithLabel("List.get()")));
+        assertThat(aug, notHaveEdge(actionNodeWithLabel("Collection.add()"), CONDITION, actionNodeWithLabel("Collection.clear()")));
+        assertThat(aug, notHaveEdge(actionNodeWithLabel("List.get()"), CONDITION, actionNodeWithLabel("Collection.clear()")));
     }
 }

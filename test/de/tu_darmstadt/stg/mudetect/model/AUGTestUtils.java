@@ -182,6 +182,16 @@ public class AUGTestUtils {
         return new AUGElementMatcher<>(AbstractBaseGraph::edgeSet, matcher);
     }
 
+    public static Matcher<? super AUG> notHaveEdge(final Matcher<? super EGroumNode> sourceMatcher,
+										            final EGroumDataEdge.Type edgeType,
+										            final Matcher<? super EGroumNode> targetMatcher) {
+        return notHaveEdge(new EdgeMatcher(sourceMatcher, EGroumDataEdge.getLabel(edgeType), targetMatcher));
+    }
+
+    private static Matcher<? super AUG> notHaveEdge(Matcher<? super EGroumEdge> matcher) {
+        return new AUGElementNotMatcher<>(AbstractBaseGraph::edgeSet, matcher);
+    }
+
     private static class AUGElementMatcher<E> extends BaseMatcher<AUG> {
         private final static AUGDotExporter augDotExporter = new AUGDotExporter(
                 EGroumNode::getLabel, new AUGNodeAttributeProvider(), new AUGEdgeAttributeProvider());
