@@ -36,6 +36,7 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
+import org.eclipse.jdt.core.dom.InfixExpression.Operator;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.InstanceofExpression;
 import org.eclipse.jdt.core.dom.LabeledStatement;
@@ -1251,12 +1252,11 @@ public class EGroumGraph implements Serializable {
 		pdg = new EGroumGraph(context, configuration);
 		EGroumGraph lg = buildArgumentPDG(control, branch, astNode.getLeftOperand());
 		EGroumGraph rg = buildArgumentPDG(control, branch, astNode.getRightOperand());
-		for (EGroumNode sink : lg.statementSinks) {
-			for (EGroumNode source : rg.statementSources) {
-				new EGroumDataEdge(sink, source, Type.DEPENDENCE);
-			}
-		}
-		String label = JavaASTUtil.buildLabel(astNode.getOperator());
+		connectDependence(lg, rg);
+		InfixExpression.Operator op = astNode.getOperator();
+//		if (op == Operator.CONDITIONAL_AND || op == Operator.CONDITIONAL_OR)
+//			connectControl(lg, rg, "sel");
+		String label = JavaASTUtil.buildLabel(op);
 		EGroumActionNode node = new EGroumActionNode(control, branch, astNode, astNode.getNodeType(), null, label, label);
 		lg.mergeSequentialData(node, Type.PARAMETER);
 		rg.mergeSequentialData(node, Type.PARAMETER);
@@ -1268,15 +1268,32 @@ public class EGroumGraph implements Serializable {
 				EGroumGraph tmp = buildArgumentPDG(control, branch, (Expression) astNode.extendedOperands().get(i));
 				tmp.mergeSequentialData(node, Type.PARAMETER);
 				egs[2+i] = tmp;
-				for (EGroumNode sink : egs[1+i].statementSinks)
-					for (EGroumNode source : egs[2+i].statementSources)
-						new EGroumDataEdge(sink, source, Type.DEPENDENCE);
+				connectDependence(egs[1+i], egs[2+i]);
+//				if (op == Operator.CONDITIONAL_AND || op == Operator.CONDITIONAL_OR)
+//					connectControl(egs[1+i], egs[2+i], "sel");
 			}
 			pdg.mergeParallel(egs);
 		}
 		else
 			pdg.mergeParallel(lg, rg);
 		return pdg;
+	}
+
+	private void connectDependence(EGroumGraph lg, EGroumGraph rg) {
+		for (EGroumNode sink : lg.statementSinks) {
+			for (EGroumNode source : rg.statementSources) {
+				new EGroumDataEdge(sink, source, Type.DEPENDENCE);
+			}
+		}
+	}
+
+	@SuppressWarnings("unused")
+	private void connectControl(EGroumGraph lg, EGroumGraph rg, String label) {
+		for (EGroumNode sink : lg.statementNodes) {
+			for (EGroumNode source : rg.statementNodes) {
+				new EGroumDataEdge(sink, source, Type.CONDITION, label);
+			}
+		}
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, IfStatement astNode) {
