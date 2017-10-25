@@ -15,20 +15,20 @@ import de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilder;
 import java.io.IOException;
 import java.util.Collection;
 
-class IntraProjectStrategy extends MuDetectStrategy {
+public class IntraProjectStrategy extends MuDetectStrategy {
     @Override
-    Collection<APIUsageExample> loadTrainingExamples(DetectorArgs args, DetectorOutput.Builder output) throws IOException {
+    protected Collection<APIUsageExample> loadTrainingExamples(DetectorArgs args, DetectorOutput.Builder output) throws IOException {
         return new AUGBuilder(new DefaultAUGConfiguration())
                 .build(args.getTargetPath().srcPath, args.getDependencyClassPath());
     }
 
     @Override
-    AUGMiner createMiner() {
+    protected AUGMiner createMiner() {
         return new DefaultAUGMiner(new DefaultMiningConfiguration());
     }
 
     @Override
-    MuDetect createDetector(Model model) {
+    protected MuDetect createDetector(Model model) {
         return new MuDetect(
                 new MinPatternActionsModel(model, 2),
                 new AlternativeMappingsOverlapsFinder(new DefaultOverlapFinderConfig(new DefaultMiningConfiguration())),

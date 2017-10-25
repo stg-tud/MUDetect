@@ -17,15 +17,15 @@ import de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilder;
 import java.io.FileNotFoundException;
 import java.util.Collection;
 
-class ProvidedPatternsStrategy extends MuDetectStrategy {
+public class ProvidedPatternsStrategy extends MuDetectStrategy {
     @Override
-    Collection<APIUsageExample> loadTrainingExamples(DetectorArgs args, DetectorOutput.Builder output) throws FileNotFoundException {
+    protected Collection<APIUsageExample> loadTrainingExamples(DetectorArgs args, DetectorOutput.Builder output) throws FileNotFoundException {
         return new AUGBuilder(new DefaultAUGConfiguration())
                 .build(args.getPatternPath().srcPath, args.getDependencyClassPath());
     }
 
     @Override
-    AUGMiner createMiner() {
+    protected AUGMiner createMiner() {
         DefaultMiningConfiguration config = new DefaultMiningConfiguration() {{
             minPatternSupport = 1; // create a pattern from each provided example
         }};
@@ -33,7 +33,7 @@ class ProvidedPatternsStrategy extends MuDetectStrategy {
     }
 
     @Override
-    MuDetect createDetector(Model model) {
+    protected MuDetect createDetector(Model model) {
         return new MuDetect(
                 new MinPatternActionsModel(model, 2),
                 new EmptyOverlapsFinder(

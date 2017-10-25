@@ -21,17 +21,17 @@ import java.util.stream.Collectors;
 
 import static de.tu_darmstadt.stg.mudetect.AlternativeViolationPredicate.firstAlternativeViolation;
 
-abstract class MuDetectStrategy implements DetectionStrategy {
+public abstract class MuDetectStrategy implements DetectionStrategy {
 
-    abstract Collection<APIUsageExample> loadTrainingExamples(DetectorArgs args, DetectorOutput.Builder output) throws IOException;
+    protected abstract Collection<APIUsageExample> loadTrainingExamples(DetectorArgs args, DetectorOutput.Builder output) throws IOException;
 
-    abstract AUGMiner createMiner();
+    protected abstract AUGMiner createMiner();
 
-    private Collection<APIUsageExample> loadDetectionTargets(DetectorArgs args) throws IOException {
+    protected Collection<APIUsageExample> loadDetectionTargets(DetectorArgs args) throws IOException {
         return new AUGBuilder(new DefaultAUGConfiguration()).build(args.getTargetPath().srcPath, args.getDependencyClassPath());
     }
 
-    abstract MuDetect createDetector(Model model);
+    protected abstract MuDetect createDetector(Model model);
 
     @Override
     public DetectorOutput detectViolations(DetectorArgs args) throws Exception {
