@@ -16,6 +16,7 @@ import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.IntersectionType;
 import org.eclipse.jdt.core.dom.Javadoc;
@@ -424,7 +425,10 @@ public class JavaASTUtil {
 		return assignmentLabels.get(operator.toString());
 	}
 
-	public static boolean isConstant(int modifiers) {
+	public static boolean isConstant(IVariableBinding vb) {
+		if (vb.isEnumConstant())
+			return true;
+		int modifiers = vb.getModifiers();
 		return Modifier.isFinal(modifiers) && Modifier.isStatic(modifiers);
 	}
 }

@@ -38,4 +38,24 @@ public class EncodeConstantTest {
         assertThat(aug, hasNode(dataNodeWithLabel(String.valueOf(Integer.MAX_VALUE))));
         assertThat(aug, hasNode(dataNodeWithValue(String.valueOf(Integer.MAX_VALUE))));
     }
+
+    @Test
+    public void encodeEnumTest0() throws Exception {
+    	AUGConfiguration conf = new AUGConfiguration(){{encodeConstants = 0;}};
+        AUG aug = buildAUG(
+                "void m(java.awt.Color c) { if (c == java.awt.Color.BLACK) c.getRGB(); }",
+                conf);
+        assertThat(aug, hasNode(dataNodeWithLabel("Color")));
+        assertThat(aug, hasNode(dataNodeWithType("Color")));
+    }
+
+    @Test
+    public void encodeEnumTest1() throws Exception {
+    	AUGConfiguration conf = new AUGConfiguration(){{encodeConstants = 1;}};
+        AUG aug = buildAUG(
+                "void m(java.awt.Color c) { if (c == java.awt.Color.BLACK) c.getRGB(); }",
+                conf);
+        assertThat(aug, hasNode(dataNodeWithName("Color.BLACK")));
+        assertThat(aug, hasNode(dataNodeWithLabel("Color.BLACK")));
+    }
 }

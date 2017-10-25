@@ -879,7 +879,7 @@ public class EGroumGraph implements Serializable {
 				type = vb.getType().getTypeDeclaration().getName();
 			else
 				type = vb.getType().getName();
-			if (JavaASTUtil.isConstant(vb.getModifiers())) {
+			if (JavaASTUtil.isConstant(vb)) {
 				if (vb.getDeclaringClass().getTypeDeclaration() != null)
 					constantName = vb.getDeclaringClass().getTypeDeclaration().getName() + "." + vb.getName();
 				else
@@ -906,7 +906,7 @@ public class EGroumGraph implements Serializable {
 			}
 		}
 		if (constantName != null) {
-			EGroumConstantNode node = new EGroumConstantNode(astNode, astNodeType, constantName, type, constantName, constantValue, true, false, configuration.encodeConstants);
+			EGroumDataNode node = new EGroumDataNode(astNode, astNodeType, constantName, type, constantName, constantValue, true, false, configuration.encodeConstants);
 			return new EGroumGraph(context, node, configuration);
 		}
 		String name = astNode.getIdentifier();
@@ -937,7 +937,7 @@ public class EGroumGraph implements Serializable {
 			}
 		}
 		if (name.equals(name.toUpperCase()))
-			return new EGroumGraph(context, new EGroumConstantNode(astNode, ASTNode.FIELD_ACCESS, name, name, name, null, true, false, configuration.encodeConstants), configuration);
+			return new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS, name, name, name, null, true, false, configuration.encodeConstants), configuration);
 		if (configuration.keepQualifierEdges && astNodeType == -1) {
 			EGroumGraph pdg = new EGroumGraph(context, new EGroumDataNode(
 					null, ASTNode.THIS_EXPRESSION, "this",
@@ -994,7 +994,7 @@ public class EGroumGraph implements Serializable {
 				type = vb.getType().getTypeDeclaration().getName();
 			else
 				type = vb.getType().getName();
-			if (JavaASTUtil.isConstant(vb.getModifiers())) {
+			if (JavaASTUtil.isConstant(vb)) {
 				if (vb.getDeclaringClass().getTypeDeclaration() != null)
 					constantName = vb.getDeclaringClass().getTypeDeclaration().getName() + "." + vb.getName();
 				else
@@ -1021,14 +1021,14 @@ public class EGroumGraph implements Serializable {
 			}
 		}
 		if (constantName != null) {
-			EGroumConstantNode node = new EGroumConstantNode(astNode, astNodeType, constantName, type, constantName, constantValue, true, false, configuration.encodeConstants);
+			EGroumDataNode node = new EGroumDataNode(astNode, astNodeType, constantName, type, constantName, constantValue, true, false, configuration.encodeConstants);
 			return new EGroumGraph(context, node, configuration);
 		} else {
 			if (astNode.resolveTypeBinding() != null)
 				type = astNode.resolveTypeBinding().getTypeDeclaration().getName();
 			String name = astNode.getName().getIdentifier();
 			if (name.equals(name.toUpperCase()))
-				return new EGroumGraph(context, new EGroumConstantNode(astNode, ASTNode.FIELD_ACCESS, astNode.getFullyQualifiedName(), type == null ? astNode.getFullyQualifiedName() : type, astNode.getFullyQualifiedName(), null, true, false, configuration.encodeConstants), configuration);
+				return new EGroumGraph(context, new EGroumDataNode(astNode, ASTNode.FIELD_ACCESS, astNode.getFullyQualifiedName(), type == null ? astNode.getFullyQualifiedName() : type, astNode.getFullyQualifiedName(), null, true, false, configuration.encodeConstants), configuration);
 			if (type == null)
 				type = "UNKNOWN";
 			EGroumDataNode node = new EGroumDataNode(astNode, astNodeType, astNode.getFullyQualifiedName(), type, astNode.getFullyQualifiedName(), true, false);
@@ -1060,10 +1060,8 @@ public class EGroumGraph implements Serializable {
 		}
 		if (astNode.getOperator() == PrefixExpression.Operator.INCREMENT
 				|| astNode.getOperator() == PrefixExpression.Operator.DECREMENT) {
-			pdg.mergeSequentialData(new EGroumActionNode(control, branch,
-					astNode, ASTNode.ASSIGNMENT, null, null, "="), Type.PARAMETER);
-			pdg.mergeSequentialData(new EGroumDataNode(node.astNode, node.astNodeType, node.key,
-					node.dataType, node.dataName), Type.DEFINITION);
+			pdg.mergeSequentialData(new EGroumActionNode(control, branch, astNode, ASTNode.ASSIGNMENT, null, null, "="), Type.PARAMETER);
+			pdg.mergeSequentialData(new EGroumDataNode(node.astNode, node.astNodeType, node.key, node.dataType, node.dataName), Type.DEFINITION);
 		}
 		return pdg;
 	}
@@ -1079,10 +1077,8 @@ public class EGroumGraph implements Serializable {
 		rg.mergeSequentialData(op, Type.PARAMETER);
 		EGroumGraph pdg = new EGroumGraph(context, configuration);
 		pdg.mergeParallel(lg, rg);
-		pdg.mergeSequentialData(new EGroumActionNode(control, branch,
-				astNode, ASTNode.ASSIGNMENT, null, null, "="), Type.PARAMETER);
-		pdg.mergeSequentialData(new EGroumDataNode(node.astNode, node.astNodeType, node.key,
-				node.dataType, node.dataName), Type.DEFINITION);
+		pdg.mergeSequentialData(new EGroumActionNode(control, branch, astNode, ASTNode.ASSIGNMENT, null, null, "="), Type.PARAMETER);
+		pdg.mergeSequentialData(new EGroumDataNode(node.astNode, node.astNodeType, node.key, node.dataType, node.dataName), Type.DEFINITION);
 		return pdg;
 	}
 
@@ -1939,7 +1935,7 @@ public class EGroumGraph implements Serializable {
 		EGroumNode node = pdg.getOnlyOut();
 		if (node instanceof EGroumDataNode) {
 			if (node.isDefinition())
-				pdg.mergeSequentialData(new EGroumDataNode(node.astNode, node.astNodeType, node.key, node.dataType, ((EGroumDataNode) node).dataName, ((EGroumDataNode) node).isField, false), Type.REFERENCE);
+				pdg.mergeSequentialData(new EGroumDataNode(node.astNode, node.astNodeType, node.key, node.dataType, ((EGroumDataNode) node).dataName, ((EGroumDataNode) node).dataValue, ((EGroumDataNode) node).isField, false, ((EGroumDataNode) node).encodeLevel), Type.REFERENCE);
 			return pdg;
 		}
 		String type = node.dataType;
@@ -2559,7 +2555,7 @@ public class EGroumGraph implements Serializable {
 		if (qual == null) {
 			EGroumNode def = defs.get(null).get(node.key);
 			if (def == null) {
-				def = new EGroumDataNode(null, node.astNodeType, node.key, node.dataType, node.dataName, true, true);
+				def = new EGroumDataNode(null, node.astNodeType, node.key, node.dataType, node.dataName, node.dataValue, true, true, node.encodeLevel);
 				defs.get(null).put(node.key, def);
 				nodes.add(def);
 			}
@@ -2581,10 +2577,10 @@ public class EGroumGraph implements Serializable {
 				}
 				EGroumNode def = ds.get(node.key);
 				if (def == null) {
-					def = new EGroumDataNode(null, node.astNodeType, node.key, node.dataType, node.dataName, node.isField, true);
+					def = new EGroumDataNode(null, node.astNodeType, node.key, node.dataType, node.dataName, node.dataValue, node.isField, true, node.encodeLevel);
 					ds.put(node.key, def);
 					nodes.add(def);
-					EGroumDataNode qualRef = new EGroumDataNode(null, qualDef.astNodeType, qualDef.key, qualDef.dataType, ((EGroumDataNode) qualDef).dataName, ((EGroumDataNode) qualDef).isField, false);
+					EGroumDataNode qualRef = new EGroumDataNode(null, qualDef.astNodeType, qualDef.key, qualDef.dataType, ((EGroumDataNode) qualDef).dataName, ((EGroumDataNode) qualDef).dataValue, ((EGroumDataNode) qualDef).isField, false, ((EGroumDataNode) qualDef).encodeLevel);
 					nodes.add(qualRef);
 					new EGroumDataEdge(qualDef, qualRef, Type.REFERENCE);
 					new EGroumDataEdge(qualRef, def, Type.QUALIFIER);

@@ -114,7 +114,7 @@ public class AUGTestUtils {
         return new BaseMatcher<EGroumNode>() {
             @Override
             public boolean matches(Object item) {
-                return item instanceof EGroumDataNode && ((EGroumDataNode) item).getDataType().equals(type);
+                return item instanceof EGroumDataNode && ((EGroumDataNode) item).getDataType() != null && ((EGroumDataNode) item).getDataType().equals(type);
             }
 
             @Override
@@ -128,7 +128,7 @@ public class AUGTestUtils {
         return new BaseMatcher<EGroumNode>() {
             @Override
             public boolean matches(Object item) {
-                return item instanceof EGroumDataNode && ((EGroumDataNode) item).getDataName().equals(name);
+                return item instanceof EGroumDataNode && ((EGroumDataNode) item).getDataName() != null && ((EGroumDataNode) item).getDataName().equals(name);
             }
 
             @Override
@@ -142,7 +142,7 @@ public class AUGTestUtils {
         return new BaseMatcher<EGroumNode>() {
             @Override
             public boolean matches(Object item) {
-                return item instanceof EGroumConstantNode && ((EGroumConstantNode) item).getDataValue().equals(value);
+                return item instanceof EGroumDataNode && ((EGroumDataNode) item).getDataValue() != null && ((EGroumDataNode) item).getDataValue().equals(value);
             }
 
             @Override

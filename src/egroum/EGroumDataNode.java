@@ -8,8 +8,9 @@ import java.util.Optional;
 
 public class EGroumDataNode extends EGroumNode {
 	protected boolean isField = false, isDeclaration = false;
-	
 	protected String dataName;
+	protected String dataValue;
+	protected int encodeLevel = 0;
 	
 	public EGroumDataNode(ASTNode astNode, int nodeType, String key, String dataType, String dataName) {
 		super(astNode, nodeType, key);
@@ -27,9 +28,15 @@ public class EGroumDataNode extends EGroumNode {
 		this.isField = isField;
 		this.isDeclaration = isDeclaration;
 	}
+
+	public EGroumDataNode(ASTNode astNode, int nodeType, String key, String dataType, String dataName, String dataValue, boolean isField, boolean isDeclaration, int encodeLevel) {
+		this(astNode, nodeType, key, dataType, dataName, isField, isDeclaration);
+		this.dataValue = dataValue;
+		this.encodeLevel = encodeLevel;
+	}
 	
 	public EGroumDataNode(EGroumDataNode node) {
-		this(node.astNode, node.astNodeType, node.key, node.dataType, node.dataName, node.isField, node.isDeclaration);
+		this(node.astNode, node.astNodeType, node.key, node.dataType, node.dataName, node.dataValue, node.isField, node.isDeclaration, node.encodeLevel);
 	}
 
 	public EGroumDataNode(String dataType) {
@@ -42,8 +49,16 @@ public class EGroumDataNode extends EGroumNode {
 		return dataName;
 	}
 
+	public String getDataValue() {
+		return dataValue;
+	}
+
 	@Override
 	public String getLabel() {
+		if (encodeLevel >= 2 && dataValue != null)
+			return dataValue;
+		if (encodeLevel >= 1 && dataName != null)
+			return dataName;
 		return dataType;
 	}
 
@@ -106,9 +121,11 @@ public class EGroumDataNode extends EGroumNode {
 		this.astNodeType = node.astNodeType;
 		this.dataName = node.dataName;
 		this.dataType = node.dataType;
+		this.dataValue = node.dataValue;
 		this.key = node.key;
 		this.isField = node.isField;
 		this.isDeclaration = node.isDeclaration;
+		this.encodeLevel = node.encodeLevel;
 	}
 	
 	@Override
