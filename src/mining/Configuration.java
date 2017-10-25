@@ -40,4 +40,9 @@ public class Configuration {
      * The level of occurrence of instances of a pattern
      */
     public Level occurenceLevel = Level.WITHIN_METHOD;
+    
+    /**
+     * Abstract labels of condition edges (sel, rep, sync, handle)
+     */
+    public boolean abstractConditionEdges = false;
 }

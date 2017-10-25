@@ -30,7 +30,16 @@ class MinerTestUtils {
         return mineWithMinSupport2(buildGroumsForMethods(sourceCodes));
     }
 
-    static void print(List<Pattern> patterns, TestName testName) {
+    static List<Pattern> mineMethods(Configuration conf, String... sourceCodes) {
+		return mine(conf, buildGroumsForMethods(sourceCodes));
+	}
+
+    static List<Pattern> mine(Configuration conf, ArrayList<EGroumGraph> groums) {
+        Miner miner = new Miner("test", conf);
+        return new ArrayList<>(miner.mine(groums));
+	}
+
+	static void print(List<Pattern> patterns, TestName testName) {
         System.err.println("Test '" + testName.getMethodName() + "':");
         for (Pattern pattern : patterns) {
             HashSet<EGroumNode> set = new HashSet<>(pattern.getRepresentative().getNodes());

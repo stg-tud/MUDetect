@@ -29,6 +29,25 @@ public class ExasFeature {
 		edgeFeatures.put("_control_", edgeFeatures.size());
 	}
 	
+	public static void abstractConditionEdges() {
+		edgeFeatures.clear();
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONDITION), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.DEFINITION),  edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.PARAMETER), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.QUALIFIER), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.RECEIVER), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.REFERENCE), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.ORDER), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.THROW), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.FINALLY), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONTAINS), edgeFeatures.size());
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONDITION, "sel"), 0);
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONDITION, "rep"), 0);
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONDITION, "syn"), 0);
+		edgeFeatures.put(EGroumDataEdge.getLabel(Type.CONDITION, "hdl"), 0);
+		edgeFeatures.put("_control_", edgeFeatures.size());
+	}
+	
 	private HashMap<String, Integer> nodeFeatures = new HashMap<>();
 	
 	public ExasFeature(ArrayList<EGroumNode> nodes, Function<EGroumNode, String> nodeToLabel) {
