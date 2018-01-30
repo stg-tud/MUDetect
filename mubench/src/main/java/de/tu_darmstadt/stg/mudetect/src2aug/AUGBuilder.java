@@ -53,9 +53,16 @@ public class AUGBuilder {
         this.configuration = configuration;
     }
 
+    public Collection<APIUsageExample> build(String[] sourcePaths, String[] classpaths) {
+        EGroumBuilder builder = new EGroumBuilder(configuration);
+        return Arrays.stream(sourcePaths)
+                .flatMap(sourcePath -> builder.buildBatch(sourcePath, classpaths).stream())
+                .map(AUGBuilder::toAUG)
+                .collect(Collectors.toList());
+    }
+
 	public Collection<APIUsageExample> build(String sourcePath, String[] classpaths) {
-        return new EGroumBuilder(configuration).buildBatch(sourcePath, classpaths).stream()
-                .map(AUGBuilder::toAUG).collect(Collectors.toList());
+        return build(new String[] {sourcePath}, classpaths);
     }
 
     public Collection<APIUsageExample> build(String source, String basePath, String projectName, String[] classpath) {

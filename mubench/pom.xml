@@ -56,7 +56,7 @@
         <dependency>
             <groupId>de.tu-darmstadt.stg</groupId>
             <artifactId>mubench.cli</artifactId>
-            <version>0.0.10-SNAPSHOT</version>
+            <version>0.0.11</version>
         </dependency>
 
         <!-- ### Utils #################################################### -->

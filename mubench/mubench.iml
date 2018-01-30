@@ -32,7 +32,7 @@
     <orderEntry type="library" name="Maven: org.jgrapht:jgrapht-ext:0.9.2" level="project" />
     <orderEntry type="library" name="Maven: org.tinyjee.jgraphx:jgraphx:2.0.0.1" level="project" />
     <orderEntry type="library" name="Maven: jgraph:jgraph:5.13.0.0" level="project" />
-    <orderEntry type="library" name="Maven: de.tu-darmstadt.stg:mubench.cli:0.0.10-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: de.tu-darmstadt.stg:mubench.cli:0.0.11" level="project" />
     <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.17" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:19.0" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />

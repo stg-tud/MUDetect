@@ -1,31 +1,28 @@
 package de.tu_darmstadt.stg.mubench;
 
-import de.tu_darmstadt.stg.mubench.cli.CodePath;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.joining;
 
 public class TargetProject {
     private final String projectId;
     private final String versionId;
-    private final CodePath codePath;
+    private final String[] codePath;
     private Collection<Misuse> misuses;
 
-    public static TargetProject find(Path index, CodePath targetPath) throws IOException {
-        String targetSrcPath = targetPath.srcPath;
+    static TargetProject find(Path index, String[] targetSrcPaths) throws IOException {
         try (Stream<String> lines = Files.lines(index)) {
             Map<TargetProject, List<Misuse>> collect = lines.map(line -> line.split("\t"))
-                    .filter(line -> targetSrcPath.contains(String.format("/%s/%s/", line[0], line[1])))
+                    .filter(line -> anyContains(targetSrcPaths, String.format("/%s/%s/", line[0], line[1])))
                     .collect(
                             Collectors.groupingBy(
-                                    line -> new TargetProject(line[0], line[1], targetPath),
+                                    line -> new TargetProject(line[0], line[1], targetSrcPaths),
                                     Collectors.mapping(
                                             line -> new Misuse(line[2], line[4], line[5], new API(line[6])),
                                             Collectors.toList()
@@ -35,15 +32,15 @@ public class TargetProject {
 
             if (collect.isEmpty()) {
                 throw new IllegalStateException(
-                        String.format("Found no target project for path '%s'", targetSrcPath)
+                        String.format("Found no target project for paths [%s]", toString(targetSrcPaths))
                 );
             }
 
             if (collect.size() > 1) {
                 throw new IllegalStateException(
-                        String.format("Found more than one target project for path '%s': %s",
-                                targetSrcPath,
-                                collect.keySet().stream().map(TargetProject::getId).collect(Collectors.joining(", "))
+                        String.format("Found more than one target project for paths [%s]: %s",
+                                toString(targetSrcPaths),
+                                collect.keySet().stream().map(TargetProject::getId).collect(joining(", "))
                         ));
             }
 
@@ -54,7 +51,20 @@ public class TargetProject {
         }
     }
 
-    private TargetProject(String projectId, String versionId, CodePath codePath) {
+    private static boolean anyContains(String[] strings, String substring) {
+        for (String string : strings) {
+            if (string.contains(substring)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static String toString(String[] strings) {
+        return Arrays.stream(strings).collect(joining(", "));
+    }
+
+    private TargetProject(String projectId, String versionId, String[] codePath) {
         this.projectId = projectId;
         this.versionId = versionId;
         this.codePath = codePath;
@@ -72,7 +82,7 @@ public class TargetProject {
         return versionId;
     }
 
-    public CodePath getCodePath() {
+    public String[] getCodePath() {
         return codePath;
     }
 

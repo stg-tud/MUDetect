@@ -18,16 +18,16 @@ public class MuMinerRunner {
 
     private static class MuMinerStrategy implements DetectionStrategy {
         @Override
-        public DetectorOutput detectViolations(DetectorArgs args) throws Exception {
+        public DetectorOutput detectViolations(DetectorArgs args, DetectorOutput.Builder output) throws Exception {
             Collection<APIUsageExample> augs = loadTargetData(args);
             ArrayList<Anomaly> anomalies = detectAnomalies(augs);
             List<DetectorFinding> findings = toDetectorFindings(anomalies);
-            return createOutput().withFindings(findings);
+            return output.withFindings(findings);
         }
 
         private Collection<APIUsageExample> loadTargetData(DetectorArgs args) throws FileNotFoundException {
             return new AUGBuilder(new DefaultAUGConfiguration())
-                    .build(args.getTargetPath().srcPath, args.getDependencyClassPath());
+                    .build(args.getTargetSrcPaths(), args.getDependencyClassPath());
         }
 
         private ArrayList<Anomaly> detectAnomalies(Collection<APIUsageExample> augs) {

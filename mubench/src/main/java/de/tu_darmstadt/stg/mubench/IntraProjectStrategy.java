@@ -19,7 +19,7 @@ public class IntraProjectStrategy extends MuDetectStrategy {
     @Override
     protected Collection<APIUsageExample> loadTrainingExamples(DetectorArgs args, DetectorOutput.Builder output) throws IOException {
         return new AUGBuilder(new DefaultAUGConfiguration())
-                .build(args.getTargetPath().srcPath, args.getDependencyClassPath());
+                .build(args.getTargetSrcPaths(), args.getDependencyClassPath());
     }
 
     @Override

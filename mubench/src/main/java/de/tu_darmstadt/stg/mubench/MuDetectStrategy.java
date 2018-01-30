@@ -28,15 +28,14 @@ public abstract class MuDetectStrategy implements DetectionStrategy {
     protected abstract AUGMiner createMiner();
 
     protected Collection<APIUsageExample> loadDetectionTargets(DetectorArgs args) throws IOException {
-        return new AUGBuilder(new DefaultAUGConfiguration()).build(args.getTargetPath().srcPath, args.getDependencyClassPath());
+        return new AUGBuilder(new DefaultAUGConfiguration())
+                .build(args.getTargetSrcPaths(), args.getDependencyClassPath());
     }
 
     protected abstract MuDetect createDetector(Model model);
 
     @Override
-    public DetectorOutput detectViolations(DetectorArgs args) throws Exception {
-        DetectorOutput.Builder output = createOutput();
-
+    public DetectorOutput detectViolations(DetectorArgs args, DetectorOutput.Builder output) throws Exception {
         long startTime = System.currentTimeMillis();
         Collection<APIUsageExample> trainingExamples = loadTrainingExamples(args, output);
         long endTrainingLoadTime = System.currentTimeMillis();

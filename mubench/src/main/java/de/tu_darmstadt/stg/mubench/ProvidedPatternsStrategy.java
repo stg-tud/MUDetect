@@ -21,7 +21,7 @@ public class ProvidedPatternsStrategy extends MuDetectStrategy {
     @Override
     protected Collection<APIUsageExample> loadTrainingExamples(DetectorArgs args, DetectorOutput.Builder output) throws FileNotFoundException {
         return new AUGBuilder(new DefaultAUGConfiguration())
-                .build(args.getPatternPath().srcPath, args.getDependencyClassPath());
+                .build(args.getPatternSrcPath(), args.getDependencyClassPath());
     }
 
     @Override

@@ -43,10 +43,8 @@ class CrossProjectStrategy implements DetectionStrategy {
     }
 
     @Override
-    public DetectorOutput detectViolations(DetectorArgs args) throws Exception {
-        DetectorOutput.Builder output = createOutput();
-
-        TargetProject targetProject = TargetProject.find(getIndexFilePath(), args.getTargetPath());
+    public DetectorOutput detectViolations(DetectorArgs args, DetectorOutput.Builder output) throws Exception {
+        TargetProject targetProject = TargetProject.find(getIndexFilePath(), args.getTargetSrcPaths());
         Collection<APIUsageExample> targets = loadDetectionTargets(args, targetProject);
         output.withRunInfo("numberOfTargets", targets.size());
 
@@ -227,9 +225,10 @@ class CrossProjectStrategy implements DetectionStrategy {
     }
 
     private Collection<APIUsageExample> loadDetectionTargets(DetectorArgs args, TargetProject targetProject) throws IOException {
-        return new AUGBuilder(new DefaultAUGConfiguration() {{
+        AUGBuilder builder = new AUGBuilder(new DefaultAUGConfiguration() {{
             usageExamplePredicate = MisuseInstancePredicate.examplesOf(targetProject.getMisuses());
-        }}).build(args.getTargetPath().srcPath, args.getDependencyClassPath());
+        }});
+        return builder.build(args.getTargetSrcPaths(), args.getDependencyClassPath());
     }
 
     private MuDetect createDetector(Model model) {
