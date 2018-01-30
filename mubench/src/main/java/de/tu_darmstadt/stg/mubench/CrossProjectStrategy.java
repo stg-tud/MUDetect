@@ -34,11 +34,11 @@ import java.util.stream.StreamSupport;
 class CrossProjectStrategy implements DetectionStrategy {
     private final Mode mode;
 
-    public static enum Mode {
+    public enum Mode {
         OFFLINE, ONLINE
     }
 
-    public CrossProjectStrategy(Mode mode) {
+    CrossProjectStrategy(Mode mode) {
         this.mode = mode;
     }
 
