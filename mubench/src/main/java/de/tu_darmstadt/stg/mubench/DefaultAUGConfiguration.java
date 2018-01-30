@@ -2,7 +2,7 @@ package de.tu_darmstadt.stg.mubench;
 
 import de.tu_darmstadt.stg.mudetect.src2aug.AUGConfiguration;
 
-class DefaultAUGConfiguration extends AUGConfiguration {
+public class DefaultAUGConfiguration extends AUGConfiguration {
     {
         minStatements = 0;
         groum = false;
