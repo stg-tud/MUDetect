@@ -92,25 +92,6 @@ public class AUGImprovement2 {
             usageExamplePredicate = TypeUsageExamplePredicate.usageExamplesOf("java.util.Collection", "java.util.Iterator");}});
     	assertThat(gs, is(not(empty())));
     }
-    
-    @Test
-    public void constant() throws Exception {
-    	ArrayList<EGroumGraph> gs = AUGBuilderTestUtils.buildAndPrintAUGsForFile("input/Test_constant.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2;}});
-    	assertThat(gs.get(0).getNodes().size(), Is.is(16));
-    	assertThat(gs.get(0).getEdges().size(), Is.is(38));
-    	int c = 0;
-    	for (EGroumNode node : gs.get(0).getNodes()) {
-    		if (node.getAstNodeType() == ASTNode.NUMBER_LITERAL && node.getDataType().equals("int") && node.getDataName().equals("0"))
-    			c++;
-    		else if (node.getAstNodeType() == ASTNode.BOOLEAN_LITERAL && node.getDataType().equals("boolean") && node.getDataName().equals("true"))
-    			c++;
-    		else if (node.getAstNodeType() == ASTNode.CHARACTER_LITERAL && node.getDataType().equals("char") && node.getDataName().equals("c"))
-    			c++;
-    		else if (node.getAstNodeType() == ASTNode.STRING_LITERAL && node.getDataType().equals("String") && node.getDataName().equals("s"))
-    			c++;
-    	}
-    	assertThat(c, Is.is(4));
-    }
 
     @Test
     public void qualifiedName() throws Exception {

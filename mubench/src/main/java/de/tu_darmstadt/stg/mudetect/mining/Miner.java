@@ -3,12 +3,6 @@
  */
 package de.tu_darmstadt.stg.mudetect.mining;
 
-import de.tu_darmstadt.stg.mudetect.aug.*;
-import egroum.DenseAUGPredicate;
-import exas.ExasFeature;
-import mining.Configuration.Level;
-import utils.FileIO;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;

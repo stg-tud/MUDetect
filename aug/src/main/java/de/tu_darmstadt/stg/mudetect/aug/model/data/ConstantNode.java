@@ -3,18 +3,20 @@ package de.tu_darmstadt.stg.mudetect.aug.model.data;
 import de.tu_darmstadt.stg.mudetect.aug.model.BaseNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.DataNode;
 
-public class LiteralNode extends BaseNode implements DataNode {
+public class ConstantNode extends BaseNode implements DataNode {
     private final String dataType;
+    private final String dataName;
     private final String dataValue;
 
-    public LiteralNode(String dataType, String dataValue) {
+    public ConstantNode(String dataType, String dataName, String dataValue) {
         this.dataType = dataType;
+        this.dataName = dataName;
         this.dataValue = dataValue;
     }
 
     @Override
     public String getName() {
-        return null;
+        return dataName;
     }
 
     @Override

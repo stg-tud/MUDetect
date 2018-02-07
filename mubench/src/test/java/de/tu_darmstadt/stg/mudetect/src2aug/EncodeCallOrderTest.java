@@ -4,15 +4,17 @@ import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.CONDITION;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.ORDER;
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.actionNodeWithLabel;
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.hasEdge;
 import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUG;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 public class EncodeCallOrderTest {
     @Test
-    public void encodesTransitiveOrderEdges() throws Exception {
+    public void encodesTransitiveOrderEdges() {
         APIUsageExample aug = AUGBuilderTestUtils.buildAUG("void m(java.util.List l) {\n" +
                 "  l.add(null);\n" +
                 "  l.get(0);\n" +

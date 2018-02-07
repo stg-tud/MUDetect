@@ -110,7 +110,7 @@ public class AUGTestUtils {
         };
     }
     
-    public static Matcher<? super Node> dataNodeWithType(String type) {
+    public static Matcher<Node> dataNodeWithType(String type) {
         return new BaseMatcher<Node>() {
             @Override
             public boolean matches(Object item) {
@@ -124,7 +124,7 @@ public class AUGTestUtils {
         };
     }
     
-    public static Matcher<? super Node> dataNodeWithName(String name) {
+    public static Matcher<Node> dataNodeWithName(String name) {
         return new BaseMatcher<Node>() {
             @Override
             public boolean matches(Object item) {
@@ -138,7 +138,7 @@ public class AUGTestUtils {
         };
     }
     
-    public static Matcher<? super Node> dataNodeWithValue(String value) {
+    public static Matcher<Node> dataNodeWithValue(String value) {
         return new BaseMatcher<Node>() {
             @Override
             public boolean matches(Object item) {
@@ -257,7 +257,13 @@ public class AUGTestUtils {
 
         @Override
         public boolean matches(Object item) {
-            return super.matches(item) && ((ConditionEdge) item).getConditionType() == conditionType;
+            if (super.matches(item)) {
+                if (item instanceof TransitiveEdge) {
+                    item = ((TransitiveEdge) item).getCorrespondingDirectEdge();
+                }
+                return ((ConditionEdge) item).getConditionType() == conditionType;
+            }
+            return false;
         }
 
         @Override

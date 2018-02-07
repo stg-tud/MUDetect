@@ -418,7 +418,7 @@ public abstract class EGroumNode {
 			for (EGroumEdge e : node.inEdges) {
 				if (e instanceof EGroumDataEdge && !parameterTransitiveNodes.contains(e.source)) {
 					EGroumDataEdge de = (EGroumDataEdge) e;
-					if (de.type == Type.PARAMETER || de.type == Type.QUALIFIER || de.type == Type.RECEIVER || de.type == Type.REFERENCE || de.type == Type.DEFINITION)
+					if (de.type == PARAMETER || de.type == QUALIFIER || de.type == RECEIVER || de.type == REFERENCE || de.type == DEFINITION)
 						nodes.add(de.source);
 				}
 			}
@@ -456,7 +456,7 @@ public abstract class EGroumNode {
 				}
 				if (!(e.source instanceof EGroumDataNode))
 					continue;
-				if (this instanceof EGroumActionNode && de.type != Type.RECEIVER && de.type != Type.PARAMETER && de.type != Type.CONDITION)
+				if (this instanceof EGroumActionNode && de.type != RECEIVER && de.type != PARAMETER && de.type != CONDITION)
 					continue;
 				if (this instanceof EGroumDataNode && de.type != QUALIFIER)
 					continue;

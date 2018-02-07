@@ -12,7 +12,7 @@ public interface Edge extends Cloneable {
         CONTAINS("contains"),
         FINALLY("finally"),
         QUALIFIER("qual"),
-        EXCEPTION_HANDLING("cond");
+        EXCEPTION_HANDLING("hdl");
 
         private final String label;
 

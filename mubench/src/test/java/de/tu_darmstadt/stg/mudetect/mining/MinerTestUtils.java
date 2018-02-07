@@ -1,6 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.dot.DisplayAUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 
 import java.util.*;
@@ -9,14 +10,14 @@ import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUGs
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-class MinerTestUtils {
+public class MinerTestUtils {
     private static List<APIUsagePattern> mine(Collection<APIUsageExample> examples, Configuration config) {
         AUGMiner miner = new DefaultAUGMiner(config);
         return new ArrayList<>(miner.mine(examples).getPatterns());
     }
 
-    static List<APIUsagePattern> mineMethods(Configuration config, String... sourceCodes) {
-        return mine(buildGroumsForMethods(sourceCodes), config);
+    public static List<APIUsagePattern> mineMethods(Configuration config, String... sourceCodes) {
+        return mine(buildAUGsForMethods(sourceCodes), config);
     }
 
     static List<APIUsagePattern> mineWithMinSupport(Collection<APIUsageExample> examples, int minSupport) {

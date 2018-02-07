@@ -1,11 +1,11 @@
-package egroum;
+package de.tu_darmstadt.stg.mudetect.src2aug;
 
-import de.tu_darmstadt.stg.mudetect.aug.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.aug.Edge.Type.PARAMETER;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.*;
-import static egroum.AUGBuilderTestUtils.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUG;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 

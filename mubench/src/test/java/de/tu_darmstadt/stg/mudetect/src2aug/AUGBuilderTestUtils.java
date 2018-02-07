@@ -13,7 +13,7 @@ public class AUGBuilderTestUtils {
         return buildAUGForMethod(code);
     }
 
-    static APIUsageExample buildAUG(String code, AUGConfiguration configuration) {
+    public static APIUsageExample buildAUG(String code, AUGConfiguration configuration) {
         return buildAUGForMethod(code, configuration);
     }
 

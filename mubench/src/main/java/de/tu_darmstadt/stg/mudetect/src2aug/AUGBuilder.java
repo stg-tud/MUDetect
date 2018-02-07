@@ -124,9 +124,7 @@ public class AUGBuilder {
                             return new RepetitionEdge(source, target);
                         case "syn":
                             return new SynchronizationEdge(source, target);
-                        case "cond":
-                            // assuming here that all remaining "cond" edges are exception handling ones, not sure this
-                            // holds, but I can't think of any case that isn't handled by the above cases.
+                        case "hdl":
                             return new ExceptionHandlingEdge(source, target);
                         default:
                             throw new IllegalArgumentException("unsupported type of condition edge: " + label);
@@ -145,17 +143,27 @@ public class AUGBuilder {
     private static Node convert(EGroumNode node) {
         if (node instanceof EGroumDataNode) {
             // TODO there's Exception nodes in catch blocks without incoming THROW edges
-            if (((EGroumDataNode) node).isException() || node.getLabel().endsWith("Exception") || node.getLabel().endsWith("Error")) {
-                return new ExceptionNode(node.getDataType(), node.getDataName());
+            EGroumDataNode dataNode = (EGroumDataNode) node;
+            String dataType = node.getDataType();
+            String dataName = dataNode.getDataName();
+            String dataValue = dataNode.getDataValue();
+            if (dataNode.isException() || node.getLabel().endsWith("Exception") || node.getLabel().endsWith("Error")) {
+                return new ExceptionNode(dataType, dataName);
             } else if (node.astNodeType == ASTNode.SIMPLE_NAME) {
-                return new VariableNode(node.getDataType(), node.getDataName());
+                return new VariableNode(dataType, dataName);
+            } else if (node.astNodeType == ASTNode.FIELD_ACCESS) {
+                return new ConstantNode(dataType, dataName, dataValue);
             } else if (LITERAL_AST_NODE_TYPES.contains(node.astNodeType)) {
-                return new LiteralNode(node.getDataType(), node.getDataName());
+                if (dataName != null) {
+                    return new ConstantNode(dataType, dataName, dataValue);
+                } else {
+                    return new LiteralNode(dataType, dataValue);
+                }
             } else if (node.getLabel().endsWith("()")) {
                 // encoding of the methods of anonymous class instances
                 return new AnonymousClassMethodNode(node.getLabel());
             } else {
-                return new AnonymousObjectNode(node.getDataType());
+                return new AnonymousObjectNode(dataType);
             }
         } else if (node instanceof EGroumActionNode) {
             String label = node.getLabel();
@@ -167,6 +175,8 @@ public class AUGBuilder {
             } else if (label.endsWith(".arrayset()")) {
                 String[] labelParts = split(label);
                 return new ArrayAssignmentNode(labelParts[0], node.getSourceLineNumber().orElse(-1));
+            } else if (label.equals("<nullcheck>")) {
+                return new NullCheckNode();
             } else if (node.astNodeType == ASTNode.METHOD_INVOCATION) {
                 String[] labelParts = split(label);
                 return new MethodCallNode(labelParts[0], labelParts[1], node.getSourceLineNumber().orElse(-1));

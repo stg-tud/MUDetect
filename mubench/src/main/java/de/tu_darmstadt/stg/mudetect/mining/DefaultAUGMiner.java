@@ -75,12 +75,12 @@ public class DefaultAUGMiner implements AUGMiner {
             Node node = nodes.get(i);
             Node newNode;
             if (node instanceof DataNode) {
-                Multiset<String> values = HashMultiset.create();
+                Set<DataNode> equivalentNodes = new HashSet<>();
                 for (Fragment fragment : pattern.getFragments()) {
                     DataNode eqivalentNode = (DataNode) fragment.getNodes().get(i);
-                    values.add(eqivalentNode.getValue());
+                    equivalentNodes.add(eqivalentNode);
                 }
-                newNode = new AggregateDataNode(((DataNode) node).getType(), values);
+                newNode = new AggregateDataNode(((DataNode) node).getType(), equivalentNodes);
             } else {
                 newNode = node.clone();
             }

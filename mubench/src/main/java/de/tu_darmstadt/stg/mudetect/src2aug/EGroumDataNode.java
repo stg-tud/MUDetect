@@ -2,13 +2,26 @@ package de.tu_darmstadt.stg.mudetect.src2aug;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static de.tu_darmstadt.stg.mudetect.src2aug.EGroumDataEdge.Type.DEFINITION;
 import static de.tu_darmstadt.stg.mudetect.src2aug.EGroumDataEdge.Type.QUALIFIER;
 import static de.tu_darmstadt.stg.mudetect.src2aug.EGroumDataEdge.Type.THROW;
 
 public class EGroumDataNode extends EGroumNode {
+	private static final Set<Integer> LITERAL_AST_NODE_TYPES = new HashSet<>();
+
+	static {
+		LITERAL_AST_NODE_TYPES.add(ASTNode.BOOLEAN_LITERAL);
+		LITERAL_AST_NODE_TYPES.add(ASTNode.CHARACTER_LITERAL);
+		LITERAL_AST_NODE_TYPES.add(ASTNode.NULL_LITERAL);
+		LITERAL_AST_NODE_TYPES.add(ASTNode.NUMBER_LITERAL);
+		LITERAL_AST_NODE_TYPES.add(ASTNode.STRING_LITERAL);
+		LITERAL_AST_NODE_TYPES.add(ASTNode.TYPE_LITERAL);
+	}
+
 	protected boolean isField = false, isDeclaration = false;
 	protected String dataName;
 	protected String dataValue;
@@ -22,7 +35,13 @@ public class EGroumDataNode extends EGroumNode {
 			this.dataType = "UNKNOWN";
 		else
 			this.dataType = dataType;
+
 		this.dataName = dataName;
+	}
+
+	public EGroumDataNode(ASTNode astNode, int nodeType, String key, String dataType, String dataName, String dataValue) {
+		this(astNode, nodeType, key, dataType, dataName);
+		this.dataValue = dataValue;
 	}
 	
 	public EGroumDataNode(ASTNode astNode, int nodeType, String key, String dataType, String dataName, boolean isField, boolean isDeclaration) {

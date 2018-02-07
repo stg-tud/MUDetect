@@ -5,13 +5,12 @@ import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.DisplayAUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 
 import java.util.Collection;
 import java.util.List;
 
+import static de.tu_darmstadt.stg.mudetect.mining.MinerTestUtils.mineWithMinSupport;
 import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUGsForClasses;
 import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUGsFromFile;
 import static org.hamcrest.CoreMatchers.is;
@@ -23,7 +22,7 @@ public class MinerTest {
 
 	@Test
 	public void mineOrderedNodesOfSameReceiver() {
-		Collection<APIUsageExample> groums = buildGroumsFromFile("input/Test_mine_ordered_nodes_of_same_receiver.java");
+		Collection<APIUsageExample> groums = buildAUGsFromFile("input/Test_mine_ordered_nodes_of_same_receiver.java");
 		
 		List<APIUsagePattern> patterns = mineWithMinSupport(groums, 10);
 		
@@ -236,8 +235,7 @@ public class MinerTest {
 			"    return v1D;\n" + 
 			"  }\n" + 
 			"}";
-		Collection<APIUsageExample> groums = buildAUGsForClasses(new String[]{targetSource, patternSource});
-		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
+		List<APIUsagePattern> patterns = MinerTestUtils.mineMethods(new Configuration() {{minPatternSupport = 2; abstractConditionEdges = true;}},targetSource, patternSource);
 		
 //		assertThat(patterns, hasSize(2));
 		print(patterns);
