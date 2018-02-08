@@ -12,7 +12,7 @@ import de.tu_darmstadt.stg.mudetect.mining.DefaultAUGMiner;
 import de.tu_darmstadt.stg.mudetect.mining.MinPatternActionsModel;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
 import de.tu_darmstadt.stg.mudetect.ranking.NoRankingStrategy;
-import de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilder;
+import edu.iastate.cs.egroum.aug.AUGBuilder;
 
 import java.io.FileNotFoundException;
 import java.util.Collection;

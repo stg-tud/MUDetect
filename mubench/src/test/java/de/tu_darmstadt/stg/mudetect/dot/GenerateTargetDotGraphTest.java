@@ -6,7 +6,7 @@ import de.tu_darmstadt.stg.mudetect.model.Violation;
 import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.ORDER;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.emptyOverlap;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.instance;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
 
 public class GenerateTargetDotGraphTest {
     @Test
-    public void includesTargetOnlyNode() throws Exception {
+    public void includesTargetOnlyNode() {
         APIUsagePattern pattern = somePattern(buildAUG());
         APIUsageExample target = buildAUG().withActionNode(":action:").build();
         Violation violation = new Violation(emptyOverlap(pattern, target), 1, "constant rank");
@@ -25,7 +25,7 @@ public class GenerateTargetDotGraphTest {
     }
 
     @Test
-    public void includesTargetOnlyEdge() throws Exception {
+    public void includesTargetOnlyEdge() {
         APIUsagePattern pattern = somePattern(buildAUG());
         APIUsageExample target = buildAUG(":G:").withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
         Violation violation = new Violation(emptyOverlap(pattern, target), 1, "constant rank");
@@ -35,7 +35,7 @@ public class GenerateTargetDotGraphTest {
     }
 
     @Test
-    public void includesMappedElements() throws Exception {
+    public void includesMappedElements() {
         APIUsageExample aug = buildAUG(":G:").withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
         Violation violation = new Violation(instance(aug), 1, "constant rank");
 

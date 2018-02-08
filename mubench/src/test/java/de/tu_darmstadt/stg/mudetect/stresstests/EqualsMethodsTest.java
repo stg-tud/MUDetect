@@ -1,22 +1,22 @@
 package de.tu_darmstadt.stg.mudetect.stresstests;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
-import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge.ConditionType.SELECTION;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.DEFINITION;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge.ConditionType.SELECTION;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUGsForClass;
+import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClass;
 
 public class EqualsMethodsTest {
     @Test(timeout = 60000)
-    public void equalsMethod() throws Exception {
+    public void equalsMethod() {
         APIUsageExample target = buildAUGsForClass("import java.io.IOException;\n" +
                 "import java.text.Collator;\n" +
                 "\n" +

@@ -14,7 +14,8 @@
 	<modules>
 		<module>mubench</module>
         <module>aug</module>
-    </modules>
+		<module>src2egroum2aug</module>
+	</modules>
 
 	<distributionManagement>
 		<repository>

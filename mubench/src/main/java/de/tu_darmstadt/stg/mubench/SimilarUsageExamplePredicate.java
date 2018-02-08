@@ -2,8 +2,8 @@ package de.tu_darmstadt.stg.mubench;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
-import de.tu_darmstadt.stg.mudetect.src2aug.EGroumGraph;
-import de.tu_darmstadt.stg.mudetect.mining.TypeUsageExamplePredicate;
+import edu.iastate.cs.egroum.aug.TypeUsageExamplePredicate;
+import edu.iastate.cs.egroum.aug.EGroumGraph;
 
 import java.util.Collections;
 import java.util.Set;

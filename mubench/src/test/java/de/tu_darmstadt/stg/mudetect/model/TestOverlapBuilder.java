@@ -8,9 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.someAUG;
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.builderFrom;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.builderFrom;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
 
 public class TestOverlapBuilder {
 

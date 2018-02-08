@@ -1,12 +1,12 @@
 package de.tu_darmstadt.stg.mudetect.ranking;
 
+import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.ORDER;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.extend;
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.extend;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.number.IsCloseTo.closeTo;
@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
 public class OverlapWeightFunctionTest {
 
     @Test
-    public void considersMissingNodes() throws Exception {
+    public void considersMissingNodes() {
         TestAUGBuilder targetBuilder = buildAUG().withActionNode("a");
         TestAUGBuilder patternBuilder = extend(targetBuilder).withActionNode("b");
         Overlap violation = buildOverlap(targetBuilder, patternBuilder).withNode("a", "a").build();
@@ -27,7 +27,7 @@ public class OverlapWeightFunctionTest {
     }
 
     @Test
-    public void considersMissingEdges() throws Exception {
+    public void considersMissingEdges() {
         TestAUGBuilder targetBuilder = buildAUG().withActionNodes("a", "b");
         TestAUGBuilder patternBuilder = extend(targetBuilder).withDataEdge("a", ORDER, "b");
         Overlap violation = buildOverlap(targetBuilder, patternBuilder).withNode("a", "a").build();

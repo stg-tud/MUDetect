@@ -2,7 +2,7 @@ package de.tu_darmstadt.stg.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.VariableNode;
-import de.tu_darmstadt.stg.mudetect.src2aug.DotGraph;
+import edu.iastate.cs.egroum.dot.DotGraph;
 
 import java.io.File;
 import java.util.*;

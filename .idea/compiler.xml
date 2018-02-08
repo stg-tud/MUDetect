@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="aug" />
         <module name="mubench" />
+        <module name="src2egroum2aug" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -15,6 +16,7 @@
       <module name="grouminer" target="1.8" />
       <module name="mubench" target="1.8" />
       <module name="mudetect" target="1.5" />
+      <module name="src2egroum2aug" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

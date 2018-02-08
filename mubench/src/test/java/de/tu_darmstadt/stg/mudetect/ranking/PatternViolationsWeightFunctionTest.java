@@ -7,7 +7,7 @@ import de.tu_darmstadt.stg.mudetect.model.Overlaps;
 import org.junit.Before;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.someAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.someOverlap;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static org.hamcrest.CoreMatchers.is;
@@ -31,7 +31,7 @@ public class PatternViolationsWeightFunctionTest {
     }
 
     @Test
-    public void withoutOtherViolationOfPattern() throws Exception {
+    public void withoutOtherViolationOfPattern() {
         ViolationWeightFunction weightFunction = new PatternViolationsWeightFunction();
 
         double weight = weightFunction.getWeight(violation, overlaps, null);
@@ -40,7 +40,7 @@ public class PatternViolationsWeightFunctionTest {
     }
 
     @Test
-    public void withOtherViolationOfSamePattern() throws Exception {
+    public void withOtherViolationOfSamePattern() {
         overlaps.addViolation(someOverlap(aPattern, someAUG()));
         ViolationWeightFunction weightFunction = new PatternViolationsWeightFunction();
 
@@ -50,7 +50,7 @@ public class PatternViolationsWeightFunctionTest {
     }
 
     @Test
-    public void withViolationOfOtherPattern() throws Exception {
+    public void withViolationOfOtherPattern() {
         overlaps.addViolation(someOverlap(somePattern(), someAUG()));
         ViolationWeightFunction weightFunction = new PatternViolationsWeightFunction();
 

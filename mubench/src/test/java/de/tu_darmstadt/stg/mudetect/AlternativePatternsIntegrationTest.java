@@ -4,7 +4,6 @@ import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.matcher.SubtypeDataNodeMatcher;
-import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.ranking.NoRankingStrategy;
@@ -14,19 +13,19 @@ import org.junit.Test;
 import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.*;
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
-import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.utils.SetUtils.asSet;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static de.tu_darmstadt.stg.mudetect.utils.SetUtils.asSet;
 
 public class AlternativePatternsIntegrationTest {
 
     @Test
-    public void matchesSubtypes() throws Exception {
+    public void matchesSubtypes() {
         APIUsagePattern pattern = buildPattern("void p(Object o) { o.hashCode(); }", 2);
-        APIUsageExample target = buildAUG("void t(Integer i) { i.hashCode(); }");
+        APIUsageExample target = buildAUG("void t(Integer i) { i.hashCode(); }").build();
         TypeHierarchy typeHierarchy = new TypeHierarchy() {{ addSupertype("Integer", "Object"); }};
         MuDetect detector = new MuDetect(() -> asSet(pattern),
                 new AlternativeMappingsOverlapsFinder(new SubtypeDataNodeMatcher(typeHierarchy).or(new EquallyLabelledNodeMatcher())),
@@ -39,8 +38,8 @@ public class AlternativePatternsIntegrationTest {
     }
 
     @Test
-    public void multipleCallViolations() throws Exception {
-        APIUsagePattern pattern = somePattern(TestAUGBuilder.buildAUG().withActionNode("JPanel.<init>").withDataNode("JPanel")
+    public void multipleCallViolations() {
+        APIUsagePattern pattern = somePattern(buildAUG().withActionNode("JPanel.<init>").withDataNode("JPanel")
                 .withActionNode("add1", "JPanel.add()").withActionNode("add2", "JPanel.add()")
                 .withDataEdge("JPanel.<init>", DEFINITION, "JPanel")
                 .withDataEdge("JPanel", RECEIVER, "add1")
@@ -55,7 +54,7 @@ public class AlternativePatternsIntegrationTest {
                 "    controlPanel.add(null);\n"+
                 "    controlPanel.add(null);\n" +
                 "  }\n" +
-                "}");
+                "}").build();
         MuDetect detector = new MuDetect(() -> asSet(pattern),
                 new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher()),
                 new MissingElementViolationPredicate(),
@@ -67,8 +66,8 @@ public class AlternativePatternsIntegrationTest {
     }
 
     @Test
-    public void mappingToWrongDataNode() throws Exception {
-        APIUsagePattern pattern = somePattern(TestAUGBuilder.buildAUG()
+    public void mappingToWrongDataNode() {
+        APIUsagePattern pattern = somePattern(buildAUG()
                 .withDataNode("IO1", "IndexOutput")
                 .withActionNode("gFP()", "IndexOutput.getFilePointer()")
                 .withDataEdge("IO1", RECEIVER, "gFP()")
@@ -96,7 +95,7 @@ public class AlternativePatternsIntegrationTest {
                 "    assert tvd.getFilePointer() == tvdPosition;\n" +
                 "    assert tvf.getFilePointer() == tvfPosition;" +
                 "  }\n" +
-                "}");
+                "}").build();
 
         MuDetect detector = new MuDetect(() -> asSet(pattern),
                 new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher()),

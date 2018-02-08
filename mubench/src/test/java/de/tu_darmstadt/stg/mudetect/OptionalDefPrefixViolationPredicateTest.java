@@ -1,21 +1,21 @@
 package de.tu_darmstadt.stg.mudetect;
 
-import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
+import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
 import org.junit.Test;
 
 import java.util.Optional;
 
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge.ConditionType.REPETITION;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.*;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class OptionalDefPrefixViolationPredicateTest {
     @Test
-    public void missingNonDefPrefixIsNoDecision() throws Exception {
+    public void missingNonDefPrefixIsNoDecision() {
         TestOverlapBuilder overlap = buildOverlap(buildAUG(), buildAUG().withActionNode("m()"));
 
         Optional<Boolean> decision = new OptionalDefPrefixViolationPredicate().apply(overlap.build());
@@ -24,7 +24,7 @@ public class OptionalDefPrefixViolationPredicateTest {
     }
 
     @Test
-    public void missingDefPrefixAndMoreIsNoDecision() throws Exception {
+    public void missingDefPrefixAndMoreIsNoDecision() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("create()", "use()", "use2()").withDataNode("Object")
                 .withDataEdge("create()", DEFINITION, "Object")
                 .withDataEdge("Object", RECEIVER, "use()").withDataEdge("create()", RECEIVER, "use()")
@@ -40,7 +40,7 @@ public class OptionalDefPrefixViolationPredicateTest {
     }
 
     @Test
-    public void missingDefPrefixAndEdgeBetweenTwoMappedNodesIsNoDecision() throws Exception {
+    public void missingDefPrefixAndEdgeBetweenTwoMappedNodesIsNoDecision() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("create()", "use()", "use2()").withDataNode("Object")
                 .withDataEdge("create()", DEFINITION, "Object")
                 .withDataEdge("Object", RECEIVER, "use()").withDataEdge("create()", RECEIVER, "use()")
@@ -59,7 +59,7 @@ public class OptionalDefPrefixViolationPredicateTest {
     }
 
     @Test
-    public void missingDefPrefixIsNoViolation() throws Exception {
+    public void missingDefPrefixIsNoViolation() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("create()", "use()").withDataNode("Object")
                 .withDataEdge("create()", DEFINITION, "Object")
                 .withDataEdge("Object", RECEIVER, "use()").withDataEdge("create()", RECEIVER, "use()");
@@ -74,7 +74,7 @@ public class OptionalDefPrefixViolationPredicateTest {
     }
 
     @Test
-    public void missingDefPrefixWithPredecessorIsNoViolation() throws Exception {
+    public void missingDefPrefixWithPredecessorIsNoViolation() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("create()", "use()").withDataNodes("Creator", "Object")
                 .withDataEdge("Creator", RECEIVER, "create()")
                 .withDataEdge("create()", DEFINITION, "Object")
@@ -90,7 +90,7 @@ public class OptionalDefPrefixViolationPredicateTest {
     }
 
     @Test
-    public void missingDefPrefixWithConditionEdgeIsNoViolation() throws Exception {
+    public void missingDefPrefixWithConditionEdgeIsNoViolation() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("iterator()", "hasNext()", "next()").withDataNode("Iterator")
                 .withDataEdge("iterator()", DEFINITION, "Iterator")
                 .withDataEdge("Iterator", RECEIVER, "hasNext()")
@@ -126,7 +126,7 @@ public class OptionalDefPrefixViolationPredicateTest {
      * </pre>
      */
     @Test
-    public void missingDefPrefixWithConditionEdgeToOtherDefinitionIsNoViolation() throws Exception {
+    public void missingDefPrefixWithConditionEdgeToOtherDefinitionIsNoViolation() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("iterator()", "hasNext()", "next()").withDataNode("Iterator")
                 .withDataEdge("iterator()", DEFINITION, "Iterator")
                 .withDataEdge("Iterator", RECEIVER, "hasNext()")

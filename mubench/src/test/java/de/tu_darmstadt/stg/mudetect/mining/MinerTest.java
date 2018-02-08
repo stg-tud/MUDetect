@@ -11,8 +11,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.mining.MinerTestUtils.mineWithMinSupport;
-import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUGsForClasses;
-import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUGsFromFile;
+import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClasses;
+import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsFromFile;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasSize;

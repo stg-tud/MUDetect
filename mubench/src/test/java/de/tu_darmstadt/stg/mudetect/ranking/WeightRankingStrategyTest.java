@@ -12,9 +12,8 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.someAUG;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.someOverlap;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
@@ -24,7 +23,7 @@ public class WeightRankingStrategyTest {
     public final JUnitRuleMockery context = new JUnitRuleMockery();
 
     @Test
-    public void ranksViolations() throws Exception {
+    public void ranksViolations() {
         Overlap violation1 = someOverlap();
         Overlap violation2 = someOverlap();
 
@@ -51,7 +50,7 @@ public class WeightRankingStrategyTest {
     }
 
     @Test
-    public void ranksViolationsWithSameConfidenceByTargetName() throws Exception {
+    public void ranksViolationsWithSameConfidenceByTargetName() {
         Overlap violation1 = someOverlap(somePattern(), someAUG("target-b"));
         Overlap violation2 = someOverlap(somePattern(), someAUG("target-a"));
         Overlap violation3 = someOverlap(somePattern(), someAUG("target-c"));

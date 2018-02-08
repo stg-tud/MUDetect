@@ -1,17 +1,17 @@
 package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
+import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
 import org.junit.Test;
 
 import java.util.List;
 
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge.ConditionType.SELECTION;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.CONDITION;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.ORDER;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.assertFindsOverlaps;
 import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.findOverlaps;
@@ -21,7 +21,7 @@ import static de.tu_darmstadt.stg.mudetect.utils.CollectionUtils.only;
 
 public class FindViolationsTest {
     @Test
-    public void findsMissingNode() throws Exception {
+    public void findsMissingNode() {
         TestAUGBuilder target = buildAUG().withActionNode("C.m()");
         TestAUGBuilder pattern = buildAUG().withActionNode("C.m()")
                 .withActionNode("C.n()").withDataEdge("C.m()", ORDER, "C.n()");
@@ -31,7 +31,7 @@ public class FindViolationsTest {
     }
 
     @Test
-    public void excludesNonEqualNode() throws Exception {
+    public void excludesNonEqualNode() {
         TestAUGBuilder pattern = buildAUG().withActionNode("A").withActionNode("B").withDataEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNode("A").withActionNode("C").withDataEdge("A", ORDER, "C");
 
@@ -40,7 +40,7 @@ public class FindViolationsTest {
     }
 
     @Test
-    public void ignoresNonEqualEdge() throws Exception {
+    public void ignoresNonEqualEdge() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", PARAMETER, "B");
 
@@ -50,7 +50,7 @@ public class FindViolationsTest {
     }
 
     @Test
-    public void ignoresReverseEdge() throws Exception {
+    public void ignoresReverseEdge() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("B", ORDER, "A");
 
@@ -60,7 +60,7 @@ public class FindViolationsTest {
     }
 
     @Test
-    public void mapsTargetEdgeOnlyOnce() throws Exception {
+    public void mapsTargetEdgeOnlyOnce() {
         TestAUGBuilder pattern = buildAUG().withActionNode("A").withActionNode("B1", "B").withActionNode("B2", "B")
                 .withDataEdge("A", ORDER, "B1").withDataEdge("A", ORDER, "B2");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
@@ -71,7 +71,7 @@ public class FindViolationsTest {
     }
 
     @Test
-    public void mapsPatternNodeOnlyOnce() throws Exception {
+    public void mapsPatternNodeOnlyOnce() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B")
                 .withDataEdge("A", PARAMETER, "B")
                 .withCondEdge("A", SELECTION, "B");
@@ -89,7 +89,7 @@ public class FindViolationsTest {
     }
 
     @Test
-    public void mapsTargetNodeOnlyOnce() throws Exception {
+    public void mapsTargetNodeOnlyOnce() {
         TestAUGBuilder pattern = buildAUG().withActionNode("A1", "A").withActionNode("A2", "A").withActionNode("B")
                 .withDataEdge("A1", PARAMETER, "B")
                 .withCondEdge("A2", SELECTION, "B");
@@ -104,7 +104,7 @@ public class FindViolationsTest {
     }
 
     @Test
-    public void findsInstanceAndPartialInstance() throws Exception {
+    public void findsInstanceAndPartialInstance() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B", "C")
                 .withDataEdge("A", ORDER, "B").withDataEdge("B", ORDER, "C");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "C").withActionNode("B1", "B").withActionNode("B2", "B")
@@ -126,7 +126,7 @@ public class FindViolationsTest {
      * explains the actual problem (the reversed call order).
      */
     @Test
-    public void findsBothPartialOverlaps() throws Exception {
+    public void findsBothPartialOverlaps() {
         TestAUGBuilder pattern = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
                 .withDataEdge("a1", ORDER, "a2").withDataEdge("a1", ORDER, "b").withDataEdge("b", ORDER, "a2");
         TestAUGBuilder target = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
@@ -145,7 +145,7 @@ public class FindViolationsTest {
      * <code>a(); b();</code> this to be reported as a partial instance, since it's really not.
      */
     @Test
-    public void filtersAdditionalOrderEdgeBetweenNodesFromAnInstance() throws Exception {
+    public void filtersAdditionalOrderEdgeBetweenNodesFromAnInstance() {
         TestAUGBuilder pattern = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
                 .withDataEdge("a1", ORDER, "a2").withDataEdge("a1", ORDER, "b");
         TestAUGBuilder target = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
@@ -165,7 +165,7 @@ public class FindViolationsTest {
      * target graph that leads to them. To solve this problem, we make the algorithm prioritize mappable edges.
      */
     @Test
-    public void prioritizesMappableEdges() throws Exception {
+    public void prioritizesMappableEdges() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A") // the algorithm will start extending from this node
                 .withDataNodes("B", "C", "D", "E", "F")
                 .withCondEdge("B", SELECTION, "A")

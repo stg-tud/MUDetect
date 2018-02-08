@@ -1,8 +1,8 @@
 package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
+import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,8 +11,8 @@ import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.DEFINITION;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.contains;
 import static org.junit.Assert.assertThat;
@@ -21,14 +21,14 @@ public class ParameterMappingTest {
     private AlternativeMappingsOverlapsFinder overlapsFinder;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         overlapsFinder = new AlternativeMappingsOverlapsFinder(new AlternativeMappingsOverlapsFinder.Config() {{
             nodeMatcher = new EquallyLabelledNodeMatcher();
         }});
     }
 
     @Test
-    public void mapsParameter() throws Exception {
+    public void mapsParameter() {
         TestAUGBuilder pattern = buildAUG().withActionNode("m()").withDataNode("P").withDataEdge("P", PARAMETER, "m()");
         TestAUGBuilder target = buildAUG().withActionNode("m()").withDataNode("P").withDataEdge("P", PARAMETER, "m()");
 
@@ -39,7 +39,7 @@ public class ParameterMappingTest {
     }
 
     @Test
-    public void mapsParameterWithSource() throws Exception {
+    public void mapsParameterWithSource() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("source()", "m()").withDataNode("P")
                 .withDataEdge("source()", DEFINITION, "P").withDataEdge("P", PARAMETER, "m()");
         TestAUGBuilder target = buildAUG().withActionNodes("source()", "m()").withDataNode("P")
@@ -53,7 +53,7 @@ public class ParameterMappingTest {
     }
 
     @Test
-    public void mapsParameterWithMissingSource() throws Exception {
+    public void mapsParameterWithMissingSource() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("source()", "m()").withDataNode("P")
                 .withDataEdge("source()", DEFINITION, "P").withDataEdge("P", PARAMETER, "m()");
         TestAUGBuilder target = buildAUG().withActionNode("m()").withDataNode("P")
@@ -70,7 +70,7 @@ public class ParameterMappingTest {
      * the number of false positives, we ensure that corresponding direct and indirect edges always get mapped together.
      */
     @Test
-    public void mapsCorrespondingDirectAndIndirectEdges() throws Exception {
+    public void mapsCorrespondingDirectAndIndirectEdges() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("src()", "sink()").withDataEdge("src()", PARAMETER, "sink()")
                 .withDataNode("P1", "P").withDataEdge("P1", PARAMETER, "sink()")
                 .withDataNode("P2", "P").withDataEdge("src()", DEFINITION, "P2").withDataEdge("P2", PARAMETER, "sink()");

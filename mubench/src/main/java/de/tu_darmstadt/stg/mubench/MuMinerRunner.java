@@ -6,7 +6,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.Location;
 import de.tu_darmstadt.stg.mudetect.mining.Anomaly;
 import de.tu_darmstadt.stg.mudetect.mining.Fragment;
 import de.tu_darmstadt.stg.mudetect.mining.Miner;
-import de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilder;
+import edu.iastate.cs.egroum.aug.AUGBuilder;
 
 import java.io.FileNotFoundException;
 import java.util.*;

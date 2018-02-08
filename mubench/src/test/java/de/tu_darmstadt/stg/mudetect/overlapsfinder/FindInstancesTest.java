@@ -1,15 +1,15 @@
 package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
+import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
 import org.junit.Test;
 
 import java.util.List;
 
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge.ConditionType.SELECTION;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.*;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.instance;
 import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.assertFindsOverlaps;
@@ -20,29 +20,29 @@ import static de.tu_darmstadt.stg.mudetect.utils.CollectionUtils.only;
 
 public class FindInstancesTest {
     @Test
-    public void findsSingleNodeInstance() throws Exception {
+    public void findsSingleNodeInstance() {
         assertFindsInstance(buildAUG().withActionNode("C.m()"));
     }
 
     @Test
-    public void findsTwoNodeInstance() throws Exception {
+    public void findsTwoNodeInstance() {
         assertFindsInstance(buildAUG().withActionNodes("C.a()", "C.b()").withDataEdge("C.a()", ORDER, "C.b()"));
     }
 
     @Test
-    public void findsThreeNodeChain() throws Exception {
+    public void findsThreeNodeChain() {
         assertFindsInstance(buildAUG().withActionNodes("A", "B", "C")
                 .withDataEdge("A", ORDER, "B").withDataEdge("B", ORDER, "C"));
     }
 
     @Test
-    public void findsFourNodeChain() throws Exception {
+    public void findsFourNodeChain() {
         assertFindsInstance(buildAUG().withActionNodes("A", "B", "C", "D")
                 .withDataEdge("A", ORDER, "B").withDataEdge("B", ORDER, "C").withDataEdge("C", ORDER, "D"));
     }
 
     @Test
-    public void ignoresUnmappableTargetNode() throws Exception {
+    public void ignoresUnmappableTargetNode() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B")
                 .withDataNode("C").withDataEdge("A", ORDER, "C");
@@ -53,7 +53,7 @@ public class FindInstancesTest {
     }
 
     @Test
-    public void findsTwoOverlappingInstances() throws Exception {
+    public void findsTwoOverlappingInstances() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNode("A").withActionNode("B1", "B").withActionNode("B2", "B")
                 .withDataEdge("A", ORDER, "B1").withDataEdge("A", ORDER, "B2");
@@ -66,38 +66,38 @@ public class FindInstancesTest {
     }
 
     @Test
-    public void findsCallReceiver() throws Exception {
+    public void findsCallReceiver() {
         assertFindsInstance(buildAUG().withDataNode("C").withActionNode("C.m()").withDataEdge("C", RECEIVER, "C.m()"));
     }
 
     @Test
-    public void findsMultipleCalls() throws Exception {
+    public void findsMultipleCalls() {
         assertFindsInstance(buildAUG().withDataNode("C").withActionNodes("C.m()", "C.n()")
                 .withDataEdge("C", RECEIVER, "C.m()")
                 .withDataEdge("C", RECEIVER, "C.n()"));
     }
 
     @Test
-    public void findCallArguments() throws Exception {
+    public void findCallArguments() {
         assertFindsInstance(buildAUG().withDataNode("Object").withActionNode("Object.equals()")
                 .withDataEdge("Object", PARAMETER, "Object.equals()"));
     }
 
     @Test
-    public void findsMultipleEdgesBetweenTwoNodes() throws Exception {
+    public void findsMultipleEdgesBetweenTwoNodes() {
         assertFindsInstance(buildAUG().withActionNodes("A.m()", "A.n()")
                 .withDataEdge("A.m()", ORDER, "A.n()")
                 .withDataEdge("A.m()", PARAMETER, "A.n()"));
     }
 
     @Test
-    public void findsConditionPredicate() throws Exception {
+    public void findsConditionPredicate() {
         assertFindsInstance(buildAUG().withActionNodes("A.predicate()", "B.m()")
                 .withDataEdge("A.predicate()", CONDITION, "B.m()"));
     }
 
     @Test
-    public void findsConditionEquation() throws Exception {
+    public void findsConditionEquation() {
         assertFindsInstance(buildAUG().withDataNode("int").withActionNodes("List.size()", "List.get()", ">")
                 .withDataEdge("List.size()", PARAMETER, ">")
                 .withDataEdge("int", PARAMETER, ">")
@@ -105,13 +105,13 @@ public class FindInstancesTest {
     }
 
     @Test
-    public void findsResultAsArgument() throws Exception {
+    public void findsResultAsArgument() {
         assertFindsInstance(buildAUG().withActionNodes("A.getX()", "B.takeX()")
                 .withDataEdge("A.getX()", PARAMETER, "B.takeX()"));
     }
 
     @Test
-    public void findsExceptionHandling() throws Exception {
+    public void findsExceptionHandling() {
         assertFindsInstance(buildAUG().withActionNodes("C.throws()", "E.handler()")
                 .withDataNode("SomeException")
                 .withDataEdge("C.throws()", THROW, "SomeException")
@@ -120,19 +120,19 @@ public class FindInstancesTest {
     }
 
     @Test
-    public void findsThrow() throws Exception {
+    public void findsThrow() {
         assertFindsInstance(buildAUG().withActionNodes("throw", "SomeException.<init>")
                 .withDataEdge("SomeException.<init>", PARAMETER, "throw"));
     }
 
     @Test
-    public void findsFinally() throws Exception {
+    public void findsFinally() {
         assertFindsInstance(buildAUG().withActionNodes("C.throws()", "A.cleanup()")
                 .withDataEdge("C.throws()", FINALLY, "A.cleanup()"));
     }
 
     @Test
-    public void findsLargestAlternative() throws Exception {
+    public void findsLargestAlternative() {
         // Both pattern and target are equal. However, to find this the algorithm needs to map the edges correctly,
         // because both branches start with the same call, but one has an additional call afterwards.
         assertFindsInstance(buildAUG().withActionNodes("A.check()", "C.foo()")
@@ -149,7 +149,7 @@ public class FindInstancesTest {
      * causing many false positives. This test is derived from an evaluation scenario where this became apparent.
      */
     @Test
-    public void issue_unluckyMapping() throws Exception {
+    public void issue_unluckyMapping() {
         TestAUGBuilder pattern = buildAUG()
                 .withActionNode("init", "StringBuilder.<init>")
                 .withActionNode("toString", "Object.toString()")
@@ -181,7 +181,7 @@ public class FindInstancesTest {
     }
 
     @Test
-    public void handlesMultipleEdgesBetweenTwoNodes() throws Exception {
+    public void handlesMultipleEdgesBetweenTwoNodes() {
         assertFindsInstance(buildAUG().withActionNodes("A", "B")
                 .withDataEdge("A", RECEIVER, "B")
                 .withCondEdge("A", SELECTION, "B"));

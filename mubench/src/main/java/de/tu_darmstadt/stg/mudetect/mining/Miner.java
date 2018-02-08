@@ -13,8 +13,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.ConstructorCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.LiteralNode;
-import de.tu_darmstadt.stg.mudetect.src2aug.DenseAUGPredicate;
-import de.tu_darmstadt.stg.mudetect.utils.FileIO;
+import edu.iastate.cs.egroum.utils.FileIO;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.DEFINITION;
 

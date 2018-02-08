@@ -12,7 +12,7 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.someAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.someOverlap;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static org.hamcrest.Matchers.hasItems;
@@ -24,7 +24,7 @@ public class EmptyOverlapFinderTest {
     public final JUnitRuleMockery context = new JUnitRuleMockery();
 
     @Test
-    public void insertsEmptyOverlapIfNoOverlaps() throws Exception {
+    public void insertsEmptyOverlapIfNoOverlaps() {
         APIUsagePattern pattern = somePattern();
         APIUsageExample target = someAUG();
         OverlapsFinder wrappedFinder = context.mock(OverlapsFinder.class);
@@ -41,7 +41,7 @@ public class EmptyOverlapFinderTest {
     }
 
     @Test
-    public void returnsOriginalOverlapsIfAny() throws Exception {
+    public void returnsOriginalOverlapsIfAny() {
         Overlap overlap = someOverlap();
         APIUsagePattern pattern = overlap.getPattern();
         APIUsageExample target = overlap.getTarget();

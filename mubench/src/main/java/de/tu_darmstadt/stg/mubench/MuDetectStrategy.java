@@ -12,7 +12,7 @@ import de.tu_darmstadt.stg.mudetect.model.Violation;
 import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import de.tu_darmstadt.stg.mustudies.UsageUtils;
 import de.tu_darmstadt.stg.yaml.YamlObject;
-import de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilder;
+import edu.iastate.cs.egroum.aug.AUGBuilder;
 
 import java.io.IOException;
 import java.util.Collection;

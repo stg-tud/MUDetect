@@ -2,13 +2,13 @@ package de.tu_darmstadt.stg.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
 import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
-import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 
 import java.util.HashSet;
 
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.someAUG;
 
 public class TestPatternBuilder {
     public static APIUsagePattern somePattern() {
@@ -24,7 +24,7 @@ public class TestPatternBuilder {
         for (int i = 0; i < nodeCount; i++) {
             nodeNames[i] = Integer.toString(i);
         }
-        return TestPatternBuilder.somePattern(buildAUG().withActionNodes(nodeNames), support);
+        return somePattern(buildAUG().withActionNodes(nodeNames), support);
     }
 
     public static APIUsagePattern somePattern(APIUsageGraph patternAUG) {

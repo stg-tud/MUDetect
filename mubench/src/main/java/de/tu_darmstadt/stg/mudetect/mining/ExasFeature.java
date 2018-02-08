@@ -1,8 +1,8 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
+import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
-import de.tu_darmstadt.stg.mudetect.src2aug.EGroumDataEdge;
-import de.tu_darmstadt.stg.mudetect.src2aug.EGroumNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,40 +12,27 @@ public class ExasFeature {
 	public static final int MAX_LENGTH = 4 * 2 - 1;
 	private static HashMap<String, Integer> edgeFeatures = new HashMap<>();
 	static {
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.CONDITION), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.DEFINITION),  edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.PARAMETER), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.QUALIFIER), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.RECEIVER), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.REFERENCE), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.ORDER), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.THROW), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.FINALLY), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.CONTAINS), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.CONDITION, "sel"), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.CONDITION, "rep"), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.CONDITION, "syn"), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.CONDITION, "hdl"), edgeFeatures.size());
-		edgeFeatures.put("_control_", edgeFeatures.size());
+		edgeFeatures.put(Edge.Type.CONDITION.getLabel(), edgeFeatures.size());
+		edgeFeatures.put(Edge.Type.DEFINITION.getLabel(),  edgeFeatures.size());
+		edgeFeatures.put(Edge.Type.PARAMETER.getLabel(), edgeFeatures.size());
+		edgeFeatures.put(Edge.Type.QUALIFIER.getLabel(), edgeFeatures.size());
+		edgeFeatures.put(Edge.Type.RECEIVER.getLabel(), edgeFeatures.size());
+		edgeFeatures.put(Edge.Type.ORDER.getLabel(), edgeFeatures.size());
+		edgeFeatures.put(Edge.Type.THROW.getLabel(), edgeFeatures.size());
+		edgeFeatures.put(Edge.Type.FINALLY.getLabel(), edgeFeatures.size());
+		edgeFeatures.put(Edge.Type.CONTAINS.getLabel(), edgeFeatures.size());
+		edgeFeatures.put(ConditionEdge.ConditionType.SELECTION.getLabel(), edgeFeatures.size());
+		edgeFeatures.put(ConditionEdge.ConditionType.REPETITION.getLabel(), edgeFeatures.size());
+		edgeFeatures.put(Edge.Type.SYNCHRONIZE.getLabel(), edgeFeatures.size());
+		edgeFeatures.put(Edge.Type.EXCEPTION_HANDLING.getLabel(), edgeFeatures.size());
 	}
 
 	public static void abstractConditionEdges() {
-		edgeFeatures.clear();
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.CONDITION), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.DEFINITION),  edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.PARAMETER), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.QUALIFIER), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.RECEIVER), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.REFERENCE), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.ORDER), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.THROW), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.FINALLY), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.CONTAINS), edgeFeatures.size());
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.CONDITION, "sel"), 0);
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.CONDITION, "rep"), 0);
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.CONDITION, "syn"), 0);
-		edgeFeatures.put(EGroumDataEdge.getLabel(EGroumDataEdge.Type.CONDITION, "hdl"), 0);
-		edgeFeatures.put("_control_", edgeFeatures.size());
+		Integer conditionFeatureId = edgeFeatures.get(Edge.Type.CONDITION.getLabel());
+		edgeFeatures.put(ConditionEdge.ConditionType.SELECTION.getLabel(), conditionFeatureId);
+		edgeFeatures.put(ConditionEdge.ConditionType.REPETITION.getLabel(), conditionFeatureId);
+		edgeFeatures.put(Edge.Type.SYNCHRONIZE.getLabel(), conditionFeatureId);
+		edgeFeatures.put(Edge.Type.EXCEPTION_HANDLING.getLabel(), conditionFeatureId);
 	}
 
 	private HashMap<String, Integer> nodeFeatures = new HashMap<>();

@@ -4,7 +4,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.DataNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import org.eclipse.jdt.core.dom.InfixExpression;
-import de.tu_darmstadt.stg.mudetect.utils.JavaASTUtil;
+import edu.iastate.cs.egroum.utils.JavaASTUtil;
 
 import java.util.Optional;
 

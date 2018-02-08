@@ -17,8 +17,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.someAUG;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.someAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.someOverlap;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.*;
@@ -36,7 +36,7 @@ public class MuDetectTest {
     private ViolationPredicate violationPredicate;
 
     @Test
-    public void findsViolations() throws Exception {
+    public void findsViolations() {
         final APIUsagePattern pattern = somePattern();
         final APIUsageExample target = someAUG();
         final Collection<APIUsageExample> targets = singletonList(target);
@@ -58,7 +58,7 @@ public class MuDetectTest {
     }
 
     @Test
-    public void ignoresNonViolations() throws Exception {
+    public void ignoresNonViolations() {
         final APIUsagePattern pattern = somePattern();
         final APIUsageExample target = someAUG();
         final Collection<APIUsageExample> targets = singletonList(target);

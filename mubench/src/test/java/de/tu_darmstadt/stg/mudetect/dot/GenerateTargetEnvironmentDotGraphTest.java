@@ -1,8 +1,8 @@
 package de.tu_darmstadt.stg.mudetect.dot;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 import org.hamcrest.BaseMatcher;
@@ -12,8 +12,8 @@ import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.ORDER;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.extend;
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.extend;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.*;
 import static de.tu_darmstadt.stg.mudetect.model.TestViolationBuilder.someViolation;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThat;
 
 public class GenerateTargetEnvironmentDotGraphTest {
     @Test
-    public void keepsSingleNode() throws Exception {
+    public void keepsSingleNode() {
         APIUsageExample aug = buildAUG().withActionNode("A").build();
         Overlap instance = instance(aug);
 
@@ -32,7 +32,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
     }
 
     @Test
-    public void addsSameEdgeOnlyOnce() throws Exception {
+    public void addsSameEdgeOnlyOnce() {
         APIUsageExample aug = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B").build();
         Overlap instance = instance(aug);
 
@@ -42,7 +42,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
     }
 
     @Test
-    public void excludesDistantNodes() throws Exception {
+    public void excludesDistantNodes() {
         TestAUGBuilder pattern = buildAUG().withActionNode("A");
         TestAUGBuilder env = extend(pattern).withActionNode("B").withDataEdge("A", ORDER, "B");
         TestAUGBuilder target = extend(env).withActionNode("C").withDataEdge("B", ORDER, "C");
@@ -54,7 +54,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
     }
 
     @Test
-    public void graysOutTargetOnlyElements() throws Exception {
+    public void graysOutTargetOnlyElements() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A");
         TestAUGBuilder target = extend(pattern).withActionNode("B").withDataEdge("A", ORDER, "B");
         TestOverlapBuilder instance = buildOverlap(target, pattern).withNode("A", "A");
@@ -66,7 +66,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
     }
 
     @Test
-    public void highlightsMappedElements() throws Exception {
+    public void highlightsMappedElements() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
         TestOverlapBuilder instance = buildOverlap(target, pattern).withNodes("A", "B").withEdge("A", ORDER, "B");
@@ -78,7 +78,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
     }
 
     @Test
-    public void includesEdgesBetweenTargetOnlyNodes() throws Exception {
+    public void includesEdgesBetweenTargetOnlyNodes() {
         TestAUGBuilder pattern = buildAUG().withActionNode("A");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B", "C")
                 .withDataEdge("A", ORDER, "B")
@@ -97,7 +97,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
      * anyways.
      */
     @Test
-    public void setsNSLimitAttribute() throws Exception {
+    public void setsNSLimitAttribute() {
         String dotGraph = toDotGraph(someViolation(someOverlap()));
 
         assertDotGraphContains(dotGraph, "nslimit=10000;");

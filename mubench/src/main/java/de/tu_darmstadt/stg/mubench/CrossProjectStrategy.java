@@ -19,8 +19,8 @@ import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFi
 import de.tu_darmstadt.stg.mudetect.ranking.*;
 import de.tu_darmstadt.stg.mustudies.UsageUtils;
 import de.tu_darmstadt.stg.yaml.YamlObject;
-import de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilder;
-import de.tu_darmstadt.stg.mudetect.mining.TypeUsageExamplePredicate;
+import edu.iastate.cs.egroum.aug.TypeUsageExamplePredicate;
+import edu.iastate.cs.egroum.aug.AUGBuilder;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;

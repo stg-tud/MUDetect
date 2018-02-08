@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
+import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
-import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
 
 import java.util.Set;
@@ -9,15 +9,13 @@ import java.util.Set;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.SYNCHRONIZE;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.THROW;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.*;
 import static de.tu_darmstadt.stg.mudetect.utils.SetUtils.asSet;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 public class MinPatternActionsModelTest {
     @Test
-    public void filtersPatternWithFewerActions() throws Exception {
+    public void filtersPatternWithFewerActions() {
         APIUsagePattern pattern = somePattern(TestAUGBuilder.buildAUG().withActionNode("m()"));
 
         Set<APIUsagePattern> patterns = new MinPatternActionsModel(() -> asSet(pattern), 2).getPatterns();
@@ -26,7 +24,7 @@ public class MinPatternActionsModelTest {
     }
 
     @Test
-    public void considersCalls() throws Exception {
+    public void considersCalls() {
         APIUsagePattern pattern = somePattern(TestAUGBuilder.buildAUG().withActionNodes("m()", "n()"));
 
         Set<APIUsagePattern> patterns = new MinPatternActionsModel(() -> asSet(pattern), 2).getPatterns();
@@ -35,7 +33,7 @@ public class MinPatternActionsModelTest {
     }
 
     @Test
-    public void considersCatch() throws Exception {
+    public void considersCatch() {
         APIUsagePattern pattern = somePattern(TestAUGBuilder.buildAUG()
                 .withActionNodes("m()").withDataNode("SomeException")
                 .withDataEdge("m()", THROW, "SomeException"));
@@ -46,7 +44,7 @@ public class MinPatternActionsModelTest {
     }
 
     @Test
-    public void considersSynchronization() throws Exception {
+    public void considersSynchronization() {
         APIUsagePattern pattern = somePattern(TestAUGBuilder.buildAUG()
                 .withDataNode("Object").withActionNodes("m()")
                 .withDataEdge("Object", SYNCHRONIZE, "m()"));

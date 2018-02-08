@@ -1,15 +1,15 @@
 package de.tu_darmstadt.stg.mudetect.stresstests;
 
+import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
-import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.junit.Test;
 
 import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
-import static de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThat;
  */
 public class LimitExploredAlternativesTest {
     @Test
-    public void skipIfTooMany() throws Exception {
+    public void skipIfTooMany() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A")
                 .withDataNode("B1", "B").withDataEdge("B1", PARAMETER, "A")
                 .withDataNode("B2", "B").withDataEdge("B2", PARAMETER, "A")

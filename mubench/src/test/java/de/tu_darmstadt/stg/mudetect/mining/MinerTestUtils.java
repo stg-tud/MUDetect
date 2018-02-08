@@ -6,7 +6,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 
 import java.util.*;
 
-import static de.tu_darmstadt.stg.mudetect.src2aug.AUGBuilderTestUtils.buildAUGsForMethods;
+import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForMethods;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 

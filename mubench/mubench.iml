@@ -12,7 +12,12 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: de.tu-darmstadt.stg:mubench.cli:0.0.11" level="project" />
+    <orderEntry type="module" module-name="aug" />
+    <orderEntry type="library" name="Maven: org.jgrapht:jgrapht-core:0.9.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jgrapht:jgrapht-ext:0.9.2" level="project" />
+    <orderEntry type="library" name="Maven: org.tinyjee.jgraphx:jgraphx:2.0.0.1" level="project" />
+    <orderEntry type="library" name="Maven: jgraph:jgraph:5.13.0.0" level="project" />
+    <orderEntry type="module" module-name="src2egroum2aug" />
     <orderEntry type="library" name="Maven: org.eclipse.tycho:org.eclipse.jdt.core:3.11.1.v20150902-1521" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jdt:org.eclipse.jdt.annotation:1.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.core:runtime:3.10.0-v20140318-2214" level="project" />
@@ -28,11 +33,6 @@
     <orderEntry type="library" name="Maven: org.eclipse.core:org.eclipse.core.commands:3.6.0" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.equinox:org.eclipse.equinox.common:3.6.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:bcel-findbugs:6.0" level="project" />
-    <orderEntry type="module" module-name="aug" />
-    <orderEntry type="library" name="Maven: org.jgrapht:jgrapht-core:0.9.2" level="project" />
-    <orderEntry type="library" name="Maven: org.jgrapht:jgrapht-ext:0.9.2" level="project" />
-    <orderEntry type="library" name="Maven: org.tinyjee.jgraphx:jgraphx:2.0.0.1" level="project" />
-    <orderEntry type="library" name="Maven: jgraph:jgraph:5.13.0.0" level="project" />
     <orderEntry type="library" name="Maven: de.tu-darmstadt.stg:mubench.cli:0.0.11" level="project" />
     <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.17" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:19.0" level="project" />
@@ -45,6 +45,7 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.jmock:jmock:2.6.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-library:1.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit-dep:4.4" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: de.tu-darmstadt.stg.mudetect:aug:test-jar:tests:0.0.1-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="aug" scope="TEST" production-on-test="" />
+    <orderEntry type="module" module-name="src2egroum2aug" scope="TEST" production-on-test="" />
   </component>
 </module>

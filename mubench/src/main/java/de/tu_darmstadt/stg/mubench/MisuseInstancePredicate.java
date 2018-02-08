@@ -1,8 +1,8 @@
 package de.tu_darmstadt.stg.mubench;
 
-import de.tu_darmstadt.stg.mudetect.src2aug.EGroumGraph;
-import de.tu_darmstadt.stg.mudetect.mining.UsageExamplePredicate;
-import de.tu_darmstadt.stg.mudetect.utils.JavaASTUtil;
+import edu.iastate.cs.egroum.aug.EGroumGraph;
+import edu.iastate.cs.egroum.aug.UsageExamplePredicate;
+import edu.iastate.cs.egroum.utils.JavaASTUtil;
 
 import org.eclipse.jdt.core.dom.*;
 

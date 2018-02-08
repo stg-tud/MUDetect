@@ -2,7 +2,7 @@ package de.tu_darmstadt.stg.mudetect.typehierarchy;
 
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.*;
-import de.tu_darmstadt.stg.mudetect.utils.FileIO;
+import edu.iastate.cs.egroum.utils.FileIO;
 
 import java.io.File;
 import java.util.List;

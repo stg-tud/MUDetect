@@ -1,21 +1,21 @@
 package de.tu_darmstadt.stg.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
+import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
-import de.tu_darmstadt.stg.mudetect.model.TestAUGBuilder;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
-import static de.tu_darmstadt.stg.mudetect.model.AUGTestUtils.isEqual;
+import static de.tu_darmstadt.stg.mudetect.aug.model.AUGTestUtils.isEqual;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 
-public class PatternTestUtils {
-    public static Matcher<APIUsagePattern> isPattern(TestAUGBuilder builder, int support) {
+class PatternTestUtils {
+    static Matcher<APIUsagePattern> isPattern(TestAUGBuilder builder, int support) {
         return isPattern(builder.build(APIUsagePattern.class), support);
     }
 
-    public static Matcher<APIUsagePattern> isPattern(APIUsagePattern aug, int support) {
+    static Matcher<APIUsagePattern> isPattern(APIUsagePattern aug, int support) {
         Matcher<? super APIUsageGraph> augMatcher = isEqual(aug);
         return new BaseMatcher<APIUsagePattern>() {
             @Override

@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/aug/aug.iml" filepath="$PROJECT_DIR$/aug/aug.iml" />
       <module fileurl="file://$PROJECT_DIR$/mubench/mubench.iml" filepath="$PROJECT_DIR$/mubench/mubench.iml" />
       <module fileurl="file://$PROJECT_DIR$/mudetect.iml" filepath="$PROJECT_DIR$/mudetect.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src2egroum2aug/src2egroum2aug.iml" filepath="$PROJECT_DIR$/src2egroum2aug/src2egroum2aug.iml" />
     </modules>
   </component>
 </project>
