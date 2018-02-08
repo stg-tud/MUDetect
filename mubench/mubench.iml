@@ -45,5 +45,6 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.jmock:jmock:2.6.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-library:1.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit-dep:4.4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: de.tu-darmstadt.stg.mudetect:aug:test-jar:tests:0.0.1-SNAPSHOT" level="project" />
   </component>
 </module>

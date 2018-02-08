@@ -4,17 +4,17 @@ import de.tu_darmstadt.stg.mudetect.aug.model.BaseNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.DataNode;
 
 public class VariableNode extends BaseNode implements DataNode {
-    private final String dataType;
-    private final String dataName;
+    private final String variableType;
+    private final String variableName;
 
-    public VariableNode(String dataType, String dataName) {
-        this.dataType = dataType;
-        this.dataName = dataName;
+    public VariableNode(String variableType, String variableName) {
+        this.variableType = variableType;
+        this.variableName = variableName;
     }
 
     @Override
     public String getName() {
-        return dataName;
+        return variableName;
     }
 
     @Override
@@ -24,7 +24,7 @@ public class VariableNode extends BaseNode implements DataNode {
 
     @Override
     public String getType() {
-        return dataType;
+        return variableType;
     }
 
     @Override

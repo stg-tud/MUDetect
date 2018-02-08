@@ -1,13 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.src2aug;
 
+import de.tu_darmstadt.stg.mudetect.aug.builder.APIUsageExampleBuilder;
 import de.tu_darmstadt.stg.mudetect.aug.model.*;
-import de.tu_darmstadt.stg.mudetect.aug.model.actions.*;
-import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.*;
-import de.tu_darmstadt.stg.mudetect.aug.model.data.*;
-import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.DefinitionEdge;
-import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
-import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.QualifierEdge;
-import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ReceiverEdge;
 import de.tu_darmstadt.stg.mudetect.utils.JavaASTUtil;
 import org.eclipse.jdt.core.dom.ASTNode;
 
@@ -72,75 +66,87 @@ public class AUGBuilder {
 
     private static APIUsageExample toAUG(EGroumGraph groum) {
         LOGGER.info("Converting to AUG: " + groum.getFilePath() + " " + groum.getName());
-        APIUsageExample aug = new APIUsageExample(
+        APIUsageExampleBuilder builder = APIUsageExampleBuilder.buildAUG(
                 new Location(groum.getProjectName(), groum.getFilePath(), getMethodSignature(groum)));
-        Map<EGroumNode, Node> nodeMap = new HashMap<>();
         for (EGroumNode node : groum.getNodes()) {
-            Node newNode = convert(node);
-            newNode.setGraph(aug);
-            nodeMap.put(node, newNode);
-            aug.addVertex(newNode);
+            addNode(builder, node);
         }
         for (EGroumNode node : groum.getNodes()) {
             for (EGroumEdge edge : node.getInEdges()) {
-                Node source = nodeMap.get(edge.getSource());
-                Node target = nodeMap.get(edge.getTarget());
-                aug.addEdge(source, target, convert(edge, source, target));
+                addEdge(builder, edge);
             }
         }
-        return aug;
+        return builder.build();
     }
 
-    private static Edge convert(EGroumEdge edge, Node source, Node target) {
-        Edge newEdge = convertDirectEdge(edge, source, target);
+    private static void addEdge(APIUsageExampleBuilder builder, EGroumEdge edge) {
+        Edge newEdge = convertDirectEdge(builder, edge);
         if (!edge.isDirect()) {
             // TODO the transitive edge should not wrap its 'newEdge', but the new edge for the corresponding direct
             // edge. But neither do we know this edge here, nor whether it has even been created yet. Therefore, we
             // cheat, which is currently functionally equivalent.
-            newEdge = new TransitiveEdge(source, target, newEdge);
+            // new TransitiveEdge(newEdge.getSource(), newEdge.getTarget(), newEdge);
         }
-        return newEdge;
     }
 
-    private static Edge convertDirectEdge(EGroumEdge edge, Node source, Node target) {
+    private static Edge convertDirectEdge(APIUsageExampleBuilder builder, EGroumEdge edge) {
+        String sourceNodeId = getNodeId(edge.getSource());
+        String targetNodeId = getNodeId(edge.getTarget());
         if (edge instanceof EGroumDataEdge) {
-            switch (((EGroumDataEdge) edge).getType()) {
+            EGroumDataEdge.Type type = ((EGroumDataEdge) edge).getType();
+            switch (type) {
                 case RECEIVER:
-                    return new ReceiverEdge(source, target);
+                    builder.withReceiverEdge(sourceNodeId, targetNodeId);
+                    break;
                 case PARAMETER:
-                    return new ParameterEdge(source, target);
+                    builder.withParameterEdge(sourceNodeId, targetNodeId);
+                    break;
                 case ORDER:
-                    return new OrderEdge(source, target);
+                    builder.withOrderEdge(sourceNodeId, targetNodeId);
+                    break;
                 case DEFINITION:
-                    return new DefinitionEdge(source, target);
+                    builder.withDefinitionEdge(sourceNodeId, targetNodeId);
+                    break;
                 case QUALIFIER:
-                    return new QualifierEdge(source, target);
+                    builder.withQualifierEdge(sourceNodeId, targetNodeId);
+                    break;
                 case CONDITION:
                     String label = edge.getLabel();
                     switch (label) {
                         case "sel":
-                            return new SelectionEdge(source, target);
+                            builder.withSelectionEdge(sourceNodeId, targetNodeId);
+                            break;
                         case "rep":
-                            return new RepetitionEdge(source, target);
+                            builder.withRepetitionEdge(sourceNodeId, targetNodeId);
+                            break;
                         case "syn":
-                            return new SynchronizationEdge(source, target);
+                            builder.withSynchronizationEdge(sourceNodeId, targetNodeId);
+                            break;
                         case "hdl":
-                            return new ExceptionHandlingEdge(source, target);
+                            builder.withExceptionHandlingEdge(sourceNodeId, targetNodeId);
+                            break;
                         default:
                             throw new IllegalArgumentException("unsupported type of condition edge: " + label);
                     }
                 case THROW:
-                    return new ThrowEdge(source, target);
+                    builder.withThrowEdge(sourceNodeId, targetNodeId);
+                    break;
                 case FINALLY:
-                    return new FinallyEdge(source, target);
+                    builder.withFinallyEdge(sourceNodeId, targetNodeId);
+                    break;
                 case CONTAINS:
-                    return new ContainsEdge(source, target);
+                    builder.withContainsEdge(sourceNodeId, targetNodeId);
+                    break;
+                default:
+                    throw new IllegalArgumentException("unsupported edge type: " + type);
             }
+            return null;
         }
-        throw new IllegalArgumentException("unsupported edge type: " + edge.getLabel());
+        throw new IllegalArgumentException("unsupported edge: " + edge.getLabel());
     }
 
-    private static Node convert(EGroumNode node) {
+    private static void addNode(APIUsageExampleBuilder builder, EGroumNode node) {
+        String nodeId = getNodeId(node);
         if (node instanceof EGroumDataNode) {
             // TODO there's Exception nodes in catch blocks without incoming THROW edges
             EGroumDataNode dataNode = (EGroumDataNode) node;
@@ -148,81 +154,115 @@ public class AUGBuilder {
             String dataName = dataNode.getDataName();
             String dataValue = dataNode.getDataValue();
             if (dataNode.isException() || node.getLabel().endsWith("Exception") || node.getLabel().endsWith("Error")) {
-                return new ExceptionNode(dataType, dataName);
+                builder.withException(nodeId, dataType, dataName);
+                return;
             } else if (node.astNodeType == ASTNode.SIMPLE_NAME) {
-                return new VariableNode(dataType, dataName);
+                builder.withVariable(nodeId, dataType, dataName);
+                return;
             } else if (node.astNodeType == ASTNode.FIELD_ACCESS) {
-                return new ConstantNode(dataType, dataName, dataValue);
+                builder.withConstant(nodeId, dataType, dataName, dataValue);
+                return;
             } else if (LITERAL_AST_NODE_TYPES.contains(node.astNodeType)) {
                 if (dataName != null) {
-                    return new ConstantNode(dataType, dataName, dataValue);
+                    builder.withConstant(nodeId, dataType, dataName, dataValue);
+                    return;
                 } else {
-                    return new LiteralNode(dataType, dataValue);
+                    builder.withLiteral(nodeId, dataType, dataValue);
+                    return;
                 }
             } else if (node.getLabel().endsWith("()")) {
                 // encoding of the methods of anonymous class instances
-                return new AnonymousClassMethodNode(node.getLabel());
+                builder.withAnonymousClassMethod(nodeId, node.getLabel());
+                return;
             } else {
-                return new AnonymousObjectNode(dataType);
+                builder.withAnonymousObject(nodeId, dataType);
+                return;
             }
         } else if (node instanceof EGroumActionNode) {
+            int sourceLineNumber = node.getSourceLineNumber().orElse(-1);
             String label = node.getLabel();
             if (label.startsWith("{") && label.endsWith("}")) {
-                return new ArrayCreationNode(label.substring(1, label.length() - 1), node.getSourceLineNumber().orElse(-1));
+                builder.withArrayCreation(nodeId, label.substring(1, label.length() - 1), sourceLineNumber);
+                return;
             } else if (label.endsWith(".arrayget()")) {
                 String[] labelParts = split(label);
-                return new ArrayAccessNode(labelParts[0], node.getSourceLineNumber().orElse(-1));
+                builder.withArrayAccess(nodeId, labelParts[0], sourceLineNumber);
+                return;
             } else if (label.endsWith(".arrayset()")) {
                 String[] labelParts = split(label);
-                return new ArrayAssignmentNode(labelParts[0], node.getSourceLineNumber().orElse(-1));
+                builder.withArrayAssignment(nodeId, labelParts[0], sourceLineNumber);
+                return;
             } else if (label.equals("<nullcheck>")) {
-                return new NullCheckNode();
+                builder.withNullCheck(nodeId, sourceLineNumber);
+                return;
             } else if (node.astNodeType == ASTNode.METHOD_INVOCATION) {
                 String[] labelParts = split(label);
-                return new MethodCallNode(labelParts[0], labelParts[1], node.getSourceLineNumber().orElse(-1));
+                builder.withMethodCall(nodeId, labelParts[0], labelParts[1], sourceLineNumber);
+                return;
             } else if (node.astNodeType == ASTNode.SUPER_METHOD_INVOCATION) {
                 String[] labelParts = split(label);
-                return new SuperMethodCallNode(labelParts[0], labelParts[1], node.getSourceLineNumber().orElse(-1));
+                builder.withSuperMethodCall(nodeId, labelParts[0], labelParts[1], sourceLineNumber);
+                return;
             } else if (node.astNodeType == ASTNode.CLASS_INSTANCE_CREATION) {
                 String[] labelParts = split(label);
-                return new ConstructorCallNode(labelParts[0], node.getSourceLineNumber().orElse(-1));
+                builder.withConstructorCall(nodeId, labelParts[0], sourceLineNumber);
+                return;
             } else if (node.astNodeType == ASTNode.CONSTRUCTOR_INVOCATION) {
                 /* constructor name for "this()" calls look like "Type()" */
                 String typeName = label.substring(0, label.length() - 2); // remove "()"
-                return new ConstructorCallNode(typeName, node.getSourceLineNumber().orElse(-1));
+                builder.withConstructorCall(nodeId, typeName, sourceLineNumber);
+                return;
             } else if (node.astNodeType == ASTNode.SUPER_CONSTRUCTOR_INVOCATION) {
                 String typeName = label.substring(0, label.length() - 2); // remove "()" from "Supertype()"
-                return new SuperConstructorCallNode(typeName, node.getSourceLineNumber().orElse(-1));
+                builder.withSuperConstructorCall(nodeId, typeName, sourceLineNumber);
+                return;
             } else if (label.endsWith("<cast>")) {
-                return new CastNode(label.split("\\.")[0], node.getSourceLineNumber().orElse(-1));
+                String targetTypeName = split(label)[0];
+                builder.withCast(nodeId, targetTypeName, sourceLineNumber);
+                return;
             } else if (JavaASTUtil.infixExpressionLables.containsValue(label)) {
                 // TODO capture non-generalized operator
-                return new InfixOperatorNode(label, node.getSourceLineNumber().orElse(-1));
+                builder.withInfixOperator(nodeId, label, sourceLineNumber);
+                return;
             } else if (ASSIGNMENT_OPERATORS.contains(label)) {
                 // this happens because we transform operators such as += and -= into and = and the respective
                 // operation, but to not apply the operator abstraction afterwards, i.e., this is actually a bug
                 // in the transformation.
                 // TODO ensure consistent handling of operators
-                return new InfixOperatorNode(label, node.getSourceLineNumber().orElse(-1));
+                builder.withInfixOperator(nodeId, label, sourceLineNumber);
+                return;
             } else if (UNARY_OPERATORS.contains(label)) {
-                return new UnaryOperatorNode(label, node.getSourceLineNumber().orElse(-1));
+                builder.withUnaryOperator(nodeId, label, sourceLineNumber);
+                return;
             } else if (label.equals("=")) {
-                return new AssignmentNode(node.getSourceLineNumber().orElse(-1));
+                builder.withAssignment(nodeId, sourceLineNumber);
+                return;
             } else if (label.equals("<nullcheck>")) {
-                return new NullCheckNode(node.getSourceLineNumber().orElse(-1));
+                builder.withNullCheck(nodeId, sourceLineNumber);
+                return;
             } else if (label.endsWith("<instanceof>")) {
-                return new TypeCheckNode(label.split("\\.")[0], node.getSourceLineNumber().orElse(-1));
+                String checkTypeName = split(label)[0];
+                builder.withTypeCheck(nodeId, checkTypeName, sourceLineNumber);
+                return;
             } else if (label.equals("break")) {
-                return new BreakNode(node.getSourceLineNumber().orElse(-1));
+                builder.withBreak(nodeId, sourceLineNumber);
+                return;
             } else if (label.equals("continue")) {
-                return new ContinueNode(node.getSourceLineNumber().orElse(-1));
+                builder.withContinue(nodeId, sourceLineNumber);
+                return;
             } else if (label.equals("return")) {
-                return new ReturnNode(node.getSourceLineNumber().orElse(-1));
+                builder.withReturn(nodeId, sourceLineNumber);
+                return;
             } else if (label.equals("throw")) {
-                return new ThrowNode(node.getSourceLineNumber().orElse(-1));
+                builder.withThrow(nodeId, sourceLineNumber);
+                return;
             }
         }
         throw new IllegalArgumentException("unsupported node: " + node);
+    }
+
+    private static String getNodeId(EGroumNode node) {
+        return Integer.toString(node.getId());
     }
 
     private static String[] split(String declaringTypeAndSignatureLabel) {
