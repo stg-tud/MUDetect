@@ -4,7 +4,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.AUGTestUtils.dataNodeWithLabel;
-import static de.tu_darmstadt.stg.mudetect.aug.model.AUGTestUtils.hasNode;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGNodeMatchers.hasNode;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUG;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;

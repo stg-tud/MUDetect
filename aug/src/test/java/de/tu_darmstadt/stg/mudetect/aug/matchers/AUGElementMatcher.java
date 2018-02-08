@@ -13,14 +13,14 @@ import org.hamcrest.Matchers;
 import java.util.Set;
 import java.util.function.Function;
 
-class AUGElementMatcher<E> extends BaseMatcher<APIUsageGraph> {
+public class AUGElementMatcher<E> extends BaseMatcher<APIUsageGraph> {
     private final static AUGDotExporter augDotExporter = new AUGDotExporter(
             Node::getLabel, new AUGNodeAttributeProvider(), new AUGEdgeAttributeProvider());
 
     private final Function<APIUsageGraph, Set<E>> selector;
     private final Matcher<? super E> elementMatcher;
 
-    AUGElementMatcher(Function<APIUsageGraph, Set<E>> selector, Matcher<? super E> elementMatcher) {
+    public AUGElementMatcher(Function<APIUsageGraph, Set<E>> selector, Matcher<? super E> elementMatcher) {
         this.selector = selector;
         this.elementMatcher = elementMatcher;
     }

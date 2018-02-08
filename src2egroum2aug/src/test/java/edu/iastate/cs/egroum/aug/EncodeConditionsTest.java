@@ -5,6 +5,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.AUGTestUtils;
 import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGNodeMatchers.hasNode;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGNodeMatchers.hasNodes;
 import static de.tu_darmstadt.stg.mudetect.aug.model.AUGTestUtils.*;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUG;

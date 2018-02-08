@@ -6,7 +6,7 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
-class EdgeMatcher extends BaseMatcher<Edge> {
+public class EdgeMatcher extends BaseMatcher<Edge> {
     private final Matcher<? super Node> sourceMatcher;
     private final Class<? extends Edge> edgeType;
     private final Matcher<? super Node> targetMatcher;

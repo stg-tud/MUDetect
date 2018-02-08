@@ -1,20 +1,16 @@
 package de.tu_darmstadt.stg.mudetect.aug.model;
 
+import de.tu_darmstadt.stg.mudetect.aug.matchers.AUGElementMatcher;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
-import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGDotExporter;
-import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGEdgeAttributeProvider;
-import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGNodeAttributeProvider;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.jgrapht.graph.AbstractBaseGraph;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge.ConditionType.REPETITION;
@@ -64,21 +60,6 @@ public class AUGTestUtils {
 
     private static String getEdgeLabel(Edge edge) {
         return edge.getSource().getLabel() + "--(" + edge.getLabel() + ")-->" + edge.getTarget().getLabel();
-    }
-
-    public static Matcher<? super APIUsageGraph> hasNode(Matcher<? super Node> matcher) {
-        return new AUGElementMatcher<>(AbstractBaseGraph::vertexSet, matcher);
-    }
-
-    @SafeVarargs
-    public static Matcher<? super APIUsageGraph> hasNodes(Matcher<? super Node>... matchers) {
-        List<Matcher<? super APIUsageGraph>> all = new ArrayList<>(matchers.length);
-
-        for (Matcher<? super Node> matcher : matchers) {
-            all.add(hasNode(matcher));
-        }
-
-        return allOf(all);
     }
 
     public static Matcher<? super Node> actionNodeWithLabel(String label) {
@@ -179,39 +160,6 @@ public class AUGTestUtils {
 
     private static Matcher<? super APIUsageGraph> hasEdge(Matcher<? super Edge> matcher) {
         return new AUGElementMatcher<>(AbstractBaseGraph::edgeSet, matcher);
-    }
-
-    private static class AUGElementMatcher<E> extends BaseMatcher<APIUsageGraph> {
-        private final static AUGDotExporter augDotExporter = new AUGDotExporter(
-                Node::getLabel, new AUGNodeAttributeProvider(), new AUGEdgeAttributeProvider());
-
-        private final Function<APIUsageGraph, Set<E>> selector;
-        private final Matcher<? super E> elementMatcher;
-
-        AUGElementMatcher(Function<APIUsageGraph, Set<E>> selector, Matcher<? super E> elementMatcher) {
-            this.selector = selector;
-            this.elementMatcher = elementMatcher;
-        }
-
-        @Override
-        public boolean matches(Object item) {
-            return item instanceof APIUsageGraph && Matchers.hasItem(elementMatcher).matches(selector.apply((APIUsageGraph) item));
-        }
-
-        @Override
-        public void describeTo(Description description) {
-            description.appendText("an AUG containing ");
-            description.appendDescriptionOf(elementMatcher);
-        }
-
-        @Override
-        public void describeMismatch(Object item, Description description) {
-            if (item instanceof APIUsageGraph) {
-                description.appendText("was AUG: ").appendText(augDotExporter.toDotGraph((APIUsageGraph) item));
-            } else {
-                super.describeMismatch(item, description);
-            }
-        }
     }
 
     private static class EdgeMatcher extends BaseMatcher<Edge> {

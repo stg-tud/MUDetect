@@ -10,9 +10,25 @@ import org.jgrapht.graph.AbstractBaseGraph;
 
 import org.hamcrest.Matcher;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.core.AllOf.allOf;
+
 public abstract class AUGNodeMatchers {
     public static Matcher<? super APIUsageGraph> hasNode(Matcher<? super Node> nodeMatcher) {
         return new AUGElementMatcher<>(AbstractBaseGraph::vertexSet, nodeMatcher);
+    }
+
+    @SafeVarargs
+    public static Matcher<? super APIUsageGraph> hasNodes(Matcher<? super Node>... matchers) {
+        List<Matcher<? super APIUsageGraph>> all = new ArrayList<>(matchers.length);
+
+        for (Matcher<? super Node> matcher : matchers) {
+            all.add(hasNode(matcher));
+        }
+
+        return allOf(all);
     }
 
     public static Matcher<? super Node> variable(String dataTypeName, String variableName) {
