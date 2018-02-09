@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class AUGDotExporter {
     private static final String WINDOWS_EXEC_DOT = "D:/Program Files (x86)/Graphviz2.36/bin/dot.exe";	// Windows
-    private static final String LINUX_EXEC_DOT = "/usr/local/bin/dot";	// Linux
+    private static final String LINUX_EXEC_DOT = "dot";	// Linux
     private static String EXEC_DOT = null;
 
     static {
