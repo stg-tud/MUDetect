@@ -112,7 +112,7 @@
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
-                            <finalName>MuDetectXProject</finalName>
+                            <finalName>MuDetectXP</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                         <phase>package</phase>
