@@ -48,4 +48,16 @@ public class Overlaps {
     public void removeViolationIf(Predicate<Overlap> condition) {
         violations.removeIf(condition);
     }
+
+    public int getNumberOfEqualViolations(Overlap violation) {
+        int numberOfEqualViolations = 0;
+        for (Overlap otherViolation : getViolationsOfSamePattern(violation)) {
+            // two overlaps are equal, if they violate the same pattern in the same way,
+            // i.e., if the pattern overlap is the same.
+            if (violation.isSamePatternOverlap(otherViolation)) {
+                numberOfEqualViolations++;
+            }
+        }
+        return numberOfEqualViolations;
+    }
 }
