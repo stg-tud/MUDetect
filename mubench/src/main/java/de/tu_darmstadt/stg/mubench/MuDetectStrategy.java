@@ -54,14 +54,17 @@ public abstract class MuDetectStrategy implements DetectionStrategy {
         output.withRunInfo("detectionLoadTime", endDetectionLoadTime - endTrainingTime);
         output.withRunInfo("numberOfTargets", targets.size());
 
-        List<Violation> violations = createDetector(model).findViolations(targets).stream()
-                .filter(firstAlternativeViolation()).collect(Collectors.toList());
+        List<Violation> violations = filterViolations(createDetector(model).findViolations(targets));
         long endDetectionTime = System.currentTimeMillis();
         output.withRunInfo("detectionTime", endDetectionTime - endDetectionLoadTime);
         output.withRunInfo("numberOfViolations", violations.size());
         output.withRunInfo("numberOfExploredAlternatives", AlternativeMappingsOverlapsFinder.numberOfExploredAlternatives);
 
         return output.withFindings(violations, ViolationUtils::toFinding);
+    }
+
+    protected List<Violation> filterViolations(List<Violation> violations) {
+        return violations.stream().filter(firstAlternativeViolation()).collect(Collectors.toList());
     }
 
     private YamlObject getTypeUsageCounts(Collection<APIUsageExample> targets) {
