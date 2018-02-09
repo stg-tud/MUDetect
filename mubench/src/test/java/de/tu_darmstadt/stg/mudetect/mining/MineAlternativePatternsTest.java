@@ -16,7 +16,7 @@ public class MineAlternativePatternsTest {
     public TestName testName = new TestName();
 
     @Test
-    public void mineCorePattern() throws Exception {
+    public void mineCorePattern() {
         String iterColl = "void m(Collection c) { Iterator i = c.iterator(); while(i.hasNext()) i.next(); }";
         String iterAddList = "void m(Collection c) { c.add(); Iterator i = c.iterator(); while(i.hasNext()) i.next(); }";
         String iterRemList = "void m(Collection c) { c.remove(); Iterator i = c.iterator(); while(i.hasNext()) i.next(); }";
