@@ -1,11 +1,11 @@
 package edu.iastate.cs.egroum.aug;
 
-import de.tu_darmstadt.stg.mudetect.aug.matchers.AUGNodeMatchers;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.aug.model.AUGTestUtils.*;
-import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGMatchers.*;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.actionNodeWith;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodePropertyMatchers.label;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUG;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
@@ -20,12 +20,12 @@ public class EncodeBitwiseTest {
                 conf);
 
         if (conf.buildTransitiveDataEdges) {
-	        assertThat(aug, hasEdge(actionNodeWithLabel("String.length()"), PARAMETER, actionNodeWithLabel("<b>")));
-	        assertThat(aug, hasEdge(actionNodeWithLabel("String.indexOf()"), PARAMETER, actionNodeWithLabel("<b>")));
+            assertThat(aug, hasParameterEdge(actionNodeWith(label("String.length()")), actionNodeWith(label("<b>"))));
+            assertThat(aug, hasParameterEdge(actionNodeWith(label("String.indexOf()")), actionNodeWith(label("<b>"))));
         }
-        assertThat(aug, not(AUGNodeMatchers.hasNode(actionNodeWithLabel("<b>"))));
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("CharSequence.length()"), actionNodeWithLabel("String.getBytes()")));
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("String.indexOf()"), actionNodeWithLabel("String.getBytes()")));
+        assertThat(aug, not(hasNode(actionNodeWith(label("<b>")))));
+        assertThat(aug, hasSelectionEdge(actionNodeWith(label("CharSequence.length()")), actionNodeWith(label("String.getBytes()"))));
+        assertThat(aug, hasSelectionEdge(actionNodeWith(label("String.indexOf()")), actionNodeWith(label("String.getBytes()"))));
     }
 
     @Test
@@ -36,11 +36,11 @@ public class EncodeBitwiseTest {
                 conf);
 
         if (conf.buildTransitiveDataEdges) {
-	        assertThat(aug, hasEdge(actionNodeWithLabel("String.length()"), PARAMETER, actionNodeWithLabel("<b>")));
-	        assertThat(aug, hasEdge(actionNodeWithLabel("String.indexOf()"), PARAMETER, actionNodeWithLabel("<b>")));
+            assertThat(aug, hasParameterEdge(actionNodeWith(label("String.length()")), actionNodeWith(label("<b>"))));
+            assertThat(aug, hasParameterEdge(actionNodeWith(label("String.indexOf()")), actionNodeWith(label("<b>"))));
         }
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("<b>"), actionNodeWithLabel("String.getBytes()")));
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("CharSequence.length()"), actionNodeWithLabel("String.getBytes()")));
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("String.indexOf()"), actionNodeWithLabel("String.getBytes()")));
+        assertThat(aug, hasSelectionEdge(actionNodeWith(label("<b>")), actionNodeWith(label("String.getBytes()"))));
+        assertThat(aug, hasSelectionEdge(actionNodeWith(label("CharSequence.length()")), actionNodeWith(label("String.getBytes()"))));
+        assertThat(aug, hasSelectionEdge(actionNodeWith(label("String.indexOf()")), actionNodeWith(label("String.getBytes()"))));
     }
 }

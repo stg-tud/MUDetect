@@ -3,8 +3,10 @@ package edu.iastate.cs.egroum.aug;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.aug.model.AUGTestUtils.*;
-import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.DEFINITION;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGMatchers.hasDefinitionEdge;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.actionNodeWith;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.dataNodeWith;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodePropertyMatchers.label;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUG;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
@@ -18,8 +20,8 @@ public class EncodeDefinitionsTest {
                 "  r.read();\n" +
                 "}");
 
-        assertThat(aug, hasEdge(actionNodeWithLabel("FileInputStream.<init>"), DEFINITION, dataNodeWithLabel("InputStream")));
-        assertThat(aug, not(hasEdge(actionNodeWithLabel("FileInputStream.<init>"), DEFINITION, dataNodeWithLabel("Reader"))));
+        assertThat(aug, hasDefinitionEdge(actionNodeWith(label("FileInputStream.<init>")), dataNodeWith(label("InputStream"))));
+        assertThat(aug, not(hasDefinitionEdge(actionNodeWith(label("FileInputStream.<init>")), dataNodeWith(label("Reader")))));
     }
 
     @Test
@@ -31,10 +33,10 @@ public class EncodeDefinitionsTest {
                 "  return d;\n" +
                 "}", conf);
 
-        assertThat(aug, hasEdge(actionNodeWithLabel("ArrayList.<init>"), DEFINITION, dataNodeWithLabel("List")));
+        assertThat(aug, hasDefinitionEdge(actionNodeWith(label("ArrayList.<init>")), dataNodeWith(label("List"))));
         if (conf.buildTransitiveDataEdges)
-        	assertThat(aug, hasEdge(actionNodeWithLabel("Collection.size()"), DEFINITION, dataNodeWithLabel("double")));
+            assertThat(aug, hasDefinitionEdge(actionNodeWith(label("Collection.size()")), dataNodeWith(label("double"))));
         if (conf.buildTransitiveDataEdges)
-        	assertThat(aug, not(hasEdge(actionNodeWithLabel("ArrayList.<init>"), DEFINITION, dataNodeWithLabel("double"))));
+            assertThat(aug, not(hasDefinitionEdge(actionNodeWith(label("ArrayList.<init>")), dataNodeWith(label("double")))));
     }
 }

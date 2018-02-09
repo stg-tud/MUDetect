@@ -2,11 +2,12 @@ package de.tu_darmstadt.stg.mudetect.aug.matchers;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
+import de.tu_darmstadt.stg.utils.StringUtils;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
-public class EdgeMatcher extends BaseMatcher<Edge> {
+class EdgeMatcher extends BaseMatcher<Edge> {
     private final Matcher<? super Node> sourceMatcher;
     private final Class<? extends Edge> edgeType;
     private final Matcher<? super Node> targetMatcher;
@@ -41,16 +42,6 @@ public class EdgeMatcher extends BaseMatcher<Edge> {
         if (name.endsWith("Edge")) {
             name = name.substring(0, name.length() - 4);
         }
-        return splitCamelCase(name).toLowerCase();
-    }
-
-    private String splitCamelCase(String camelCaseString) {
-        return camelCaseString.replaceAll(
-                String.format("%s|%s|%s",
-                        "(?<=[A-Z])(?=[A-Z][a-z])",
-                        "(?<=[^A-Z])(?=[A-Z])",
-                        "(?<=[A-Za-z])(?=[^A-Za-z])"
-                ),
-                " ");
+        return StringUtils.splitCamelCase(name);
     }
 }

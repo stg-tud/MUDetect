@@ -1,35 +1,32 @@
 package edu.iastate.cs.egroum.aug;
 
-import de.tu_darmstadt.stg.mudetect.aug.matchers.AUGNodeMatchers;
+import de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
-import de.tu_darmstadt.stg.mudetect.aug.model.AUGTestUtils;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGNodeMatchers.hasNode;
-import static de.tu_darmstadt.stg.mudetect.aug.model.AUGTestUtils.actionNodeWithLabel;
-import static de.tu_darmstadt.stg.mudetect.aug.model.AUGTestUtils.hasEdge;
-import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
-import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.RECEIVER;
-import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUG;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGMatchers.*;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.*;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodePropertyMatchers.label;
+import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.*;
 import static org.junit.Assert.assertThat;
 
 public class EncodeCastTest {
     @Test
     public void encodesCast() {
-        APIUsageExample aug = AUGBuilderTestUtils.buildAUG("class C {\n" +
+        APIUsageExample aug = buildAUG("class C {\n" +
                 "  void m(Object obj) {\n" +
                 "    java.util.List l = (java.util.List) obj;\n" +
                 "    l.size();\n" +
                 "  }\n" +
                 "}");
 
-        assertThat(aug, hasNode(actionNodeWithLabel("List.<cast>")));
+        assertThat(aug, hasNode(actionNodeWith(label("List.<cast>"))));
     }
 
     @Test 
     public void addsTransitiveParameterEdgeThroughCast() {
         AUGConfiguration conf = new AUGConfiguration(){{buildTransitiveDataEdges = true;}};
-        APIUsageExample aug = AUGBuilderTestUtils.buildAUG("class C {\n" +
+        APIUsageExample aug = buildAUG("class C {\n" +
                 "  void m(java.util.List l) {\n" +
                 "    A a = (A) l.get(0);\n" +
                 "    l.remove(a);\n" +
@@ -37,13 +34,13 @@ public class EncodeCastTest {
                 "}",
                 conf);
 
-        assertThat(aug, hasEdge(actionNodeWithLabel("List.get()"), PARAMETER, actionNodeWithLabel("List.remove()")));
+        assertThat(aug, hasParameterEdge(actionNodeWith(label("List.get()")), actionNodeWith(label("List.remove()"))));
     }
 
     @Test 
     public void addsTransitiveReceiverEdgeThroughCast() {
         AUGConfiguration conf = new AUGConfiguration(){{buildTransitiveDataEdges = true;}};
-        APIUsageExample aug = AUGBuilderTestUtils.buildAUG("class C {\n" +
+        APIUsageExample aug = buildAUG("class C {\n" +
                 "  void m(java.util.List l) {\n" +
                 "    A a = (A) l.get(0);\n" +
                 "    a.m();\n" +
@@ -51,6 +48,6 @@ public class EncodeCastTest {
                 "}",
                 conf);
 
-        assertThat(aug, hasEdge(actionNodeWithLabel("List.get()"), RECEIVER, actionNodeWithLabel("A.m()")));
+        assertThat(aug, hasReceiverEdge(actionNodeWith(label("List.get()")), actionNodeWith(label("A.m()"))));
     }
 }

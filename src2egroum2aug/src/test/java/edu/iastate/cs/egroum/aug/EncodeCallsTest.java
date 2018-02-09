@@ -3,10 +3,11 @@ package edu.iastate.cs.egroum.aug;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGNodeMatchers.hasNode;
-import static de.tu_darmstadt.stg.mudetect.aug.model.AUGTestUtils.*;
-import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
-import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.RECEIVER;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGMatchers.hasNode;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGMatchers.hasParameterEdge;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGMatchers.hasReceiverEdge;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.*;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodePropertyMatchers.label;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUG;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
@@ -16,14 +17,14 @@ public class EncodeCallsTest {
     public void addsCall() {
         APIUsageExample aug = buildAUG("void m(Object o) { o.toString(); }");
 
-        assertThat(aug, hasEdge(dataNodeWithLabel("Object"), RECEIVER, actionNodeWithLabel("Object.toString()")));
+        assertThat(aug, hasReceiverEdge(dataNodeWith(label("Object")), actionNodeWith(label("Object.toString()"))));
     }
 
     @Test
     public void addsSuperCall() {
         APIUsageExample aug = buildAUG("@override public boolean equals(Object other) { return super.equals(other); }");
 
-        assertThat(aug, hasNode(actionNodeWithLabel("Object.equals()")));
+        assertThat(aug, hasNode(actionNodeWith(label("Object.equals()"))));
     }
 
     /**
@@ -34,14 +35,14 @@ public class EncodeCallsTest {
     public void addsStaticCall() {
         APIUsageExample aug = buildAUG("void m() { C.staticMethod(); }");
 
-        assertThat(aug, hasEdge(dataNodeWithLabel("C"), RECEIVER, actionNodeWithLabel("C.staticMethod()")));
+        assertThat(aug, hasReceiverEdge(dataNodeWith(label("C")), actionNodeWith(label("C.staticMethod()"))));
     }
 
     @Test
     public void addsConstructorInvocation() {
         APIUsageExample aug = buildAUG("void m() { new Object(); }");
 
-        assertThat(aug, hasNode(actionNodeWithLabel("Object.<init>")));
+        assertThat(aug, hasNode(actionNodeWith(label("Object.<init>"))));
     }
 
     @Test
@@ -49,7 +50,7 @@ public class EncodeCallsTest {
         APIUsageExample aug = buildAUG("C() { super(); }");
 
         // TODO this label seems unintuitive, should be something like Object.<sinit>()?
-        assertThat(aug, hasNode(actionNodeWithLabel("Object()")));
+        assertThat(aug, hasNode(actionNodeWith(label("Object()"))));
     }
 
     @Test
@@ -61,9 +62,9 @@ public class EncodeCallsTest {
                 "}", conf );
 		
 		if (conf.buildTransitiveDataEdges) {
-	        assertThat(aug, hasEdge(actionNodeWithLabel("FileInputStream.<init>"), RECEIVER, actionNodeWithLabel("InputStream.read()")));
-	        assertThat(aug, hasEdge(dataNodeWithLabel("InputStream"), RECEIVER, actionNodeWithLabel("InputStream.read()")));
-	        assertThat(aug, not(hasEdge(dataNodeWithLabel("File"), RECEIVER, actionNodeWithLabel("InputStream.read()"))));
+            assertThat(aug, hasReceiverEdge(actionNodeWith(label("FileInputStream.<init>")), actionNodeWith(label("InputStream.read()"))));
+            assertThat(aug, hasReceiverEdge(dataNodeWith(label("InputStream")), actionNodeWith(label("InputStream.read()"))));
+            assertThat(aug, not(hasReceiverEdge(dataNodeWith(label("File")), actionNodeWith(label("InputStream.read()")))));
 		}
     }
 
@@ -75,11 +76,11 @@ public class EncodeCallsTest {
                 "  java.io.Reader r = new InputStreamReader(is);\n" +
                 "}", conf);
 
-        assertThat(aug, hasEdge(dataNodeWithLabel("File"), PARAMETER, actionNodeWithLabel("FileInputStream.<init>")));
-        assertThat(aug, hasEdge(dataNodeWithLabel("InputStream"), PARAMETER, actionNodeWithLabel("InputStreamReader.<init>")));
+        assertThat(aug, hasParameterEdge(dataNodeWith(label("File")), actionNodeWith(label("FileInputStream.<init>"))));
+        assertThat(aug, hasParameterEdge(dataNodeWith(label("InputStream")), actionNodeWith(label("InputStreamReader.<init>"))));
 		if (conf.buildTransitiveDataEdges) {
-	        assertThat(aug, hasEdge(actionNodeWithLabel("FileInputStream.<init>"), PARAMETER, actionNodeWithLabel("InputStreamReader.<init>")));
-	        assertThat(aug, not(hasEdge(dataNodeWithLabel("File"), PARAMETER, actionNodeWithLabel("InputStreamReader.<init>"))));
+            assertThat(aug, hasParameterEdge(actionNodeWith(label("FileInputStream.<init>")), actionNodeWith(label("InputStreamReader.<init>"))));
+            assertThat(aug, not(hasParameterEdge(dataNodeWith(label("File")), actionNodeWith(label("InputStreamReader.<init>")))));
 		}
     }
 
@@ -91,8 +92,8 @@ public class EncodeCallsTest {
                 "}", conf);
 
 		if (conf.buildTransitiveDataEdges)
-			assertThat(aug, hasEdge(actionNodeWithLabel("Collection.size()"), PARAMETER, actionNodeWithLabel("List.get()")));
-        assertThat(aug, hasEdge(dataNodeWithLabel("int"), PARAMETER, actionNodeWithLabel("List.get()")));
+            assertThat(aug, hasParameterEdge(actionNodeWith(label("Collection.size()")), actionNodeWith(label("List.get()"))));
+        assertThat(aug, hasParameterEdge(dataNodeWith(label("int")), actionNodeWith(label("List.get()"))));
     }
 
     @Test
@@ -103,7 +104,7 @@ public class EncodeCallsTest {
                 "}", conf);
 
 		if (conf.buildTransitiveDataEdges)
-			assertThat(aug, hasEdge(actionNodeWithLabel("Collection.isEmpty()"), PARAMETER, actionNodeWithLabel("return")));
-        assertThat(aug, hasEdge(dataNodeWithLabel("boolean"), PARAMETER, actionNodeWithLabel("return")));
+            assertThat(aug, hasParameterEdge(actionNodeWith(label("Collection.isEmpty()")), actionNodeWith(label("return"))));
+        assertThat(aug, hasParameterEdge(dataNodeWith(label("boolean")), actionNodeWith(label("return"))));
     }
 }

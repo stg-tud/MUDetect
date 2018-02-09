@@ -5,9 +5,10 @@ import de.tu_darmstadt.stg.mudetect.aug.model.Location;
 import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.aug.builder.APIUsageExampleBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGEdgeMatchers.hasReceiverEdge;
-import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGNodeMatchers.*;
-import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.DEFINITION;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGMatchers.hasNode;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGMatchers.hasReceiverEdge;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.methodCall;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.variable;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 

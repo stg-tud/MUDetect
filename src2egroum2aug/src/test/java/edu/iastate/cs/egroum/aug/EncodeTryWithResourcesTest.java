@@ -3,10 +3,10 @@ package edu.iastate.cs.egroum.aug;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGNodeMatchers.hasNode;
-import static de.tu_darmstadt.stg.mudetect.aug.model.AUGTestUtils.*;
-import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.FINALLY;
-import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.RECEIVER;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGMatchers.*;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.actionNodeWith;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.dataNodeWith;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodePropertyMatchers.label;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUG;
 import static org.junit.Assert.assertThat;
 
@@ -17,8 +17,8 @@ public class EncodeTryWithResourcesTest {
                 "  try (SomeResource r = new SomeResource()) {}" +
                 "}");
 
-        assertThat(aug, hasNode(actionNodeWithLabel("AutoCloseable.close()")));
-        assertThat(aug, hasEdge(dataNodeWithLabel("SomeResource"), RECEIVER, actionNodeWithLabel("AutoCloseable.close()")));
-        assertThat(aug, hasEdge(actionNodeWithLabel("SomeResource.<init>"), FINALLY, actionNodeWithLabel("AutoCloseable.close()")));
+        assertThat(aug, hasNode(actionNodeWith(label("AutoCloseable.close()"))));
+        assertThat(aug, hasReceiverEdge(dataNodeWith(label("SomeResource")), actionNodeWith(label("AutoCloseable.close()"))));
+        assertThat(aug, hasFinallyEdge(actionNodeWith(label("SomeResource.<init>")), actionNodeWith(label("AutoCloseable.close()"))));
     }
 }

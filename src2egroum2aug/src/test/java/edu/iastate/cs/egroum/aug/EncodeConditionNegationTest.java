@@ -1,13 +1,13 @@
 package edu.iastate.cs.egroum.aug;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGNodeMatchers.hasNode;
-import static de.tu_darmstadt.stg.mudetect.aug.model.AUGTestUtils.*;
-import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGMatchers.*;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.actionNodeWith;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodePropertyMatchers.label;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUG;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 public class EncodeConditionNegationTest {
@@ -19,16 +19,16 @@ public class EncodeConditionNegationTest {
         APIUsageExample aug = buildAUG(NEGATED_CONDITION, conf);
 
         if (conf.buildTransitiveDataEdges)
-        	assertThat(aug, hasEdge(actionNodeWithLabel("Collection.isEmpty()"), PARAMETER, actionNodeWithLabel("!")));
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("Collection.isEmpty()"), actionNodeWithLabel("List.get()")));
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("!"), actionNodeWithLabel("List.get()")));
+            assertThat(aug, hasParameterEdge(actionNodeWith(label("Collection.isEmpty()")), actionNodeWith(label("!"))));
+        assertThat(aug, hasSelectionEdge(actionNodeWith(label("Collection.isEmpty()")), actionNodeWith(label("List.get()"))));
+        assertThat(aug, hasSelectionEdge(actionNodeWith(label("!")), actionNodeWith(label("List.get()"))));
     }
 
     @Test
     public void ignoresNegation() {
         APIUsageExample aug = buildAUG(NEGATED_CONDITION, new AUGConfiguration() {{ encodeUnaryOperators = false; }});
 
-        assertThat(aug, Matchers.not(hasNode(actionNodeWithLabel("!"))));
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("Collection.isEmpty()"), actionNodeWithLabel("List.get()")));
+        assertThat(aug, not(hasNode(actionNodeWith(label("!")))));
+        assertThat(aug, hasSelectionEdge(actionNodeWith(label("Collection.isEmpty()")), actionNodeWith(label("List.get()"))));
     }
 }

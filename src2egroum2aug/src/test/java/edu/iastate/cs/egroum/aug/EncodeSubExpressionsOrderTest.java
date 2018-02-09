@@ -3,8 +3,9 @@ package edu.iastate.cs.egroum.aug;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.aug.model.AUGTestUtils.*;
-import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.*;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGMatchers.*;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.*;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodePropertyMatchers.label;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUG;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
@@ -17,10 +18,10 @@ public class EncodeSubExpressionsOrderTest {
                 "  return l != null && l.isEmpty();\n" +
                 "}");
 
-        assertThat(aug, hasEdge(dataNodeWithLabel("boolean"), PARAMETER, actionNodeWithLabel("return")));
-        assertThat(aug, hasEdge(actionNodeWithLabel("<nullcheck>"), DEFINITION, dataNodeWithLabel("boolean")));
-        assertThat(aug, hasEdge(actionNodeWithLabel("Collection.isEmpty()"), DEFINITION, dataNodeWithLabel("boolean")));
-        assertThat(aug, not(hasEdge(actionNodeWithLabel("<nullcheck>"), ORDER, actionNodeWithLabel("Collection.isEmpty()"))));
+        assertThat(aug, hasParameterEdge(dataNodeWith(label("boolean")), actionNodeWith(label("return"))));
+        assertThat(aug, hasDefinitionEdge(actionNodeWith(label("<nullcheck>")), dataNodeWith(label("boolean"))));
+        assertThat(aug, hasDefinitionEdge(actionNodeWith(label("Collection.isEmpty()")), dataNodeWith(label("boolean"))));
+        assertThat(aug, not(hasOrderEdge(actionNodeWith(label("<nullcheck>")), actionNodeWith(label("Collection.isEmpty()")))));
     }
 	
     @Test
@@ -29,11 +30,11 @@ public class EncodeSubExpressionsOrderTest {
                 "  return l != null && l.isEmpty();\n" +
                 "}");
 
-        assertThat(aug, hasEdge(dataNodeWithLabel("boolean"), PARAMETER, actionNodeWithLabel("return")));
-        assertThat(aug, hasEdge(actionNodeWithLabel("<nullcheck>"), DEFINITION, dataNodeWithLabel("boolean")));
-        assertThat(aug, hasEdge(actionNodeWithLabel("Collection.isEmpty()"), DEFINITION, dataNodeWithLabel("boolean")));
-        assertThat(aug, not(hasEdge(actionNodeWithLabel("<nullcheck>"), ORDER, actionNodeWithLabel("Collection.isEmpty()"))));
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("<nullcheck>"), actionNodeWithLabel("Collection.isEmpty()")));
+        assertThat(aug, hasParameterEdge(dataNodeWith(label("boolean")), actionNodeWith(label("return"))));
+        assertThat(aug, hasDefinitionEdge(actionNodeWith(label("<nullcheck>")), dataNodeWith(label("boolean"))));
+        assertThat(aug, hasDefinitionEdge(actionNodeWith(label("Collection.isEmpty()")), dataNodeWith(label("boolean"))));
+        assertThat(aug, not(hasOrderEdge(actionNodeWith(label("<nullcheck>")), actionNodeWith(label("Collection.isEmpty()")))));
+        assertThat(aug, hasSelectionEdge(actionNodeWith(label("<nullcheck>")), actionNodeWith(label("Collection.isEmpty()"))));
     }
 
     @Test
@@ -43,11 +44,11 @@ public class EncodeSubExpressionsOrderTest {
                 "  return b && l.isEmpty();\n" +
                 "}");
 
-        assertThat(aug, hasEdge(dataNodeWithLabel("boolean"), PARAMETER, actionNodeWithLabel("return")));
-        assertThat(aug, hasEdge(actionNodeWithLabel("<nullcheck>"), DEFINITION, dataNodeWithLabel("boolean")));
-        assertThat(aug, hasEdge(actionNodeWithLabel("Collection.isEmpty()"), DEFINITION, dataNodeWithLabel("boolean")));
-        assertThat(aug, not(hasEdge(actionNodeWithLabel("<nullcheck>"), ORDER, actionNodeWithLabel("Collection.isEmpty()"))));
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("<nullcheck>"), actionNodeWithLabel("Collection.isEmpty()")));
+        assertThat(aug, hasParameterEdge(dataNodeWith(label("boolean")), actionNodeWith(label("return"))));
+        assertThat(aug, hasDefinitionEdge(actionNodeWith(label("<nullcheck>")), dataNodeWith(label("boolean"))));
+        assertThat(aug, hasDefinitionEdge(actionNodeWith(label("Collection.isEmpty()")), dataNodeWith(label("boolean"))));
+        assertThat(aug, not(hasOrderEdge(actionNodeWith(label("<nullcheck>")), actionNodeWith(label("Collection.isEmpty()")))));
+        assertThat(aug, hasSelectionEdge(actionNodeWith(label("<nullcheck>")), actionNodeWith(label("Collection.isEmpty()"))));
     }
 
 }

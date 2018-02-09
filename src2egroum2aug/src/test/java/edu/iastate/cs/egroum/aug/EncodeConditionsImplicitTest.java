@@ -1,10 +1,11 @@
 package edu.iastate.cs.egroum.aug;
 
+import de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.aug.model.AUGTestUtils.actionNodeWithLabel;
-import static de.tu_darmstadt.stg.mudetect.aug.model.AUGTestUtils.hasSelEdge;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGMatchers.hasSelectionEdge;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodePropertyMatchers.label;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUG;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
@@ -19,7 +20,7 @@ public class EncodeConditionsImplicitTest {
                 "  l.clear();\n" +
                 "}");
 
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("Collection.isEmpty()"), actionNodeWithLabel("Collection.clear()")));
+        assertThat(aug, hasSelectionEdge(NodeMatchers.actionNodeWith(label("Collection.isEmpty()")), NodeMatchers.actionNodeWith(label("Collection.clear()"))));
     }
 
     @Test
@@ -31,7 +32,7 @@ public class EncodeConditionsImplicitTest {
                 "  l.clear();\n" +
                 "}");
 
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("<nullcheck>"), actionNodeWithLabel("Collection.clear()")));
+        assertThat(aug, hasSelectionEdge(NodeMatchers.actionNodeWith(label("<nullcheck>")), NodeMatchers.actionNodeWith(label("Collection.clear()"))));
     }
 
     @Test
@@ -43,7 +44,7 @@ public class EncodeConditionsImplicitTest {
                 "  l.clear();\n" +
                 "}");
 
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("Collection.isEmpty()"), actionNodeWithLabel("Collection.clear()")));
+        assertThat(aug, hasSelectionEdge(NodeMatchers.actionNodeWith(label("Collection.isEmpty()")), NodeMatchers.actionNodeWith(label("Collection.clear()"))));
     }
 
     @Test
@@ -55,7 +56,7 @@ public class EncodeConditionsImplicitTest {
                 "  }\n" +
                 "}");
 
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("<nullcheck>"), actionNodeWithLabel("Object.hashCode()")));
+        assertThat(aug, hasSelectionEdge(NodeMatchers.actionNodeWith(label("<nullcheck>")), NodeMatchers.actionNodeWith(label("Object.hashCode()"))));
     }
 
     @Test
@@ -67,7 +68,7 @@ public class EncodeConditionsImplicitTest {
                 "  }\n" +
                 "}");
 
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("<nullcheck>"), actionNodeWithLabel("Object.hashCode()")));
+        assertThat(aug, hasSelectionEdge(NodeMatchers.actionNodeWith(label("<nullcheck>")), NodeMatchers.actionNodeWith(label("Object.hashCode()"))));
     }
 
     @Test
@@ -79,21 +80,21 @@ public class EncodeConditionsImplicitTest {
                 "  o.hashCode();\n" +
                 "}");
 
-        assertThat(aug, not(hasSelEdge(actionNodeWithLabel("<r>"), actionNodeWithLabel("Object.hashCode()"))));
+        assertThat(aug, not(hasSelectionEdge(NodeMatchers.actionNodeWith(label("<r>")), NodeMatchers.actionNodeWith(label("Object.hashCode()")))));
     }
 
     @Test
     public void guardDefinition() {
         APIUsageExample aug = buildAUG("void m(Object o) { if (o == null) o = new Object(); o.hashCode();}");
 
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("<nullcheck>"), actionNodeWithLabel("Object.<init>")));
+        assertThat(aug, hasSelectionEdge(NodeMatchers.actionNodeWith(label("<nullcheck>")), NodeMatchers.actionNodeWith(label("Object.<init>"))));
     }
 
     @Test
     public void guardRedefinition() {
         APIUsageExample aug = buildAUG("void m(Object o) { if (o == null) { o = new Object(); o.hashCode();}}");
-        
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("<nullcheck>"), actionNodeWithLabel("Object.<init>")));
-        assertThat(aug, hasSelEdge(actionNodeWithLabel("<nullcheck>"), actionNodeWithLabel("Object.hashCode()")));
+
+        assertThat(aug, hasSelectionEdge(NodeMatchers.actionNodeWith(label("<nullcheck>")), NodeMatchers.actionNodeWith(label("Object.<init>"))));
+        assertThat(aug, hasSelectionEdge(NodeMatchers.actionNodeWith(label("<nullcheck>")), NodeMatchers.actionNodeWith(label("Object.hashCode()"))));
     }
 }
