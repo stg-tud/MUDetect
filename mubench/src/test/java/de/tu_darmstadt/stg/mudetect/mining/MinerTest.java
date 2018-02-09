@@ -171,7 +171,8 @@ public class MinerTest {
 		}
 		assertThat(contains, is(true));
 	}
-	
+
+	@Ignore
 	@Test
 	public void jackrabbit1() {
 		String targetSource = "public class ItemManager {\n" + 
@@ -207,7 +208,6 @@ public class MinerTest {
 		assertThat(patterns.size(), is(1));
 	}
 
-	@Ignore
 	@Test
 	public void acmath_1() {
 		String targetSource = "class SubLine {\n" + 
