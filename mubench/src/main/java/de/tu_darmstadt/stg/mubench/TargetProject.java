@@ -18,7 +18,9 @@ public class TargetProject {
 
     static TargetProject find(Path index, String[] targetSrcPaths) throws IOException {
         try (Stream<String> lines = Files.lines(index)) {
-            Map<TargetProject, List<Misuse>> collect = lines.map(line -> line.split("\t"))
+            Map<TargetProject, List<Misuse>> collect = lines
+                    .filter(line -> !line.isEmpty())
+                    .map(line -> line.split("\t"))
                     .filter(line -> anyContains(targetSrcPaths, String.format("/%s/%s/", line[0], line[1])))
                     .collect(
                             Collectors.groupingBy(
