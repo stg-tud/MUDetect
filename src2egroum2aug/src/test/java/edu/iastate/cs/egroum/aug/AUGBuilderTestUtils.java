@@ -9,19 +9,27 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class AUGBuilderTestUtils {
+    /**
+     * Use {@link #buildAUGForMethod(String)} instead.
+     */
+    @Deprecated
     public static APIUsageExample buildAUG(String code) {
         return buildAUGForMethod(code);
     }
 
+    /**
+     * Use {@link #buildAUGForMethod(String, AUGConfiguration)} instead.
+     */
+    @Deprecated
     public static APIUsageExample buildAUG(String code, AUGConfiguration configuration) {
         return buildAUGForMethod(code, configuration);
     }
 
-    static APIUsageExample buildAUGForMethod(String code) {
+    public static APIUsageExample buildAUGForMethod(String code) {
         return buildAUGForMethod(code, new AUGConfiguration());
     }
 
-    private static APIUsageExample buildAUGForMethod(String code, AUGConfiguration configuration) {
+    public static APIUsageExample buildAUGForMethod(String code, AUGConfiguration configuration) {
         String classCode = "class C { " + code + "}";
         Collection<APIUsageExample> groums = buildAUGsForClass(classCode, configuration);
         assertThat(groums.size(), is(1));

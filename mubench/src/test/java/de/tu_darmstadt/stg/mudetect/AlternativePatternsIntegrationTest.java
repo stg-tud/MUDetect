@@ -16,6 +16,7 @@ import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.*;
 import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
 import static de.tu_darmstadt.stg.mudetect.utils.SetUtils.asSet;
+import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGForMethod;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -25,7 +26,7 @@ public class AlternativePatternsIntegrationTest {
     @Test
     public void matchesSubtypes() {
         APIUsagePattern pattern = buildPattern("void p(Object o) { o.hashCode(); }", 2);
-        APIUsageExample target = buildAUG("void t(Integer i) { i.hashCode(); }").build();
+        APIUsageExample target = buildAUGForMethod("void t(Integer i) { i.hashCode(); }");
         TypeHierarchy typeHierarchy = new TypeHierarchy() {{ addSupertype("Integer", "Object"); }};
         MuDetect detector = new MuDetect(() -> asSet(pattern),
                 new AlternativeMappingsOverlapsFinder(new SubtypeDataNodeMatcher(typeHierarchy).or(new EquallyLabelledNodeMatcher())),
@@ -45,7 +46,7 @@ public class AlternativePatternsIntegrationTest {
                 .withDataEdge("JPanel", RECEIVER, "add1")
                 .withDataEdge("JPanel", RECEIVER, "add2")
                 .withDataEdge("add2", ORDER, "add1").build());
-        APIUsageExample target = buildAUG("import javax.swing.JPanel;\n" +
+        APIUsageExample target = buildAUGForMethod("import javax.swing.JPanel;\n" +
                 "class C {\n" +
                 "  void m() {\n" +
                 "    JPanel controlPanel = new JPanel();\n"+
@@ -54,7 +55,7 @@ public class AlternativePatternsIntegrationTest {
                 "    controlPanel.add(null);\n"+
                 "    controlPanel.add(null);\n" +
                 "  }\n" +
-                "}").build();
+                "}");
         MuDetect detector = new MuDetect(() -> asSet(pattern),
                 new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher()),
                 new MissingElementViolationPredicate(),
@@ -77,7 +78,7 @@ public class AlternativePatternsIntegrationTest {
                 .withActionNode("wL()", "IndexOutput.writeLong()")
                 .withDataEdge("IO2", RECEIVER, "wL()")
                 .withDataEdge("long", PARAMETER, "wL()"));
-        APIUsageExample target = buildAUG("class C {\n" +
+        APIUsageExample target = buildAUGForMethod("class C {\n" +
                 "  IndexOutput tvd, tvf, tvx;" +
                 "  void addRawDocuments(TermVectorsReader reader, int[] tvdLengths, int[] tvfLengths, int numDocs) throws IOException {\n" +
                 "    long tvdPosition = tvd.getFilePointer();\n" +
@@ -95,7 +96,7 @@ public class AlternativePatternsIntegrationTest {
                 "    assert tvd.getFilePointer() == tvdPosition;\n" +
                 "    assert tvf.getFilePointer() == tvfPosition;" +
                 "  }\n" +
-                "}").build();
+                "}");
 
         MuDetect detector = new MuDetect(() -> asSet(pattern),
                 new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher()),
@@ -111,6 +112,6 @@ public class AlternativePatternsIntegrationTest {
     }
 
     private APIUsagePattern buildPattern(String method, int support) {
-        return somePattern(buildAUG(method), support);
+        return somePattern(buildAUGForMethod(method), support);
     }
 }
