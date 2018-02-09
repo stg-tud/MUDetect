@@ -13,7 +13,7 @@ public class TargetSrcTypeHierarchyTest {
     private static TypeHierarchy hierarchy;
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         // Excluding project binary paths from classpath, because it slows down analysis manifold.
         String[] projectDependencyClassPath = Arrays.stream(ClassPath.getClassPath().split(":"))
                 .filter(dependencyPath ->
@@ -26,62 +26,62 @@ public class TargetSrcTypeHierarchyTest {
     }
 
     @Test
-    public void findsSuperclass() throws Exception {
+    public void findsSuperclass() {
         assertIsA(hierarchy, C.class, "extends", Super.class);
     }
 
     @Test
-    public void findsSuperclassTransitively() throws Exception {
+    public void findsSuperclassTransitively() {
         assertIsA(hierarchy, C.class, "extends (transitively)", SuperSuper.class);
     }
 
     @Test
-    public void findsInterface() throws Exception {
+    public void findsInterface() {
         assertIsA(hierarchy, C.class, "implements", I.class);
     }
 
     @Test
-    public void findsInterfaceOfSuperclass() throws Exception {
+    public void findsInterfaceOfSuperclass() {
         assertIsA(hierarchy, C.class, "implements (transitively)", SuperI.class);
     }
 
     @Test
-    public void findsInterfaceOfInterface() throws Exception {
+    public void findsInterfaceOfInterface() {
         assertIsA(hierarchy, I.class, "interface extends", ISuper.class);
     }
 
     @Test
-    public void findsInterfaceOfInterfaceTransitively() throws Exception {
+    public void findsInterfaceOfInterfaceTransitively() {
         assertIsA(hierarchy, I.class, "interface extends (transitively)", ISuperSuper.class);
     }
 
     @Test
-    public void analyzesInnerClass() throws Exception {
+    public void analyzesInnerClass() {
         assertIsA(hierarchy, C.D.class, "(inner class) extends", Super.class);
     }
 
     @Test
-    public void analyzesDeclaredMethodReturnType() throws Exception {
+    public void analyzesDeclaredMethodReturnType() {
         assertIsA(hierarchy, Set.class, "return type of C.a() is a", Collection.class);
     }
 
     @Test
-    public void analyzesDeclaredMethodParameter() throws Exception {
+    public void analyzesDeclaredMethodParameter() {
         assertIsA(hierarchy, ArrayList.class, "parameter type of C.b() is a", Collection.class);
     }
 
     @Test
-    public void analyzesReferencedType_import() throws Exception {
+    public void analyzesReferencedType_import() {
         assertIsA(hierarchy, HashSet.class, "referenced in C.c() is a", Collection.class);
     }
 
     @Test
-    public void analyzedReferencedType_qualified() throws Exception {
+    public void analyzedReferencedType_qualified() {
         assertIsA(hierarchy, LinkedList.class, "referenced (qualified) in C.d() is a", Collection.class);
     }
 
     @Test
-    public void analyzesInvokedMethodReturnType() throws Exception {
+    public void analyzesInvokedMethodReturnType() {
         assertIsA(hierarchy, List.class, "returned from Arrays.asList() in C.e() is a", Collection.class);
     }
 
