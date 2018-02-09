@@ -104,7 +104,7 @@ class CrossProjectStrategy implements DetectionStrategy {
         throw new IllegalStateException("no target for misuse.");
     }
 
-    private Collection<APIUsageExample> loadTrainingExamples(API targetType, String logPrefix, TypeUsageExamplePredicate examplePredicate, DetectorArgs args, DetectorOutput.Builder output) throws FileNotFoundException {
+    private Collection<APIUsageExample> loadTrainingExamples(API targetType, String logPrefix, TypeUsageExamplePredicate examplePredicate, DetectorArgs args, DetectorOutput.Builder output) {
         List<ExampleProject> exampleProjects = getExampleProjects(targetType);
         System.out.println(String.format("[MuDetectXProject] Example Projects = %d", exampleProjects.size()));
         output.withRunInfo(logPrefix + "-exampleProjects", exampleProjects.size());
@@ -123,7 +123,7 @@ class CrossProjectStrategy implements DetectionStrategy {
                 try {
                     System.setOut(new PrintStream(new OutputStream() {
                         @Override
-                        public void write(int arg0) throws IOException {}
+                        public void write(int arg0) {}
                     }));
                     projectExamples.addAll(builder.build(projectSrcPath.toString(), args.getDependencyClassPath()));
                 } catch (Exception e) {
