@@ -12,7 +12,7 @@ import de.tu_darmstadt.stg.mudetect.mining.AUGMiner;
 import de.tu_darmstadt.stg.mudetect.mining.DefaultAUGMiner;
 import de.tu_darmstadt.stg.mudetect.mining.MinPatternActionsModel;
 import de.tu_darmstadt.stg.mudetect.mining.Model;
-import de.tu_darmstadt.stg.mudetect.ranking.NoRankingStrategy;
+import de.tu_darmstadt.stg.mudetect.ranking.*;
 import edu.iastate.cs.egroum.aug.AUGBuilder;
 
 import java.io.FileNotFoundException;
@@ -42,7 +42,10 @@ public class ProvidedPatternsStrategy extends MuDetectStrategy {
                         new AlternativeMappingsOverlapsFinder(
                                 new DefaultOverlapFinderConfig(new DefaultMiningConfiguration()))),
                 new EverythingViolationPredicate(),
-                new NoRankingStrategy());
+                new WeightRankingStrategy(
+                        new OverlapWithoutEdgesToMissingNodesWeightFunction(
+                                new ConstantNodeWeightFunction()
+                        )));
     }
 
     @Override
