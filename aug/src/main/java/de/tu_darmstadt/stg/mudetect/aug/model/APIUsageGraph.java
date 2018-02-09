@@ -57,17 +57,9 @@ public class APIUsageGraph extends DirectedMultigraph<Node, Edge> {
     }
 
     public Set<String> getAPIs() {
-        return vertexSet().stream().map(this::getApi)
+        return vertexSet().stream().map(Node::getAPI)
                 .filter(Optional::isPresent).map(Optional::get)
                 .collect(Collectors.toSet());
-    }
-
-    private Optional<String> getApi(Node node) {
-        Optional<String> api = node.getAPI();
-        if (api.orElse("").endsWith(".")) {
-            System.out.println("WTF?");
-        }
-        return api;
     }
 
     /**
