@@ -5,6 +5,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.DisplayAUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -205,7 +206,8 @@ public class MinerTest {
 		print(patterns);
 		assertThat(patterns.size(), is(1));
 	}
-	
+
+	@Ignore
 	@Test
 	public void acmath_1() {
 		String targetSource = "class SubLine {\n" + 
