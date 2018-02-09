@@ -123,8 +123,9 @@ buildNumber.properties
 
 ### Project Specific ###
 /mubench/output
-/mubench/aug-improvement
-/mubench/paper-examples
+/src2egroum2aug/output
+/src2egroum2aug/aug-improvement
+/src2egroum2aug/paper-examples
 log*.txt
 /mubench/temp/
 /*.zip
