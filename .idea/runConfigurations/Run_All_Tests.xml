@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run All Tests" type="CompoundRunConfigurationType" factoryName="Compound Run Configuration">
+    <toRun type="JUnit" name="All in aug" />
+    <toRun type="JUnit" name="All in mubench" />
+    <toRun type="JUnit" name="All in src2egroum2aug" />
+    <method />
+  </configuration>
+</component>
