@@ -90,9 +90,9 @@ public class EGroumActionNode extends EGroumNode {
 
 	public boolean hasBackwardDataDependence(EGroumActionNode preNode) {
 		HashSet<EGroumNode> defs = new HashSet<>(), preDefs = new HashSet<>();
-		getIncomingActions(defs);
+		//getIncomingActions(defs);
 		getDefinitions(defs);
-		getIncomingActions(preDefs);
+		//getIncomingActions(preDefs);
 		preNode.getDefinitions(preDefs);
 		return overlap(defs, preDefs);
 	}

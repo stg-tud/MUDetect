@@ -241,7 +241,7 @@ public class MinerTest {
 		
 //		assertThat(patterns, hasSize(2));
 		print(patterns);
-		assertThat(patterns, hasSize(2));
+		assertThat(patterns, hasSize(3));
 	}
 
 	@Test

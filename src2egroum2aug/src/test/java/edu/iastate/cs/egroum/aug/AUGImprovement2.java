@@ -22,6 +22,7 @@ public class AUGImprovement2 {
     @Rule
     public TestName name = new TestName();
 
+    @Ignore
     @Test
     public void transitiveDataDependentEdges() throws Exception {
         ArrayList<EGroumGraph> gs = buildAndPrintAUGsForFile("input/Test_transitive_data_dependent_edges.java", null, "aug-improvement", new AUGConfiguration(){{removeImplementationCode = 2; groum = false;}});
@@ -117,7 +118,7 @@ public class AUGImprovement2 {
     	if (conf.buildTransitiveDataEdges)
     		assertThat(gs.get(0).getEdges().size(), Is.is(11));
     	else
-    		assertThat(gs.get(0).getEdges().size(), Is.is(9));
+    		assertThat(gs.get(0).getEdges().size(), Is.is(8));
     }
 
     @Test
@@ -128,7 +129,7 @@ public class AUGImprovement2 {
     	if (conf.buildTransitiveDataEdges)
     		assertThat(gs.get(0).getEdges().size(), Is.is(8));
     	else
-    		assertThat(gs.get(0).getEdges().size(), Is.is(6));
+    		assertThat(gs.get(0).getEdges().size(), Is.is(5));
     	
     	if (conf.buildTransitiveDataEdges) {
 	    	boolean hasCastParameter = false;
@@ -229,7 +230,7 @@ public class AUGImprovement2 {
     	if (conf.buildTransitiveDataEdges)
     		assertThat(gs.get(0).getEdges().size(), Is.is(17));
     	else
-    		assertThat(gs.get(0).getEdges().size(), Is.is(15));
+    		assertThat(gs.get(0).getEdges().size(), Is.is(13));
     }
 
     @Test
@@ -240,7 +241,7 @@ public class AUGImprovement2 {
     	if (conf.buildTransitiveDataEdges)
     		assertThat(gs.get(0).getEdges().size(), Is.is(17));
     	else
-    		assertThat(gs.get(0).getEdges().size(), Is.is(19));
+    		assertThat(gs.get(0).getEdges().size(), Is.is(15));
     }
 
     @Test
