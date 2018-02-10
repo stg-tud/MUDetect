@@ -128,6 +128,7 @@ public class AUGBuilder {
                         default:
                             throw new IllegalArgumentException("unsupported type of condition edge: " + label);
                     }
+                    break;
                 case THROW:
                     builder.withThrowEdge(sourceNodeId, targetNodeId);
                     break;
