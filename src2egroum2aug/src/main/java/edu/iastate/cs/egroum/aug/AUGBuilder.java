@@ -237,9 +237,6 @@ public class AUGBuilder {
             } else if (label.equals("=")) {
                 builder.withAssignment(nodeId, sourceLineNumber);
                 return;
-            } else if (label.equals("<nullcheck>")) {
-                builder.withNullCheck(nodeId, sourceLineNumber);
-                return;
             } else if (label.endsWith("<instanceof>")) {
                 String checkTypeName = split(label)[0];
                 builder.withTypeCheck(nodeId, checkTypeName, sourceLineNumber);
