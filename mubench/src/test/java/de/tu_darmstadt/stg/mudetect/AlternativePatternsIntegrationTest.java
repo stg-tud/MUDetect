@@ -14,7 +14,7 @@ import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.*;
 import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
+import static edu.iastate.cs.mudetect.mining.TestPatternBuilder.somePattern;
 import static de.tu_darmstadt.stg.mudetect.utils.SetUtils.asSet;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGForMethod;
 import static org.hamcrest.Matchers.empty;

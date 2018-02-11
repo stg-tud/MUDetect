@@ -1,11 +1,11 @@
 package de.tu_darmstadt.stg.mudetect.ranking;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
-import de.tu_darmstadt.stg.mudetect.mining.Model;
+import edu.iastate.cs.mudetect.mining.Model;
 import org.junit.Test;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
+import static edu.iastate.cs.mudetect.mining.TestPatternBuilder.somePattern;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.instance;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;

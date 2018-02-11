@@ -14,7 +14,7 @@ import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.someAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.someOverlap;
-import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
+import static edu.iastate.cs.mudetect.mining.TestPatternBuilder.somePattern;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;

@@ -2,7 +2,7 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.model.Overlaps;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
-import de.tu_darmstadt.stg.mudetect.mining.Model;
+import edu.iastate.cs.mudetect.mining.Model;
 
 import java.util.List;
 

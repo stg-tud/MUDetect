@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.tu_darmstadt.stg.mudetect.mining;
+package edu.iastate.cs.mudetect.mining;
 
 import java.io.File;
 import java.util.ArrayList;

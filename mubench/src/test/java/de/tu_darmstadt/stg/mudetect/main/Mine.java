@@ -5,10 +5,10 @@ package de.tu_darmstadt.stg.mudetect.main;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.DataNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
-import de.tu_darmstadt.stg.mudetect.mining.Anomaly;
-import de.tu_darmstadt.stg.mudetect.mining.Configuration;
-import de.tu_darmstadt.stg.mudetect.mining.Fragment;
-import de.tu_darmstadt.stg.mudetect.mining.Miner;
+import edu.iastate.cs.mudetect.mining.Anomaly;
+import edu.iastate.cs.mudetect.mining.Configuration;
+import edu.iastate.cs.mudetect.mining.Fragment;
+import edu.iastate.cs.mudetect.mining.Miner;
 import edu.iastate.cs.egroum.aug.AUGBuilder;
 import edu.iastate.cs.egroum.aug.AUGConfiguration;
 import edu.iastate.cs.egroum.utils.FileIO;

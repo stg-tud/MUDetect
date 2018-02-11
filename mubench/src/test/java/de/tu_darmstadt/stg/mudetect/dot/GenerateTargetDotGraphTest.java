@@ -9,7 +9,7 @@ import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.ORDER;
 import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.emptyOverlap;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.instance;
-import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
+import static edu.iastate.cs.mudetect.mining.TestPatternBuilder.somePattern;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
 

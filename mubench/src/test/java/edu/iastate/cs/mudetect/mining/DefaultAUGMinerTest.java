@@ -1,4 +1,4 @@
-package de.tu_darmstadt.stg.mudetect.mining;
+package edu.iastate.cs.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
@@ -15,7 +15,8 @@ import java.util.stream.Collectors;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.RECEIVER;
 import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
-import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
+import static edu.iastate.cs.mudetect.mining.TestPatternBuilder.*;
+import static edu.iastate.cs.mudetect.mining.TestPatternBuilder.somePattern;
 import static de.tu_darmstadt.stg.mudetect.utils.CollectionUtils.first;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClass;
 import static org.hamcrest.Matchers.contains;

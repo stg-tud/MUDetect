@@ -1,7 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.ranking;
 
 import de.tu_darmstadt.stg.mudetect.ViolationRankingStrategy;
-import de.tu_darmstadt.stg.mudetect.mining.Model;
+import edu.iastate.cs.mudetect.mining.Model;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.Overlaps;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
@@ -13,7 +13,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.someAUG;
-import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
+import static edu.iastate.cs.mudetect.mining.TestPatternBuilder.somePattern;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.someOverlap;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;

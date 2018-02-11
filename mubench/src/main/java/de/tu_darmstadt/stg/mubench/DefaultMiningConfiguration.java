@@ -3,7 +3,7 @@ package de.tu_darmstadt.stg.mubench;
 import de.tu_darmstadt.stg.mudetect.matcher.DataNodeConstantLabelProvider;
 import de.tu_darmstadt.stg.mudetect.matcher.NodeLabelProvider;
 import de.tu_darmstadt.stg.mudetect.matcher.NullCheckNodeLabelProvider;
-import de.tu_darmstadt.stg.mudetect.mining.Configuration;
+import edu.iastate.cs.mudetect.mining.Configuration;
 
 class DefaultMiningConfiguration extends Configuration {
     {

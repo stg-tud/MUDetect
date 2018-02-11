@@ -8,10 +8,10 @@ import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFi
 import de.tu_darmstadt.stg.mudetect.overlapsfinder.EmptyOverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.EverythingViolationPredicate;
 import de.tu_darmstadt.stg.mudetect.MuDetect;
-import de.tu_darmstadt.stg.mudetect.mining.AUGMiner;
-import de.tu_darmstadt.stg.mudetect.mining.DefaultAUGMiner;
-import de.tu_darmstadt.stg.mudetect.mining.MinPatternActionsModel;
-import de.tu_darmstadt.stg.mudetect.mining.Model;
+import edu.iastate.cs.mudetect.mining.AUGMiner;
+import edu.iastate.cs.mudetect.mining.DefaultAUGMiner;
+import edu.iastate.cs.mudetect.mining.MinPatternActionsModel;
+import edu.iastate.cs.mudetect.mining.Model;
 import de.tu_darmstadt.stg.mudetect.ranking.*;
 import edu.iastate.cs.egroum.aug.AUGBuilder;
 

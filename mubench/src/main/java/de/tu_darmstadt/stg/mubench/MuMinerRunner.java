@@ -3,9 +3,9 @@ package de.tu_darmstadt.stg.mubench;
 import de.tu_darmstadt.stg.mubench.cli.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.Location;
-import de.tu_darmstadt.stg.mudetect.mining.Anomaly;
-import de.tu_darmstadt.stg.mudetect.mining.Fragment;
-import de.tu_darmstadt.stg.mudetect.mining.Miner;
+import edu.iastate.cs.mudetect.mining.Anomaly;
+import edu.iastate.cs.mudetect.mining.Fragment;
+import edu.iastate.cs.mudetect.mining.Miner;
 import edu.iastate.cs.egroum.aug.AUGBuilder;
 
 import java.io.FileNotFoundException;

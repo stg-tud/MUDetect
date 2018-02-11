@@ -1,4 +1,4 @@
-package de.tu_darmstadt.stg.mudetect.mining;
+package edu.iastate.cs.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 

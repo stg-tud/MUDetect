@@ -1,9 +1,10 @@
-package de.tu_darmstadt.stg.mudetect.mining;
+package edu.iastate.cs.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 import org.junit.Test;
 
-import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
+import static edu.iastate.cs.mudetect.mining.TestPatternBuilder.*;
+import static edu.iastate.cs.mudetect.mining.TestPatternBuilder.somePattern;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static de.tu_darmstadt.stg.mudetect.utils.SetUtils.asSet;

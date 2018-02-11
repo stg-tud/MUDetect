@@ -11,7 +11,7 @@ import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.DEFINITION;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge.ConditionType.SELECTION;
-import static de.tu_darmstadt.stg.mudetect.mining.TestPatternBuilder.somePattern;
+import static edu.iastate.cs.mudetect.mining.TestPatternBuilder.somePattern;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClass;
 
 public class EqualsMethodsTest {

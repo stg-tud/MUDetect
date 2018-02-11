@@ -1,4 +1,4 @@
-package de.tu_darmstadt.stg.mudetect.mining;
+package edu.iastate.cs.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 import org.junit.Rule;
@@ -7,8 +7,8 @@ import org.junit.rules.TestName;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.mining.MinerTestUtils.mineMethods;
-import static de.tu_darmstadt.stg.mudetect.mining.MinerTestUtils.print;
+import static edu.iastate.cs.mudetect.mining.MinerTestUtils.mineMethods;
+import static edu.iastate.cs.mudetect.mining.MinerTestUtils.print;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 

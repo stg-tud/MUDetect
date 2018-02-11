@@ -1,4 +1,4 @@
-package de.tu_darmstadt.stg.mudetect.mining;
+package edu.iastate.cs.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
@@ -11,7 +11,7 @@ import org.junit.Test;
 import java.util.Collection;
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.mining.MinerTestUtils.mineWithMinSupport;
+import static edu.iastate.cs.mudetect.mining.MinerTestUtils.mineWithMinSupport;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClasses;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsFromFile;
 import static org.hamcrest.CoreMatchers.is;
@@ -138,15 +138,15 @@ public class MinerTest {
 		assertThat(patterns.size(), is(1));
 		assertThat(patterns.get(0).vertexSet().size(), is(groums.iterator().next().getNodeSize()));
 	}
-	
+
 	@Test
 	public void decryptTarget() {
 		Collection<APIUsageExample> groums = buildAUGsFromFile("input/Test_alibaba2_old.java");
 		groums.addAll(buildAUGsFromFile("input/Test_alibaba2_old.java"));
-		
+
 		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
 		print(patterns);
-		
+
 		assertThat(patterns.size(), is(1));
 		assertThat(patterns.get(0).vertexSet().size(), not(groums.iterator().next().getNodeSize()));
 	}
