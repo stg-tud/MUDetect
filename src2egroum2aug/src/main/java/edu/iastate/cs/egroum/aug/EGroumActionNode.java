@@ -149,9 +149,8 @@ public class EGroumActionNode extends EGroumNode {
 	private void getDefinitions(HashSet<EGroumNode> defs) {
 		for (EGroumEdge e : inEdges) {
 			if (e.source instanceof EGroumDataNode) {
-				ArrayList<EGroumNode> tmpDefs = e.source.getDefinitions();
-				defs.addAll(tmpDefs);
-				for (EGroumNode def : new HashSet<EGroumNode>(defs)) {
+				defs.addAll(e.source.getDefinitions());
+				for (EGroumNode def : new HashSet<>(defs)) {
 					EGroumNode qual = def.getQualifier();
 					if (qual != null)
 						defs.addAll(qual.getDefinitions());

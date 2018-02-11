@@ -281,6 +281,9 @@ public abstract class EGroumNode {
 		return null;
 	}
 
+	/**
+	 * The source nodes of all incoming REFERENCE edges, if this is a data node. Empty set otherwise.
+	 */
 	public ArrayList<EGroumNode> getDefinitions() {
 		ArrayList<EGroumNode> defs = new ArrayList<>();
 		if (this instanceof EGroumDataNode) {
@@ -488,8 +491,7 @@ public abstract class EGroumNode {
 			preNodes.add(e.source);
 			if (!visitedNodes.contains(e.source))
 				e.source.buildPreSequentialNodes(visitedNodes, preNodesOfNode);
-			HashSet<EGroumNode> s = preNodesOfNode.get(e.source);
-			preNodes.addAll(s);
+			preNodes.addAll(preNodesOfNode.get(e.source));
 		}
 		preNodesOfNode.put(this, preNodes);
 	}
