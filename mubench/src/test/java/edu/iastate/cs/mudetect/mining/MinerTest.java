@@ -140,18 +140,6 @@ public class MinerTest {
 	}
 
 	@Test
-	public void decryptTarget() {
-		Collection<APIUsageExample> groums = buildAUGsFromFile("input/Test_alibaba2_old.java");
-		groums.addAll(buildAUGsFromFile("input/Test_alibaba2_old.java"));
-
-		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
-		print(patterns);
-
-		assertThat(patterns.size(), is(1));
-		assertThat(patterns.get(0).vertexSet().size(), not(groums.iterator().next().getNodeSize()));
-	}
-	
-	@Test
 	public void decrypt() {
 		Collection<APIUsageExample> groums = buildAUGsFromFile("input/Test_alibaba2_old.java");
 		groums.addAll(buildAUGsFromFile("input/Test_alibaba2_old.java"));
