@@ -33,7 +33,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
 
     @Test
     public void addsSameEdgeOnlyOnce() {
-        APIUsageExample aug = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B").build();
+        APIUsageExample aug = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B").build();
         Overlap instance = instance(aug);
 
         String dotGraph = toDotGraph(someViolation(instance));
@@ -44,8 +44,8 @@ public class GenerateTargetEnvironmentDotGraphTest {
     @Test
     public void excludesDistantNodes() {
         TestAUGBuilder pattern = buildAUG().withActionNode("A");
-        TestAUGBuilder env = extend(pattern).withActionNode("B").withDataEdge("A", ORDER, "B");
-        TestAUGBuilder target = extend(env).withActionNode("C").withDataEdge("B", ORDER, "C");
+        TestAUGBuilder env = extend(pattern).withActionNode("B").withEdge("A", ORDER, "B");
+        TestAUGBuilder target = extend(env).withActionNode("C").withEdge("B", ORDER, "C");
         TestOverlapBuilder instance = buildOverlap(target, pattern).withNode("A", "A");
 
         String dotGraph = toDotGraph(someViolation(instance));
@@ -56,34 +56,34 @@ public class GenerateTargetEnvironmentDotGraphTest {
     @Test
     public void graysOutTargetOnlyElements() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A");
-        TestAUGBuilder target = extend(pattern).withActionNode("B").withDataEdge("A", ORDER, "B");
+        TestAUGBuilder target = extend(pattern).withActionNode("B").withEdge("A", ORDER, "B");
         TestOverlapBuilder instance = buildOverlap(target, pattern).withNode("A", "A");
 
         String dotGraph = toDotGraph(someViolation(instance));
 
         assertDotGraphContains(dotGraph, " [ label=\"B\" shape=\"box\" color=\"gray\" fontcolor=\"gray\" ];");
-        assertDotGraphContains(dotGraph, " [ label=\"order\" style=\"solid\" color=\"gray\" fontcolor=\"gray\" ];");
+        assertDotGraphContains(dotGraph, " [ label=\"order\" style=\"bold\" color=\"gray\" fontcolor=\"gray\" ];");
     }
 
     @Test
     public void highlightsMappedElements() {
-        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
-        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B");
+        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B");
         TestOverlapBuilder instance = buildOverlap(target, pattern).withNodes("A", "B").withEdge("A", ORDER, "B");
 
         String dotGraph = toDotGraph(someViolation(instance));
 
         assertDotGraphContains(dotGraph, " [ label=\"A\" shape=\"box\" ];");
-        assertDotGraphContains(dotGraph, " [ label=\"order\" style=\"solid\" ];");
+        assertDotGraphContains(dotGraph, " [ label=\"order\" style=\"bold\" ];");
     }
 
     @Test
     public void includesEdgesBetweenTargetOnlyNodes() {
         TestAUGBuilder pattern = buildAUG().withActionNode("A");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B", "C")
-                .withDataEdge("A", ORDER, "B")
-                .withDataEdge("A", ORDER, "C")
-                .withDataEdge("B", PARAMETER, "C");
+                .withEdge("A", ORDER, "B")
+                .withEdge("A", ORDER, "C")
+                .withEdge("B", PARAMETER, "C");
         TestOverlapBuilder instance = buildOverlap(target, pattern).withNode("A");
 
         String dotGraph = toDotGraph(someViolation(instance));

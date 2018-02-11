@@ -25,10 +25,10 @@ public class GenerateViolationDotGraphTest {
 
     @Test
     public void includesEdgeLabel() {
-        APIUsageExample aug = buildAUG(":G:").withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
+        APIUsageExample aug = buildAUG(":G:").withActionNodes(":a:", ":b:").withEdge(":a:", ORDER, ":b:").build();
         Violation violation = new Violation(instance(aug), 1, "constant rank");
 
-        assertDotGraphContains(violation, " [ label=\"order\" style=\"solid\" ");
+        assertDotGraphContains(violation, " [ label=\"order\" style=\"bold\" ");
     }
 
     @Test
@@ -41,10 +41,10 @@ public class GenerateViolationDotGraphTest {
 
     @Test
     public void includesMissingEdge() {
-        APIUsageExample aug = buildAUG().withActionNodes(":a:", ":b:").withDataEdge(":a:", ORDER, ":b:").build();
+        APIUsageExample aug = buildAUG().withActionNodes(":a:", ":b:").withEdge(":a:", ORDER, ":b:").build();
         Violation violation = new Violation(someOverlap(aug, aug.vertexSet(), new HashSet<>()), 1, "constant rank");
 
-        assertDotGraphContains(violation, " [ label=\"order\" style=\"solid\" color=\"red\" fontcolor=\"red\" ];");
+        assertDotGraphContains(violation, " [ label=\"order\" style=\"bold\" color=\"red\" fontcolor=\"red\" ];");
     }
 
     @Test

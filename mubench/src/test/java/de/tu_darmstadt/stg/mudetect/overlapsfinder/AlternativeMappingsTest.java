@@ -22,15 +22,15 @@ public class AlternativeMappingsTest {
     @Test
     public void findsMaximalAlternativeMappingToTarget() throws Exception {
         TestAUGBuilder target = buildAUG().withActionNodes("A", "getB()")
-                .withDataNode("B1", "B").withDataEdge("B1", PARAMETER, "A")
-                .withDataNode("B2", "B").withDataEdge("B2", PARAMETER, "A")
-                .withDataNode("B3", "B").withDataEdge("B3", PARAMETER, "A")
-                .withDataNode("B4", "B").withDataEdge("B4", PARAMETER, "A")
-                .withDataNode("B5", "B").withDataEdge("B5", PARAMETER, "A")
-                .withDataEdge("getB()", DEFINITION, "B3").withDataEdge("getB()", PARAMETER, "A");
+                .withDataNode("B1", "B").withEdge("B1", PARAMETER, "A")
+                .withDataNode("B2", "B").withEdge("B2", PARAMETER, "A")
+                .withDataNode("B3", "B").withEdge("B3", PARAMETER, "A")
+                .withDataNode("B4", "B").withEdge("B4", PARAMETER, "A")
+                .withDataNode("B5", "B").withEdge("B5", PARAMETER, "A")
+                .withEdge("getB()", DEFINITION, "B3").withEdge("getB()", PARAMETER, "A");
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "getB()")
-                .withDataNode("B").withDataEdge("B", PARAMETER, "A")
-                .withDataEdge("getB()", DEFINITION, "B").withDataEdge("getB()", PARAMETER, "A");
+                .withDataNode("B").withEdge("B", PARAMETER, "A")
+                .withEdge("getB()", DEFINITION, "B").withEdge("getB()", PARAMETER, "A");
 
         TestOverlapBuilder instance = buildOverlap(target, pattern).withNodes("A", "getB()")
                 .withNode("B3", "B").withEdge("B3", "B", PARAMETER, "A", "A")

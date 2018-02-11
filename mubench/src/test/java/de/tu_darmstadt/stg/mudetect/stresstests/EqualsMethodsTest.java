@@ -80,7 +80,7 @@ public class EqualsMethodsTest {
                 .withDataNode("b6", "boolean")
                 .withDataNode("b7", "boolean")
                 .withDataNode("b8", "boolean")
-                .withDataEdge("b1", PARAMETER, "r1")
+                .withEdge("b1", PARAMETER, "r1")
                 .withCondEdge("b2", SELECTION, "r1")
                 .withCondEdge("b2", SELECTION, "eq")
                 .withCondEdge("b3", SELECTION, "r1")
@@ -90,10 +90,10 @@ public class EqualsMethodsTest {
                 .withCondEdge("b4", SELECTION, "eq")
                 .withCondEdge("b4", SELECTION, "r2")
                 .withCondEdge("b4", SELECTION, "r3")
-                .withDataEdge("b5", PARAMETER, "r2")
-                .withDataEdge("b6", PARAMETER, "r3")
-                .withDataEdge("eq", DEFINITION, "b7")
-                .withDataEdge("eq", DEFINITION, "b8");
+                .withEdge("b5", PARAMETER, "r2")
+                .withEdge("b6", PARAMETER, "r3")
+                .withEdge("eq", DEFINITION, "b7")
+                .withEdge("eq", DEFINITION, "b8");
         APIUsagePattern pattern = somePattern(patternAUG);
 
         new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher()).findOverlaps(target, pattern);

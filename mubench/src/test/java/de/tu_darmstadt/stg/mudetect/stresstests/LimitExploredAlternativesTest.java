@@ -24,10 +24,10 @@ public class LimitExploredAlternativesTest {
     @Test
     public void skipIfTooMany() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A")
-                .withDataNode("B1", "B").withDataEdge("B1", PARAMETER, "A")
-                .withDataNode("B2", "B").withDataEdge("B2", PARAMETER, "A")
-                .withDataNode("B3", "B").withDataEdge("B3", PARAMETER, "A");
-        TestAUGBuilder target = buildAUG().withActionNode("A").withDataNode("B").withDataEdge("B", PARAMETER, "A");
+                .withDataNode("B1", "B").withEdge("B1", PARAMETER, "A")
+                .withDataNode("B2", "B").withEdge("B2", PARAMETER, "A")
+                .withDataNode("B3", "B").withEdge("B3", PARAMETER, "A");
+        TestAUGBuilder target = buildAUG().withActionNode("A").withDataNode("B").withEdge("B", PARAMETER, "A");
 
         AlternativeMappingsOverlapsFinder finder = new AlternativeMappingsOverlapsFinder(
                 new AlternativeMappingsOverlapsFinder.Config() {{

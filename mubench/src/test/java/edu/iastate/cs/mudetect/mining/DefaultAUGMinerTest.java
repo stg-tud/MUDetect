@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.RECEIVER;
 import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
-import static edu.iastate.cs.mudetect.mining.TestPatternBuilder.*;
 import static edu.iastate.cs.mudetect.mining.TestPatternBuilder.somePattern;
 import static de.tu_darmstadt.stg.mudetect.utils.CollectionUtils.first;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClass;
@@ -33,7 +32,7 @@ public class DefaultAUGMinerTest {
         Set<APIUsagePattern> patterns = minePatterns(groums);
 
         TestAUGBuilder pattern = buildAUG().withDataNode("C").withActionNode("C.foo()")
-                .withDataEdge("C", RECEIVER, "C.foo()");
+                .withEdge("C", RECEIVER, "C.foo()");
         assertThat(patterns, contains(isPattern(pattern, 2)));
     }
 
@@ -47,8 +46,8 @@ public class DefaultAUGMinerTest {
         Set<APIUsagePattern> patterns = minePatterns(groums);
 
         TestAUGBuilder pattern = buildAUG().withActionNode("C.foo()").withDataNodes("C", "String")
-                .withDataEdge("C", RECEIVER, "C.foo()")
-                .withDataEdge("String", PARAMETER, "C.foo()");
+                .withEdge("C", RECEIVER, "C.foo()")
+                .withEdge("String", PARAMETER, "C.foo()");
         assertThat(patterns, contains(isPattern(pattern, 2)));
     }
 

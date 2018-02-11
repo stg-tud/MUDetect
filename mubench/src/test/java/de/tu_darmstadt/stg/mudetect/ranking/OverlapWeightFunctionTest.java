@@ -29,7 +29,7 @@ public class OverlapWeightFunctionTest {
     @Test
     public void considersMissingEdges() {
         TestAUGBuilder targetBuilder = buildAUG().withActionNodes("a", "b");
-        TestAUGBuilder patternBuilder = extend(targetBuilder).withDataEdge("a", ORDER, "b");
+        TestAUGBuilder patternBuilder = extend(targetBuilder).withEdge("a", ORDER, "b");
         Overlap violation = buildOverlap(targetBuilder, patternBuilder).withNode("a", "a").build();
         ViolationWeightFunction weightFunction = new OverlapWeightFunction();
 

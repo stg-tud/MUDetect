@@ -26,26 +26,26 @@ public class FindInstancesTest {
 
     @Test
     public void findsTwoNodeInstance() {
-        assertFindsInstance(buildAUG().withActionNodes("C.a()", "C.b()").withDataEdge("C.a()", ORDER, "C.b()"));
+        assertFindsInstance(buildAUG().withActionNodes("C.a()", "C.b()").withEdge("C.a()", ORDER, "C.b()"));
     }
 
     @Test
     public void findsThreeNodeChain() {
         assertFindsInstance(buildAUG().withActionNodes("A", "B", "C")
-                .withDataEdge("A", ORDER, "B").withDataEdge("B", ORDER, "C"));
+                .withEdge("A", ORDER, "B").withEdge("B", ORDER, "C"));
     }
 
     @Test
     public void findsFourNodeChain() {
         assertFindsInstance(buildAUG().withActionNodes("A", "B", "C", "D")
-                .withDataEdge("A", ORDER, "B").withDataEdge("B", ORDER, "C").withDataEdge("C", ORDER, "D"));
+                .withEdge("A", ORDER, "B").withEdge("B", ORDER, "C").withEdge("C", ORDER, "D"));
     }
 
     @Test
     public void ignoresUnmappableTargetNode() {
-        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
-        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B")
-                .withDataNode("C").withDataEdge("A", ORDER, "C");
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B");
+        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B")
+                .withDataNode("C").withEdge("A", ORDER, "C");
 
         TestOverlapBuilder instance = buildOverlap(target, pattern).withNodes("A", "B").withEdge("A", ORDER, "B");
 
@@ -54,9 +54,9 @@ public class FindInstancesTest {
 
     @Test
     public void findsTwoOverlappingInstances() {
-        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNode("A").withActionNode("B1", "B").withActionNode("B2", "B")
-                .withDataEdge("A", ORDER, "B1").withDataEdge("A", ORDER, "B2");
+                .withEdge("A", ORDER, "B1").withEdge("A", ORDER, "B2");
 
         TestOverlapBuilder instance1 = buildOverlap(target, pattern).withNode("A", "A")
                 .withNode("B1", "B").withEdge("A", "A", ORDER, "B1", "B");
@@ -67,68 +67,68 @@ public class FindInstancesTest {
 
     @Test
     public void findsCallReceiver() {
-        assertFindsInstance(buildAUG().withDataNode("C").withActionNode("C.m()").withDataEdge("C", RECEIVER, "C.m()"));
+        assertFindsInstance(buildAUG().withDataNode("C").withActionNode("C.m()").withEdge("C", RECEIVER, "C.m()"));
     }
 
     @Test
     public void findsMultipleCalls() {
         assertFindsInstance(buildAUG().withDataNode("C").withActionNodes("C.m()", "C.n()")
-                .withDataEdge("C", RECEIVER, "C.m()")
-                .withDataEdge("C", RECEIVER, "C.n()"));
+                .withEdge("C", RECEIVER, "C.m()")
+                .withEdge("C", RECEIVER, "C.n()"));
     }
 
     @Test
     public void findCallArguments() {
         assertFindsInstance(buildAUG().withDataNode("Object").withActionNode("Object.equals()")
-                .withDataEdge("Object", PARAMETER, "Object.equals()"));
+                .withEdge("Object", PARAMETER, "Object.equals()"));
     }
 
     @Test
     public void findsMultipleEdgesBetweenTwoNodes() {
         assertFindsInstance(buildAUG().withActionNodes("A.m()", "A.n()")
-                .withDataEdge("A.m()", ORDER, "A.n()")
-                .withDataEdge("A.m()", PARAMETER, "A.n()"));
+                .withEdge("A.m()", ORDER, "A.n()")
+                .withEdge("A.m()", PARAMETER, "A.n()"));
     }
 
     @Test
     public void findsConditionPredicate() {
         assertFindsInstance(buildAUG().withActionNodes("A.predicate()", "B.m()")
-                .withDataEdge("A.predicate()", CONDITION, "B.m()"));
+                .withEdge("A.predicate()", CONDITION, "B.m()"));
     }
 
     @Test
     public void findsConditionEquation() {
         assertFindsInstance(buildAUG().withDataNode("int").withActionNodes("List.size()", "List.get()", ">")
-                .withDataEdge("List.size()", PARAMETER, ">")
-                .withDataEdge("int", PARAMETER, ">")
-                .withDataEdge(">", CONDITION, "List.get()"));
+                .withEdge("List.size()", PARAMETER, ">")
+                .withEdge("int", PARAMETER, ">")
+                .withEdge(">", CONDITION, "List.get()"));
     }
 
     @Test
     public void findsResultAsArgument() {
         assertFindsInstance(buildAUG().withActionNodes("A.getX()", "B.takeX()")
-                .withDataEdge("A.getX()", PARAMETER, "B.takeX()"));
+                .withEdge("A.getX()", PARAMETER, "B.takeX()"));
     }
 
     @Test
     public void findsExceptionHandling() {
         assertFindsInstance(buildAUG().withActionNodes("C.throws()", "E.handler()")
                 .withDataNode("SomeException")
-                .withDataEdge("C.throws()", THROW, "SomeException")
-                .withDataEdge("SomeException", CONDITION, "E.handler()")
-                .withDataEdge("SomeException", PARAMETER, "E.handler()"));
+                .withEdge("C.throws()", THROW, "SomeException")
+                .withEdge("SomeException", CONDITION, "E.handler()")
+                .withEdge("SomeException", PARAMETER, "E.handler()"));
     }
 
     @Test
     public void findsThrow() {
         assertFindsInstance(buildAUG().withActionNodes("throw", "SomeException.<init>")
-                .withDataEdge("SomeException.<init>", PARAMETER, "throw"));
+                .withEdge("SomeException.<init>", PARAMETER, "throw"));
     }
 
     @Test
     public void findsFinally() {
         assertFindsInstance(buildAUG().withActionNodes("C.throws()", "A.cleanup()")
-                .withDataEdge("C.throws()", FINALLY, "A.cleanup()"));
+                .withEdge("C.throws()", FINALLY, "A.cleanup()"));
     }
 
     @Test
@@ -138,9 +138,9 @@ public class FindInstancesTest {
         assertFindsInstance(buildAUG().withActionNodes("A.check()", "C.foo()")
                 .withActionNode("B1", "B.op()")
                 .withActionNode("B2", "B.op()")
-                .withDataEdge("B1", ORDER, "C.foo()")
-                .withDataEdge("A.check()", CONDITION, "B1")
-                .withDataEdge("A.check()", CONDITION, "B2"));
+                .withEdge("B1", ORDER, "C.foo()")
+                .withEdge("A.check()", CONDITION, "B1")
+                .withEdge("A.check()", CONDITION, "B2"));
     }
 
     /**
@@ -155,12 +155,12 @@ public class FindInstancesTest {
                 .withActionNode("toString", "Object.toString()")
                 .withActionNode("append1", "StringBuilder.append()")
                 .withActionNode("append2", "StringBuilder.append()")
-                .withDataEdge("init", RECEIVER, "append1")
-                .withDataEdge("init", RECEIVER, "append2")
-                .withDataEdge("init", RECEIVER, "toString")
-                .withDataEdge("append1", ORDER, "append2")
-                .withDataEdge("append1", ORDER, "toString")
-                .withDataEdge("append2", ORDER, "toString");
+                .withEdge("init", RECEIVER, "append1")
+                .withEdge("init", RECEIVER, "append2")
+                .withEdge("init", RECEIVER, "toString")
+                .withEdge("append1", ORDER, "append2")
+                .withEdge("append1", ORDER, "toString")
+                .withEdge("append2", ORDER, "toString");
 
         TestAUGBuilder target = buildAUG()
                 .withActionNode("init", "StringBuilder.<init>")
@@ -168,12 +168,12 @@ public class FindInstancesTest {
                 .withActionNode("append1", "StringBuilder.append()")
                 .withActionNode("append2", "StringBuilder.append()")
                 // Adding the same edges in different order to increase the likelihood of picking a wrong mapping.
-                .withDataEdge("append2", ORDER, "toString")
-                .withDataEdge("init", RECEIVER, "append2")
-                .withDataEdge("init", RECEIVER, "toString")
-                .withDataEdge("init", RECEIVER, "append1")
-                .withDataEdge("append1", ORDER, "toString")
-                .withDataEdge("append1", ORDER, "append2");
+                .withEdge("append2", ORDER, "toString")
+                .withEdge("init", RECEIVER, "append2")
+                .withEdge("init", RECEIVER, "toString")
+                .withEdge("init", RECEIVER, "append1")
+                .withEdge("append1", ORDER, "toString")
+                .withEdge("append1", ORDER, "append2");
 
         List<Overlap> overlaps = findOverlaps(target, pattern);
 
@@ -183,7 +183,7 @@ public class FindInstancesTest {
     @Test
     public void handlesMultipleEdgesBetweenTwoNodes() {
         assertFindsInstance(buildAUG().withActionNodes("A", "B")
-                .withDataEdge("A", RECEIVER, "B")
+                .withEdge("A", RECEIVER, "B")
                 .withCondEdge("A", SELECTION, "B"));
     }
 

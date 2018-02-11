@@ -29,8 +29,8 @@ public class ParameterMappingTest {
 
     @Test
     public void mapsParameter() {
-        TestAUGBuilder pattern = buildAUG().withActionNode("m()").withDataNode("P").withDataEdge("P", PARAMETER, "m()");
-        TestAUGBuilder target = buildAUG().withActionNode("m()").withDataNode("P").withDataEdge("P", PARAMETER, "m()");
+        TestAUGBuilder pattern = buildAUG().withActionNode("m()").withDataNode("P").withEdge("P", PARAMETER, "m()");
+        TestAUGBuilder target = buildAUG().withActionNode("m()").withDataNode("P").withEdge("P", PARAMETER, "m()");
 
         List<Overlap> overlaps = overlapsFinder.findOverlaps(target.build(), somePattern(pattern));
 
@@ -41,9 +41,9 @@ public class ParameterMappingTest {
     @Test
     public void mapsParameterWithSource() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("source()", "m()").withDataNode("P")
-                .withDataEdge("source()", DEFINITION, "P").withDataEdge("P", PARAMETER, "m()");
+                .withEdge("source()", DEFINITION, "P").withEdge("P", PARAMETER, "m()");
         TestAUGBuilder target = buildAUG().withActionNodes("source()", "m()").withDataNode("P")
-                .withDataEdge("source()", DEFINITION, "P").withDataEdge("P", PARAMETER, "m()");
+                .withEdge("source()", DEFINITION, "P").withEdge("P", PARAMETER, "m()");
 
         List<Overlap> overlaps = overlapsFinder.findOverlaps(target.build(), somePattern(pattern));
 
@@ -55,9 +55,9 @@ public class ParameterMappingTest {
     @Test
     public void mapsParameterWithMissingSource() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("source()", "m()").withDataNode("P")
-                .withDataEdge("source()", DEFINITION, "P").withDataEdge("P", PARAMETER, "m()");
+                .withEdge("source()", DEFINITION, "P").withEdge("P", PARAMETER, "m()");
         TestAUGBuilder target = buildAUG().withActionNode("m()").withDataNode("P")
-                .withDataEdge("P", PARAMETER, "m()");
+                .withEdge("P", PARAMETER, "m()");
 
         List<Overlap> overlaps = overlapsFinder.findOverlaps(target.build(), somePattern(pattern));
 
@@ -71,17 +71,17 @@ public class ParameterMappingTest {
      */
     @Test
     public void mapsCorrespondingDirectAndIndirectEdges() {
-        TestAUGBuilder pattern = buildAUG().withActionNodes("src()", "sink()").withDataEdge("src()", PARAMETER, "sink()")
-                .withDataNode("P1", "P").withDataEdge("P1", PARAMETER, "sink()")
-                .withDataNode("P2", "P").withDataEdge("src()", DEFINITION, "P2").withDataEdge("P2", PARAMETER, "sink()");
+        TestAUGBuilder pattern = buildAUG().withActionNodes("src()", "sink()").withEdge("src()", PARAMETER, "sink()")
+                .withDataNode("P1", "P").withEdge("P1", PARAMETER, "sink()")
+                .withDataNode("P2", "P").withEdge("src()", DEFINITION, "P2").withEdge("P2", PARAMETER, "sink()");
         // From the four direct edges in this target, the two para edges have two alternative mappings each, while
         // the two def edges have one alternative mapping each, hence, they get mapped first. If the def edge to P3 is
         // mapped first, P2 -(para)-> sink() cannot be mapped anymore, hence, we find a false-positive violation. To
         // avoid this, we give priority to the corresponding direct para edge after mapping the indirect para edge.
-        TestAUGBuilder target = buildAUG().withActionNodes("src()", "sink()").withDataEdge("src()", PARAMETER, "sink()")
-                .withDataNode("P1", "P").withDataEdge("P1", PARAMETER, "sink()")
-                .withDataNode("P3", "P").withDataEdge("src()", DEFINITION, "P3")
-                .withDataNode("P2", "P").withDataEdge("src()", DEFINITION, "P2").withDataEdge("P2", PARAMETER, "sink()");
+        TestAUGBuilder target = buildAUG().withActionNodes("src()", "sink()").withEdge("src()", PARAMETER, "sink()")
+                .withDataNode("P1", "P").withEdge("P1", PARAMETER, "sink()")
+                .withDataNode("P3", "P").withEdge("src()", DEFINITION, "P3")
+                .withDataNode("P2", "P").withEdge("src()", DEFINITION, "P2").withEdge("P2", PARAMETER, "sink()");
 
         List<Overlap> overlaps = overlapsFinder.findOverlaps(target.build(), somePattern(pattern));
 

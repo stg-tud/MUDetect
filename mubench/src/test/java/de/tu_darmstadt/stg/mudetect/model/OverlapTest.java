@@ -17,8 +17,8 @@ public class OverlapTest {
     @Test
     public void encodesMultipleEdgesBetweenTwoNodes() {
         TestAUGBuilder builder = buildAUG().withActionNodes("A", "B")
-                .withDataEdge("A", PARAMETER, "B")
-                .withDataEdge("A", ORDER, "B");
+                .withEdge("A", PARAMETER, "B")
+                .withEdge("A", ORDER, "B");
         APIUsageExample aug = builder.build();
         Overlap instance = instance(aug);
 
@@ -37,7 +37,7 @@ public class OverlapTest {
 
     @Test
     public void equalByMappedEdge() {
-        final TestAUGBuilder augBuilder = buildAUG().withActionNodes("a", "b").withDataEdge("a", ORDER, "b");
+        final TestAUGBuilder augBuilder = buildAUG().withActionNodes("a", "b").withEdge("a", ORDER, "b");
         final Overlap overlap1 = buildOverlap(augBuilder, augBuilder)
                 .withNode("a", "a").withNode("b", "b").withEdge("a", "a", ORDER, "b", "b").build();
         final Overlap overlap2 = buildOverlap(augBuilder, augBuilder)
@@ -57,7 +57,7 @@ public class OverlapTest {
 
     @Test
     public void differByMappedEdge() {
-        final TestAUGBuilder augBuilder = buildAUG().withActionNodes("a", "b").withDataEdge("a", ORDER, "b");
+        final TestAUGBuilder augBuilder = buildAUG().withActionNodes("a", "b").withEdge("a", ORDER, "b");
         final Overlap overlap1 = buildOverlap(augBuilder, augBuilder)
                 .withNode("a", "a").withNode("b", "b").withEdge("a", "a", ORDER, "b", "b").build();
         final Overlap overlap2 = buildOverlap(augBuilder, augBuilder).withNode("a", "a").withNode("b", "b").build();

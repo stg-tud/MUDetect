@@ -29,7 +29,7 @@ public class ConditionMappingTest {
     @Test
     public void mapsEqualConditions() throws Exception {
         TestAUGBuilder target = buildAUG().withActionNodes("A", "<").withDataNodes("int", "long")
-                .withCondEdge("<", SELECTION, "A").withDataEdge("int", PARAMETER, "<").withDataEdge("long", PARAMETER, "<");
+                .withCondEdge("<", SELECTION, "A").withEdge("int", PARAMETER, "<").withEdge("long", PARAMETER, "<");
         Overlap instance = instance(target);
 
         assertThat(overlapsFinder, findsOverlaps(target, target, instance));
@@ -38,9 +38,9 @@ public class ConditionMappingTest {
     @Test
     public void skipsEntireConditionOnDifferentArguments() throws Exception {
         TestAUGBuilder target = buildAUG().withActionNodes("A", "<").withDataNodes("int", "float")
-                .withCondEdge("<", SELECTION, "A").withDataEdge("int", PARAMETER, "<").withDataEdge("float", PARAMETER, "<");
+                .withCondEdge("<", SELECTION, "A").withEdge("int", PARAMETER, "<").withEdge("float", PARAMETER, "<");
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "<").withDataNodes("int", "long")
-                .withCondEdge("<", SELECTION, "A").withDataEdge("int", PARAMETER, "<").withDataEdge("long", PARAMETER, "<");
+                .withCondEdge("<", SELECTION, "A").withEdge("int", PARAMETER, "<").withEdge("long", PARAMETER, "<");
         Overlap overlap = buildOverlap(target, pattern).withNode("A").build();
 
         assertThat(overlapsFinder, findsOverlaps(target, pattern, overlap));

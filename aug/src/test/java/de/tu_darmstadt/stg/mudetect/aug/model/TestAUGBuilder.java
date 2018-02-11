@@ -4,6 +4,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.actions.InfixOperatorNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.ReturnNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.OrderEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.RepetitionEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.SelectionEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.VariableNode;
@@ -177,8 +178,14 @@ public class TestAUGBuilder {
         return this;
     }
 
-    public TestAUGBuilder withDataEdge(String sourceId, Edge.Type type, String targetId) {
-        edges.add(new BaseDataFlowEdge(getNode(sourceId), getNode(targetId), type));
+    public TestAUGBuilder withEdge(String sourceId, Edge.Type type, String targetId) {
+        switch (type) {
+            case ORDER:
+                edges.add(new OrderEdge(getNode(sourceId), getNode(targetId)));
+                break;
+            default:
+                edges.add(new BaseDataFlowEdge(getNode(sourceId), getNode(targetId), type));
+        }
         return this;
     }
 

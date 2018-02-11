@@ -29,7 +29,7 @@ public class MissingElementViolationPredicateTest {
 
     @Test
     public void missingEdge() {
-        final TestAUGBuilder builder = buildAUG().withActionNodes(":a1:", ":a2:").withDataEdge(":a1:", ORDER, ":a2:");
+        final TestAUGBuilder builder = buildAUG().withActionNodes(":a1:", ":a2:").withEdge(":a1:", ORDER, ":a2:");
         Overlap overlap = buildOverlap(builder).withNode(":a1:").withNode(":a2:").build();
 
         MissingElementViolationPredicate strategy = new MissingElementViolationPredicate();

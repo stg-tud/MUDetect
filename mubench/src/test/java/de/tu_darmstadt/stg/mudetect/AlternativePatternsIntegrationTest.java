@@ -42,10 +42,10 @@ public class AlternativePatternsIntegrationTest {
     public void multipleCallViolations() {
         APIUsagePattern pattern = somePattern(buildAUG().withActionNode("JPanel.<init>").withDataNode("JPanel")
                 .withActionNode("add1", "JPanel.add()").withActionNode("add2", "JPanel.add()")
-                .withDataEdge("JPanel.<init>", DEFINITION, "JPanel")
-                .withDataEdge("JPanel", RECEIVER, "add1")
-                .withDataEdge("JPanel", RECEIVER, "add2")
-                .withDataEdge("add2", ORDER, "add1").build());
+                .withEdge("JPanel.<init>", DEFINITION, "JPanel")
+                .withEdge("JPanel", RECEIVER, "add1")
+                .withEdge("JPanel", RECEIVER, "add2")
+                .withEdge("add2", ORDER, "add1").build());
         APIUsageExample target = buildAUGForMethod("import javax.swing.JPanel;\n" +
                 "class C {\n" +
                 "  void m() {\n" +
@@ -71,13 +71,13 @@ public class AlternativePatternsIntegrationTest {
         APIUsagePattern pattern = somePattern(buildAUG()
                 .withDataNode("IO1", "IndexOutput")
                 .withActionNode("gFP()", "IndexOutput.getFilePointer()")
-                .withDataEdge("IO1", RECEIVER, "gFP()")
+                .withEdge("IO1", RECEIVER, "gFP()")
                 .withDataNode("long")
-                .withDataEdge("gFP()", DEFINITION, "long")
+                .withEdge("gFP()", DEFINITION, "long")
                 .withDataNode("IO2", "IndexOutput")
                 .withActionNode("wL()", "IndexOutput.writeLong()")
-                .withDataEdge("IO2", RECEIVER, "wL()")
-                .withDataEdge("long", PARAMETER, "wL()"));
+                .withEdge("IO2", RECEIVER, "wL()")
+                .withEdge("long", PARAMETER, "wL()"));
         APIUsageExample target = buildAUGForMethod("class C {\n" +
                 "  IndexOutput tvd, tvf, tvx;" +
                 "  void addRawDocuments(TermVectorsReader reader, int[] tvdLengths, int[] tvfLengths, int numDocs) throws IOException {\n" +

@@ -24,7 +24,7 @@ public class OverlapWithoutEdgesToMissingNodesWeightFunctionTest {
 
     @Test
     public void noMissingElements_withEdge() {
-        Overlap instance = instance(buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B"));
+        Overlap instance = instance(buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B"));
 
         double weight = getWeight(instance, node -> 1);
 
@@ -33,7 +33,7 @@ public class OverlapWithoutEdgesToMissingNodesWeightFunctionTest {
 
     @Test
     public void excludesEdgeToMissingNode() {
-        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNode("A");
         Overlap violation = buildOverlap(target, pattern).withNode("A").build();
 
@@ -44,7 +44,7 @@ public class OverlapWithoutEdgesToMissingNodesWeightFunctionTest {
 
     @Test
     public void considersNodeImportance() {
-        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNode("A");
         Overlap violation = buildOverlap(target, pattern).withNode("A").build();
 
@@ -57,8 +57,8 @@ public class OverlapWithoutEdgesToMissingNodesWeightFunctionTest {
     @Test
     public void considerNodeImportance2() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B", "C")
-                .withDataEdge("A", ORDER, "B").withDataEdge("A", ORDER, "C").withDataEdge("B", ORDER, "C");
-        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withDataEdge("A", ORDER, "B");
+                .withEdge("A", ORDER, "B").withEdge("A", ORDER, "C").withEdge("B", ORDER, "C");
+        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B");
         Overlap violation = buildOverlap(target, pattern).withNodes("A", "B").withEdge("A", ORDER, "B").build();
 
         double weightWithEqualImportance = getWeight(violation, node -> 1);

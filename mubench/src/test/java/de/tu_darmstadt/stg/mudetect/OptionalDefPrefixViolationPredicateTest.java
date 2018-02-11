@@ -26,11 +26,11 @@ public class OptionalDefPrefixViolationPredicateTest {
     @Test
     public void missingDefPrefixAndMoreIsNoDecision() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("create()", "use()", "use2()").withDataNode("Object")
-                .withDataEdge("create()", DEFINITION, "Object")
-                .withDataEdge("Object", RECEIVER, "use()").withDataEdge("create()", RECEIVER, "use()")
-                .withDataEdge("Object", RECEIVER, "use2()").withDataEdge("create()", RECEIVER, "use2()");
+                .withEdge("create()", DEFINITION, "Object")
+                .withEdge("Object", RECEIVER, "use()").withEdge("create()", RECEIVER, "use()")
+                .withEdge("Object", RECEIVER, "use2()").withEdge("create()", RECEIVER, "use2()");
         TestAUGBuilder target = buildAUG().withActionNodes("use()").withDataNode("Object")
-                .withDataEdge("Object", RECEIVER, "use()");
+                .withEdge("Object", RECEIVER, "use()");
         TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("use()", "Object")
                 .withEdge("Object", RECEIVER, "use()");
 
@@ -42,13 +42,13 @@ public class OptionalDefPrefixViolationPredicateTest {
     @Test
     public void missingDefPrefixAndEdgeBetweenTwoMappedNodesIsNoDecision() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("create()", "use()", "use2()").withDataNode("Object")
-                .withDataEdge("create()", DEFINITION, "Object")
-                .withDataEdge("Object", RECEIVER, "use()").withDataEdge("create()", RECEIVER, "use()")
-                .withDataEdge("Object", RECEIVER, "use2()").withDataEdge("create()", RECEIVER, "use2()")
-                .withDataEdge("use()", ORDER, "use2()");
+                .withEdge("create()", DEFINITION, "Object")
+                .withEdge("Object", RECEIVER, "use()").withEdge("create()", RECEIVER, "use()")
+                .withEdge("Object", RECEIVER, "use2()").withEdge("create()", RECEIVER, "use2()")
+                .withEdge("use()", ORDER, "use2()");
         TestAUGBuilder target = buildAUG().withActionNodes("use()", "use2()").withDataNode("Object")
-                .withDataEdge("Object", RECEIVER, "use()")
-                .withDataEdge("Object", RECEIVER, "use2()");
+                .withEdge("Object", RECEIVER, "use()")
+                .withEdge("Object", RECEIVER, "use2()");
         TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("use()", "use2()", "Object")
                 .withEdge("Object", RECEIVER, "use()")
                 .withEdge("Object", RECEIVER, "use2()");
@@ -61,10 +61,10 @@ public class OptionalDefPrefixViolationPredicateTest {
     @Test
     public void missingDefPrefixIsNoViolation() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("create()", "use()").withDataNode("Object")
-                .withDataEdge("create()", DEFINITION, "Object")
-                .withDataEdge("Object", RECEIVER, "use()").withDataEdge("create()", RECEIVER, "use()");
+                .withEdge("create()", DEFINITION, "Object")
+                .withEdge("Object", RECEIVER, "use()").withEdge("create()", RECEIVER, "use()");
         TestAUGBuilder target = buildAUG().withActionNodes("use()").withDataNode("Object")
-                .withDataEdge("Object", RECEIVER, "use()");
+                .withEdge("Object", RECEIVER, "use()");
         TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("use()", "Object")
                 .withEdge("Object", RECEIVER, "use()");
 
@@ -76,11 +76,11 @@ public class OptionalDefPrefixViolationPredicateTest {
     @Test
     public void missingDefPrefixWithPredecessorIsNoViolation() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("create()", "use()").withDataNodes("Creator", "Object")
-                .withDataEdge("Creator", RECEIVER, "create()")
-                .withDataEdge("create()", DEFINITION, "Object")
-                .withDataEdge("Object", RECEIVER, "use()").withDataEdge("create()", RECEIVER, "use()");
+                .withEdge("Creator", RECEIVER, "create()")
+                .withEdge("create()", DEFINITION, "Object")
+                .withEdge("Object", RECEIVER, "use()").withEdge("create()", RECEIVER, "use()");
         TestAUGBuilder target = buildAUG().withActionNodes("use()").withDataNodes("Object")
-                .withDataEdge("Object", RECEIVER, "use()");
+                .withEdge("Object", RECEIVER, "use()");
         TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("use()", "Object")
                 .withEdge("Object", RECEIVER, "use()");
 
@@ -92,14 +92,14 @@ public class OptionalDefPrefixViolationPredicateTest {
     @Test
     public void missingDefPrefixWithConditionEdgeIsNoViolation() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("iterator()", "hasNext()", "next()").withDataNode("Iterator")
-                .withDataEdge("iterator()", DEFINITION, "Iterator")
-                .withDataEdge("Iterator", RECEIVER, "hasNext()")
-                .withDataEdge("Iterator", RECEIVER, "next()")
+                .withEdge("iterator()", DEFINITION, "Iterator")
+                .withEdge("Iterator", RECEIVER, "hasNext()")
+                .withEdge("Iterator", RECEIVER, "next()")
                 .withCondEdge("iterator()", REPETITION, "next()")
                 .withCondEdge("hasNext()", REPETITION, "next()");
         TestAUGBuilder target = buildAUG().withActionNodes("hasNext()", "next()").withDataNode("Iterator")
-                .withDataEdge("Iterator", RECEIVER, "hasNext()")
-                .withDataEdge("Iterator", RECEIVER, "next()")
+                .withEdge("Iterator", RECEIVER, "hasNext()")
+                .withEdge("Iterator", RECEIVER, "next()")
                 .withCondEdge("hasNext()", REPETITION, "next()");
         TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("hasNext()", "next()", "Iterator")
                 .withEdge("Iterator", RECEIVER, "hasNext()")
@@ -128,14 +128,14 @@ public class OptionalDefPrefixViolationPredicateTest {
     @Test
     public void missingDefPrefixWithConditionEdgeToOtherDefinitionIsNoViolation() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("iterator()", "hasNext()", "next()").withDataNode("Iterator")
-                .withDataEdge("iterator()", DEFINITION, "Iterator")
-                .withDataEdge("Iterator", RECEIVER, "hasNext()")
-                .withDataEdge("Iterator", RECEIVER, "next()")
+                .withEdge("iterator()", DEFINITION, "Iterator")
+                .withEdge("Iterator", RECEIVER, "hasNext()")
+                .withEdge("Iterator", RECEIVER, "next()")
                 .withCondEdge("iterator()", REPETITION, "next()")
                 .withCondEdge("hasNext()", REPETITION, "next()");
         TestAUGBuilder target = buildAUG().withActionNodes("iterator()", "hasNext()", "next()").withDataNode("Iterator")
-                .withDataEdge("Iterator", RECEIVER, "hasNext()")
-                .withDataEdge("Iterator", RECEIVER, "next()")
+                .withEdge("Iterator", RECEIVER, "hasNext()")
+                .withEdge("Iterator", RECEIVER, "next()")
                 .withCondEdge("iterator()", REPETITION, "next()")
                 .withCondEdge("hasNext()", REPETITION, "next()");
         TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("iterator()", "hasNext()", "next()", "Iterator")

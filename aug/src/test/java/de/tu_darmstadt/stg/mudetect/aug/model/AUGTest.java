@@ -15,8 +15,8 @@ public class AUGTest {
     @Test
     public void encodesMultipleEdgesBetweenTwoNodes() {
         TestAUGBuilder builder = buildAUG().withActionNodes("A", "B")
-                .withDataEdge("A", PARAMETER, "B")
-                .withDataEdge("A", ORDER, "B");
+                .withEdge("A", PARAMETER, "B")
+                .withEdge("A", ORDER, "B");
         APIUsageExample aug = builder.build();
 
         assertThat(aug, containsEdge(builder.getEdge("A", ORDER, "B")));

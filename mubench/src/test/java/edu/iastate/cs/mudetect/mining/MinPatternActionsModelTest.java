@@ -36,7 +36,7 @@ public class MinPatternActionsModelTest {
     public void considersCatch() {
         APIUsagePattern pattern = somePattern(TestAUGBuilder.buildAUG()
                 .withActionNodes("m()").withDataNode("SomeException")
-                .withDataEdge("m()", THROW, "SomeException"));
+                .withEdge("m()", THROW, "SomeException"));
 
         Set<APIUsagePattern> patterns = new MinPatternActionsModel(() -> asSet(pattern), 2).getPatterns();
 
@@ -47,7 +47,7 @@ public class MinPatternActionsModelTest {
     public void considersSynchronization() {
         APIUsagePattern pattern = somePattern(TestAUGBuilder.buildAUG()
                 .withDataNode("Object").withActionNodes("m()")
-                .withDataEdge("Object", SYNCHRONIZE, "m()"));
+                .withEdge("Object", SYNCHRONIZE, "m()"));
 
         Set<APIUsagePattern> patterns = new MinPatternActionsModel(() -> asSet(pattern), 2).getPatterns();
 
