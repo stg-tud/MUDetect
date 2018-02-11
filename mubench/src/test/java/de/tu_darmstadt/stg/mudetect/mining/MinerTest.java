@@ -147,7 +147,7 @@ public class MinerTest {
 		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
 		print(patterns);
 		
-		assertThat(patterns.size(), is(2));
+		assertThat(patterns.size(), is(1));
 		assertThat(patterns.get(0).vertexSet().size(), not(groums.iterator().next().getNodeSize()));
 	}
 	
@@ -159,7 +159,7 @@ public class MinerTest {
 		List<APIUsagePattern> patterns = MinerTestUtils.mineWithMinSupport2(groums);
 		print(patterns);
 		
-		assertThat(patterns.size(), is(2));
+		assertThat(patterns.size(), is(1));
 		
 		boolean contains = false;
 		for (APIUsagePattern p : patterns) {
@@ -241,7 +241,7 @@ public class MinerTest {
 		
 //		assertThat(patterns, hasSize(2));
 		print(patterns);
-		assertThat(patterns, hasSize(3));
+		assertThat(patterns, hasSize(2));
 	}
 
 	@Test

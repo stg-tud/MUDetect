@@ -90,14 +90,14 @@ public class EGroumActionNode extends EGroumNode {
 
 	public boolean hasBackwardDataDependence(EGroumActionNode preNode) {
 		HashSet<EGroumNode> defs = new HashSet<>(), preDefs = new HashSet<>();
-		//getIncomingActions(defs);
+		getActionNodesConnectedByIncomingDataEdge(defs);
 		getDefinitions(defs);
-		//getIncomingActions(preDefs);
+		getActionNodesConnectedByIncomingDataEdge(preDefs);
 		preNode.getDefinitions(preDefs);
 		return overlap(defs, preDefs);
 	}
 
-	private void getIncomingActions(HashSet<EGroumNode> defs) {
+	private void getActionNodesConnectedByIncomingDataEdge(HashSet<EGroumNode> defs) {
 		for (EGroumEdge e : inEdges) {
 			if (e instanceof EGroumDataEdge && e.source instanceof EGroumActionNode)
 				defs.add(e.source);

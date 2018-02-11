@@ -2161,53 +2161,94 @@ public class EGroumGraph implements Serializable {
 	}
 
 	private void buildSequentialClosure() {
-		HashMap<EGroumNode, HashSet<EGroumNode>> preNodesOfNode = new HashMap<>();
-		preNodesOfNode.put(entryNode, new HashSet<>());
-		HashSet<EGroumNode> visitedNodes = new HashSet<>();
-		visitedNodes.add(entryNode);
-		for (EGroumNode node : nodes) {
-			if (!visitedNodes.contains(node))
-				node.buildPreSequentialNodes(visitedNodes, preNodesOfNode);
-		}
-		visitedNodes.clear();
-		for (EGroumNode node : preNodesOfNode.keySet()) {
+        Map<EGroumNode, HashSet<EGroumNode>> predRelation = buildPredecessorRelation();
+        PredecessorRelationTraversal traversal = new PredecessorRelationTraversal(predRelation);
+
+        List<EGroumNode> traversedNodes = new ArrayList<>();
+        while (traversal.hasNext()) {
+			EGroumNode node = traversal.next();
 			if (node.getAstNodeType() == ASTNode.METHOD_INVOCATION || node.isCoreAction()) {
-				for (EGroumNode preNode : preNodesOfNode.get(node)) {
-					if ((preNode.getAstNodeType() == ASTNode.METHOD_INVOCATION || preNode.isCoreAction()) && !node.hasInNode(preNode) && ((EGroumActionNode) node).hasBackwardDataDependence((EGroumActionNode) preNode)) {
-						HashSet<EGroumNode> preNodes = new HashSet<>(preNodesOfNode.get(preNode));
-						boolean inDifferentCatches = false;
-						HashSet<EGroumNode> cns = node.getCatchClauses();
-						for (EGroumNode cn : cns) {
-							for (EGroumEdge e : cn.inEdges) {
-								if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == CONDITION) {
-									EGroumNode en = e.source.getDefinition();
-									if (en == null) continue;
-									for (EGroumEdge e1 : en.inEdges) {
-										if (e1 instanceof EGroumDataEdge && ((EGroumDataEdge) e1).type == EGroumDataEdge.Type.THROW) {
-											if (!preNodes.contains(en) && preNodes.contains(e1.source)) {
-												inDifferentCatches = true;
-												break;
-											}
-										}
-										if (inDifferentCatches)
-											break;
-									}
-								}
-								if (inDifferentCatches)
-									break;
-							}
-							if (inDifferentCatches)
-								break;
-						}
-						if (!inDifferentCatches)
+			    traversedNodes.add(node);
+				HashSet<EGroumNode> preNodes = predRelation.get(node);
+                for (int i = traversedNodes.size() - 1; i >= 0; i--) {
+					EGroumNode preNode = traversedNodes.get(i);
+					if (preNodes.contains(preNode)) {
+					if (!node.hasInNode(preNode) && ((EGroumActionNode) node).hasBackwardDataDependence((EGroumActionNode) preNode)) {
+                        if (!areInDifferentCatches(node, preNodes))
 							new EGroumDataEdge(preNode, node, ORDER);
-					}
+					}}
 				}
 			}
 		}
 	}
 
-	private void pruneTemporaryDataDependence() {
+    private Map<EGroumNode, HashSet<EGroumNode>> buildPredecessorRelation() {
+        HashMap<EGroumNode, HashSet<EGroumNode>> preNodesOfNode = new HashMap<>();
+        preNodesOfNode.put(entryNode, new HashSet<>());
+        HashSet<EGroumNode> visitedNodes = new HashSet<>();
+        entryNode.buildPreSequentialNodes(visitedNodes, preNodesOfNode);
+        for (EGroumNode node : nodes) {
+            if (!visitedNodes.contains(node))
+                node.buildPreSequentialNodes(visitedNodes, preNodesOfNode);
+        }
+        return preNodesOfNode;
+    }
+
+    private static class PredecessorRelationTraversal implements Iterator<EGroumNode> {
+        private Map<EGroumNode, HashSet<EGroumNode>> relation;
+        private Set<EGroumNode> queuedNodes = new HashSet<>();
+        private Set<EGroumNode> traversedNodes = new HashSet<>();
+
+        PredecessorRelationTraversal(Map<EGroumNode, HashSet<EGroumNode>> predecessorRelation) {
+            this.relation = predecessorRelation;
+            this.queuedNodes.addAll(relation.keySet());
+        }
+
+        @Override
+        public boolean hasNext() {
+            return traversedNodes.size() < relation.size();
+        }
+
+        @Override
+        public EGroumNode next() {
+            for (EGroumNode node : queuedNodes) {
+                if (traversedNodes.containsAll(relation.get(node))) {
+                    queuedNodes.remove(node);
+                    traversedNodes.add(node);
+                    return node;
+                }
+            }
+            throw new IllegalStateException("there should always be a node without untraversed predecessors");
+        }
+    }
+
+    private boolean areInDifferentCatches(EGroumNode node, HashSet<EGroumNode> preNodes) {
+        boolean inDifferentCatches = false;
+        HashSet<EGroumNode> cns = node.getCatchClauses();
+        for (EGroumNode cn : cns) {
+            for (EGroumEdge e : cn.inEdges) {
+                if (e instanceof EGroumDataEdge && ((EGroumDataEdge) e).type == CONDITION) {
+                    EGroumNode en = e.source.getDefinition();
+                    if (en == null) continue;
+                    for (EGroumEdge e1 : en.inEdges) {
+                        if (e1 instanceof EGroumDataEdge && ((EGroumDataEdge) e1).type == EGroumDataEdge.Type.THROW) {
+                            if (!preNodes.contains(en) && preNodes.contains(e1.source)) {
+                                inDifferentCatches = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (inDifferentCatches)
+                    break;
+            }
+            if (inDifferentCatches)
+                break;
+        }
+        return inDifferentCatches;
+    }
+
+    private void pruneTemporaryDataDependence() {
 		for (EGroumNode node : nodes) {
 			if (node == entryNode || node == endNode)
 				continue;
