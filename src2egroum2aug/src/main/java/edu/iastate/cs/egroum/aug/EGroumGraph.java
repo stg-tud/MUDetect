@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static edu.iastate.cs.egroum.aug.EGroumDataEdge.Type.*;
+import static java.util.stream.Collectors.toList;
 
 public class EGroumGraph implements Serializable {
 	private static final long serialVersionUID = -5128703931982211886L;
@@ -2162,24 +2163,30 @@ public class EGroumGraph implements Serializable {
 
 	private void buildSequentialClosure() {
         Map<EGroumNode, HashSet<EGroumNode>> predRelation = buildPredecessorRelation();
-        PredecessorRelationTraversal traversal = new PredecessorRelationTraversal(predRelation);
+
+        // Since the predecessor relation is transitive, we have that for every two nodes n1 and n2, if n1 is a
+        // predecessor of n2 than relation.get(n1).size() < relation.get(n2).size(), because relation.get(n2)
+        // contains at least all elements of relation.get(n1) plus n1 itself. Thus, if we order the nodes by the
+        // number of their predecessors, all predecessors are sorted before their successors.
+        List<EGroumNode> nodesInPredOrder = predRelation.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(this::compareBySize))
+                .map(Map.Entry::getKey).collect(toList());
 
         List<EGroumNode> traversedNodes = new ArrayList<>();
-        while (traversal.hasNext()) {
-			EGroumNode node = traversal.next();
-			if (node.getAstNodeType() == ASTNode.METHOD_INVOCATION || node.isCoreAction()) {
-			    traversedNodes.add(node);
-				HashSet<EGroumNode> preNodes = predRelation.get(node);
-                for (int i = traversedNodes.size() - 1; i >= 0; i--) {
-					EGroumNode preNode = traversedNodes.get(i);
-					if (preNodes.contains(preNode)) {
-					if (!node.hasInNode(preNode) && ((EGroumActionNode) node).hasBackwardDataDependence((EGroumActionNode) preNode)) {
-                        if (!areInDifferentCatches(node, preNodes))
-							new EGroumDataEdge(preNode, node, ORDER);
-					}}
-				}
-			}
-		}
+        for (EGroumNode node : nodesInPredOrder) {
+            if (node.getAstNodeType() == ASTNode.METHOD_INVOCATION || node.isCoreAction()) {
+                HashSet<EGroumNode> preNodes = predRelation.get(node);
+                for (int j = traversedNodes.size() - 1; j >= 0; j--) {
+                    EGroumNode preNode = traversedNodes.get(j);
+                    if (preNodes.contains(preNode) && !node.hasInNode(preNode)
+                            && ((EGroumActionNode) node).hasBackwardDataDependence((EGroumActionNode) preNode)
+                            && !areInDifferentCatches(node, preNodes)) {
+                        new EGroumDataEdge(preNode, node, ORDER);
+                    }
+                }
+                traversedNodes.add(node);
+            }
+        }
 	}
 
     private Map<EGroumNode, HashSet<EGroumNode>> buildPredecessorRelation() {
@@ -2194,32 +2201,8 @@ public class EGroumGraph implements Serializable {
         return preNodesOfNode;
     }
 
-    private static class PredecessorRelationTraversal implements Iterator<EGroumNode> {
-        private Map<EGroumNode, HashSet<EGroumNode>> relation;
-        private Set<EGroumNode> queuedNodes = new HashSet<>();
-        private Set<EGroumNode> traversedNodes = new HashSet<>();
-
-        PredecessorRelationTraversal(Map<EGroumNode, HashSet<EGroumNode>> predecessorRelation) {
-            this.relation = predecessorRelation;
-            this.queuedNodes.addAll(relation.keySet());
-        }
-
-        @Override
-        public boolean hasNext() {
-            return traversedNodes.size() < relation.size();
-        }
-
-        @Override
-        public EGroumNode next() {
-            for (EGroumNode node : queuedNodes) {
-                if (traversedNodes.containsAll(relation.get(node))) {
-                    queuedNodes.remove(node);
-                    traversedNodes.add(node);
-                    return node;
-                }
-            }
-            throw new IllegalStateException("there should always be a node without untraversed predecessors");
-        }
+    private int compareBySize(HashSet<EGroumNode> preds1, HashSet<EGroumNode> preds2) {
+        return Integer.compareUnsigned(preds1.size(), preds2.size());
     }
 
     private boolean areInDifferentCatches(EGroumNode node, HashSet<EGroumNode> preNodes) {
