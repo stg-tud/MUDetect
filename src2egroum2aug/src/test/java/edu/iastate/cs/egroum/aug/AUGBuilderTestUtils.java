@@ -48,9 +48,13 @@ public class AUGBuilderTestUtils {
     }
 
     public static Collection<APIUsageExample> buildAUGsFromFile(String path) {
-        return new AUGBuilder(new AUGConfiguration() {{
+        return buildAUGsFromFile(path, new AUGConfiguration() {{
             removeImplementationCode = 2;
-        }}).build(getTestFilePath(path), null);
+        }});
+    }
+
+    static Collection<APIUsageExample> buildAUGsFromFile(String path, AUGConfiguration configuration) {
+        return new AUGBuilder(configuration).build(getTestFilePath(path), null);
     }
 
     public static ArrayList<APIUsageExample> buildAUGsForClasses(String[] sourceCodes) {
@@ -67,29 +71,6 @@ public class AUGBuilderTestUtils {
             groums.add(buildAUGForMethod(sourceCode));
         }
         return groums;
-    }
-
-    static void buildAndPrintAUGsForFile(String inputPath, String[] classpaths, String outputPath) {
-        buildAndPrintAUGsForFile(inputPath, classpaths, outputPath, new AUGConfiguration() {{
-            removeImplementationCode = 2;
-        }});
-    }
-
-    static ArrayList<EGroumGraph> buildAndPrintAUGsForFile(String inputPath, String[] classpaths, String outputPath, AUGConfiguration config) {
-        String srcFileName = getTestFilePath(inputPath);
-        EGroumBuilder gb = new EGroumBuilder(config);
-        ArrayList<EGroumGraph> gs = gb.buildBatch(srcFileName, classpaths);
-        for (EGroumGraph g : gs) {
-            String s = g.getName();
-            s = s.replace("\n", "\\l");
-            s = s.replace("\t", "    ");
-            s = s.replace("\"", "\\\"");
-            s += "\\l";
-            s = "0 [label=\"" + s + "\"" + " shape=box style=dotted]";
-//			System.out.println(s);
-            g.toGraphics(s, outputPath);
-        }
-        return gs;
     }
 
     private static String getTestFilePath(String relativePath) {

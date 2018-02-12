@@ -12,9 +12,15 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static org.hamcrest.Matchers.instanceOf;
+
 public class NodePropertyMatchers {
     public static Matcher<Node> label(String label) {
         return propertyEquals(Node::getLabel, "label", label);
+    }
+
+    public static Matcher<Node> type(Class<? extends Node> nodeType) {
+        return instanceOf(nodeType);
     }
 
     public static Matcher<DataNode> name(String dataName) {
