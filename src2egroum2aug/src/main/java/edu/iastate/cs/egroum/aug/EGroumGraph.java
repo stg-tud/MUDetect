@@ -2142,9 +2142,11 @@ public class EGroumGraph implements Serializable {
 		for (EGroumNode node : nodes)
 			if (!doneNodes.contains(node))
 				node.buildDataClosure(doneNodes);
+
 		for (EGroumNode node : nodes)
 			if (node instanceof EGroumControlNode && node.astNodeType != ASTNode.CATCH_CLAUSE && node.astNodeType != ASTNode.SYNCHRONIZED_STATEMENT)
 				((EGroumControlNode) node).buildConditionClosure();
+
 		if (!configuration.buildTransitiveDataEdges) {
 			for (EGroumNode node : nodes) {
 				for (EGroumEdge e : new HashSet<>(node.inEdges))
@@ -2152,10 +2154,11 @@ public class EGroumGraph implements Serializable {
 						e.delete();
 			}
 		}
+
 		buildSequentialClosure();
-		doneNodes.clear();
 		pruneTemporaryDataDependence();
-		doneNodes = new HashSet<EGroumNode>();
+
+		doneNodes = new HashSet<>();
 		for (EGroumNode node : nodes)
 			if (!doneNodes.contains(node))
 				node.buildControlClosure(doneNodes);
