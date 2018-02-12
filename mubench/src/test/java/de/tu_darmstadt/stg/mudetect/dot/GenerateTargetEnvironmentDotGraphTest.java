@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mudetect.dot;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
+import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
@@ -14,6 +15,7 @@ import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.ORDER;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.extend;
+import static de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge.ConditionType.SELECTION;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.*;
 import static de.tu_darmstadt.stg.mudetect.model.TestViolationBuilder.someViolation;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -56,13 +58,13 @@ public class GenerateTargetEnvironmentDotGraphTest {
     @Test
     public void graysOutTargetOnlyElements() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A");
-        TestAUGBuilder target = extend(pattern).withActionNode("B").withEdge("A", ORDER, "B");
+        TestAUGBuilder target = extend(pattern).withActionNode("B").withCondEdge("A", SELECTION, "B");
         TestOverlapBuilder instance = buildOverlap(target, pattern).withNode("A", "A");
 
         String dotGraph = toDotGraph(someViolation(instance));
 
         assertDotGraphContains(dotGraph, " [ label=\"B\" shape=\"box\" color=\"gray\" fontcolor=\"gray\" ];");
-        assertDotGraphContains(dotGraph, " [ label=\"order\" style=\"bold\" color=\"gray\" fontcolor=\"gray\" ];");
+        assertDotGraphContains(dotGraph, " [ label=\"sel\" style=\"bold\" color=\"gray\" fontcolor=\"gray\" ];");
     }
 
     @Test
@@ -81,14 +83,26 @@ public class GenerateTargetEnvironmentDotGraphTest {
     public void includesEdgesBetweenTargetOnlyNodes() {
         TestAUGBuilder pattern = buildAUG().withActionNode("A");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B", "C")
-                .withEdge("A", ORDER, "B")
-                .withEdge("A", ORDER, "C")
+                .withCondEdge("A", SELECTION, "B")
+                .withCondEdge("A", SELECTION, "C")
                 .withEdge("B", PARAMETER, "C");
         TestOverlapBuilder instance = buildOverlap(target, pattern).withNode("A");
 
         String dotGraph = toDotGraph(someViolation(instance));
 
         assertDotGraphContains(dotGraph, "[ label=\"para\" style=\"solid\" color=\"gray\" fontcolor=\"gray\" ];");
+    }
+
+    @Test
+    public void excludesOrderOnlyConnections() {
+        TestAUGBuilder pattern = buildAUG().withActionNode("A");
+        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B");
+        TestOverlapBuilder instance = buildOverlap(target, pattern).withNode("A");
+
+        String dotGraph = toDotGraph(someViolation(instance));
+
+        assertThat(dotGraph, not(containsString("label=\"order\"")));
+        assertThat(dotGraph, not(containsString("label=\"B\"")));
     }
 
     /**

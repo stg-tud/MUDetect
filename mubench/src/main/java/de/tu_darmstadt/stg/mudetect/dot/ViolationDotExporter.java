@@ -3,6 +3,7 @@ package de.tu_darmstadt.stg.mudetect.dot;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.OrderEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGNodeLabelProvider;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
@@ -59,8 +60,11 @@ public class ViolationDotExporter {
         for (Node mappedTargetNode : overlap.getMappedTargetNodes()) {
             envAUG.addVertex(mappedTargetNode);
             for (Edge edge : target.edgesOf(mappedTargetNode)) {
-                envAUG.addVertex(target.getEdgeSource(edge));
-                envAUG.addVertex(target.getEdgeTarget(edge));
+                // exclude nodes that are only connected via order edges
+                if (!(edge instanceof OrderEdge)) {
+                    envAUG.addVertex(target.getEdgeSource(edge));
+                    envAUG.addVertex(target.getEdgeTarget(edge));
+                }
             }
         }
         Set<Node> envNodes = envAUG.vertexSet();
