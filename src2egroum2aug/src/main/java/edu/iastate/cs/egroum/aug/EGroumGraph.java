@@ -2143,6 +2143,7 @@ public class EGroumGraph implements Serializable {
 			if (!doneNodes.contains(node))
 				node.buildDataClosure(doneNodes);
 
+		// SMELL doesn't the condition closure need to be built predecessors-first as well? All the other closures do.
 		for (EGroumNode node : nodes)
 			if (node instanceof EGroumControlNode && node.astNodeType != ASTNode.CATCH_CLAUSE && node.astNodeType != ASTNode.SYNCHRONIZED_STATEMENT)
 				((EGroumControlNode) node).buildConditionClosure();
