@@ -1,6 +1,7 @@
 package edu.iastate.cs.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.OrderEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.VariableNode;
 import edu.iastate.cs.egroum.dot.DotGraph;
 
@@ -402,18 +403,23 @@ public class Fragment {
 		HashSet<Node> ens = new HashSet<>(), exclusions = new HashSet<>();
 		for (Node node : nodes) {
 			APIUsageGraph graph = node.getGraph();
-			for (Node n : graph.incomingNodesOf(node)) {
-				if (n.isCoreAction() && n.getLabel().equals(node.getLabel()))
-					exclusions.add(n);
-				else if (!nodes.contains(n))
-					ens.add(n);
+			for (Edge e : graph.incomingEdgesOf(node)) {
+                Node n = e.getSource();
+                boolean extendAlongEdge = config.extendAlongOrderEdges || !(e instanceof OrderEdge);
+                if (n.isCoreAction() && n.getLabel().equals(node.getLabel()))
+                    exclusions.add(n);
+                else if (!nodes.contains(n) && extendAlongEdge)
+                    ens.add(n);
 			}
-			for (Node n : graph.outgoingNodesOf(node)) {
-				if (n.isCoreAction() && n.getLabel().equals(node.getLabel()))
-					exclusions.add(n);
-				else if(!nodes.contains(n))
-					ens.add(n);
-			}
+
+            for (Edge e : graph.outgoingEdgesOf(node)) {
+                Node n = e.getTarget();
+                boolean extendAlongEdge = config.extendAlongOrderEdges || !(e instanceof OrderEdge);
+                if (n.isCoreAction() && n.getLabel().equals(node.getLabel()))
+                    exclusions.add(n);
+                else if (!nodes.contains(n) && extendAlongEdge)
+                    ens.add(n);
+            }
 		}
 		if (config.disallowRepeatedCalls)
 			ens.removeAll(exclusions);

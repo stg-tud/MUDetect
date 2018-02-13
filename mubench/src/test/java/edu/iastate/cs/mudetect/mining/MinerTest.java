@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import static de.tu_darmstadt.stg.mudetect.aug.AUGTestUtils.exportAUGsAsPNG;
 import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGMatchers.hasOrderEdge;
 import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.actionNodeWith;
 import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodePropertyMatchers.label;
@@ -20,8 +21,6 @@ import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClasses;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsFromFile;
 import static edu.iastate.cs.mudetect.mining.MinerTestUtils.*;
-import static edu.iastate.cs.mudetect.mining.MinerTestUtils.mineWithMinSupport;
-import static edu.iastate.cs.mudetect.mining.MinerTestUtils.mineWithMinSupport2;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasSize;
@@ -133,7 +132,8 @@ public class MinerTest {
 		
 		print(patterns);
 	}
-	
+
+	@Ignore("there's a hdl edge missing in the graphs, which leads to an order-only connection that the mining cuts off")
 	@Test
 	public void decryptPattern() {
 		Collection<APIUsageExample> groums = buildAUGsFromFile("input/Test_alibaba2_new.java");
@@ -151,11 +151,13 @@ public class MinerTest {
 	public void decrypt() {
 		Collection<APIUsageExample> groums = buildAUGsFromFile("input/Test_alibaba2_old.java");
 		groums.addAll(buildAUGsFromFile("input/Test_alibaba2_old.java"));
-		
+
+		exportAUGsAsPNG(groums, "./output", "decrypt-input");
 		List<APIUsagePattern> patterns = mineWithMinSupport2(groums);
 		print(patterns);
-		
-		assertThat(patterns.size(), is(1));
+
+		assertThat(patterns.size(), is(2));
+		exportAUGsAsPNG(patterns, "./output", "decrypt-pattern");
 		
 		boolean contains = false;
 		for (APIUsagePattern p : patterns) {
@@ -233,9 +235,11 @@ public class MinerTest {
 			"    return v1D;\n" + 
 			"  }\n" + 
 			"}";
-		List<APIUsagePattern> patterns = mineMethods(new Configuration() {{minPatternSupport = 2; abstractConditionEdges = true;}},targetSource, patternSource);
+
+		List<APIUsagePattern> patterns = mineMethods(new Configuration() {{
+			minPatternSupport = 2; abstractConditionEdges = true; extendAlongOrderEdges = true;
+		}}, targetSource, patternSource);
 		
-//		assertThat(patterns, hasSize(2));
 		print(patterns);
 		assertThat(patterns, hasSize(2));
 	}
@@ -268,6 +272,18 @@ public class MinerTest {
 		long numberOfAppendCalls = patternNodes.stream().filter(node -> node.getLabel().equals("AbstractStringBuilder.append()")).count();
 		assertThat(numberOfAppendCalls, is(1L));
 	}
+
+	@Test
+	public void doesNotExtendAlongOrderEdge() {
+		APIUsageExample aug1 = buildAUG().withActionNodes("A.m()", "Z.f()").withEdge("A.m()", Edge.Type.ORDER, "Z.f()").build();
+		APIUsageExample aug2 = buildAUG().withActionNodes("A.m()", "Z.f()").withEdge("A.m()", Edge.Type.ORDER, "Z.f()").build();
+
+        List<APIUsagePattern> patterns = mineWithMinSupport2(Arrays.asList(aug1, aug2));
+
+        assertThat(patterns, hasSize(2));
+        assertThat(patterns.get(0), not(hasOrderEdge(actionNodeWith(label("A.m()")), actionNodeWith(label("Z.f()")))));
+        assertThat(patterns.get(1), not(hasOrderEdge(actionNodeWith(label("A.m()")), actionNodeWith(label("Z.f()")))));
+    }
 
 	private void print(APIUsageGraph graph) {
 		System.out.println(new DisplayAUGDotExporter().toDotGraph(graph));
