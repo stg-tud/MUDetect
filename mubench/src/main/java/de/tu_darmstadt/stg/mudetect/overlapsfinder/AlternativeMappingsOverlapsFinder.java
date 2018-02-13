@@ -4,6 +4,7 @@ import de.tu_darmstadt.stg.mubench.NoEdgeOrder;
 import de.tu_darmstadt.stg.mudetect.OverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.aug.model.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.OrderEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGEdgeAttributeProvider;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGNodeAttributeProvider;
@@ -199,9 +200,19 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
                 int targetEdgeTargetIndex = getTargetNodeIndex(target.getEdgeTarget(targetExtensionEdge));
                 int numberOfAlternatives = 0;
                 for (Alternative alternative : alternatives) {
-                    Set<Edge> mappingAlternatives = getCandidatePatternEdges(targetEdgeTargetIndex, targetExtensionEdge, targetEdgeSourceIndex, this.pattern, alternative, this::match);
-                    if (config.matchEntireConditions) {
-                        mappingAlternatives = filterToMatchEntireConditions(target, targetExtensionEdge, pattern, mappingAlternatives, this::match);
+                    Set<Edge> mappingAlternatives = null;
+                    if (targetExtensionEdge instanceof OrderEdge) {
+                        Node patternSourceNode = alternative.getMappedPatternNode(targetEdgeSourceIndex);
+                        Node patternTargetNode = alternative.getMappedPatternNode(targetEdgeTargetIndex);
+                        if (patternSourceNode == null || patternTargetNode == null) {
+                            mappingAlternatives = new HashSet<>();
+                        }
+                    }
+                    if (mappingAlternatives == null) {
+                        mappingAlternatives = getCandidatePatternEdges(targetEdgeTargetIndex, targetExtensionEdge, targetEdgeSourceIndex, this.pattern, alternative, this::match);
+                        if (config.matchEntireConditions) {
+                            mappingAlternatives = filterToMatchEntireConditions(target, targetExtensionEdge, pattern, mappingAlternatives, this::match);
+                        }
                     }
                     patternExtensionCandidates.put(alternative, mappingAlternatives);
                     numberOfAlternatives += mappingAlternatives.size();
@@ -212,7 +223,9 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
                     numberOfAlternatives *= getEquivalentTargetEdgeCount(this.target, targetExtensionEdge, targetEdgeSourceIndex, targetEdgeTargetIndex, this::match);
                 }
                 if (numberOfAlternatives == 0) {
-                    edgeIt.remove();
+                    // TODO we currently cannot prune here, as long as we exclude OrderEdges from extension if at least
+                    // one of their endpoints is not mapped. This means an edge could become mappable later.
+                    //edgeIt.remove();
                 } else if (numberOfAlternatives < minNumberOfAlternatives
                         || (numberOfAlternatives == minNumberOfAlternatives
                         && config.edgeOrder.test(targetExtensionEdge, nextExtensionEdge))) {

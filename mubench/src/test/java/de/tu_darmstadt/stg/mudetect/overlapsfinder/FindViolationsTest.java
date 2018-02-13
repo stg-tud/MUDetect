@@ -62,8 +62,8 @@ public class FindViolationsTest {
     @Test
     public void mapsTargetEdgeOnlyOnce() {
         TestAUGBuilder pattern = buildAUG().withActionNode("A").withActionNode("B1", "B").withActionNode("B2", "B")
-                .withEdge("A", ORDER, "B1").withEdge("A", ORDER, "B2");
-        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B");
+                .withEdge("A", CONDITION, "B1").withEdge("A", CONDITION, "B2");
+        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withEdge("A", CONDITION, "B");
 
         List<Overlap> overlaps = findOverlaps(pattern, target);
 
@@ -106,14 +106,14 @@ public class FindViolationsTest {
     @Test
     public void findsInstanceAndPartialInstance() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B", "C")
-                .withEdge("A", ORDER, "B").withEdge("B", ORDER, "C");
+                .withEdge("A", CONDITION, "B").withEdge("B", CONDITION, "C");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "C").withActionNode("B1", "B").withActionNode("B2", "B")
-                .withEdge("A", ORDER, "B1").withEdge("A", ORDER, "B2").withEdge("B1", ORDER, "C");
+                .withEdge("A", CONDITION, "B1").withEdge("A", CONDITION, "B2").withEdge("B1", CONDITION, "C");
 
         TestOverlapBuilder instance = buildOverlap(target, pattern).withNodes("A", "C").withNode("B1", "B")
-                .withEdge("A", "A", ORDER, "B1", "B").withEdge("B1", "B", ORDER, "C", "C");
+                .withEdge("A", "A", CONDITION, "B1", "B").withEdge("B1", "B", CONDITION, "C", "C");
         TestOverlapBuilder violation = buildOverlap(target, pattern).withNode("A").withNode("B2", "B")
-                .withEdge("A", "A", ORDER, "B2", "B");
+                .withEdge("A", "A", CONDITION, "B2", "B");
 
         assertFindsOverlaps(pattern, target, instance, violation);
     }
@@ -128,12 +128,12 @@ public class FindViolationsTest {
     @Test
     public void findsBothPartialOverlaps() {
         TestAUGBuilder pattern = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
-                .withEdge("a1", ORDER, "a2").withEdge("a1", ORDER, "b").withEdge("b", ORDER, "a2");
+                .withEdge("a1", CONDITION, "a2").withEdge("a1", CONDITION, "b").withEdge("b", CONDITION, "a2");
         TestAUGBuilder target = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
-                .withEdge("a1", ORDER, "a2").withEdge("a1", ORDER, "b").withEdge("a2", ORDER, "b");
+                .withEdge("a1", CONDITION, "a2").withEdge("a1", CONDITION, "b").withEdge("a2", CONDITION, "b");
 
         TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("a1", "a2", "b")
-                .withEdge("a1", ORDER, "a2").withEdge("a1", ORDER, "b");
+                .withEdge("a1", CONDITION, "a2").withEdge("a1", CONDITION, "b");
 
         assertFindsOverlaps(pattern, target, overlap);
     }
@@ -147,13 +147,13 @@ public class FindViolationsTest {
     @Test
     public void filtersAdditionalOrderEdgeBetweenNodesFromAnInstance() {
         TestAUGBuilder pattern = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
-                .withEdge("a1", ORDER, "a2").withEdge("a1", ORDER, "b");
+                .withEdge("a1", CONDITION, "a2").withEdge("a1", CONDITION, "b");
         TestAUGBuilder target = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
-                .withEdge("a1", ORDER, "a2").withEdge("a1", ORDER, "b").withEdge("a2", ORDER, "b");
+                .withEdge("a1", CONDITION, "a2").withEdge("a1", CONDITION, "b").withEdge("a2", CONDITION, "b");
 
         TestOverlapBuilder instance = buildOverlap(target, pattern)
-                .withNodes("a1", "a2").withEdge("a1", ORDER, "a2")
-                .withNode("b").withEdge("a1", ORDER, "b");
+                .withNodes("a1", "a2").withEdge("a1", CONDITION, "a2")
+                .withNode("b").withEdge("a1", CONDITION, "b");
 
         assertFindsOverlaps(pattern, target, instance);
     }
@@ -172,26 +172,26 @@ public class FindViolationsTest {
                 .withCondEdge("C", SELECTION, "A")
                 .withCondEdge("D", SELECTION, "A")
                 .withCondEdge("E", SELECTION, "A")
-                .withEdge("F", ORDER, "A") // this is the edge that makes the connection
-                .withEdge("F", ORDER, "B")
-                .withEdge("F", ORDER, "C")
-                .withEdge("F", ORDER, "D")
-                .withEdge("F", ORDER, "E");
+                .withEdge("F", CONDITION, "A") // this is the edge that makes the connection
+                .withEdge("F", CONDITION, "B")
+                .withEdge("F", CONDITION, "C")
+                .withEdge("F", CONDITION, "D")
+                .withEdge("F", CONDITION, "E");
 
         TestAUGBuilder target = buildAUG().withActionNodes("A") // the algorithm will start extending from this node
                 .withDataNodes("B", "C", "D", "E", "F")
-                .withEdge("F", ORDER, "A") // this is the edge that makes the connection
-                .withEdge("F", ORDER, "B")
-                .withEdge("F", ORDER, "C")
-                .withEdge("F", ORDER, "D")
-                .withEdge("F", ORDER, "E");
+                .withEdge("F", CONDITION, "A") // this is the edge that makes the connection
+                .withEdge("F", CONDITION, "B")
+                .withEdge("F", CONDITION, "C")
+                .withEdge("F", CONDITION, "D")
+                .withEdge("F", CONDITION, "E");
 
         TestOverlapBuilder violation = buildOverlap(target, pattern).withNodes("A", "B", "C", "D", "E", "F")
-                .withEdge("F", ORDER, "A")
-                .withEdge("F", ORDER, "B")
-                .withEdge("F", ORDER, "C")
-                .withEdge("F", ORDER, "D")
-                .withEdge("F", ORDER, "E");
+                .withEdge("F", CONDITION, "A")
+                .withEdge("F", CONDITION, "B")
+                .withEdge("F", CONDITION, "C")
+                .withEdge("F", CONDITION, "D")
+                .withEdge("F", CONDITION, "E");
 
         assertFindsOverlaps(pattern, target, violation);
     }

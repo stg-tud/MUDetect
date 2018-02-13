@@ -213,15 +213,24 @@ public class TestAUGBuilder {
         for (Edge edge : edges) {
             if (edge.getSource() == getNode(sourceNodeId) &&
                     edge.getTarget() == getNode(targetNodeId) &&
-                    hasType(edge, type)) {
+                    edge.getType() == type) {
                 return edge;
             }
         }
         throw new IllegalArgumentException("no such edge");
     }
 
-    private boolean hasType(Edge edge, Edge.Type type) {
-        return edge.getType() == type;
+    @Deprecated
+    public Edge getEdge(String sourceNodeId, ConditionEdge.ConditionType type, String targetNodeId) {
+        for (Edge edge : edges) {
+            if (edge instanceof ConditionEdge &&
+                    edge.getSource() == getNode(sourceNodeId) &&
+                    edge.getTarget() == getNode(targetNodeId) &&
+                    ((ConditionEdge) edge).getConditionType() == type) {
+                return edge;
+            }
+        }
+        throw new IllegalArgumentException("no such edge");
     }
 
     public APIUsageExample build() {

@@ -87,6 +87,6 @@ class OverlapsFinderTestUtils {
 
     static Matcher<Iterable<? extends Overlap>> contains(TestOverlapBuilder... expectedOverlapsBuilders) {
         Overlap[] expectedOverlaps = buildOverlaps(expectedOverlapsBuilders);
-        return Matchers.contains(expectedOverlaps);
+        return Matchers.containsInAnyOrder(expectedOverlaps);
     }
 }

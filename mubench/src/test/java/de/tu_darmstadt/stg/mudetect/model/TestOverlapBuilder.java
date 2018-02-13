@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mudetect.model;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.Location;
+import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 
 import java.util.HashMap;
@@ -134,11 +135,28 @@ public class TestOverlapBuilder {
         return this;
     }
 
+    public TestOverlapBuilder withEdge(String targetSourceNodeId, String patternSourceNodeId, ConditionEdge.ConditionType type, String targetTargetNodeId, String patternTargetNodeId) {
+        if (!maps(targetSourceNodeId, patternSourceNodeId)) {
+            throw new IllegalArgumentException("not mapped '" + targetSourceNodeId + "'<->'" + patternSourceNodeId + "'");
+        }
+        if (!maps(targetTargetNodeId, patternTargetNodeId)) {
+            throw new IllegalArgumentException("not mapped '" + targetTargetNodeId + "'<->'" + patternTargetNodeId + "'");
+        }
+        targetEdgeByPatternEdge.put(
+                patternAUGBuilder.getEdge(patternSourceNodeId, type, patternTargetNodeId),
+                targetAUGBuilder.getEdge(targetSourceNodeId, type, targetTargetNodeId));
+        return this;
+    }
+
     private boolean maps(String targetNodeId, String patternNodeId) {
         return targetNodeByPatternNode.get(patternAUGBuilder.getNode(patternNodeId)) == targetAUGBuilder.getNode(targetNodeId);
     }
 
     public TestOverlapBuilder withEdge(String targetAndPatternSourceNodeId, Edge.Type type, String targetAndPatternTargetNodeId) {
+        return withEdge(targetAndPatternSourceNodeId, targetAndPatternSourceNodeId, type, targetAndPatternTargetNodeId, targetAndPatternTargetNodeId);
+    }
+
+    public TestOverlapBuilder withEdge(String targetAndPatternSourceNodeId, ConditionEdge.ConditionType type, String targetAndPatternTargetNodeId) {
         return withEdge(targetAndPatternSourceNodeId, targetAndPatternSourceNodeId, type, targetAndPatternTargetNodeId, targetAndPatternTargetNodeId);
     }
 
