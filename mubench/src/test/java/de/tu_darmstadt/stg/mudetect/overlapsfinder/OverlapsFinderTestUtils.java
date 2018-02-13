@@ -20,6 +20,9 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 class OverlapsFinderTestUtils {
+    /**
+     * @deprecated use {@link #contains(TestOverlapBuilder...)} instead.
+     */
     @Deprecated
     static List<Overlap> findOverlaps(TestAUGBuilder patternBuilder, TestAUGBuilder targetBuilder) {
         APIUsageExample target = targetBuilder.build();
@@ -27,6 +30,9 @@ class OverlapsFinderTestUtils {
         return createDefaultFinder().findOverlaps(target, pattern);
     }
 
+    /**
+     * @deprecated use {@link #contains(TestOverlapBuilder...)} instead.
+     */
     @Deprecated
     static void assertFindsOverlaps(TestAUGBuilder patternBuilder,
                                     TestAUGBuilder targetBuilder,
@@ -34,6 +40,9 @@ class OverlapsFinderTestUtils {
         assertThat(createDefaultFinder(), findsOverlaps(targetBuilder, patternBuilder, expectedOverlaps));
     }
 
+    /**
+     * @deprecated use {@link #contains(TestOverlapBuilder...)} instead.
+     */
     @Deprecated
     static void assertFindsOverlaps(TestAUGBuilder patternBuilder,
                                     TestAUGBuilder targetBuilder,
@@ -80,6 +89,10 @@ class OverlapsFinderTestUtils {
         };
     }
 
+    /**
+     * @deprecated use {@link #contains(TestOverlapBuilder...)} instead.
+     */
+    @Deprecated
     static Matcher<OverlapsFinder> findsOverlaps(TestAUGBuilder targetBuilder, TestAUGBuilder patternBuilder, TestOverlapBuilder... expectedOverlapsBuilders) {
         Overlap[] expectedOverlaps = buildOverlaps(expectedOverlapsBuilders);
         return findsOverlaps(targetBuilder, patternBuilder, expectedOverlaps);
