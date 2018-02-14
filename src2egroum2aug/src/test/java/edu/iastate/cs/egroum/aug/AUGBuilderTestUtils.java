@@ -65,7 +65,7 @@ public class AUGBuilderTestUtils {
         return groums;
     }
 
-    public static ArrayList<APIUsageExample> buildAUGsForMethods(String[] sourceCodes) {
+    public static ArrayList<APIUsageExample> buildAUGsForMethods(String... sourceCodes) {
         ArrayList<APIUsageExample> groums = new ArrayList<>();
         for (String sourceCode : sourceCodes) {
             groums.add(buildAUGForMethod(sourceCode));

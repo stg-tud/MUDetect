@@ -1,6 +1,7 @@
 package edu.iastate.cs.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.OrderEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.VariableNode;
 import edu.iastate.cs.egroum.dot.DotGraph;
@@ -405,7 +406,7 @@ public class Fragment {
 			APIUsageGraph graph = node.getGraph();
 			for (Edge e : graph.incomingEdgesOf(node)) {
                 Node n = e.getSource();
-                boolean extendAlongEdge = config.extendAlongOrderEdges || !(e instanceof OrderEdge);
+                boolean extendAlongEdge = isExtendAlongEdge(e);
                 if (n.isCoreAction() && n.getLabel().equals(node.getLabel()))
                     exclusions.add(n);
                 else if (!nodes.contains(n) && extendAlongEdge)
@@ -414,7 +415,7 @@ public class Fragment {
 
             for (Edge e : graph.outgoingEdgesOf(node)) {
                 Node n = e.getTarget();
-                boolean extendAlongEdge = config.extendAlongOrderEdges || !(e instanceof OrderEdge);
+                boolean extendAlongEdge = isExtendAlongEdge(e);
                 if (n.isCoreAction() && n.getLabel().equals(node.getLabel()))
                     exclusions.add(n);
                 else if (!nodes.contains(n) && extendAlongEdge)
@@ -556,7 +557,15 @@ public class Fragment {
 		return lens;
 	}
 
-	private void add(Node node, HashMap<String, HashSet<ArrayList<Node>>> lens) {
+    private boolean isExtendAlongEdge(Edge e) {
+        if (e instanceof OrderEdge) {
+            return config.extendAlongOrderEdges;
+        } else {
+            return !(e instanceof ConditionEdge);
+        }
+    }
+
+    private void add(Node node, HashMap<String, HashSet<ArrayList<Node>>> lens) {
 		String label = config.nodeToLabel.apply(node);
 		HashSet<ArrayList<Node>> s = lens.computeIfAbsent(label, k -> new HashSet<>());
 		ArrayList<Node> l = new ArrayList<>();
