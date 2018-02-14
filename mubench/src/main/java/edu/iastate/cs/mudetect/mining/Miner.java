@@ -3,17 +3,15 @@
  */
 package edu.iastate.cs.mudetect.mining;
 
+import de.tu_darmstadt.stg.mudetect.aug.model.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.data.LiteralNode;
+import edu.iastate.cs.egroum.utils.FileIO;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-
-import de.tu_darmstadt.stg.mudetect.aug.model.*;
-import de.tu_darmstadt.stg.mudetect.aug.model.actions.ConstructorCallNode;
-import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
-import de.tu_darmstadt.stg.mudetect.aug.model.data.LiteralNode;
-import edu.iastate.cs.egroum.utils.FileIO;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.DEFINITION;
 
@@ -56,7 +54,7 @@ public class Miner {
 					nodes = new HashSet<>();
 				nodes.add(node);
 				nodesOfLabel.put(label, nodes);
-				if (shouldStartMiningFrom(node))
+				if (config.isStartNode.test(node))
 					coreLabels.add(label);
 			}
 		}
@@ -113,10 +111,6 @@ public class Miner {
 		report();
 
 		return getPatterns();
-	}
-
-	private boolean shouldStartMiningFrom(Node node) {
-		return node.isCoreAction() && node instanceof MethodCallNode && !(node instanceof ConstructorCallNode);
 	}
 
 	private void collapseLiterals(APIUsageExample aug) {

@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -394,6 +395,11 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
     @SuppressWarnings("WeakerAccess")
     public static class Config {
         /**
+         * Predicate that decides whether matching is started from a given node.
+         */
+        public Predicate<Node> isStartNode = node -> node instanceof MethodCallNode;
+
+        /**
          * Predicate stating whether a target node (first argument) is matched by a pattern node (second argument). The
          * predicate may be asymmetric.
          */
@@ -460,9 +466,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
     }
 
     private Set<Node> getStartNodes(APIUsageExample target) {
-        return target.vertexSet().stream()
-                .filter(node -> node instanceof MethodCallNode)
-                .collect(Collectors.toSet());
+        return target.vertexSet().stream().filter(config.isStartNode).collect(Collectors.toSet());
     }
 
     private void removeSubgraphs(List<Overlap> overlaps) {

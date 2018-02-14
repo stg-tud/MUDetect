@@ -1,12 +1,20 @@
 package edu.iastate.cs.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.actions.ConstructorCallNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class Configuration {
     public int minPatternSize = 1, maxPatternSize = Integer.MAX_VALUE;
     public int minPatternSupport = 10, maxPatternSupport = 1000;
+
+    /**
+     * Predicate that decides whether mining is started from a give node.
+     */
+    public Predicate<Node> isStartNode = node -> node.isCoreAction() && node instanceof MethodCallNode && !(node instanceof ConstructorCallNode);
 
     /**
      * Whether or not the miner should extend a pattern with an incoming data node, if that data node is not defined by
