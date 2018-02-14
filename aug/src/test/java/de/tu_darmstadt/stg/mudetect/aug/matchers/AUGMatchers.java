@@ -84,6 +84,11 @@ public class AUGMatchers {
         return hasEdge(ContainsEdge.class, sourceMatcher, targetMatcher);
     }
 
+    public static Matcher<? super APIUsageGraph> hasEdge(Matcher<? super Node> sourceMatcher,
+                                                         Matcher<? super Node> targetMatcher) {
+        return hasEdge(Edge.class, sourceMatcher, targetMatcher);
+    }
+
     private static Matcher<? super APIUsageGraph> hasEdge(Class<? extends Edge> edgeType,
                                                           Matcher<? super Node> sourceMatcher,
                                                           Matcher<? super Node> targetMatcher) {

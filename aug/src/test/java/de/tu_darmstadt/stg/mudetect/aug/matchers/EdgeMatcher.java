@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mudetect.aug.matchers;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
 import de.tu_darmstadt.stg.utils.StringUtils;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -25,7 +26,7 @@ class EdgeMatcher extends BaseMatcher<Edge> {
         if (item instanceof Edge) {
             Edge edge = (Edge) item;
             return sourceMatcher.matches(edge.getSource())
-                    && edge.getClass() == edgeType
+                    && edgeType.isAssignableFrom(edge.getClass())
                     && targetMatcher.matches(edge.getTarget());
         }
         return false;
@@ -33,7 +34,12 @@ class EdgeMatcher extends BaseMatcher<Edge> {
 
     @Override
     public void describeTo(Description description) {
-        description.appendText("a ").appendValue(getEdgeTypeName()).appendText(" edge from ");
+        if (edgeType == Edge.class) {
+            description.appendText("an");
+        } else {
+            description.appendText("a ").appendValue(getEdgeTypeName());
+        }
+        description.appendText(" edge from ");
         description.appendDescriptionOf(sourceMatcher).appendText(" to ").appendDescriptionOf(targetMatcher);
     }
 
