@@ -5,8 +5,9 @@ import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 
-public class VeryPrevalentNodePredicate {
+public class VeryPrevalentNodePredicate implements Predicate<Node> {
     private static final Set<String> veryPrevalentTypes = new HashSet<>();
 
     static {
@@ -17,7 +18,8 @@ public class VeryPrevalentNodePredicate {
         veryPrevalentTypes.add("Exception");
     }
 
-    public static boolean isVeryPrevalent(Node node) {
+    @Override
+    public boolean test(Node node) {
         if (node instanceof MethodCallNode) {
             String declaringTypeName = ((MethodCallNode) node).getDeclaringTypeName();
             return veryPrevalentTypes.contains(declaringTypeName);
