@@ -26,6 +26,6 @@ public class CatchNode extends BaseNode implements ActionNode {
 
     @Override
     public boolean isCoreAction() {
-        return false;
+        return true;
     }
 }
