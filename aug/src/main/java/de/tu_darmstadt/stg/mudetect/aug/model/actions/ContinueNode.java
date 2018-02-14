@@ -17,6 +17,6 @@ public class ContinueNode extends BaseNode implements ActionNode {
 
     @Override
     public boolean isCoreAction() {
-        return true;
+        return false;
     }
 }

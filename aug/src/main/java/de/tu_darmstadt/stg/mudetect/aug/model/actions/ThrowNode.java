@@ -17,6 +17,6 @@ public class ThrowNode extends BaseNode implements ActionNode {
 
     @Override
     public boolean isCoreAction() {
-        return true;
+        return false;
     }
 }
