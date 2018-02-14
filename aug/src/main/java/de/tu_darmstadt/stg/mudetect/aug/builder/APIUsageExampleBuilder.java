@@ -92,6 +92,10 @@ public class APIUsageExampleBuilder {
         return withNode(nodeId, new ThrowNode(sourceLineNumber));
     }
 
+    public APIUsageExampleBuilder withCatch(String nodeId, String exceptionType, int sourceLineNumber) {
+        return withNode(nodeId, new CatchNode(exceptionType, sourceLineNumber));
+    }
+
     public APIUsageExampleBuilder withTypeCheck(String nodeId, String targetTypeName, int sourceLineNumber) {
         return withNode(nodeId, new TypeCheckNode(targetTypeName, sourceLineNumber));
     }

@@ -196,6 +196,9 @@ public class AUGBuilder {
             } else if (label.equals("<nullcheck>")) {
                 builder.withNullCheck(nodeId, sourceLineNumber);
                 return;
+            } else if (label.endsWith(".<catch>")) {
+                builder.withCatch(nodeId, label.substring(0, label.length() - 8), sourceLineNumber);
+                return;
             } else if (node.astNodeType == ASTNode.METHOD_INVOCATION) {
                 String[] labelParts = split(label);
                 builder.withMethodCall(nodeId, labelParts[0], labelParts[1], sourceLineNumber);

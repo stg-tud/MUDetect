@@ -17,8 +17,8 @@ public class EncodeExceptionHandlingTest {
         APIUsageExample aug = buildAUGForMethod("void m() { try { hashCode(); } catch(RuntimeException e) { e.printStackTrace(); } }");
 
         assertThat(aug, hasThrowEdge(actionNodeWith(label("Object.hashCode()")), dataNodeWith(label("RuntimeException"))));
-        assertThat(aug, hasParameterEdge(dataNodeWith(label("RuntimeException")), actionNodeWith(label("RuntimeException.<catch>"))));
-        assertThat(aug, hasExceptionHandlingEdge(actionNodeWith(label("RuntimeException.<catch>")), actionNodeWith(label("Throwable.printStackTrace()"))));
+        assertThat(aug, hasParameterEdge(dataNodeWith(label("RuntimeException")), actionNodeWith(label("<catch>"))));
+        assertThat(aug, hasExceptionHandlingEdge(actionNodeWith(label("<catch>")), actionNodeWith(label("Throwable.printStackTrace()"))));
         assertThat(aug, hasReceiverEdge(dataNodeWith(label("RuntimeException")), actionNodeWith(label("Throwable.printStackTrace()"))));
     }
 
@@ -27,13 +27,13 @@ public class EncodeExceptionHandlingTest {
     public void throwCatchImpliesOrder() {
         APIUsageExample aug = buildAUGForMethod("void m() { try { hashCode(); } catch(RuntimeException e) { e.printStackTrace(); } }");
 
-        assertThat(aug, hasOrderEdge(actionNodeWith(label("Object.hashCode()")), actionNodeWith(label("RuntimeException.<catch>"))));
+        assertThat(aug, hasOrderEdge(actionNodeWith(label("Object.hashCode()")), actionNodeWith(label("<catch>"))));
     }
 
     @Test
     public void catchHandleImpliesOrder() {
         APIUsageExample aug = buildAUGForMethod("void m() { try { hashCode(); } catch(RuntimeException e) { e.printStackTrace(); } }");
 
-        assertThat(aug, hasOrderEdge(actionNodeWith(label("RuntimeException.<catch>")), actionNodeWith(label("Throwable.printStackTrace()"))));
+        assertThat(aug, hasOrderEdge(actionNodeWith(label("<catch>")), actionNodeWith(label("Throwable.printStackTrace()"))));
     }
 }
