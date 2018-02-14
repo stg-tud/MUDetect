@@ -3,6 +3,7 @@ package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 import de.tu_darmstadt.stg.mubench.NoEdgeOrder;
 import de.tu_darmstadt.stg.mudetect.OverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.aug.model.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.OrderEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGDotExporter;
@@ -432,7 +433,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
     public List<Overlap> findOverlaps(APIUsageExample target, APIUsagePattern pattern) {
         List<Overlap> overlaps = new ArrayList<>();
         Set<Node> coveredTargetNodes = new HashSet<>();
-        Set<Node> startTargetNodes = target.getMeaningfulActionNodes();
+        Set<Node> startTargetNodes = getStartNodes(target);
         if (!startTargetNodes.isEmpty()) {
             AUGDotExporter exporter = new AUGDotExporter(
                     Node::getLabel, new AUGNodeAttributeProvider(), new AUGEdgeAttributeProvider());
@@ -456,6 +457,12 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
             LOGGER.debug("Found {} overlaps.", overlaps.size());
         }
         return overlaps;
+    }
+
+    private Set<Node> getStartNodes(APIUsageExample target) {
+        return target.vertexSet().stream()
+                .filter(node -> node instanceof MethodCallNode)
+                .collect(Collectors.toSet());
     }
 
     private void removeSubgraphs(List<Overlap> overlaps) {

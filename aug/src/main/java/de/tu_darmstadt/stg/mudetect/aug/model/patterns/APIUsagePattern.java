@@ -2,16 +2,12 @@ package de.tu_darmstadt.stg.mudetect.aug.model.patterns;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
 import de.tu_darmstadt.stg.mudetect.aug.model.Location;
-import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class APIUsagePattern extends APIUsageGraph {
     private final int support;
     private final Set<Location> exampleLocations;
-
-    private List<Node> meaningfulActionNodesByUniquenesCache = null;
 
     public APIUsagePattern(int support, Set<Location> exampleLocations) {
         this.support = support;
@@ -24,18 +20,6 @@ public class APIUsagePattern extends APIUsageGraph {
 
     public Set<Location> getExampleLocations() {
         return exampleLocations;
-    }
-
-    public List<Node> getMeaningfulActionNodesByUniqueness() {
-        if (meaningfulActionNodesByUniquenesCache == null) {
-            Set<Node> meaningfulActionNodes = getMeaningfulActionNodes();
-            Map<String, List<Node>> actionNodesByLabel = meaningfulActionNodes.stream()
-                    .collect(Collectors.groupingBy(Node::getLabel));
-            meaningfulActionNodesByUniquenesCache = meaningfulActionNodes.stream()
-                    .sorted(Comparator.comparing(node -> actionNodesByLabel.get(node.getLabel()).size()))
-                    .collect(Collectors.toList());
-        }
-        return meaningfulActionNodesByUniquenesCache;
     }
 
     @Override
