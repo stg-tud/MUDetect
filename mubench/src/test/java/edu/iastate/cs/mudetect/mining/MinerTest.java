@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.aug.AUGTestUtils.exportAUGsAsPNG;
 import static de.tu_darmstadt.stg.mudetect.aug.matchers.AUGMatchers.hasOrderEdge;
 import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.actionNodeWith;
 import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodePropertyMatchers.label;
@@ -152,13 +151,10 @@ public class MinerTest {
 		Collection<APIUsageExample> groums = buildAUGsFromFile("input/Test_alibaba2_old.java");
 		groums.addAll(buildAUGsFromFile("input/Test_alibaba2_old.java"));
 
-		exportAUGsAsPNG(groums, "./output", "decrypt-input");
 		List<APIUsagePattern> patterns = mineWithMinSupport2(groums);
-		print(patterns);
 
-		assertThat(patterns.size(), is(2));
-		exportAUGsAsPNG(patterns, "./output", "decrypt-pattern");
-		
+		assertThat(patterns.size(), is(1));
+
 		boolean contains = false;
 		for (APIUsagePattern p : patterns) {
 			for (Node node : p.vertexSet())
