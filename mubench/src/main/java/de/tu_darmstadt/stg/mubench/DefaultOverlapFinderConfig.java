@@ -7,7 +7,7 @@ import edu.iastate.cs.mudetect.mining.Configuration;
 
 class DefaultOverlapFinderConfig extends AlternativeMappingsOverlapsFinder.Config {
     DefaultOverlapFinderConfig(Configuration config) {
-        isStartNode = super.isStartNode.and(new VeryPrevalentNodePredicate());
+        isStartNode = super.isStartNode.and(new VeryPrevalentNodePredicate().negate());
         nodeMatcher = new EquallyLabelledNodeMatcher(config.nodeToLabel);
         edgeOrder = new DataEdgeTypePriorityOrder();
     }

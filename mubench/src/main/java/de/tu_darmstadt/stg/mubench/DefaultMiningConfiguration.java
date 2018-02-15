@@ -10,7 +10,7 @@ class DefaultMiningConfiguration extends Configuration {
     {
         minPatternSupport = 10;
         occurenceLevel = Level.WITHIN_METHOD;
-        isStartNode = super.isStartNode.and(new VeryPrevalentNodePredicate());
+        isStartNode = super.isStartNode.and(new VeryPrevalentNodePredicate().negate());
         disableSystemOut = true;
         outputPath = System.getProperty("mudetect.mining.outputpath");
         nodeToLabel = NodeLabelProvider.firstOrDefaultLabel(
