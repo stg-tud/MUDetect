@@ -16,11 +16,11 @@ public class Configuration {
      */
     public Predicate<Node> isStartNode = node -> node.isCoreAction() && node instanceof MethodCallNode && !(node instanceof ConstructorCallNode);
 
+    public enum DataNodeExtensionStrategy { ALWAYS, IF_INCOMING, IF_INCOMING_AND_OUTGOING }
     /**
-     * Whether or not the miner should extend a pattern with an incoming data node, if that data node is not defined by
-     * a core-action node.
+     * Whether or not the miner should extend a pattern with a data node.
      */
-    public boolean extendSourceDataNodes = true;
+    public DataNodeExtensionStrategy extendByDataNode = DataNodeExtensionStrategy.IF_INCOMING;
 
     /**
      * Whether or not the miner should output log information to System.out.

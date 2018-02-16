@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.RECEIVER;
 import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
+import static edu.iastate.cs.mudetect.mining.Configuration.DataNodeExtensionStrategy.IF_INCOMING;
 import static edu.iastate.cs.mudetect.mining.TestPatternBuilder.somePattern;
 import static de.tu_darmstadt.stg.mudetect.utils.CollectionUtils.first;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClass;
@@ -93,7 +94,7 @@ public class DefaultAUGMinerTest {
     }
 
     private Set<APIUsagePattern> minePatterns(Collection<APIUsageExample> groums) {
-        Configuration config = new Configuration() {{ minPatternSupport = 2; extendSourceDataNodes = true; }};
+        Configuration config = new Configuration() {{ minPatternSupport = 2; extendByDataNode = IF_INCOMING; }};
         return new DefaultAUGMiner(config).mine(groums).getPatterns();
     }
 

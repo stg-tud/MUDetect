@@ -11,6 +11,9 @@ import java.util.*;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.DEFINITION;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.THROW;
+import static edu.iastate.cs.mudetect.mining.Configuration.DataNodeExtensionStrategy.ALWAYS;
+import static edu.iastate.cs.mudetect.mining.Configuration.DataNodeExtensionStrategy.IF_INCOMING;
+import static edu.iastate.cs.mudetect.mining.Configuration.DataNodeExtensionStrategy.IF_INCOMING_AND_OUTGOING;
 
 /**
  * @author Nguyen Anh Hoan
@@ -449,7 +452,8 @@ public class Fragment {
 						} else if (containsAnyOf(outs)) {
                             // ... it produces data in the fragment and ...
                             for (Node next : ins) {
-                                if (next.isCoreAction() || (config.extendSourceDataNodes && next instanceof DataNode))
+                                if (next.isCoreAction()
+                                        || ((config.extendByDataNode == ALWAYS || config.extendByDataNode == IF_INCOMING) && next instanceof DataNode))
                                     // ... it is a successor of a core action OR of a data node by which we might extend
                                     add(node, next, lens);
                             }
@@ -457,7 +461,9 @@ public class Fragment {
 					}
 				}
 			} else if (node instanceof DataNode) {
-				if (config.extendSourceDataNodes) {
+			    if (config.extendByDataNode == ALWAYS) {
+			        add(node, lens);
+                } else if (config.extendByDataNode == IF_INCOMING) {
 					boolean hasThrow = false;
 					for (Edge e : graph.incomingEdgesOf(node)) {
 						if (e.getType() == THROW && nodes.contains(graph.getEdgeSource(e))) {
@@ -471,8 +477,7 @@ public class Fragment {
                         if (containsAnyOf(outs))
 							add(node, lens);
 					}
-				}
-				else {
+				} else if (config.extendByDataNode == IF_INCOMING_AND_OUTGOING) {
 					boolean hasThrow = false;
 					for (Edge e : graph.incomingEdgesOf(node)) {
 						if (e.getType() == THROW && nodes.contains(graph.getEdgeSource(e))) {
@@ -513,7 +518,9 @@ public class Fragment {
 							}
 						}
 					}
-				}
+				} else {
+			        throw new IllegalArgumentException("missing handling for data-node extension strategy: " + config.extendByDataNode);
+                }
 			}
 		}
 //		Random r = new Random();
