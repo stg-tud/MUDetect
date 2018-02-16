@@ -431,46 +431,28 @@ public class Fragment {
 				if (node.isCoreAction()) {
 					add(node, lens);
 				} else {
-
+				    // extend by non-core action, if ...
 					Set<Node> ins = graph.incomingNodesOf(node), outs = graph.outgoingNodesOf(node);
 					if (!ins.isEmpty() && !outs.isEmpty()) {
-						boolean found = false;
-						for (Node n : ins) {
-							if (nodes.contains(n)) {
-								found = true;
-								break;
-							}
-						}
-						if (found) {
-							found = false;
-							for (Node n : outs) {
-								if (nodes.contains(n)) {
-									found = true;
-									break;
-								}
-							}
-							if (found) {
+                        if (containsAnyOf(ins)) {
+                            // ... it consumes data in the fragment and ...
+                            if (containsAnyOf(outs)) {
+                                // ... it produces data in the fragment.
 								add(node, lens);
 							} else {
+                                // ... it is a predecessor of a core action.
 								for (Node n : outs) {
 									if (n.isCoreAction())
 										add(node, n, lens);
 								}
 							}
-						} else {
-							found = false;
-							for (Node n : outs) {
-								if (nodes.contains(n)) {
-									found = true;
-									break;
-								}
-							}
-							if (found) {
-								for (Node next : ins) {
-									if (next.isCoreAction() || (config.extendSourceDataNodes && next instanceof DataNode))
-										add(node, next, lens);
-								}
-							}
+						} else if (containsAnyOf(outs)) {
+                            // ... it produces data in the fragment and ...
+                            for (Node next : ins) {
+                                if (next.isCoreAction() || (config.extendSourceDataNodes && next instanceof DataNode))
+                                    // ... it is a successor of a core action OR of a data node by which we might extend
+                                    add(node, next, lens);
+                            }
 						}
 					}
 				}
@@ -485,15 +467,8 @@ public class Fragment {
 						}
 					}
 					if (!hasThrow) {
-						boolean hasOut = false;
 						Set<Node> outs = graph.outgoingNodesOf(node);
-						for (Node next : outs) {
-							if (nodes.contains(next)) {
-								hasOut = true;
-								break;
-							}
-						}
-						if (hasOut)
+                        if (containsAnyOf(outs))
 							add(node, lens);
 					}
 				}
@@ -556,6 +531,15 @@ public class Fragment {
 //		}
 		return lens;
 	}
+
+    private boolean containsAnyOf(Set<Node> nodes) {
+        for (Node n : nodes) {
+            if (this.nodes.contains(n)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private boolean isExtendAlongEdge(Edge e) {
         if (e instanceof OrderEdge) {
