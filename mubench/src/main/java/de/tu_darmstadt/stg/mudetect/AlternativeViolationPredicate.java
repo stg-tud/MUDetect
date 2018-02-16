@@ -1,6 +1,7 @@
 package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 
 import java.util.HashSet;
@@ -18,7 +19,7 @@ public class AlternativeViolationPredicate {
         Set<Node> coveredNodes = new HashSet<>();
         return violation -> {
             Set<Node> mappedTargetNodes = violation.getOverlap().getMappedTargetNodes().stream()
-                    .filter(node -> node.getLabel().endsWith("<init>") || node.getLabel().endsWith("()"))
+                    .filter(node -> node instanceof MethodCallNode)
                     .collect(Collectors.toSet());
             if (mappedTargetNodes.stream().anyMatch(coveredNodes::contains)) {
                 return false;
