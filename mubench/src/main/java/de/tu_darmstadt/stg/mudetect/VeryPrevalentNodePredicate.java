@@ -14,6 +14,7 @@ public class VeryPrevalentNodePredicate implements Predicate<Node> {
         veryPrevalentTypes.add("Object");
         veryPrevalentTypes.add("Class");
         veryPrevalentTypes.add("String");
+        veryPrevalentTypes.add("CharSequence");
         veryPrevalentTypes.add("Arrays");
         veryPrevalentTypes.add("System");
         veryPrevalentTypes.add("Throwable");
