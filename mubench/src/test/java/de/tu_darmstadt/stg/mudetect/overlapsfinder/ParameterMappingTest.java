@@ -9,12 +9,12 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.DEFINITION;
-import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.PARAMETER;
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.*;
 import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
-import static edu.iastate.cs.mudetect.mining.TestPatternBuilder.somePattern;
+import static de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge.ConditionType.SELECTION;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.contains;
+import static edu.iastate.cs.mudetect.mining.TestPatternBuilder.somePattern;
 import static org.junit.Assert.assertThat;
 
 public class ParameterMappingTest {
@@ -89,6 +89,36 @@ public class ParameterMappingTest {
                 .withNodes("src()", "sink()").withEdge("src()", PARAMETER, "sink()")
                 .withNode("P1").withEdge("P1", PARAMETER, "sink()")
                 .withNode("P2").withEdge("src()", DEFINITION, "P2").withEdge("P2", PARAMETER, "sink()");
+        assertThat(overlaps, contains(overlap));
+    }
+
+    /**
+     * If an action has multiple parameters (of the same type), they all have equally many mapping alternatives,
+     * i.e., we would pick one of them at random as the next extension candidate. As long as the parameters have no
+     * other connections, this is fine. However, if one parameter has other connections, we might be unlucky with
+     * the selection, leaving some of these additional connections unnecessarily unmappend. To mitigate this problem,
+     * we prefer parameter nodes with a higher edge degree.
+     */
+    @Test
+    public void prefersParameterWithMultipleConnectionsToReduceRiskOfUnluckyMapping() {
+        TestAUGBuilder pattern = buildAUG().withActionNode("sur()", "Utilities.isSurrogatePair()")
+                .withActionNode("con()", "Utilities.convertToUtf32()")
+                .withDataNode("int")
+                .withEdge("int", PARAMETER, "sur()").withEdge("int", PARAMETER, "con()")
+                .withCondEdge("sur()", SELECTION, "con()").withEdge("sur()", ORDER, "con()");
+        TestAUGBuilder target = buildAUG().withActionNode("sur()", "Utilities.isSurrogatePair()")
+                .withActionNode("con()", "Utilities.convertToUtf32()")
+                .withDataNode("int")
+                .withDataNode("i1", "int").withEdge("i1", PARAMETER, "sur()")
+                .withDataNode("i2", "int").withEdge("i2", PARAMETER, "con()")
+                .withEdge("int", PARAMETER, "sur()").withEdge("int", PARAMETER, "con()")
+                .withCondEdge("sur()", SELECTION, "con()").withEdge("sur()", ORDER, "con()");
+
+        List<Overlap> overlaps = overlapsFinder.findOverlaps(target.build(), somePattern(pattern));
+
+        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("sur()", "con()", "int")
+                .withEdge("int", PARAMETER, "sur()").withEdge("int", PARAMETER, "con()")
+                .withEdge("sur()", SELECTION, "con()").withEdge("sur()", ORDER, "con()");
         assertThat(overlaps, contains(overlap));
     }
 }

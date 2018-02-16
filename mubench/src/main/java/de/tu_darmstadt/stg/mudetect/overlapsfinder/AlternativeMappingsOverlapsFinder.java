@@ -7,6 +7,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.actions.ConstructorCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.OrderEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGEdgeAttributeProvider;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGNodeAttributeProvider;
@@ -196,6 +197,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
             nextExtensionEdge = null;
             nextExtensionMappingAlternatives = new LinkedHashMap<>();
             int minNumberOfAlternatives = Integer.MAX_VALUE;
+            int maxIncomingParameterEdgeSourceNodeDegree = -1;
             for (Iterator<Edge> edgeIt = candidates.iterator(); edgeIt.hasNext();) {
                 Edge targetExtensionEdge = edgeIt.next();
                 Map<Alternative, Set<Edge>> patternExtensionCandidates = new LinkedHashMap<>();
@@ -225,16 +227,20 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
                 } else {
                     numberOfAlternatives *= getEquivalentTargetEdgeCount(this.target, targetExtensionEdge, targetEdgeSourceIndex, targetEdgeTargetIndex, this::match);
                 }
+
+                int incomingParameterEdgeSourceNodeDegree = getIncomingParameterEdgeSourceNodeDegree(targetExtensionEdge);
+
                 if (numberOfAlternatives == 0) {
                     // TODO we currently cannot prune here, as long as we exclude OrderEdges from extension if at least
                     // one of their endpoints is not mapped. This means an edge could become mappable later.
                     //edgeIt.remove();
                 } else if (numberOfAlternatives < minNumberOfAlternatives
-                        || (numberOfAlternatives == minNumberOfAlternatives
-                        && config.edgeOrder.test(targetExtensionEdge, nextExtensionEdge))) {
+                        || (numberOfAlternatives == minNumberOfAlternatives && config.edgeOrder.test(targetExtensionEdge, nextExtensionEdge))
+                        || (numberOfAlternatives == minNumberOfAlternatives && nextExtensionEdge instanceof ParameterEdge && maxIncomingParameterEdgeSourceNodeDegree < incomingParameterEdgeSourceNodeDegree)) {
                     nextExtensionEdge = targetExtensionEdge;
                     nextExtensionMappingAlternatives = patternExtensionCandidates;
                     minNumberOfAlternatives = numberOfAlternatives;
+                    maxIncomingParameterEdgeSourceNodeDegree = incomingParameterEdgeSourceNodeDegree;
                 }
             }
             if (nextExtensionEdge != null) {
@@ -247,6 +253,20 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
                 return true;
             } else {
                 return false;
+            }
+        }
+
+        /**
+         * This method returns the edge degree of the edge's source node, if the edge is a parameter edge and its source
+         * node is not yet mapped. See
+         * ParameterMappingTest#prefersParameterWithMultipleConnectionsToReduceRiskOfUnluckyMapping for motivation.
+         */
+        private int getIncomingParameterEdgeSourceNodeDegree(Edge extensionEdge) {
+            boolean sourceNodeIsNotMapped = getTargetNodeIndex(target.getEdgeSource(extensionEdge)) == -1;
+            if (sourceNodeIsNotMapped && extensionEdge instanceof ParameterEdge) {
+                return target.edgesOf(target.getEdgeSource(extensionEdge)).size();
+            } else {
+                return -1;
             }
         }
 
