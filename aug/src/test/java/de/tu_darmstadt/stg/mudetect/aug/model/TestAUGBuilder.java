@@ -9,6 +9,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.RepetitionEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.SelectionEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.VariableNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.BaseDataFlowEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 
 import java.util.*;
@@ -182,6 +183,9 @@ public class TestAUGBuilder {
         switch (type) {
             case ORDER:
                 edges.add(new OrderEdge(getNode(sourceId), getNode(targetId)));
+                break;
+            case PARAMETER:
+                edges.add(new ParameterEdge(getNode(sourceId), getNode(targetId)));
                 break;
             default:
                 edges.add(new BaseDataFlowEdge(getNode(sourceId), getNode(targetId), type));
