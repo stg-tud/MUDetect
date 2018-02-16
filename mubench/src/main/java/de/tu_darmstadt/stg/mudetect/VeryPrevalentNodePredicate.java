@@ -12,8 +12,10 @@ public class VeryPrevalentNodePredicate implements Predicate<Node> {
 
     static {
         veryPrevalentTypes.add("Object");
+        veryPrevalentTypes.add("Class");
         veryPrevalentTypes.add("String");
         veryPrevalentTypes.add("Arrays");
+        veryPrevalentTypes.add("System");
         veryPrevalentTypes.add("Throwable");
         veryPrevalentTypes.add("Exception");
     }
