@@ -154,7 +154,7 @@ public class AUGBuilder {
             String dataType = node.getDataType();
             String dataName = dataNode.getDataName();
             String dataValue = dataNode.getDataValue();
-            if (dataNode.isException() || node.getLabel().endsWith("Exception") || node.getLabel().endsWith("Error")) {
+            if (dataNode.isException() || dataType.endsWith("Exception") || dataType.endsWith("Error") || dataType.equals("Throwable")) {
                 builder.withException(nodeId, dataType, dataName);
                 return;
             } else if (node.astNodeType == ASTNode.SIMPLE_NAME) {
