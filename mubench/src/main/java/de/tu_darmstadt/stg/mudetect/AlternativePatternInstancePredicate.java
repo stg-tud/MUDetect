@@ -7,7 +7,7 @@ import java.util.Collection;
 public class AlternativePatternInstancePredicate {
     public boolean test(Overlap violation, Collection<Overlap> instances) {
         for (Overlap instance : instances) {
-            if (violation.isSameTargetOverlap(instance)) {
+            if (violation.isInTargetOverlap(instance)) {
                 return true;
             }
         }
