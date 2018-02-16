@@ -8,6 +8,7 @@ import edu.iastate.cs.egroum.dot.DotGraph;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.DEFINITION;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.THROW;
@@ -252,10 +253,7 @@ public class Fragment {
 			System.err.println("NULL fragment in checking overlap");
 			return false;
 		}
-		HashSet<Node> tempNodes = new HashSet<>();
-		tempNodes.addAll(fragment.nodes);
-		tempNodes.retainAll(this.nodes);
-		return !tempNodes.isEmpty();
+		return nodes.stream().filter(node -> node instanceof ActionNode).anyMatch(fragment.nodes::contains);
 	}
 	
 	@Override
