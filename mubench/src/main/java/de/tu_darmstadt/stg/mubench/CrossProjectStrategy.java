@@ -7,7 +7,7 @@ import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
 import de.tu_darmstadt.stg.mudetect.FirstDecisionViolationPredicate;
 import de.tu_darmstadt.stg.mudetect.MissingElementViolationPredicate;
 import de.tu_darmstadt.stg.mudetect.MuDetect;
-import de.tu_darmstadt.stg.mudetect.OptionalDefPrefixViolationPredicate;
+import de.tu_darmstadt.stg.mudetect.MissingDefPrefixNoViolationPredicate;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 import edu.iastate.cs.mudetect.mining.AUGMiner;
@@ -236,7 +236,7 @@ class CrossProjectStrategy implements DetectionStrategy {
                 new MinPatternActionsModel(model, 2),
                 new AlternativeMappingsOverlapsFinder(new DefaultOverlapFinderConfig(new DefaultMiningConfiguration())),
                 new FirstDecisionViolationPredicate(
-                        new OptionalDefPrefixViolationPredicate(),
+                        new MissingDefPrefixNoViolationPredicate(),
                         new MissingElementViolationPredicate()),
                 new WeightRankingStrategy(
                         new ProductWeightFunction(

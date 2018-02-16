@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.DEFINITION;
 
-public class OptionalDefPrefixViolationPredicate implements ViolationPredicate {
+public class MissingDefPrefixNoViolationPredicate implements ViolationPredicate {
     @Override
     public Optional<Boolean> apply(Overlap overlap) {
         Set<Edge> missingDirectConnectionEdges = overlap.getMissingEdges().stream()

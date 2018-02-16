@@ -33,7 +33,7 @@ public class IntraProjectStrategy extends MuDetectStrategy {
                 new MinPatternActionsModel(model, 2),
                 new AlternativeMappingsOverlapsFinder(new DefaultOverlapFinderConfig(new DefaultMiningConfiguration())),
                 new FirstDecisionViolationPredicate(
-                        new OptionalDefPrefixViolationPredicate(),
+                        new MissingDefPrefixNoViolationPredicate(),
                         new MissingElementViolationPredicate()),
                 new WeightRankingStrategy(
                         new ProductWeightFunction(

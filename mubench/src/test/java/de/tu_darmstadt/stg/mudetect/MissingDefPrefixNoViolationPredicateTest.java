@@ -13,12 +13,12 @@ import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class OptionalDefPrefixViolationPredicateTest {
+public class MissingDefPrefixNoViolationPredicateTest {
     @Test
     public void missingNonDefPrefixIsNoDecision() {
         TestOverlapBuilder overlap = buildOverlap(buildAUG(), buildAUG().withActionNode("m()"));
 
-        Optional<Boolean> decision = new OptionalDefPrefixViolationPredicate().apply(overlap.build());
+        Optional<Boolean> decision = new MissingDefPrefixNoViolationPredicate().apply(overlap.build());
 
         assertThat(decision, is(Optional.empty()));
     }
@@ -34,7 +34,7 @@ public class OptionalDefPrefixViolationPredicateTest {
         TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("use()", "Object")
                 .withEdge("Object", RECEIVER, "use()");
 
-        Optional<Boolean> decision = new OptionalDefPrefixViolationPredicate().apply(overlap.build());
+        Optional<Boolean> decision = new MissingDefPrefixNoViolationPredicate().apply(overlap.build());
 
         assertThat(decision, is(Optional.empty()));
     }
@@ -53,7 +53,7 @@ public class OptionalDefPrefixViolationPredicateTest {
                 .withEdge("Object", RECEIVER, "use()")
                 .withEdge("Object", RECEIVER, "use2()");
 
-        Optional<Boolean> decision = new OptionalDefPrefixViolationPredicate().apply(overlap.build());
+        Optional<Boolean> decision = new MissingDefPrefixNoViolationPredicate().apply(overlap.build());
 
         assertThat(decision, is(Optional.empty()));
     }
@@ -68,7 +68,7 @@ public class OptionalDefPrefixViolationPredicateTest {
         TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("use()", "Object")
                 .withEdge("Object", RECEIVER, "use()");
 
-        Optional<Boolean> decision = new OptionalDefPrefixViolationPredicate().apply(overlap.build());
+        Optional<Boolean> decision = new MissingDefPrefixNoViolationPredicate().apply(overlap.build());
 
         assertThat(decision, is(Optional.of(false)));
     }
@@ -84,7 +84,7 @@ public class OptionalDefPrefixViolationPredicateTest {
         TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("use()", "Object")
                 .withEdge("Object", RECEIVER, "use()");
 
-        Optional<Boolean> decision = new OptionalDefPrefixViolationPredicate().apply(overlap.build());
+        Optional<Boolean> decision = new MissingDefPrefixNoViolationPredicate().apply(overlap.build());
 
         assertThat(decision, is(Optional.of(false)));
     }
@@ -106,7 +106,7 @@ public class OptionalDefPrefixViolationPredicateTest {
                 .withEdge("Iterator", RECEIVER, "next()")
                 .withEdge("hasNext()", CONDITION, "next()");
 
-        Optional<Boolean> decision = new OptionalDefPrefixViolationPredicate().apply(overlap.build());
+        Optional<Boolean> decision = new MissingDefPrefixNoViolationPredicate().apply(overlap.build());
 
         assertThat(decision, is(Optional.of(false)));
     }
@@ -144,7 +144,7 @@ public class OptionalDefPrefixViolationPredicateTest {
                 .withEdge("iterator()", CONDITION, "next()")
                 .withEdge("hasNext()", CONDITION, "next()");
 
-        Optional<Boolean> decision = new OptionalDefPrefixViolationPredicate().apply(overlap.build());
+        Optional<Boolean> decision = new MissingDefPrefixNoViolationPredicate().apply(overlap.build());
 
         assertThat(decision, is(Optional.of(false)));
     }
