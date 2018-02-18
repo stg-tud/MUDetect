@@ -1,12 +1,11 @@
 package de.tu_darmstadt.stg.mudetect.aug.model;
 
+import de.tu_darmstadt.stg.mudetect.aug.model.actions.CatchNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.InfixOperatorNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.ReturnNode;
-import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
-import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.OrderEdge;
-import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.RepetitionEdge;
-import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.SelectionEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.data.ExceptionNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.VariableNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.BaseDataFlowEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
@@ -137,6 +136,8 @@ public class TestAUGBuilder {
             return withNode(id, new InfixOperatorNode(abstractOperatorName));
         } else if (nodeName.equals("return")) {
             return withNode(id, new ReturnNode());
+        } else if (nodeName.equals("<catch>")) {
+            return withNode(id, new CatchNode("Throwable"));
         } else {
             if (nodeName.contains(".")) {
                 String[] nameParts = nodeName.split("\\.");
@@ -167,8 +168,12 @@ public class TestAUGBuilder {
     }
 
     public TestAUGBuilder withDataNode(String id, String nodeName) {
-        // TODO check whether we need the second parameter here
-        return withNode(id, new VariableNode(nodeName, null));
+        if (nodeName.endsWith("Exception") || nodeName.endsWith("Error") || nodeName.equals("Throwable")) {
+            return withNode(id, new ExceptionNode(nodeName, null));
+        } else {
+            // TODO check whether we need the second parameter here
+            return withNode(id, new VariableNode(nodeName, null));
+        }
     }
 
     public TestAUGBuilder withNode(String id, Node node) {
@@ -180,15 +185,20 @@ public class TestAUGBuilder {
     }
 
     public TestAUGBuilder withEdge(String sourceId, Edge.Type type, String targetId) {
+        Node sourceNode = getNode(sourceId);
+        Node targetNode = getNode(targetId);
         switch (type) {
             case ORDER:
-                edges.add(new OrderEdge(getNode(sourceId), getNode(targetId)));
+                edges.add(new OrderEdge(sourceNode, targetNode));
+                break;
+            case THROW:
+                edges.add(new ThrowEdge(sourceNode, targetNode));
                 break;
             case PARAMETER:
-                edges.add(new ParameterEdge(getNode(sourceId), getNode(targetId)));
+                edges.add(new ParameterEdge(sourceNode, targetNode));
                 break;
             default:
-                edges.add(new BaseDataFlowEdge(getNode(sourceId), getNode(targetId), type));
+                edges.add(new BaseDataFlowEdge(sourceNode, targetNode, type));
         }
         return this;
     }
