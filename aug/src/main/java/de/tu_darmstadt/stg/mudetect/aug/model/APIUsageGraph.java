@@ -1,6 +1,5 @@
 package de.tu_darmstadt.stg.mudetect.aug.model;
 
-import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import java.util.Collection;
@@ -57,7 +56,7 @@ public class APIUsageGraph extends DirectedMultigraph<Node, Edge> {
     @Override
     public boolean addEdge(Node sourceVertex, Node targetVertex, Edge edge) {
         if (frozen) throw new UnsupportedOperationException(FROZEN);
-        return super.addEdge(sourceVertex, targetVertex, edge);
+        return !hasEdge(sourceVertex, edge.getClass(), targetVertex) && super.addEdge(sourceVertex, targetVertex, edge);
     }
 
     @Override
@@ -120,5 +119,14 @@ public class APIUsageGraph extends DirectedMultigraph<Node, Edge> {
             hash = super.hashCode();
         }
         return hash;
+    }
+
+    private boolean hasEdge(Node edgeSource, Class<? extends Edge> edgeType, Node edgeTarget) {
+        for (Edge edge : outgoingEdgesOf(edgeSource)) {
+            if (edgeType.isAssignableFrom(edge.getClass()) && getEdgeTarget(edge) == edgeTarget) {
+                return true;
+            }
+        }
+        return false;
     }
 }
