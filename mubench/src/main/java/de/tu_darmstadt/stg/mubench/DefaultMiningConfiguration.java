@@ -9,9 +9,9 @@ import edu.iastate.cs.mudetect.mining.Configuration;
 class DefaultMiningConfiguration extends Configuration {
     {
         minPatternSupport = 10;
-        occurenceLevel = Level.WITHIN_METHOD;
+        occurenceLevel = Level.CROSS_METHOD;
         isStartNode = super.isStartNode.and(new VeryPrevalentNodePredicate().negate());
-        extendByDataNode = DataNodeExtensionStrategy.ALWAYS;
+        extendByDataNode = DataNodeExtensionStrategy.IF_INCOMING;
         disableSystemOut = true;
         outputPath = System.getProperty("mudetect.mining.outputpath");
         nodeToLabel = NodeLabelProvider.firstOrDefaultLabel(
