@@ -1989,6 +1989,11 @@ public class EGroumGraph implements Serializable {
 	private void mergeSequential(EGroumGraph pdg) {
 		if (pdg.statementNodes.isEmpty())
 			return;
+        if (this.isEmpty()) {
+            // if the left side of the join is empty, the entire right side becomes the result, since there are not
+            // sinks to connect to the sources of the right side.
+            this.statementSources.addAll(pdg.statementSources);
+        }
 		if (!sinks.isEmpty()) {
 			HashSet<EGroumDataNode> remains = new HashSet<EGroumDataNode>();
 			for (EGroumDataNode source : pdg.dataSources) {
@@ -2274,6 +2279,12 @@ public class EGroumGraph implements Serializable {
 					|| (!configuration.encodeBitwiseOperators && node.getLabel().equals("<b>"))
 					|| (!configuration.encodeConditionalOperators && node.getLabel().equals("<c>"))) {
 				HashSet<EGroumNode> delNodes = new HashSet<>();
+				Set<EGroumNode> inDeps = new HashSet<>();
+                for (EGroumEdge inEdge : node.inEdges) {
+                    if (inEdge instanceof EGroumDataEdge && ((EGroumDataEdge) inEdge).type == DEPENDENCE) {
+                        inDeps.add(inEdge.source);
+                    }
+                }
 				for (EGroumEdge e1 : node.outEdges) {
 					if (e1.target.isAssignment() && e1 instanceof EGroumDataEdge && ((EGroumDataEdge) e1).type == PARAMETER) {
 						for (EGroumEdge e2 : e1.target.outEdges) {
@@ -2289,8 +2300,11 @@ public class EGroumGraph implements Serializable {
 									}
 								}
 								delNodes.add(e2.target);
-								break;
-							}
+							} else if (e2 instanceof EGroumDataEdge && ((EGroumDataEdge) e2).type == DEPENDENCE) {
+                                for (EGroumNode inDep : inDeps) {
+                                    new EGroumDataEdge(inDep, e2.target, DEPENDENCE);
+                                }
+                            }
 						}
 						delNodes.add(e1.target);
 						break;

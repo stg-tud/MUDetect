@@ -89,19 +89,41 @@ public class EGroumActionNode extends EGroumNode {
 	}
 
 	public boolean hasBackwardDataDependence(EGroumActionNode preNode) {
+		if (hasDataDependencyViaActionsOn(preNode)
+				|| hasControlDependencyThatHasDataDependencyViaActionsOn(preNode)) {
+			return true;
+		}
 		HashSet<EGroumNode> defs = new HashSet<>(), preDefs = new HashSet<>();
-		getActionNodesConnectedByIncomingDataEdge(defs);
 		getDefinitions(defs);
-		getActionNodesConnectedByIncomingDataEdge(preDefs);
 		preNode.getDefinitions(preDefs);
 		return overlap(defs, preDefs);
 	}
 
-	private void getActionNodesConnectedByIncomingDataEdge(HashSet<EGroumNode> defs) {
-		for (EGroumEdge e : inEdges) {
-			if (e instanceof EGroumDataEdge && e.source instanceof EGroumActionNode)
-				defs.add(e.source);
+	private boolean hasDataDependencyViaActionsOn(EGroumActionNode preNode) {
+		for (EGroumEdge edge : inEdges) {
+			if (edge instanceof EGroumDataEdge) {
+				if (edge.source == preNode) {
+					return true;
+				} else if (edge.source instanceof EGroumActionNode) {
+					return ((EGroumActionNode) edge.source).hasDataDependencyViaActionsOn(preNode);
+				}
+			}
 		}
+		return false;
+	}
+
+	private boolean hasControlDependencyThatHasDataDependencyViaActionsOn(EGroumActionNode preNode) {
+		for (EGroumEdge edge : inEdges) {
+			if (edge instanceof EGroumControlEdge) {
+				for (EGroumEdge preEdge : edge.source.inEdges) {
+					if (preEdge instanceof EGroumDataEdge && preEdge.source instanceof EGroumActionNode
+							&& ((EGroumActionNode) preEdge.source).hasDataDependencyViaActionsOn(preNode)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	public boolean hasBackwardDataDependence(EGroumNode node) {
