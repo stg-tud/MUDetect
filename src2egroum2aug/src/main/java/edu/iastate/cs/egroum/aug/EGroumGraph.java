@@ -1715,21 +1715,7 @@ public class EGroumGraph implements Serializable {
 
 	private void mergeBranches(EGroumGraph... pdgs) {
 		for (EGroumGraph pdg : pdgs) {
-			if (!sinks.isEmpty()) {
-				HashSet<EGroumDataNode> remains = new HashSet<EGroumDataNode>();
-				for (EGroumDataNode source : pdg.dataSources) {
-					for (EGroumNode sink : sinks) {
-						HashSet<EGroumDataNode> defs = sink.defStore.get(source.key);
-						if (defs == null || defs.isEmpty())
-							remains.add(source);
-						else
-							for (EGroumDataNode def : defs)
-								if (!source.hasInDataNode(def, REFERENCE))
-									new EGroumDataEdge(def, source, REFERENCE);
-					}
-				}
-				pdg.dataSources = remains;
-			}
+            connectSinksToSourcesOf(pdg);
 			for (EGroumNode sink : pdg.sinks)
 				sink.consumeDefStore(this);
 		}
@@ -1749,6 +1735,24 @@ public class EGroumGraph implements Serializable {
 			returns.addAll(pdg.returns);
 		}
 	}
+
+    private void connectSinksToSourcesOf(EGroumGraph pdg) {
+        if (!sinks.isEmpty()) {
+            HashSet<EGroumDataNode> remains = new HashSet<EGroumDataNode>();
+            for (EGroumDataNode source : pdg.dataSources) {
+                for (EGroumNode sink : sinks) {
+                    HashSet<EGroumDataNode> defs = sink.defStore.get(source.key);
+                    if (defs == null || defs.isEmpty())
+                        remains.add(source);
+                    else
+                        for (EGroumDataNode def : defs)
+                            if (!source.hasInDataNode(def, REFERENCE))
+                                new EGroumDataEdge(def, source, REFERENCE);
+                }
+            }
+            pdg.dataSources = remains;
+        }
+    }
 
 	private void mergeParallel(EGroumGraph... pdgs) {
 		for (EGroumGraph pdg : pdgs)
@@ -1994,21 +1998,7 @@ public class EGroumGraph implements Serializable {
             // sinks to connect to the sources of the right side.
             this.statementSources.addAll(pdg.statementSources);
         }
-		if (!sinks.isEmpty()) {
-			HashSet<EGroumDataNode> remains = new HashSet<EGroumDataNode>();
-			for (EGroumDataNode source : pdg.dataSources) {
-				for (EGroumNode sink : sinks) {
-					HashSet<EGroumDataNode> defs = sink.defStore.get(source.key);
-					if (defs == null || defs.isEmpty())
-						remains.add(source);
-					else
-						for (EGroumDataNode def : defs)
-							if (!source.hasInDataNode(def, REFERENCE))
-								new EGroumDataEdge(def, source, REFERENCE);
-				}
-			}
-			pdg.dataSources = remains;
-		}
+        connectSinksToSourcesOf(pdg);
 		for (EGroumNode sink : pdg.sinks)
 			sink.consumeDefStore(this);
 		for (EGroumNode sink : statementSinks) {
