@@ -22,4 +22,28 @@ public class AUGBuilderSmokeTest {
                 "  }" +
                 "}");
     }
+
+    /**
+     * When adjusting control edges from the outer finally, through the try block, to the if, we accidentally generated
+     * a cycle, because there was a superfluous edge from the bock to the condition (null check).
+     */
+    @Test
+    public void bug_cycleGeneratedInAdjustControlsDueToAdditionalDependencyFromFinallyBlockToFirstActionInFinally() {
+        buildAUGForMethod("void renameFile(java.io.InputStream in, java.io.OutputStream out) throws IOException {\n" +
+                "    try {\n" +
+                "      old.delete();\n" +
+                "    }\n" +
+                "    finally {\n" +
+                "      try {\n" +
+                "        if (in != null) {\n" +
+                "          try {\n" +
+                "            in.close();\n" +
+                "          } catch (IOException e) {\n" +
+                "            throw new RuntimeException();\n" +
+                "          }\n" +
+                "        }\n" +
+                "      } finally {}\n" +
+                "    }\n" +
+                "  }");
+    }
 }

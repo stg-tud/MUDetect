@@ -583,7 +583,9 @@ public class EGroumGraph implements Serializable {
 			// TODO append finally block to all possible throw points
 			EGroumControlNode fn = new EGroumControlNode(control, branch, astNode.getFinally(), astNode.getFinally().getNodeType());
 			EGroumGraph fg = new EGroumGraph(context, fn, configuration);
-			fg.mergeSequential(buildPDG(fn, "", astNode.getFinally()));
+            EGroumGraph pdg1 = buildPDG(fn, "", astNode.getFinally());
+            pdg1.statementSources.clear();
+            fg.mergeSequential(pdg1);
 			pdg.mergeSequential(fg);
 			for (EGroumActionNode m : triedMethods) {
 				if (triedMethods.size() == 1 || (m.exceptionTypes != null && !m.exceptionTypes.isEmpty()))
