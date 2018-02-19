@@ -8,24 +8,21 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public class VeryPrevalentNodePredicate implements Predicate<Node> {
-    private static final Set<String> veryPrevalentTypes = new HashSet<>();
+    private static final Set<String> veryUnspecificTypes = new HashSet<>();
 
     static {
-        veryPrevalentTypes.add("Object");
-        veryPrevalentTypes.add("Class");
-        veryPrevalentTypes.add("String");
-        veryPrevalentTypes.add("CharSequence");
-        veryPrevalentTypes.add("Arrays");
-        veryPrevalentTypes.add("System");
-        veryPrevalentTypes.add("Throwable");
-        veryPrevalentTypes.add("Exception");
+        veryUnspecificTypes.add("Object");
+        veryUnspecificTypes.add("Class");
+        veryUnspecificTypes.add("System");
+        veryUnspecificTypes.add("Throwable");
+        veryUnspecificTypes.add("Exception");
     }
 
     @Override
     public boolean test(Node node) {
         if (node instanceof MethodCallNode) {
             String declaringTypeName = ((MethodCallNode) node).getDeclaringTypeName();
-            return veryPrevalentTypes.contains(declaringTypeName);
+            return veryUnspecificTypes.contains(declaringTypeName);
         }
         return false;
     }
