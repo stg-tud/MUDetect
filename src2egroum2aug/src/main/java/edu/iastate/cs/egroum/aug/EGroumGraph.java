@@ -1519,8 +1519,10 @@ public class EGroumGraph implements Serializable {
 				astNode, astNode.getNodeType());
 		pdg.mergeSequentialData(node, CONDITION);
 		EGroumGraph bg = buildPDG(node, "", astNode.getBody());
-		if (!bg.isEmpty())
-			pdg.mergeSequential(bg);
+		if (!bg.isEmpty()) {
+		    bg.statementSources.clear();
+            pdg.mergeSequential(bg);
+		}
 		HashSet<EGroumActionNode> nodes = new HashSet<>();
 		if (triedMethods.size() == 1) {
 			nodes.add(triedMethods.get(0));
