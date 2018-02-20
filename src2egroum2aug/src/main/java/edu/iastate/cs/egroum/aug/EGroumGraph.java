@@ -2167,27 +2167,13 @@ public class EGroumGraph implements Serializable {
 	private void buildSequentialClosure() {
         Map<EGroumNode, HashSet<EGroumNode>> predRelation = buildPredecessorRelation();
 
-        // Since the predecessor relation is transitive, we have that for every two nodes n1 and n2, if n1 is a
-        // predecessor of n2 than relation.get(n1).size() < relation.get(n2).size(), because relation.get(n2)
-        // contains at least all elements of relation.get(n1) plus n1 itself. Thus, if we order the nodes by the
-        // number of their predecessors, all predecessors are sorted before their successors.
-        List<EGroumNode> nodesInPredOrder = predRelation.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(this::compareBySize))
-                .map(Map.Entry::getKey).collect(toList());
-
-        List<EGroumNode> traversedNodes = new ArrayList<>();
-        for (EGroumNode node : nodesInPredOrder) {
+        for (EGroumNode node : predRelation.keySet()) {
             if (node.getAstNodeType() == ASTNode.METHOD_INVOCATION || node.isCoreAction()) {
-                HashSet<EGroumNode> preNodes = predRelation.get(node);
-                for (int j = traversedNodes.size() - 1; j >= 0; j--) {
-                    EGroumNode preNode = traversedNodes.get(j);
-                    if (preNodes.contains(preNode)
-                            && ((EGroumActionNode) node).hasBackwardDataDependence((EGroumActionNode) preNode)
-                            && !areInDifferentCatches(node, preNodes)) {
+                for (EGroumNode preNode : predRelation.get(node)) {
+                    if (preNode.getAstNodeType() == ASTNode.METHOD_INVOCATION || preNode.isCoreAction()) {
                         new EGroumDataEdge(preNode, node, ORDER);
                     }
                 }
-                traversedNodes.add(node);
             }
         }
 	}
