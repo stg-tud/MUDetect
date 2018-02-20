@@ -102,10 +102,9 @@ public class EGroumActionNode extends EGroumNode {
 	private boolean hasDataDependencyViaActionsOn(EGroumActionNode preNode) {
 		for (EGroumEdge edge : inEdges) {
 			if (edge instanceof EGroumDataEdge) {
-				if (edge.source == preNode) {
+				if ((edge.source == preNode) ||
+						(edge.source instanceof EGroumActionNode && ((EGroumActionNode) edge.source).hasDataDependencyViaActionsOn(preNode))) {
 					return true;
-				} else if (edge.source instanceof EGroumActionNode) {
-					return ((EGroumActionNode) edge.source).hasDataDependencyViaActionsOn(preNode);
 				}
 			}
 		}
