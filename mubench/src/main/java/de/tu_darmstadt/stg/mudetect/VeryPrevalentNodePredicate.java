@@ -14,6 +14,7 @@ public class VeryPrevalentNodePredicate implements Predicate<Node> {
         veryUnspecificTypes.add("Object");
         veryUnspecificTypes.add("Class");
         veryUnspecificTypes.add("System");
+        veryUnspecificTypes.add("AutoCloseable");
         veryUnspecificTypes.add("Throwable");
         veryUnspecificTypes.add("Exception");
     }
