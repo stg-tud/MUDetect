@@ -31,7 +31,7 @@ public class AlternativePatternsIntegrationTest {
         MuDetect detector = new MuDetect(() -> asSet(pattern),
                 new AlternativeMappingsOverlapsFinder(new SubtypeDataNodeMatcher(typeHierarchy).or(new EquallyLabelledNodeMatcher())),
                 new MissingElementViolationPredicate(),
-                new NoRankingStrategy());
+                new NoRankingStrategy()::rankViolations);
 
         List<Violation> violations = detector.findViolations(asSet(target));
 
@@ -59,7 +59,7 @@ public class AlternativePatternsIntegrationTest {
         MuDetect detector = new MuDetect(() -> asSet(pattern),
                 new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher()),
                 new MissingElementViolationPredicate(),
-                new NoRankingStrategy());
+                new NoRankingStrategy()::rankViolations);
 
         List<Violation> violations = detector.findViolations(asSet(target));
 
@@ -101,7 +101,7 @@ public class AlternativePatternsIntegrationTest {
         MuDetect detector = new MuDetect(() -> asSet(pattern),
                 new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher()),
                 new MissingElementViolationPredicate(),
-                new NoRankingStrategy());
+                new NoRankingStrategy()::rankViolations);
 
         List<Violation> violations = detector.findViolations(asSet(target));
 

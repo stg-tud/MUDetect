@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.model.Overlaps;
 import edu.iastate.cs.mudetect.mining.Model;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
@@ -16,6 +17,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.someAUG;
 import static edu.iastate.cs.mudetect.mining.TestPatternBuilder.somePattern;
@@ -42,7 +44,7 @@ public class MuDetectTest {
         final Collection<APIUsageExample> targets = singletonList(target);
         final Overlap overlap = someOverlap(pattern, target);
         final Violation violation = new Violation(overlap, 1, "constant rank");
-        final ViolationRankingStrategy rankingStrategy = new NoRankingStrategy();
+        final BiFunction<Overlaps, Model, List<Violation>> rankingStrategy = new NoRankingStrategy()::rankViolations;
 
         context.checking(new Expectations() {{
             oneOf(model).getPatterns(); will(returnValue(Collections.singleton(pattern)));
@@ -63,7 +65,7 @@ public class MuDetectTest {
         final APIUsageExample target = someAUG();
         final Collection<APIUsageExample> targets = singletonList(target);
         final Overlap overlap = someOverlap(pattern, target);
-        final ViolationRankingStrategy rankingStrategy = new NoRankingStrategy();
+        final BiFunction<Overlaps, Model, List<Violation>> rankingStrategy = new NoRankingStrategy()::rankViolations;
 
         context.checking(new Expectations() {{
             oneOf(model).getPatterns(); will(returnValue(Collections.singleton(pattern)));

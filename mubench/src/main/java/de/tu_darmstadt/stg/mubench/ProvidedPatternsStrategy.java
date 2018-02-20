@@ -45,7 +45,7 @@ public class ProvidedPatternsStrategy extends MuDetectStrategy {
                 new WeightRankingStrategy(
                         new OverlapWithoutEdgesToMissingNodesWeightFunction(
                                 new ConstantNodeWeightFunction()
-                        )));
+                        ))::rankViolations);
     }
 
     @Override
