@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import static de.tu_darmstadt.stg.mudetect.AlternativeViolationPredicate.firstAlternativeViolation;
+
 class DefaultFilterAndRankingStrategy implements BiFunction<Overlaps, Model, List<Violation>> {
     private final ViolationRankingStrategy rankingStrategy;
     private final AlternativePatternInstancePredicate alternativePatternInstancePredicate;
@@ -27,6 +29,7 @@ class DefaultFilterAndRankingStrategy implements BiFunction<Overlaps, Model, Lis
         List<Violation> violations = rankingStrategy.rankViolations(overlaps, model);
         return violations.stream()
                 .filter(violation -> isNotAlternativePatternInstance(violation, overlaps))
+                .filter(firstAlternativeViolation())
                 .collect(Collectors.toList());
     }
 

@@ -3,7 +3,6 @@ package de.tu_darmstadt.stg.mubench;
 import de.tu_darmstadt.stg.mubench.cli.DetectorArgs;
 import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
-import de.tu_darmstadt.stg.mudetect.model.Violation;
 import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.overlapsfinder.EmptyOverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.EverythingViolationPredicate;
@@ -17,7 +16,6 @@ import edu.iastate.cs.egroum.aug.AUGBuilder;
 
 import java.io.FileNotFoundException;
 import java.util.Collection;
-import java.util.List;
 
 public class ProvidedPatternsStrategy extends MuDetectStrategy {
     @Override
@@ -48,9 +46,4 @@ public class ProvidedPatternsStrategy extends MuDetectStrategy {
                         ))::rankViolations);
     }
 
-    @Override
-    protected List<Violation> filterViolations(List<Violation> violations) {
-        // Filter nothing, to determine the *upper bound* of recall.
-        return violations;
-    }
 }
