@@ -2181,7 +2181,7 @@ public class EGroumGraph implements Serializable {
                 HashSet<EGroumNode> preNodes = predRelation.get(node);
                 for (int j = traversedNodes.size() - 1; j >= 0; j--) {
                     EGroumNode preNode = traversedNodes.get(j);
-                    if (preNodes.contains(preNode) && !node.hasInNode(preNode)
+                    if (preNodes.contains(preNode)
                             && ((EGroumActionNode) node).hasBackwardDataDependence((EGroumActionNode) preNode)
                             && !areInDifferentCatches(node, preNodes)) {
                         new EGroumDataEdge(preNode, node, ORDER);
