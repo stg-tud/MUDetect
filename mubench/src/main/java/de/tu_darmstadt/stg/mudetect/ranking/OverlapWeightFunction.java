@@ -17,4 +17,9 @@ public class OverlapWeightFunction implements ViolationWeightFunction {
         int patternSize = violation.getPattern().getSize();
         return String.format("overlap = %d / %d", violationSize, patternSize);
     }
+
+    @Override
+    public String getId() {
+        return "O";
+    }
 }

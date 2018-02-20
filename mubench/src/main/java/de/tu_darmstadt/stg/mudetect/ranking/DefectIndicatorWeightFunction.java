@@ -25,4 +25,9 @@ public class DefectIndicatorWeightFunction implements ViolationWeightFunction {
         int violationSupport = overlaps.getNumberOfEqualViolations(violation);
         return String.format("(%s) * %d / %d", uniquenessFormula, patternSupport, violationSupport);
     }
+
+    @Override
+    public String getId() {
+        return "DefectIndicator";
+    }
 }

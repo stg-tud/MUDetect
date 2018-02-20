@@ -21,4 +21,9 @@ public class RarenessWeightFunction implements ViolationWeightFunction {
         int violationSupport = overlaps.getNumberOfEqualViolations(violation);
         return String.format("1 - (%d / %d)", violationSupport, patternSupport);
     }
+
+    @Override
+    public String getId() {
+        return "Rareness";
+    }
 }

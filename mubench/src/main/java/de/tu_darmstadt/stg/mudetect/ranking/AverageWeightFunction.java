@@ -29,4 +29,16 @@ public class AverageWeightFunction implements ViolationWeightFunction {
         stringBuilder.append(") / ").append(strategies.length);
         return stringBuilder.toString();
     }
+
+    @Override
+    public String getId() {
+        StringBuilder sb = new StringBuilder("AVG(");
+        for (int i = 0; i < strategies.length; i++) {
+            if (i > 0) {
+                sb.append("+");
+            }
+            sb.append(strategies[i].getId());
+        }
+        return sb.append(")").toString();
+    }
 }

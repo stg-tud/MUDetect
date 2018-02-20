@@ -25,4 +25,9 @@ public class PatternSizeWeightFunction implements ViolationWeightFunction {
                 getPatternWeight(violation),
                 getMaxPatternWeight(model));
     }
+
+    @Override
+    public String getId() {
+        return "PSize";
+    }
 }

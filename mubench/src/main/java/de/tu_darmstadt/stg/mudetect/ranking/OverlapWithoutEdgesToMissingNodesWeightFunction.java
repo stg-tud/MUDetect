@@ -47,4 +47,9 @@ public class OverlapWithoutEdgesToMissingNodesWeightFunction implements Violatio
     private boolean isConnectedTo(Edge patternEdge, Set<Node> missingNodes) {
         return !missingNodes.contains(patternEdge.getSource()) && !missingNodes.contains(patternEdge.getTarget());
     }
+
+    @Override
+    public String getId() {
+        return "O-E2MN";
+    }
 }

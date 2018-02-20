@@ -21,4 +21,9 @@ public class ConfidenceWeightFunction implements ViolationWeightFunction {
         int patternViolations = overlaps.getViolationsOfSamePattern(violation).size();
         return String.format("%d / (%d + %d)", patternSupport, patternSupport, patternViolations);
     }
+
+    @Override
+    public String getId() {
+        return "Confidence";
+    }
 }
