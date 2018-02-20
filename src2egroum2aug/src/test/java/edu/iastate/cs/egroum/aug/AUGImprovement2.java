@@ -497,7 +497,7 @@ public class AUGImprovement2 {
         return AUGBuilderTestUtils.buildAUGsFromFile(inputPath, config);
     }
 
-    private static void exportAUGsAsPNG(Collection<APIUsageExample> augs) {
-        AUGTestUtils.exportAUGsAsPNG(augs, "./aug-improvement", "");
+    private void exportAUGsAsPNG(Collection<APIUsageExample> augs) {
+        AUGTestUtils.exportAUGsAsPNG(augs, "./aug-improvement", name.getMethodName());
     }
 }
