@@ -14,4 +14,9 @@ public class PatternViolationsWeightFunction implements ViolationWeightFunction 
     public String getFormula(Overlap violation, Overlaps overlaps, Model model) {
         return String.format("pattern violations = 1 / %d", overlaps.getViolationsOfSamePattern(violation).size());
     }
+
+    @Override
+    public String getId() {
+        return "PV";
+    }
 }

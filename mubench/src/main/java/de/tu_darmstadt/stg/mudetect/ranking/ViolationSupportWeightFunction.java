@@ -14,4 +14,9 @@ public class ViolationSupportWeightFunction implements ViolationWeightFunction {
     public String getFormula(Overlap violation, Overlaps overlaps, Model model) {
         return String.format("violation support = 1 / %d", overlaps.getNumberOfEqualViolations(violation));
     }
+
+    @Override
+    public String getId() {
+        return "VS";
+    }
 }

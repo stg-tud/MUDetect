@@ -17,4 +17,9 @@ public class PatternSameSizeSupportWeightFunction implements ViolationWeightFunc
         APIUsagePattern pattern = violation.getPattern();
         return String.format("pattern support = %d / %d", pattern.getSupport(), model.getMaxPatternSupport(pattern.getNodeSize()));
     }
+
+    @Override
+    public String getId() {
+        return "PS-ss";
+    }
 }

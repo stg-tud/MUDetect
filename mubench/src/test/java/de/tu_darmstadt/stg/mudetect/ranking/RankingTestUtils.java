@@ -16,6 +16,11 @@ public class RankingTestUtils {
             public String getFormula(Overlap violation, Overlaps overlaps, Model model) {
                 throw new UnsupportedOperationException();
             }
+
+            @Override
+            public String getId() {
+                return ":test-weight-function:";
+            }
         };
     }
 

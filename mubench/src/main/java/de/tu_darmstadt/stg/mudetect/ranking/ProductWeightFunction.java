@@ -27,4 +27,16 @@ public class ProductWeightFunction implements ViolationWeightFunction {
                 .map(factor -> factor.getFormula(violation, overlaps, model))
                 .collect(Collectors.joining(")*(", "(", ")"));
     }
+
+    @Override
+    public String getId() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < factors.length; i++) {
+            if (i > 0) {
+                sb.append("*");
+            }
+            sb.append(factors[i].getId());
+        }
+        return sb.toString();
+    }
 }

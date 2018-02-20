@@ -60,4 +60,9 @@ public class PatternUniquenessWeightFunction implements ViolationWeightFunction 
         String api = getAPIInvolvedInMostViolations(overlaps, pattern);
         return String.format("1 / %d (%s)", getNumberOfViolationsInvolvingAPI(overlaps, api), api);
     }
+
+    @Override
+    public String getId() {
+        return "PU";
+    }
 }

@@ -8,4 +8,6 @@ public interface ViolationWeightFunction {
     double getWeight(Overlap violation, Overlaps overlaps, Model model);
 
     String getFormula(Overlap violation, Overlaps overlaps, Model model);
+
+    String getId();
 }
