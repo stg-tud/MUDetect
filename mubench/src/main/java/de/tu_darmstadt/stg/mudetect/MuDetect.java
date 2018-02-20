@@ -6,31 +6,29 @@ import de.tu_darmstadt.stg.mudetect.model.*;
 import edu.iastate.cs.mudetect.mining.Model;
 
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class MuDetect {
 
     private final Model model;
     private final OverlapsFinder overlapsFinder;
     private final ViolationPredicate violationPredicate;
-    private final ViolationRankingStrategy rankingStrategy;
-    private final AlternativePatternInstancePredicate alternativePatternInstancePredicate;
+    private final BiFunction<Overlaps, Model, List<Violation>> filterAndRankingStrategy;
 
     public MuDetect(Model model,
                     OverlapsFinder overlapsFinder,
                     ViolationPredicate violationPredicate,
-                    ViolationRankingStrategy rankingStrategy) {
+                    BiFunction<Overlaps, Model, List<Violation>> filterAndRankingStrategy) {
         this.model = model;
         this.overlapsFinder = overlapsFinder;
         this.violationPredicate = violationPredicate;
-        this.rankingStrategy = rankingStrategy;
-        // SMELL this is untested behaviour, because it's very hard to test in this context. Can we separate it?
-        this.alternativePatternInstancePredicate = new AlternativePatternInstancePredicate();
+        this.filterAndRankingStrategy = filterAndRankingStrategy;
     }
 
     public List<Violation> findViolations(Collection<APIUsageExample> targets) {
         final Overlaps overlaps = findOverlaps(targets, model.getPatterns());
-        overlaps.removeViolationIf(violation -> isAlternativePatternInstance(violation, overlaps));
-        return rankingStrategy.rankViolations(overlaps, model);
+        return filterAndRankingStrategy.apply(overlaps, model);
     }
 
     private Overlaps findOverlaps(Collection<APIUsageExample> targets, Set<APIUsagePattern> patterns) {
@@ -47,11 +45,6 @@ public class MuDetect {
             }
         }
         return overlaps;
-    }
-
-    private boolean isAlternativePatternInstance(Overlap violation, Overlaps overlaps) {
-        Set<Overlap> instancesInViolationTarget = overlaps.getInstancesInSameTarget(violation);
-        return alternativePatternInstancePredicate.test(violation, instancesInViolationTarget);
     }
 }
 
