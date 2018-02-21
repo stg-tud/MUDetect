@@ -1,6 +1,5 @@
 package edu.iastate.cs.egroum.aug;
 
-import de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import org.junit.Test;
 
@@ -153,9 +152,6 @@ public class EncodeCallOrderTest {
         assertThat(aug, hasOrderEdge(actionNodeWith(label("Properties.<init>")), actionNodeWith(label("Dictionary.put()"))));
     }
 
-    /**
-     * SMELL indeterministic?
-     */
     @Test
     public void capturesOrderAcrossIfs() {
         APIUsageExample aug = buildAUGForMethod("void m(Object nextTermsHash, java.util.Iterator it) {\n" +
@@ -173,9 +169,6 @@ public class EncodeCallOrderTest {
         assertThat(aug, hasOrderEdge(actionNodeWith(label("HashMap.<init>")), actionNodeWith(label("Map.put()"))));
     }
 
-    /**
-     * SMELL should fail, but doesn't...
-     */
     @Test
     public void capturesOrderOutOfIfOverWhile() {
         APIUsageExample aug = buildAUGForMethod("void m(java.io.InputStream in, Reply reply) {\n" +
