@@ -65,4 +65,18 @@ public class EncodeSubExpressionsControlFlowTest {
         assertThat(aug, hasOrderEdge(actionNodeWith(label("File.<init>")), actionNodeWith(label("File.exists()"))));
         assertThat(aug, hasOrderEdge(actionNodeWith(label("File.<init>")), actionNodeWith(label("<nullcheck>"))));
     }
+
+    @Test
+    public void capturesOrderWithTernaryOperator() {
+        APIUsageExample aug = buildAUGForMethod("Object m(Object o) {\n" +
+                "  return o.equals(\"foo\") ? o.hashCode() : o.wait();\n" +
+                "}");
+
+        assertThat(aug, hasOrderEdge(actionNodeWith(label("Object.equals()")), actionNodeWith(label("Object.hashCode()"))));
+        assertThat(aug, hasSelectionEdge(actionNodeWith(label("Object.equals()")), actionNodeWith(label("Object.hashCode()"))));
+        assertThat(aug, hasOrderEdge(actionNodeWith(label("Object.equals()")), actionNodeWith(label("Object.wait()"))));
+        assertThat(aug, hasSelectionEdge(actionNodeWith(label("Object.equals()")), actionNodeWith(label("Object.wait()"))));
+        assertThat(aug, not(hasOrderEdge(actionNodeWith(label("Object.hashCode()")), actionNodeWith(label("Object.wait()")))));
+        assertThat(aug, not(hasOrderEdge(actionNodeWith(label("Object.<init>")), actionNodeWith(label("Object.hashCode()")))));
+    }
 }
