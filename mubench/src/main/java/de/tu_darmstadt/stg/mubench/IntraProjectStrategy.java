@@ -38,9 +38,9 @@ public class IntraProjectStrategy extends MuDetectStrategy {
                         new MissingElementViolationPredicate()),
                 new DefaultFilterAndRankingStrategy(new WeightRankingStrategy(
                         new ProductWeightFunction(
+                                new OverlapWithoutEdgesToMissingNodesWeightFunction(new ConstantNodeWeightFunction()),
                                 new PatternSupportWeightFunction(),
-                                new PatternViolationsWeightFunction(),
-                                new OverlapWithoutEdgesToMissingNodesWeightFunction(new ConstantNodeWeightFunction())
+                                new ViolationSupportWeightFunction()
                         ))));
     }
 }

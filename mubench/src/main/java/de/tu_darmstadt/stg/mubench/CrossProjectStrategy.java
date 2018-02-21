@@ -239,10 +239,10 @@ class CrossProjectStrategy implements DetectionStrategy {
                 new DefaultFilterAndRankingStrategy(
                         new WeightRankingStrategy(
                                 new ProductWeightFunction(
-                                        new PatternSupportWeightFunction(),
-                                        new PatternViolationsWeightFunction(),
-                                        new OverlapWithoutEdgesToMissingNodesWeightFunction(
-                                                new ConstantNodeWeightFunction()
+                                        new ProductWeightFunction(
+                                                new OverlapWithoutEdgesToMissingNodesWeightFunction(new ConstantNodeWeightFunction()),
+                                                new PatternSupportWeightFunction(),
+                                                new ViolationSupportWeightFunction()
                                         )))));
     }
 }
