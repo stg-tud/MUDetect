@@ -212,14 +212,4 @@ public class EncodeCallOrderTest {
 
         assertThat(aug, hasOrderEdge(actionNodeWith(label("ByteArrayOutputStream.<init>")), actionNodeWith(label("ByteArrayOutputStream.toByteArray()"))));
     }
-
-    @Test
-    public void capturesOrderIntoExpression() {
-        APIUsageExample aug = buildAUGForMethod("void m(int timestamp) {\n" +
-                "  java.io.File filrep = new java.io.File();\n" +
-                "  return ((filrep != null) && filrep.exists());" +
-                "}");
-
-        assertThat(aug, hasOrderEdge(actionNodeWith(label("File.<init>")), actionNodeWith(label("File.exists()"))));
-    }
 }

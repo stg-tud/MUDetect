@@ -8,47 +8,61 @@ import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.actionNodeW
 import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.dataNodeWith;
 import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodePropertyMatchers.label;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGForMethod;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
-public class EncodeSubExpressionsOrderTest {
+public class EncodeSubExpressionsControlFlowTest {
 	
     @Test
-    public void encodeSubExpressionsOrderTest() {
+    public void capturesSubexpressionOrder() {
         APIUsageExample aug = buildAUGForMethod("boolean m(java.util.List l) {\n" +
                 "  return l != null && l.isEmpty();\n" +
                 "}");
 
-        assertThat(aug, hasParameterEdge(dataNodeWith(label("boolean")), actionNodeWith(label("return"))));
-        assertThat(aug, hasDefinitionEdge(actionNodeWith(label("<nullcheck>")), dataNodeWith(label("boolean"))));
-        assertThat(aug, hasDefinitionEdge(actionNodeWith(label("Collection.isEmpty()")), dataNodeWith(label("boolean"))));
         assertThat(aug, hasOrderEdge(actionNodeWith(label("<nullcheck>")), actionNodeWith(label("Collection.isEmpty()"))));
+        assertThat(aug, not(hasOrderEdge(actionNodeWith(label("Collection.isEmpty()")), actionNodeWith(label("<nullcheck>")))));
     }
 	
     @Test
-    public void encodeSubExpressionsControlTest1() {
+    public void capturesSubexpressionControlRelation() {
         APIUsageExample aug = buildAUGForMethod("boolean m(java.util.List l) {\n" +
                 "  return l != null && l.isEmpty();\n" +
                 "}");
 
-        assertThat(aug, hasParameterEdge(dataNodeWith(label("boolean")), actionNodeWith(label("return"))));
-        assertThat(aug, hasDefinitionEdge(actionNodeWith(label("<nullcheck>")), dataNodeWith(label("boolean"))));
-        assertThat(aug, hasDefinitionEdge(actionNodeWith(label("Collection.isEmpty()")), dataNodeWith(label("boolean"))));
-        assertThat(aug, hasOrderEdge(actionNodeWith(label("<nullcheck>")), actionNodeWith(label("Collection.isEmpty()"))));
         assertThat(aug, hasSelectionEdge(actionNodeWith(label("<nullcheck>")), actionNodeWith(label("Collection.isEmpty()"))));
     }
 
     @Test
-    public void encodeSubExpressionsControlTest2() {
+    public void capturesSubexpressionOrderAndControlRelationFromExtractedSubexpression() {
         APIUsageExample aug = buildAUGForMethod("boolean m(java.util.List l) {\n" +
                 "  boolean b = l != null;\n" +
                 "  return b && l.isEmpty();\n" +
                 "}");
 
-        assertThat(aug, hasParameterEdge(dataNodeWith(label("boolean")), actionNodeWith(label("return"))));
-        assertThat(aug, hasDefinitionEdge(actionNodeWith(label("<nullcheck>")), dataNodeWith(label("boolean"))));
-        assertThat(aug, hasDefinitionEdge(actionNodeWith(label("Collection.isEmpty()")), dataNodeWith(label("boolean"))));
         assertThat(aug, hasOrderEdge(actionNodeWith(label("<nullcheck>")), actionNodeWith(label("Collection.isEmpty()"))));
         assertThat(aug, hasSelectionEdge(actionNodeWith(label("<nullcheck>")), actionNodeWith(label("Collection.isEmpty()"))));
     }
 
+    @Test
+    public void capturesSubexpressionOrderRelationFromExtractedSubexpressions() {
+        APIUsageExample aug = buildAUGForMethod("boolean m(java.util.List l) {\n" +
+                "  boolean b = l != null;\n" +
+                "  boolean c = l.isEmpty();\n" +
+                "  return b && c;\n" +
+                "}");
+
+        assertThat(aug, hasOrderEdge(actionNodeWith(label("<nullcheck>")), actionNodeWith(label("Collection.isEmpty()"))));
+        assertThat(aug, not(hasSelectionEdge(actionNodeWith(label("<nullcheck>")), actionNodeWith(label("Collection.isEmpty()")))));
+    }
+
+    @Test
+    public void capturesOrderToSubexpressions() {
+        APIUsageExample aug = buildAUGForMethod("void m(int timestamp) {\n" +
+                "  java.io.File filrep = new java.io.File();\n" +
+                "  return ((filrep != null) && filrep.exists());" +
+                "}");
+
+        assertThat(aug, hasOrderEdge(actionNodeWith(label("File.<init>")), actionNodeWith(label("File.exists()"))));
+        assertThat(aug, hasOrderEdge(actionNodeWith(label("File.<init>")), actionNodeWith(label("<nullcheck>"))));
+    }
 }
