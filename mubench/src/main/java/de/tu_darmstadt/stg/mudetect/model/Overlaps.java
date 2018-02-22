@@ -4,7 +4,9 @@ import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Overlaps {
     private Map<APIUsageExample, Set<Overlap>> instancesByTarget = new HashMap<>();
@@ -59,5 +61,13 @@ public class Overlaps {
             }
         }
         return numberOfEqualViolations;
+    }
+
+    public void mapViolations(Function<Overlap, Overlap> mapping) {
+        Set<Overlap> violations = new HashSet<>(this.violations);
+        this.violations.clear();
+        this.violationsByPattern.clear();
+        this.violationsByTarget.clear();
+        violations.stream().map(mapping).forEach(this::addViolation);
     }
 }
