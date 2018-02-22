@@ -25,17 +25,16 @@ class DefaultFilterAndRankingStrategy implements BiFunction<Overlaps, Model, Lis
 
     @Override
     public List<Violation> apply(Overlaps overlaps, Model model) {
+        overlaps.removeViolationIf(violation -> isAlternativePatternInstance(violation, overlaps));
         // TODO separate ranking into map to Violation with compute confidence and sort by confidence
         List<Violation> violations = rankingStrategy.rankViolations(overlaps, model);
         return violations.stream()
-                .filter(violation -> isNotAlternativePatternInstance(violation, overlaps))
                 .filter(firstAlternativeViolation())
                 .collect(Collectors.toList());
     }
 
-    private boolean isNotAlternativePatternInstance(Violation violation, Overlaps overlaps) {
-        Overlap overlap = violation.getOverlap();
-        Set<Overlap> instancesInViolationTarget = overlaps.getInstancesInSameTarget(overlap);
-        return !alternativePatternInstancePredicate.test(overlap, instancesInViolationTarget);
+    private boolean isAlternativePatternInstance(Overlap violation, Overlaps overlaps) {
+        Set<Overlap> instancesInViolationTarget = overlaps.getInstancesInSameTarget(violation);
+        return alternativePatternInstancePredicate.test(violation, instancesInViolationTarget);
     }
 }
