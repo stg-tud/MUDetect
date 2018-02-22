@@ -44,7 +44,10 @@ public class AlternativeRankingAndFilterStrategy implements BiFunction<Overlaps,
 
         List<Violation> violations = new ArrayList<>();
         for (Overlap violationOverlap : overlaps.getViolations()) {
-            violations.add(new Violation(violationOverlap, 1.0, getRankInfo(alternativeRankings, violationOverlap)));
+            String rankInfo = getRankInfo(alternativeRankings, violationOverlap);
+            if (rankInfo != null) {
+                violations.add(new Violation(violationOverlap, 1.0, rankInfo));
+            }
         }
         return violations;
     }
@@ -72,15 +75,16 @@ public class AlternativeRankingAndFilterStrategy implements BiFunction<Overlaps,
         StringBuilder rankInfo =
                 new StringBuilder("<table style=\"display:block;height:400px;width:500px;overflow:scroll;border: 1px solid black;\">")
                 .append("<thead><tr><th>Strategy</th><th>Rank</th><th>Desc</th></tr></thead><tbody>");
+        boolean possiblyNotFiltered = false;
         for (String strategyId : alternativeRankings.keySet()) {
             List<Violation> alternativeRanking = alternativeRankings.get(strategyId);
-            appendRankInfo(rankInfo, strategyId, alternativeRanking, violationOverlap);
+            possiblyNotFiltered |= appendRankInfo(rankInfo, strategyId, alternativeRanking, violationOverlap);
         }
         rankInfo.append("</tbody></table>");
-        return rankInfo.toString();
+        return possiblyNotFiltered ? rankInfo.toString() : null;
     }
 
-    private void appendRankInfo(StringBuilder rankInfo, String strategyId, List<Violation> alternativeRanking, Overlap violationOverlap) {
+    private boolean appendRankInfo(StringBuilder rankInfo, String strategyId, List<Violation> alternativeRanking, Overlap violationOverlap) {
         int rank = 0;
         Violation violation = null;
         for (; rank < alternativeRanking.size(); rank++) {
@@ -90,10 +94,10 @@ public class AlternativeRankingAndFilterStrategy implements BiFunction<Overlaps,
             }
         }
 
-        appendRankInfo(rankInfo, strategyId, rank, violation);
+        return appendRankInfo(rankInfo, strategyId, rank, violation);
     }
 
-    private void appendRankInfo(StringBuilder rankInfo, String strategyId, int rank, Violation violation) {
+    private boolean appendRankInfo(StringBuilder rankInfo, String strategyId, int rank, Violation violation) {
         rankInfo.append("<tr><td>").append(strategyId);
         if (violation != null) {
             rankInfo.append("</td><td>").append(rank)
@@ -103,5 +107,6 @@ public class AlternativeRankingAndFilterStrategy implements BiFunction<Overlaps,
                     .append("</td><td>").append("filtered");
         }
         rankInfo.append("</td></tr>");
+        return violation != null;
     }
 }
