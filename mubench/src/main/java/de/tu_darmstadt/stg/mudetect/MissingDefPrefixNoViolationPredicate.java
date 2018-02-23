@@ -31,7 +31,7 @@ public class MissingDefPrefixNoViolationPredicate implements ViolationPredicate 
 
     private boolean haveSingleSource(Set<Edge> missingDirectConnectionEdges) {
         Set<Node> sourceNodes = missingDirectConnectionEdges.stream()
-                .map(edge -> edge.getSource()).collect(Collectors.toSet());
+                .map(Edge::getSource).collect(Collectors.toSet());
         return sourceNodes.size() == 1;
     }
 
