@@ -1,6 +1,8 @@
 package de.tu_darmstadt.stg.mubench;
 
 import de.tu_darmstadt.stg.mudetect.AlternativePatternInstancePredicate;
+import de.tu_darmstadt.stg.mudetect.InstanceMethodCallPredicate;
+import de.tu_darmstadt.stg.mudetect.VeryUnspecificReceiverTypePredicate;
 import de.tu_darmstadt.stg.mudetect.ViolationRankingStrategy;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.Overlaps;
@@ -27,6 +29,7 @@ class DefaultFilterAndRankingStrategy implements BiFunction<Overlaps, Model, Lis
     public List<Violation> apply(Overlaps overlaps, Model model) {
         overlaps.removeViolationIf(violation -> isAlternativePatternInstance(violation, overlaps));
         overlaps.mapViolations(violation -> reduceViolation(violation, overlaps));
+        overlaps.removeViolationIf(this::containsNoStartNode);
         // TODO separate ranking into map to Violation with compute confidence and sort by confidence
         List<Violation> violations = rankingStrategy.rankViolations(overlaps, model);
         return violations.stream()
@@ -45,5 +48,11 @@ class DefaultFilterAndRankingStrategy implements BiFunction<Overlaps, Model, Lis
             violation = violation.without(instanceInSameTarget);
         }
         return violation;
+    }
+
+    private boolean containsNoStartNode(Overlap violation) {
+        // SMELL We duplicate the predicate for OverlapFinder start nodes here. Can we reuse it instead?
+        return violation.getMappedTargetNodes().stream()
+                .noneMatch(new InstanceMethodCallPredicate().and(new VeryUnspecificReceiverTypePredicate().negate()));
     }
 }
