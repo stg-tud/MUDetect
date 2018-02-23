@@ -17,6 +17,10 @@ public class VeryUnspecificReceiverTypePredicate implements Predicate<Node> {
         veryUnspecificTypes.add("AutoCloseable");
         veryUnspecificTypes.add("Throwable");
         veryUnspecificTypes.add("Exception");
+        veryUnspecificTypes.add("String");
+        veryUnspecificTypes.add("CharSequence");
+        veryUnspecificTypes.add("StringBuilder");
+        veryUnspecificTypes.add("AbstractStringBuilder");
     }
 
     @Override
