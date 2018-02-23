@@ -34,7 +34,7 @@ public class ParameterMappingTest {
 
         List<Overlap> overlaps = overlapsFinder.findOverlaps(target.build(), somePattern(pattern));
 
-        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("P", "m()").withEdge("P", PARAMETER, "m()");
+        TestOverlapBuilder overlap = buildOverlap(pattern, target).withNodes("P", "m()").withEdge("P", PARAMETER, "m()");
         assertThat(overlaps, contains(overlap));
     }
 
@@ -47,7 +47,7 @@ public class ParameterMappingTest {
 
         List<Overlap> overlaps = overlapsFinder.findOverlaps(target.build(), somePattern(pattern));
 
-        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("source()", "P", "m()")
+        TestOverlapBuilder overlap = buildOverlap(pattern, target).withNodes("source()", "P", "m()")
                 .withEdge("source()", DEFINITION, "P").withEdge("P", PARAMETER, "m()");
         assertThat(overlaps, contains(overlap));
     }
@@ -61,7 +61,7 @@ public class ParameterMappingTest {
 
         List<Overlap> overlaps = overlapsFinder.findOverlaps(target.build(), somePattern(pattern));
 
-        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("P", "m()").withEdge("P", PARAMETER, "m()");
+        TestOverlapBuilder overlap = buildOverlap(pattern, target).withNodes("P", "m()").withEdge("P", PARAMETER, "m()");
         assertThat(overlaps, contains(overlap));
     }
 
@@ -85,7 +85,7 @@ public class ParameterMappingTest {
 
         List<Overlap> overlaps = overlapsFinder.findOverlaps(target.build(), somePattern(pattern));
 
-        TestOverlapBuilder overlap = buildOverlap(target, pattern)
+        TestOverlapBuilder overlap = buildOverlap(pattern, target)
                 .withNodes("src()", "sink()").withEdge("src()", PARAMETER, "sink()")
                 .withNode("P1").withEdge("P1", PARAMETER, "sink()")
                 .withNode("P2").withEdge("src()", DEFINITION, "P2").withEdge("P2", PARAMETER, "sink()");
@@ -116,7 +116,7 @@ public class ParameterMappingTest {
 
         List<Overlap> overlaps = overlapsFinder.findOverlaps(target.build(), somePattern(pattern));
 
-        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("sur()", "con()", "int")
+        TestOverlapBuilder overlap = buildOverlap(pattern, target).withNodes("sur()", "con()", "int")
                 .withEdge("int", PARAMETER, "sur()").withEdge("int", PARAMETER, "con()")
                 .withEdge("sur()", SELECTION, "con()").withEdge("sur()", ORDER, "con()");
         assertThat(overlaps, contains(overlap));

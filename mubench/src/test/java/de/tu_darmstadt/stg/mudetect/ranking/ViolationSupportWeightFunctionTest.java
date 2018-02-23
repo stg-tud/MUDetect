@@ -23,7 +23,7 @@ public class ViolationSupportWeightFunctionTest {
 
         patternBuilder = buildAUG().withActionNodes("a", "b");
 
-        violation = buildOverlap(aTargetBuilder, patternBuilder).withNode("a", "a").build();
+        violation = buildOverlap(patternBuilder, aTargetBuilder).withNode("a", "a").build();
         overlaps = new Overlaps();
         overlaps.addViolation(violation);
     }
@@ -40,7 +40,7 @@ public class ViolationSupportWeightFunctionTest {
     @Test
     public void calculatesViolationSupportWeight_anEqualViolation() {
         TestAUGBuilder anotherTarget = buildAUG().withActionNode("a");
-        Overlap anEqualViolation = buildOverlap(anotherTarget, patternBuilder).withNode("a", "a").build();
+        Overlap anEqualViolation = buildOverlap(patternBuilder, anotherTarget).withNode("a", "a").build();
         overlaps.addViolation(anEqualViolation);
         ViolationWeightFunction weightFunction = new ViolationSupportWeightFunction();
 

@@ -19,7 +19,7 @@ public class MissingCatchNoViolationPredicateTest {
                 .withEdge("mayFail()", THROW, "SomeException")
                 .withEdge("SomeException", PARAMETER, "<catch>");
         TestAUGBuilder target = buildAUG().withActionNodes("mayFail()");
-        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("mayFail()");
+        TestOverlapBuilder overlap = buildOverlap(pattern, target).withNodes("mayFail()");
 
         Optional<Boolean> decision = new MissingCatchNoViolationPredicate().apply(overlap.build());
 
@@ -31,7 +31,7 @@ public class MissingCatchNoViolationPredicateTest {
         TestAUGBuilder pattern = buildAUG().withActionNodes("mayFail()").withDataNode("SomeException")
                 .withEdge("mayFail()", THROW, "SomeException");
         TestAUGBuilder target = buildAUG().withActionNodes("mayFail()");
-        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("mayFail()");
+        TestOverlapBuilder overlap = buildOverlap(pattern, target).withNodes("mayFail()");
 
         Optional<Boolean> decision = new MissingCatchNoViolationPredicate().apply(overlap.build());
 

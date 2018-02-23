@@ -47,7 +47,7 @@ public class FindInstancesTest {
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withEdge("A", CONDITION, "B")
                 .withDataNode("C").withEdge("A", CONDITION, "C");
 
-        TestOverlapBuilder instance = buildOverlap(target, pattern).withNodes("A", "B").withEdge("A", CONDITION, "B");
+        TestOverlapBuilder instance = buildOverlap(pattern, target).withNodes("A", "B").withEdge("A", CONDITION, "B");
 
         assertFindsOverlaps(pattern, target, instance);
     }
@@ -58,9 +58,9 @@ public class FindInstancesTest {
         TestAUGBuilder target = buildAUG().withActionNode("A").withActionNode("B1", "B").withActionNode("B2", "B")
                 .withEdge("A", CONDITION, "B1").withEdge("A", CONDITION, "B2");
 
-        TestOverlapBuilder instance1 = buildOverlap(target, pattern).withNode("A", "A")
+        TestOverlapBuilder instance1 = buildOverlap(pattern, target).withNode("A", "A")
                 .withNode("B1", "B").withEdge("A", "A", CONDITION, "B1", "B");
-        TestOverlapBuilder instance2 = buildOverlap(target, pattern).withNode("A", "A")
+        TestOverlapBuilder instance2 = buildOverlap(pattern, target).withNode("A", "A")
                 .withNode("B2", "B").withEdge("A", "A", CONDITION, "B2", "B");
         assertFindsOverlaps(pattern, target, instance1, instance2);
     }

@@ -29,8 +29,8 @@ public class OrderMappingTest {
         List<Overlap> overlaps = overlapsFinder.findOverlaps(target.build(), somePattern(pattern));
 
         assertThat(overlaps, contains(
-                buildOverlap(target, pattern).withNode("A.m()"),
-                buildOverlap(target, pattern).withNode("C.f()")));
+                buildOverlap(pattern, target).withNode("A.m()"),
+                buildOverlap(pattern, target).withNode("C.f()")));
     }
 
     @Test
@@ -45,7 +45,7 @@ public class OrderMappingTest {
         }});
         List<Overlap> overlaps = overlapsFinder.findOverlaps(target.build(), somePattern(pattern));
 
-        assertThat(overlaps, contains(buildOverlap(target, pattern).withNodes("A.m()", "C.f()")
+        assertThat(overlaps, contains(buildOverlap(pattern, target).withNodes("A.m()", "C.f()")
                 .withEdge("A.m()", ORDER, "C.f()").withEdge("A.m()", SELECTION, "C.f()")));
     }
 }

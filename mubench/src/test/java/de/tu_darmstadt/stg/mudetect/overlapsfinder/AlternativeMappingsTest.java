@@ -32,7 +32,7 @@ public class AlternativeMappingsTest {
                 .withDataNode("B").withEdge("B", PARAMETER, "A")
                 .withEdge("getB()", DEFINITION, "B").withEdge("getB()", PARAMETER, "A");
 
-        TestOverlapBuilder instance = buildOverlap(target, pattern).withNodes("A", "getB()")
+        TestOverlapBuilder instance = buildOverlap(pattern, target).withNodes("A", "getB()")
                 .withNode("B3", "B").withEdge("B3", "B", PARAMETER, "A", "A")
                 .withEdge("getB()", "getB()", DEFINITION, "B3", "B").withEdge("getB()", PARAMETER, "A");
 

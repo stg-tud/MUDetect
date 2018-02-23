@@ -37,8 +37,8 @@ public class AlternativePatternInstancePredicateTest {
         final TestAUGBuilder target = buildAUG().withActionNode("a");
         final TestAUGBuilder violatedPattern = buildAUG().withActionNodes("a", "b");
         final TestAUGBuilder satisfiedPattern = buildAUG().withActionNode("a");
-        final Overlap violation = buildOverlap(target, violatedPattern).withNode("a").build();
-        final Overlap instance = buildOverlap(target, satisfiedPattern).withNode("a").build();
+        final Overlap violation = buildOverlap(violatedPattern, target).withNode("a").build();
+        final Overlap instance = buildOverlap(satisfiedPattern, target).withNode("a").build();
         final AlternativePatternInstancePredicate filter = new AlternativePatternInstancePredicate();
 
         assertTrue(filter.test(violation, Collections.singleton(instance)));
@@ -49,8 +49,8 @@ public class AlternativePatternInstancePredicateTest {
         final TestAUGBuilder target = buildAUG().withActionNodes("a", "c");
         final TestAUGBuilder violatedPattern = buildAUG().withActionNodes("a", "b");
         final TestAUGBuilder satisfiedPattern = buildAUG().withActionNodes("a", "c");
-        final Overlap violation = buildOverlap(target, violatedPattern).withNode("a").build();
-        final Overlap instance = buildOverlap(target, satisfiedPattern).withNodes("a", "c").build();
+        final Overlap violation = buildOverlap(violatedPattern, target).withNode("a").build();
+        final Overlap instance = buildOverlap(satisfiedPattern, target).withNodes("a", "c").build();
         final AlternativePatternInstancePredicate filter = new AlternativePatternInstancePredicate();
 
         assertTrue(filter.test(violation, Collections.singleton(instance)));
@@ -61,8 +61,8 @@ public class AlternativePatternInstancePredicateTest {
         final TestAUGBuilder target = buildAUG().withActionNodes("a", "b", "c");
         final TestAUGBuilder violatedPattern = buildAUG().withActionNodes("a", "b", "d");
         final TestAUGBuilder satisfiedPattern = buildAUG().withActionNodes("a", "c");
-        final Overlap violation = buildOverlap(target, violatedPattern).withNodes("a", "b").build();
-        final Overlap instance = buildOverlap(target, satisfiedPattern).withNodes("a", "c").build();
+        final Overlap violation = buildOverlap(violatedPattern, target).withNodes("a", "b").build();
+        final Overlap instance = buildOverlap(satisfiedPattern, target).withNodes("a", "c").build();
         final AlternativePatternInstancePredicate filter = new AlternativePatternInstancePredicate();
 
         assertFalse(filter.test(violation, Collections.singleton(instance)));

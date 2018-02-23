@@ -72,7 +72,7 @@ public class TestOverlapBuilder {
         return someOverlap(somePattern(patternAUGBuilder), targetAUGBuilder.build());
     }
 
-    public static TestOverlapBuilder buildOverlap(TestAUGBuilder targetAUGBuilder, TestAUGBuilder patternAUGBuilder) {
+    public static TestOverlapBuilder buildOverlap(TestAUGBuilder patternAUGBuilder, TestAUGBuilder targetAUGBuilder) {
         return new TestOverlapBuilder(targetAUGBuilder, patternAUGBuilder);
     }
 
@@ -81,7 +81,7 @@ public class TestOverlapBuilder {
     }
 
     public static TestOverlapBuilder buildOverlap(APIUsagePattern pattern, APIUsageExample target) {
-        return buildOverlap(builderFrom(target), builderFrom(pattern));
+        return buildOverlap(builderFrom(pattern), builderFrom(target));
     }
 
     public static Overlap instance(TestAUGBuilder targetAndPatternAUGBuilder) {

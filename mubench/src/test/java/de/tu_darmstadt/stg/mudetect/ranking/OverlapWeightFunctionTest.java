@@ -18,7 +18,7 @@ public class OverlapWeightFunctionTest {
     public void considersMissingNodes() {
         TestAUGBuilder targetBuilder = buildAUG().withActionNode("a");
         TestAUGBuilder patternBuilder = extend(targetBuilder).withActionNode("b");
-        Overlap violation = buildOverlap(targetBuilder, patternBuilder).withNode("a", "a").build();
+        Overlap violation = buildOverlap(patternBuilder, targetBuilder).withNode("a", "a").build();
         ViolationWeightFunction weightFunction = new OverlapWeightFunction();
 
         double weight = weightFunction.getWeight(violation, null, null);
@@ -30,7 +30,7 @@ public class OverlapWeightFunctionTest {
     public void considersMissingEdges() {
         TestAUGBuilder targetBuilder = buildAUG().withActionNodes("a", "b");
         TestAUGBuilder patternBuilder = extend(targetBuilder).withEdge("a", ORDER, "b");
-        Overlap violation = buildOverlap(targetBuilder, patternBuilder).withNode("a", "a").build();
+        Overlap violation = buildOverlap(patternBuilder, targetBuilder).withNode("a", "a").build();
         ViolationWeightFunction weightFunction = new OverlapWeightFunction();
 
         double weight = weightFunction.getWeight(violation, null, null);

@@ -16,7 +16,7 @@ import static org.junit.Assert.assertThat;
 public class MissingDefPrefixNoViolationPredicateTest {
     @Test
     public void missingNonDefPrefixIsNoDecision() {
-        TestOverlapBuilder overlap = buildOverlap(buildAUG(), buildAUG().withActionNode("m()"));
+        TestOverlapBuilder overlap = buildOverlap(buildAUG().withActionNode("m()"), buildAUG());
 
         Optional<Boolean> decision = new MissingDefPrefixNoViolationPredicate().apply(overlap.build());
 
@@ -31,7 +31,7 @@ public class MissingDefPrefixNoViolationPredicateTest {
                 .withEdge("Object", RECEIVER, "use2()").withEdge("create()", RECEIVER, "use2()");
         TestAUGBuilder target = buildAUG().withActionNodes("use()").withDataNode("Object")
                 .withEdge("Object", RECEIVER, "use()");
-        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("use()", "Object")
+        TestOverlapBuilder overlap = buildOverlap(pattern, target).withNodes("use()", "Object")
                 .withEdge("Object", RECEIVER, "use()");
 
         Optional<Boolean> decision = new MissingDefPrefixNoViolationPredicate().apply(overlap.build());
@@ -49,7 +49,7 @@ public class MissingDefPrefixNoViolationPredicateTest {
         TestAUGBuilder target = buildAUG().withActionNodes("use()", "use2()").withDataNode("Object")
                 .withEdge("Object", RECEIVER, "use()")
                 .withEdge("Object", RECEIVER, "use2()");
-        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("use()", "use2()", "Object")
+        TestOverlapBuilder overlap = buildOverlap(pattern, target).withNodes("use()", "use2()", "Object")
                 .withEdge("Object", RECEIVER, "use()")
                 .withEdge("Object", RECEIVER, "use2()");
 
@@ -65,7 +65,7 @@ public class MissingDefPrefixNoViolationPredicateTest {
                 .withEdge("Object", RECEIVER, "use()").withEdge("create()", RECEIVER, "use()");
         TestAUGBuilder target = buildAUG().withActionNodes("use()").withDataNode("Object")
                 .withEdge("Object", RECEIVER, "use()");
-        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("use()", "Object")
+        TestOverlapBuilder overlap = buildOverlap(pattern, target).withNodes("use()", "Object")
                 .withEdge("Object", RECEIVER, "use()");
 
         Optional<Boolean> decision = new MissingDefPrefixNoViolationPredicate().apply(overlap.build());
@@ -81,7 +81,7 @@ public class MissingDefPrefixNoViolationPredicateTest {
                 .withEdge("Object", RECEIVER, "use()").withEdge("create()", RECEIVER, "use()");
         TestAUGBuilder target = buildAUG().withActionNodes("use()").withDataNodes("Object")
                 .withEdge("Object", RECEIVER, "use()");
-        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("use()", "Object")
+        TestOverlapBuilder overlap = buildOverlap(pattern, target).withNodes("use()", "Object")
                 .withEdge("Object", RECEIVER, "use()");
 
         Optional<Boolean> decision = new MissingDefPrefixNoViolationPredicate().apply(overlap.build());
@@ -101,7 +101,7 @@ public class MissingDefPrefixNoViolationPredicateTest {
                 .withEdge("Iterator", RECEIVER, "hasNext()")
                 .withEdge("Iterator", RECEIVER, "next()")
                 .withEdge("hasNext()", REPETITION, "next()");
-        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("hasNext()", "next()", "Iterator")
+        TestOverlapBuilder overlap = buildOverlap(pattern, target).withNodes("hasNext()", "next()", "Iterator")
                 .withEdge("Iterator", RECEIVER, "hasNext()")
                 .withEdge("Iterator", RECEIVER, "next()")
                 .withEdge("hasNext()", CONDITION, "next()");
@@ -138,7 +138,7 @@ public class MissingDefPrefixNoViolationPredicateTest {
                 .withEdge("Iterator", RECEIVER, "next()")
                 .withEdge("iterator()", REPETITION, "next()")
                 .withEdge("hasNext()", REPETITION, "next()");
-        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("iterator()", "hasNext()", "next()", "Iterator")
+        TestOverlapBuilder overlap = buildOverlap(pattern, target).withNodes("iterator()", "hasNext()", "next()", "Iterator")
                 .withEdge("Iterator", RECEIVER, "hasNext()")
                 .withEdge("Iterator", RECEIVER, "next()")
                 .withEdge("iterator()", CONDITION, "next()")

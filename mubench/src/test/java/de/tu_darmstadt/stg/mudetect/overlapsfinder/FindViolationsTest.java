@@ -26,7 +26,7 @@ public class FindViolationsTest {
         TestAUGBuilder pattern = buildAUG().withActionNode("C.m()")
                 .withActionNode("C.n()").withEdge("C.m()", ORDER, "C.n()");
 
-        TestOverlapBuilder violation = buildOverlap(target, pattern).withNode("C.m()");
+        TestOverlapBuilder violation = buildOverlap(pattern, target).withNode("C.m()");
         assertFindsOverlaps(pattern, target, violation);
     }
 
@@ -35,7 +35,7 @@ public class FindViolationsTest {
         TestAUGBuilder pattern = buildAUG().withActionNode("A").withActionNode("B").withEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNode("A").withActionNode("C").withEdge("A", ORDER, "C");
 
-        TestOverlapBuilder violation = buildOverlap(target, pattern).withNode("A");
+        TestOverlapBuilder violation = buildOverlap(pattern, target).withNode("A");
         assertFindsOverlaps(pattern, target, violation);
     }
 
@@ -44,8 +44,8 @@ public class FindViolationsTest {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withEdge("A", PARAMETER, "B");
 
-        TestOverlapBuilder violation1 = buildOverlap(target, pattern).withNode("A");
-        TestOverlapBuilder violation2 = buildOverlap(target, pattern).withNode("B");
+        TestOverlapBuilder violation1 = buildOverlap(pattern, target).withNode("A");
+        TestOverlapBuilder violation2 = buildOverlap(pattern, target).withNode("B");
         assertFindsOverlaps(pattern, target, violation1, violation2);
     }
 
@@ -54,8 +54,8 @@ public class FindViolationsTest {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withEdge("B", ORDER, "A");
 
-        TestOverlapBuilder violation1 = buildOverlap(target, pattern).withNode("A");
-        TestOverlapBuilder violation2 = buildOverlap(target, pattern).withNode("B");
+        TestOverlapBuilder violation1 = buildOverlap(pattern, target).withNode("A");
+        TestOverlapBuilder violation2 = buildOverlap(pattern, target).withNode("B");
         assertFindsOverlaps(pattern, target, violation1, violation2);
     }
 
@@ -80,9 +80,9 @@ public class FindViolationsTest {
                 .withEdge("A1", PARAMETER, "B")
                 .withEdge("A2", SELECTION, "B");
 
-        TestOverlapBuilder violation1 = buildOverlap(target, pattern).withNode("A1", "A").withNode("B")
+        TestOverlapBuilder violation1 = buildOverlap(pattern, target).withNode("A1", "A").withNode("B")
                 .withEdge("A1", "A", PARAMETER, "B", "B");
-        TestOverlapBuilder violation2 = buildOverlap(target, pattern).withNode("A2", "A").withNode("B")
+        TestOverlapBuilder violation2 = buildOverlap(pattern, target).withNode("A2", "A").withNode("B")
                 .withEdge("A2", "A", CONDITION, "B", "B");
 
         assertFindsOverlaps(pattern, target, violation1, violation2);
@@ -110,9 +110,9 @@ public class FindViolationsTest {
         TestAUGBuilder target = buildAUG().withActionNodes("A", "C").withActionNode("B1", "B").withActionNode("B2", "B")
                 .withEdge("A", CONDITION, "B1").withEdge("A", CONDITION, "B2").withEdge("B1", CONDITION, "C");
 
-        TestOverlapBuilder instance = buildOverlap(target, pattern).withNodes("A", "C").withNode("B1", "B")
+        TestOverlapBuilder instance = buildOverlap(pattern, target).withNodes("A", "C").withNode("B1", "B")
                 .withEdge("A", "A", CONDITION, "B1", "B").withEdge("B1", "B", CONDITION, "C", "C");
-        TestOverlapBuilder violation = buildOverlap(target, pattern).withNode("A").withNode("B2", "B")
+        TestOverlapBuilder violation = buildOverlap(pattern, target).withNode("A").withNode("B2", "B")
                 .withEdge("A", "A", CONDITION, "B2", "B");
 
         assertFindsOverlaps(pattern, target, instance, violation);
@@ -132,7 +132,7 @@ public class FindViolationsTest {
         TestAUGBuilder target = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
                 .withEdge("a1", CONDITION, "a2").withEdge("a1", CONDITION, "b").withEdge("a2", CONDITION, "b");
 
-        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("a1", "a2", "b")
+        TestOverlapBuilder overlap = buildOverlap(pattern, target).withNodes("a1", "a2", "b")
                 .withEdge("a1", CONDITION, "a2").withEdge("a1", CONDITION, "b");
 
         assertFindsOverlaps(pattern, target, overlap);
@@ -151,7 +151,7 @@ public class FindViolationsTest {
         TestAUGBuilder target = buildAUG().withActionNode("a1", "a").withActionNode("a2", "a").withActionNode("b")
                 .withEdge("a1", CONDITION, "a2").withEdge("a1", CONDITION, "b").withEdge("a2", CONDITION, "b");
 
-        TestOverlapBuilder instance = buildOverlap(target, pattern)
+        TestOverlapBuilder instance = buildOverlap(pattern, target)
                 .withNodes("a1", "a2").withEdge("a1", CONDITION, "a2")
                 .withNode("b").withEdge("a1", CONDITION, "b");
 
@@ -186,7 +186,7 @@ public class FindViolationsTest {
                 .withEdge("F", CONDITION, "D")
                 .withEdge("F", CONDITION, "E");
 
-        TestOverlapBuilder violation = buildOverlap(target, pattern).withNodes("A", "B", "C", "D", "E", "F")
+        TestOverlapBuilder violation = buildOverlap(pattern, target).withNodes("A", "B", "C", "D", "E", "F")
                 .withEdge("F", CONDITION, "A")
                 .withEdge("F", CONDITION, "B")
                 .withEdge("F", CONDITION, "C")

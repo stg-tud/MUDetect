@@ -41,7 +41,7 @@ public class ConditionMappingTest {
                 .withEdge("<", SELECTION, "A").withEdge("int", PARAMETER, "<").withEdge("float", PARAMETER, "<");
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "<").withDataNodes("int", "long")
                 .withEdge("<", SELECTION, "A").withEdge("int", PARAMETER, "<").withEdge("long", PARAMETER, "<");
-        Overlap overlap = buildOverlap(target, pattern).withNode("A").build();
+        Overlap overlap = buildOverlap(pattern, target).withNode("A").build();
 
         assertThat(overlapsFinder, findsOverlaps(target, pattern, overlap));
     }

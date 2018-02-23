@@ -59,7 +59,7 @@ public class GenerateViolationDotGraphTest {
     public void usesTargetNodeLabelByDefault() {
         TestAUGBuilder target = buildAUG().withActionNode("A");
         TestAUGBuilder pattern = buildAUG().withActionNode("B");
-        Overlap overlap = buildOverlap(target, pattern).withNode("A", "B").build();
+        Overlap overlap = buildOverlap(pattern, target).withNode("A", "B").build();
 
         assertDotGraphContains(new Violation(overlap, 1, "constant rank"), " [ label=\"A\"");
     }

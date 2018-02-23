@@ -47,7 +47,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
         TestAUGBuilder pattern = buildAUG().withActionNode("A");
         TestAUGBuilder env = extend(pattern).withActionNode("B").withEdge("A", ORDER, "B");
         TestAUGBuilder target = extend(env).withActionNode("C").withEdge("B", ORDER, "C");
-        TestOverlapBuilder instance = buildOverlap(target, pattern).withNode("A", "A");
+        TestOverlapBuilder instance = buildOverlap(pattern, target).withNode("A", "A");
 
         String dotGraph = toDotGraph(someViolation(instance));
 
@@ -58,7 +58,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
     public void graysOutTargetOnlyElements() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A");
         TestAUGBuilder target = extend(pattern).withActionNode("B").withEdge("A", SELECTION, "B");
-        TestOverlapBuilder instance = buildOverlap(target, pattern).withNode("A", "A");
+        TestOverlapBuilder instance = buildOverlap(pattern, target).withNode("A", "A");
 
         String dotGraph = toDotGraph(someViolation(instance));
 
@@ -70,7 +70,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
     public void highlightsMappedElements() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B");
-        TestOverlapBuilder instance = buildOverlap(target, pattern).withNodes("A", "B").withEdge("A", ORDER, "B");
+        TestOverlapBuilder instance = buildOverlap(pattern, target).withNodes("A", "B").withEdge("A", ORDER, "B");
 
         String dotGraph = toDotGraph(someViolation(instance));
 
@@ -85,7 +85,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
                 .withEdge("A", SELECTION, "B")
                 .withEdge("A", SELECTION, "C")
                 .withEdge("B", PARAMETER, "C");
-        TestOverlapBuilder instance = buildOverlap(target, pattern).withNode("A");
+        TestOverlapBuilder instance = buildOverlap(pattern, target).withNode("A");
 
         String dotGraph = toDotGraph(someViolation(instance));
 
@@ -96,7 +96,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
     public void excludesOrderOnlyConnections() {
         TestAUGBuilder pattern = buildAUG().withActionNode("A");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B");
-        TestOverlapBuilder instance = buildOverlap(target, pattern).withNode("A");
+        TestOverlapBuilder instance = buildOverlap(pattern, target).withNode("A");
 
         String dotGraph = toDotGraph(someViolation(instance));
 

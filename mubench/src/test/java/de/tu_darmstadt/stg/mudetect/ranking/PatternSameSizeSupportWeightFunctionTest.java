@@ -27,7 +27,7 @@ public class PatternSameSizeSupportWeightFunctionTest {
         pattern = somePattern(patternBuilder);
         model = () -> asSet(pattern);
 
-        violation = buildOverlap(aTargetBuilder, patternBuilder).withNode("a", "a").build();
+        violation = buildOverlap(patternBuilder, aTargetBuilder).withNode("a", "a").build();
     }
 
     @Test

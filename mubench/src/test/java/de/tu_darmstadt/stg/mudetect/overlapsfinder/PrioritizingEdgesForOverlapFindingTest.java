@@ -24,7 +24,7 @@ public class PrioritizingEdgesForOverlapFindingTest {
                 .withEdge("O", RECEIVER, "O.equals()").withEdge("O", PARAMETER, "O.equals()");
         TestAUGBuilder pattern = buildAUG().withActionNode("O.equals()").withDataNode("O1", "O").withDataNode("O2", "O")
                 .withEdge("O1", RECEIVER, "O.equals()").withEdge("O2", PARAMETER, "O.equals()");
-        TestOverlapBuilder overlap = buildOverlap(target, pattern).withNode("O.equals()").withNode("O", "O1")
+        TestOverlapBuilder overlap = buildOverlap(pattern, target).withNode("O.equals()").withNode("O", "O1")
                 .withEdge("O", "O1", RECEIVER, "O.equals()", "O.equals()");
 
         assertThat(overlapsFinder, findsOverlaps(target, pattern, overlap));
