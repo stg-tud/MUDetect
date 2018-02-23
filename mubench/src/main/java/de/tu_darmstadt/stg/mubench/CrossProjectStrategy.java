@@ -234,6 +234,7 @@ class CrossProjectStrategy implements DetectionStrategy {
                 new AlternativeMappingsOverlapsFinder(new DefaultOverlapFinderConfig(new DefaultMiningConfiguration())),
                 new FirstDecisionViolationPredicate(
                         new MissingDefPrefixNoViolationPredicate(),
+                        new OnlyDefPrefixNoViolationPredicate(),
                         new MissingQualifierNoViolationPredicate(),
                         new MissingCatchNoViolationPredicate(),
                         new MissingElementViolationPredicate()),
