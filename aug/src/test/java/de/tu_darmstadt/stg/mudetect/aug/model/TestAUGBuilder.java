@@ -8,6 +8,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.ExceptionNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.VariableNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.BaseDataFlowEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.DefinitionEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 
@@ -196,6 +197,9 @@ public class TestAUGBuilder {
                 break;
             case PARAMETER:
                 edges.add(new ParameterEdge(sourceNode, targetNode));
+                break;
+            case DEFINITION:
+                edges.add(new DefinitionEdge(sourceNode, targetNode));
                 break;
             default:
                 edges.add(new BaseDataFlowEdge(sourceNode, targetNode, type));
