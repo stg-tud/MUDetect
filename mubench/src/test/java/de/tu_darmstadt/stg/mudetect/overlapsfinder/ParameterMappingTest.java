@@ -105,14 +105,14 @@ public class ParameterMappingTest {
                 .withActionNode("con()", "Utilities.convertToUtf32()")
                 .withDataNode("int")
                 .withEdge("int", PARAMETER, "sur()").withEdge("int", PARAMETER, "con()")
-                .withCondEdge("sur()", SELECTION, "con()").withEdge("sur()", ORDER, "con()");
+                .withEdge("sur()", SELECTION, "con()").withEdge("sur()", ORDER, "con()");
         TestAUGBuilder target = buildAUG().withActionNode("sur()", "Utilities.isSurrogatePair()")
                 .withActionNode("con()", "Utilities.convertToUtf32()")
                 .withDataNode("int")
                 .withDataNode("i1", "int").withEdge("i1", PARAMETER, "sur()")
                 .withDataNode("i2", "int").withEdge("i2", PARAMETER, "con()")
                 .withEdge("int", PARAMETER, "sur()").withEdge("int", PARAMETER, "con()")
-                .withCondEdge("sur()", SELECTION, "con()").withEdge("sur()", ORDER, "con()");
+                .withEdge("sur()", SELECTION, "con()").withEdge("sur()", ORDER, "con()");
 
         List<Overlap> overlaps = overlapsFinder.findOverlaps(target.build(), somePattern(pattern));
 

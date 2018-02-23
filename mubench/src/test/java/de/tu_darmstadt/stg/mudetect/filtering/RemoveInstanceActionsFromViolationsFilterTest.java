@@ -17,7 +17,7 @@ import static org.junit.Assert.assertThat;
 public class RemoveInstanceActionsFromViolationsFilterTest {
     @Test
     public void removesInstanceAction() {
-        TestAUGBuilder target = buildAUG().withActionNodes("m()", "n()").withCondEdge("m()", SELECTION, "n()");
+        TestAUGBuilder target = buildAUG().withActionNodes("m()", "n()").withEdge("m()", SELECTION, "n()");
         Overlap instance = buildOverlap(target).withNode("m()").build();
         Overlap violation = buildOverlap(target).withNodes("m()", "n()").withEdge("m()", SELECTION, "n()").build();
 

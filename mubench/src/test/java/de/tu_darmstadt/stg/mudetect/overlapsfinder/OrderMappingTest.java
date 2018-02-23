@@ -20,7 +20,7 @@ public class OrderMappingTest {
     public void doesNotMapOrderOnlyConnection() {
         TestAUGBuilder target = buildAUG().withActionNodes("A.m()", "C.f()").withEdge("A.m()", ORDER, "C.f()");
         TestAUGBuilder pattern = buildAUG().withActionNodes("A.m()", "C.f()")
-                .withEdge("A.m()", ORDER, "C.f()").withCondEdge("A.m()", SELECTION, "C.f()");
+                .withEdge("A.m()", ORDER, "C.f()").withEdge("A.m()", SELECTION, "C.f()");
 
         AlternativeMappingsOverlapsFinder overlapsFinder = new AlternativeMappingsOverlapsFinder(new AlternativeMappingsOverlapsFinder.Config() {{
             nodeMatcher = new EquallyLabelledNodeMatcher();
@@ -36,9 +36,9 @@ public class OrderMappingTest {
     @Test
     public void mapsOrderIfOtherConnectionExists() {
         TestAUGBuilder target = buildAUG().withActionNodes("A.m()", "C.f()")
-                .withEdge("A.m()", ORDER, "C.f()").withCondEdge("A.m()", SELECTION, "C.f()");
+                .withEdge("A.m()", ORDER, "C.f()").withEdge("A.m()", SELECTION, "C.f()");
         TestAUGBuilder pattern = buildAUG().withActionNodes("A.m()", "C.f()")
-                .withEdge("A.m()", ORDER, "C.f()").withCondEdge("A.m()", SELECTION, "C.f()");
+                .withEdge("A.m()", ORDER, "C.f()").withEdge("A.m()", SELECTION, "C.f()");
 
         AlternativeMappingsOverlapsFinder overlapsFinder = new AlternativeMappingsOverlapsFinder(new AlternativeMappingsOverlapsFinder.Config() {{
             nodeMatcher = new EquallyLabelledNodeMatcher();

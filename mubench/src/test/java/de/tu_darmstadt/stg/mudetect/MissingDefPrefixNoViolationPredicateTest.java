@@ -95,12 +95,12 @@ public class MissingDefPrefixNoViolationPredicateTest {
                 .withEdge("iterator()", DEFINITION, "Iterator")
                 .withEdge("Iterator", RECEIVER, "hasNext()")
                 .withEdge("Iterator", RECEIVER, "next()")
-                .withCondEdge("iterator()", REPETITION, "next()")
-                .withCondEdge("hasNext()", REPETITION, "next()");
+                .withEdge("iterator()", REPETITION, "next()")
+                .withEdge("hasNext()", REPETITION, "next()");
         TestAUGBuilder target = buildAUG().withActionNodes("hasNext()", "next()").withDataNode("Iterator")
                 .withEdge("Iterator", RECEIVER, "hasNext()")
                 .withEdge("Iterator", RECEIVER, "next()")
-                .withCondEdge("hasNext()", REPETITION, "next()");
+                .withEdge("hasNext()", REPETITION, "next()");
         TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("hasNext()", "next()", "Iterator")
                 .withEdge("Iterator", RECEIVER, "hasNext()")
                 .withEdge("Iterator", RECEIVER, "next()")
@@ -131,13 +131,13 @@ public class MissingDefPrefixNoViolationPredicateTest {
                 .withEdge("iterator()", DEFINITION, "Iterator")
                 .withEdge("Iterator", RECEIVER, "hasNext()")
                 .withEdge("Iterator", RECEIVER, "next()")
-                .withCondEdge("iterator()", REPETITION, "next()")
-                .withCondEdge("hasNext()", REPETITION, "next()");
+                .withEdge("iterator()", REPETITION, "next()")
+                .withEdge("hasNext()", REPETITION, "next()");
         TestAUGBuilder target = buildAUG().withActionNodes("iterator()", "hasNext()", "next()").withDataNode("Iterator")
                 .withEdge("Iterator", RECEIVER, "hasNext()")
                 .withEdge("Iterator", RECEIVER, "next()")
-                .withCondEdge("iterator()", REPETITION, "next()")
-                .withCondEdge("hasNext()", REPETITION, "next()");
+                .withEdge("iterator()", REPETITION, "next()")
+                .withEdge("hasNext()", REPETITION, "next()");
         TestOverlapBuilder overlap = buildOverlap(target, pattern).withNodes("iterator()", "hasNext()", "next()", "Iterator")
                 .withEdge("Iterator", RECEIVER, "hasNext()")
                 .withEdge("Iterator", RECEIVER, "next()")

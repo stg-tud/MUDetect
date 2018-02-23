@@ -203,7 +203,7 @@ public class TestAUGBuilder {
         return this;
     }
 
-    public TestAUGBuilder withCondEdge(String sourceId, ConditionEdge.ConditionType kind, String targetId) {
+    public TestAUGBuilder withEdge(String sourceId, ConditionEdge.ConditionType kind, String targetId) {
         switch(kind) {
             case SELECTION:
                 edges.add(new SelectionEdge(getNode(sourceId), getNode(targetId)));

@@ -2,7 +2,6 @@ package de.tu_darmstadt.stg.mudetect.dot;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
-import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
@@ -58,7 +57,7 @@ public class GenerateTargetEnvironmentDotGraphTest {
     @Test
     public void graysOutTargetOnlyElements() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A");
-        TestAUGBuilder target = extend(pattern).withActionNode("B").withCondEdge("A", SELECTION, "B");
+        TestAUGBuilder target = extend(pattern).withActionNode("B").withEdge("A", SELECTION, "B");
         TestOverlapBuilder instance = buildOverlap(target, pattern).withNode("A", "A");
 
         String dotGraph = toDotGraph(someViolation(instance));
@@ -83,8 +82,8 @@ public class GenerateTargetEnvironmentDotGraphTest {
     public void includesEdgesBetweenTargetOnlyNodes() {
         TestAUGBuilder pattern = buildAUG().withActionNode("A");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B", "C")
-                .withCondEdge("A", SELECTION, "B")
-                .withCondEdge("A", SELECTION, "C")
+                .withEdge("A", SELECTION, "B")
+                .withEdge("A", SELECTION, "C")
                 .withEdge("B", PARAMETER, "C");
         TestOverlapBuilder instance = buildOverlap(target, pattern).withNode("A");
 

@@ -184,7 +184,7 @@ public class FindInstancesTest {
     public void handlesMultipleEdgesBetweenTwoNodes() {
         assertFindsInstance(buildAUG().withActionNodes("A", "B")
                 .withEdge("A", RECEIVER, "B")
-                .withCondEdge("A", SELECTION, "B"));
+                .withEdge("A", SELECTION, "B"));
     }
 
     private void assertFindsInstance(TestAUGBuilder patternAndTargetBuilder) {

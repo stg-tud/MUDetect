@@ -74,11 +74,11 @@ public class FindViolationsTest {
     public void mapsPatternNodeOnlyOnce() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B")
                 .withEdge("A", PARAMETER, "B")
-                .withCondEdge("A", SELECTION, "B");
+                .withEdge("A", SELECTION, "B");
 
         TestAUGBuilder target = buildAUG().withActionNode("A1", "A").withActionNode("A2", "A").withActionNode("B")
                 .withEdge("A1", PARAMETER, "B")
-                .withCondEdge("A2", SELECTION, "B");
+                .withEdge("A2", SELECTION, "B");
 
         TestOverlapBuilder violation1 = buildOverlap(target, pattern).withNode("A1", "A").withNode("B")
                 .withEdge("A1", "A", PARAMETER, "B", "B");
@@ -92,11 +92,11 @@ public class FindViolationsTest {
     public void mapsTargetNodeOnlyOnce() {
         TestAUGBuilder pattern = buildAUG().withActionNode("A1", "A").withActionNode("A2", "A").withActionNode("B")
                 .withEdge("A1", PARAMETER, "B")
-                .withCondEdge("A2", SELECTION, "B");
+                .withEdge("A2", SELECTION, "B");
 
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B")
                 .withEdge("A", PARAMETER, "B")
-                .withCondEdge("A", SELECTION, "B");
+                .withEdge("A", SELECTION, "B");
 
         List<Overlap> overlaps = findOverlaps(pattern, target);
 
@@ -168,10 +168,10 @@ public class FindViolationsTest {
     public void prioritizesMappableEdges() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A") // the algorithm will start extending from this node
                 .withDataNodes("B", "C", "D", "E", "F")
-                .withCondEdge("B", SELECTION, "A")
-                .withCondEdge("C", SELECTION, "A")
-                .withCondEdge("D", SELECTION, "A")
-                .withCondEdge("E", SELECTION, "A")
+                .withEdge("B", SELECTION, "A")
+                .withEdge("C", SELECTION, "A")
+                .withEdge("D", SELECTION, "A")
+                .withEdge("E", SELECTION, "A")
                 .withEdge("F", CONDITION, "A") // this is the edge that makes the connection
                 .withEdge("F", CONDITION, "B")
                 .withEdge("F", CONDITION, "C")
