@@ -1,5 +1,6 @@
 package edu.iastate.cs.mudetect.mining;
 
+import de.tu_darmstadt.stg.mudetect.InstanceMethodCallPredicate;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.ConstructorCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
@@ -14,7 +15,7 @@ public class Configuration {
     /**
      * Predicate that decides whether mining is started from a give node.
      */
-    public Predicate<Node> isStartNode = node -> node.isCoreAction() && node instanceof MethodCallNode && !(node instanceof ConstructorCallNode);
+    public Predicate<Node> isStartNode = new InstanceMethodCallPredicate().and(Node::isCoreAction);
 
     public enum DataNodeExtensionStrategy { ALWAYS, IF_INCOMING, IF_INCOMING_AND_OUTGOING }
     /**

@@ -1,6 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
 import de.tu_darmstadt.stg.mubench.NoEdgeOrder;
+import de.tu_darmstadt.stg.mudetect.InstanceMethodCallPredicate;
 import de.tu_darmstadt.stg.mudetect.OverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.aug.model.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.ConstructorCallNode;
@@ -418,7 +419,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
         /**
          * Predicate that decides whether matching is started from a given node.
          */
-        public Predicate<Node> isStartNode = node -> node instanceof MethodCallNode && !(node instanceof ConstructorCallNode);
+        public Predicate<Node> isStartNode = new InstanceMethodCallPredicate();
 
         /**
          * Predicate stating whether a target node (first argument) is matched by a pattern node (second argument). The
