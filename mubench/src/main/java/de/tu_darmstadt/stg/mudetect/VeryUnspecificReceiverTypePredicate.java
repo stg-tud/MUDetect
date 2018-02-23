@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class VeryPrevalentNodePredicate implements Predicate<Node> {
+public class VeryUnspecificReceiverTypePredicate implements Predicate<Node> {
     private static final Set<String> veryUnspecificTypes = new HashSet<>();
 
     static {

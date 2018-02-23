@@ -1,6 +1,6 @@
 package de.tu_darmstadt.stg.mubench;
 
-import de.tu_darmstadt.stg.mudetect.VeryPrevalentNodePredicate;
+import de.tu_darmstadt.stg.mudetect.VeryUnspecificReceiverTypePredicate;
 import de.tu_darmstadt.stg.mudetect.matcher.DataNodeConstantLabelProvider;
 import de.tu_darmstadt.stg.mudetect.matcher.NodeLabelProvider;
 import de.tu_darmstadt.stg.mudetect.matcher.NullCheckNodeLabelProvider;
@@ -10,7 +10,7 @@ class DefaultMiningConfiguration extends Configuration {
     {
         minPatternSupport = 10;
         occurenceLevel = Level.WITHIN_METHOD;
-        isStartNode = super.isStartNode.and(new VeryPrevalentNodePredicate().negate());
+        isStartNode = super.isStartNode.and(new VeryUnspecificReceiverTypePredicate().negate());
         extendByDataNode = DataNodeExtensionStrategy.IF_INCOMING;
         disableSystemOut = true;
         outputPath = System.getProperty("mudetect.mining.outputpath");
