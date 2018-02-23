@@ -33,6 +33,9 @@ public class AlternativeRankingAndFilterStrategy implements BiFunction<Overlaps,
                 new PatternUniquenessWeightFunction()
         ));
         for (Set<ViolationWeightFunction> permutation : permutations) {
+            if (permutation.isEmpty()) {
+                continue;
+            }
             strategies.add(new ProductWeightFunction(permutation.toArray(new ViolationWeightFunction[0])));
         }
         alternativePatternInstancePredicate = new AlternativePatternInstancePredicate();
