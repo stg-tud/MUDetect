@@ -27,32 +27,17 @@ class DefaultFilterAndRankingStrategy implements BiFunction<Overlaps, Model, Lis
 
     @Override
     public List<Violation> apply(Overlaps overlaps, Model model) {
-        overlaps.removeViolationIf(violation -> isAlternativePatternInstance(violation, overlaps));
-        overlaps.mapViolations(violation -> reduceViolation(violation, overlaps));
-        overlaps.removeViolationIf(this::containsNoStartNode);
         // TODO separate ranking into map to Violation with compute confidence and sort by confidence
         List<Violation> violations = rankingStrategy.rankViolations(overlaps, model);
         return violations.stream()
+                .filter(violation -> isNotAlternativePatternInstance(violation, overlaps))
                 .filter(firstAlternativeViolation())
                 .collect(Collectors.toList());
     }
 
-    private boolean isAlternativePatternInstance(Overlap violation, Overlaps overlaps) {
-        Set<Overlap> instancesInViolationTarget = overlaps.getInstancesInSameTarget(violation);
-        return alternativePatternInstancePredicate.test(violation, instancesInViolationTarget);
-    }
-
-    private Overlap reduceViolation(Overlap violation, Overlaps overlaps) {
-        Set<Overlap> instancesInSameTarget = overlaps.getInstancesInSameTarget(violation);
-        for (Overlap instanceInSameTarget : instancesInSameTarget) {
-            violation = violation.without(instanceInSameTarget);
-        }
-        return violation;
-    }
-
-    private boolean containsNoStartNode(Overlap violation) {
-        // SMELL We duplicate the predicate for OverlapFinder start nodes here. Can we reuse it instead?
-        return violation.getMappedTargetNodes().stream()
-                .noneMatch(new InstanceMethodCallPredicate().and(new VeryUnspecificReceiverTypePredicate().negate()));
+    private boolean isNotAlternativePatternInstance(Violation violation, Overlaps overlaps) {
+        Overlap overlap = violation.getOverlap();
+        Set<Overlap> instancesInViolationTarget = overlaps.getInstancesInSameTarget(overlap);
+        return !alternativePatternInstancePredicate.test(overlap, instancesInViolationTarget);
     }
 }
