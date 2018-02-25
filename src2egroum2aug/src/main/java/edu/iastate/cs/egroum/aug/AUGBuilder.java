@@ -153,7 +153,6 @@ public class AUGBuilder {
     private void addNode(APIUsageExampleBuilder builder, EGroumNode node) {
         String nodeId = getNodeId(node);
         if (node instanceof EGroumDataNode) {
-            // TODO there's Exception nodes in catch blocks without incoming THROW edges
             // drop nodes that are only connected by qualifier edges, since we also drop qualifier edges and these nodes
             // would become disconnected.
             if (!configuration.encodeQualifiers && node.getInEdges().isEmpty()
@@ -166,6 +165,7 @@ public class AUGBuilder {
             String dataName = dataNode.getDataName();
             String dataValue = dataNode.getDataValue();
             if (dataNode.isException() || dataType.endsWith("Exception") || dataType.endsWith("Error") || dataType.equals("Throwable")) {
+                // TODO there's Exception nodes in catch blocks without incoming THROW edges
                 builder.withException(nodeId, dataType, dataName);
                 return;
             } else if (node.astNodeType == ASTNode.SIMPLE_NAME) {
