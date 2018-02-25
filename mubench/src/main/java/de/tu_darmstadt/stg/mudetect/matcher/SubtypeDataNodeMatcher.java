@@ -1,5 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.matcher;
 
+import de.tu_darmstadt.stg.mudetect.aug.model.DataNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.typehierarchy.TypeHierarchy;
 
@@ -13,6 +14,7 @@ public class SubtypeDataNodeMatcher implements NodeMatcher {
 
     @Override
     public boolean test(Node targetNode, Node patternNode) {
-        return typeHierarchy.isA(targetNode.getLabel(), patternNode.getLabel());
+        return targetNode instanceof DataNode && patternNode instanceof DataNode
+                && typeHierarchy.isA(((DataNode) targetNode).getType(), ((DataNode) patternNode).getType());
     }
 }
