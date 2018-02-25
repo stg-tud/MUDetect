@@ -5,20 +5,22 @@ import de.tu_darmstadt.stg.mudetect.aug.model.DataNode;
 import de.tu_darmstadt.stg.mudetect.aug.visitors.NodeVisitor;
 
 public class AnonymousClassMethodNode extends BaseNode implements DataNode {
+    private final String baseType;
     private final String methodSignature;
 
-    public AnonymousClassMethodNode(String methodSignature) {
+    public AnonymousClassMethodNode(String baseType, String methodSignature) {
+        this.baseType = baseType;
         this.methodSignature = methodSignature;
     }
 
     @Override
     public String getType() {
-        return "<method>";
+        return baseType;
     }
 
     @Override
     public String getName() {
-        return "<method>";
+        return methodSignature;
     }
 
     @Override
@@ -26,11 +28,6 @@ public class AnonymousClassMethodNode extends BaseNode implements DataNode {
         return null;
     }
 
-    @Override
-    public String getLabel() {
-        return methodSignature;
-    }
-    
     @Override
     public <R> R apply(NodeVisitor<R> visitor) {
         return visitor.visit(this);

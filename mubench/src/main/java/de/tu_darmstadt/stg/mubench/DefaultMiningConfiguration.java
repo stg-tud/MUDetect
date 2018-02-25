@@ -1,9 +1,9 @@
 package de.tu_darmstadt.stg.mubench;
 
 import de.tu_darmstadt.stg.mudetect.VeryUnspecificReceiverTypePredicate;
-import de.tu_darmstadt.stg.mudetect.matcher.DataNodeConstantLabelProvider;
-import de.tu_darmstadt.stg.mudetect.matcher.NodeLabelProvider;
-import de.tu_darmstadt.stg.mudetect.matcher.NullCheckNodeLabelProvider;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
+import de.tu_darmstadt.stg.mudetect.matcher.AllDataNodesSameLabelProvider;
+import de.tu_darmstadt.stg.mudetect.matcher.SelAndRepSameLabelProvider;
 import edu.iastate.cs.mudetect.mining.Configuration;
 
 class DefaultMiningConfiguration extends Configuration {
@@ -14,9 +14,6 @@ class DefaultMiningConfiguration extends Configuration {
         extendByDataNode = DataNodeExtensionStrategy.IF_INCOMING;
         disableSystemOut = true;
         outputPath = System.getProperty("mudetect.mining.outputpath");
-        nodeToLabel = NodeLabelProvider.firstOrDefaultLabel(
-                new NullCheckNodeLabelProvider(),
-                new DataNodeConstantLabelProvider()
-        );
+        labelProvider = new AllDataNodesSameLabelProvider(new BaseAUGLabelProvider());
     }
 }

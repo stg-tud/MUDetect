@@ -4,6 +4,8 @@ import de.tu_darmstadt.stg.mudetect.OverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
+import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledEdgeMatcher;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
@@ -51,7 +53,11 @@ class OverlapsFinderTestUtils {
     }
 
     private static AlternativeMappingsOverlapsFinder createDefaultFinder() {
-        return new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher());
+        return new AlternativeMappingsOverlapsFinder(new AlternativeMappingsOverlapsFinder.Config() {{
+            BaseAUGLabelProvider labelProvider = new BaseAUGLabelProvider();
+            nodeMatcher = new EquallyLabelledNodeMatcher(labelProvider);
+            edgeMatcher = new EquallyLabelledEdgeMatcher(labelProvider);
+        }});
     }
 
     private static Overlap[] buildOverlaps(TestOverlapBuilder[] expectedOverlapsBuilders) {

@@ -3,14 +3,15 @@ package edu.iastate.cs.mudetect.mining;
 import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.AUGLabelProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.function.Function;
 
 public class ExasFeature {
 	public static final int MAX_LENGTH = 4 * 2 - 1;
 	private static HashMap<String, Integer> edgeFeatures = new HashMap<>();
+
 	static {
 		edgeFeatures.put(Edge.Type.CONDITION.getLabel(), edgeFeatures.size());
 		edgeFeatures.put(Edge.Type.DEFINITION.getLabel(),  edgeFeatures.size());
@@ -37,9 +38,9 @@ public class ExasFeature {
 
 	private HashMap<String, Integer> nodeFeatures = new HashMap<>();
 
-	public ExasFeature(ArrayList<Node> nodes, Function<Node, String> nodeToLabel) {
+	public ExasFeature(ArrayList<Node> nodes, AUGLabelProvider labelProvider) {
 		for (int i = 0; i < nodes.size(); i++) {
-			String label = nodeToLabel.apply(nodes.get(i));
+			String label = labelProvider.getLabel(nodes.get(i));
 			if (!nodeFeatures.containsKey(label))
 				nodeFeatures.put(label, i + 1);
 		}

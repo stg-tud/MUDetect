@@ -171,9 +171,10 @@ public class AUGBuilder {
                     builder.withLiteral(nodeId, dataType, dataValue);
                     return;
                 }
-            } else if (node.getLabel().endsWith("()")) {
+            } else if (node.astNodeType == ASTNode.METHOD_DECLARATION) {
                 // encoding of the methods of anonymous class instances
-                builder.withAnonymousClassMethod(nodeId, node.getLabel());
+                String[] info = splitDeclaringTypeAndSignature(dataName);
+                builder.withAnonymousClassMethod(nodeId, info[0], info[1]);
                 return;
             } else {
                 builder.withAnonymousObject(nodeId, dataType);
@@ -186,11 +187,11 @@ public class AUGBuilder {
                 builder.withArrayCreation(nodeId, label.substring(1, label.length() - 1), sourceLineNumber);
                 return;
             } else if (label.endsWith(".arrayget()")) {
-                String[] labelParts = split(label);
+                String[] labelParts = splitDeclaringTypeAndSignature(label);
                 builder.withArrayAccess(nodeId, labelParts[0], sourceLineNumber);
                 return;
             } else if (label.endsWith(".arrayset()")) {
-                String[] labelParts = split(label);
+                String[] labelParts = splitDeclaringTypeAndSignature(label);
                 builder.withArrayAssignment(nodeId, labelParts[0], sourceLineNumber);
                 return;
             } else if (label.equals("<nullcheck>")) {
@@ -200,15 +201,15 @@ public class AUGBuilder {
                 builder.withCatch(nodeId, label.substring(0, label.length() - 8), sourceLineNumber);
                 return;
             } else if (node.astNodeType == ASTNode.METHOD_INVOCATION) {
-                String[] labelParts = split(label);
+                String[] labelParts = splitDeclaringTypeAndSignature(label);
                 builder.withMethodCall(nodeId, labelParts[0], labelParts[1], sourceLineNumber);
                 return;
             } else if (node.astNodeType == ASTNode.SUPER_METHOD_INVOCATION) {
-                String[] labelParts = split(label);
+                String[] labelParts = splitDeclaringTypeAndSignature(label);
                 builder.withSuperMethodCall(nodeId, labelParts[0], labelParts[1], sourceLineNumber);
                 return;
             } else if (node.astNodeType == ASTNode.CLASS_INSTANCE_CREATION) {
-                String[] labelParts = split(label);
+                String[] labelParts = splitDeclaringTypeAndSignature(label);
                 builder.withConstructorCall(nodeId, labelParts[0], sourceLineNumber);
                 return;
             } else if (node.astNodeType == ASTNode.CONSTRUCTOR_INVOCATION) {
@@ -221,7 +222,7 @@ public class AUGBuilder {
                 builder.withSuperConstructorCall(nodeId, typeName, sourceLineNumber);
                 return;
             } else if (label.endsWith("<cast>")) {
-                String targetTypeName = split(label)[0];
+                String targetTypeName = splitDeclaringTypeAndSignature(label)[0];
                 builder.withCast(nodeId, targetTypeName, sourceLineNumber);
                 return;
             } else if (JavaASTUtil.infixExpressionLables.containsValue(label)) {
@@ -242,7 +243,7 @@ public class AUGBuilder {
                 builder.withAssignment(nodeId, sourceLineNumber);
                 return;
             } else if (label.endsWith("<instanceof>")) {
-                String checkTypeName = split(label)[0];
+                String checkTypeName = splitDeclaringTypeAndSignature(label)[0];
                 builder.withTypeCheck(nodeId, checkTypeName, sourceLineNumber);
                 return;
             } else if (label.equals("break")) {
@@ -266,7 +267,7 @@ public class AUGBuilder {
         return Integer.toString(node.getId());
     }
 
-    private static String[] split(String declaringTypeAndSignatureLabel) {
+    private static String[] splitDeclaringTypeAndSignature(String declaringTypeAndSignatureLabel) {
         int endOfDeclaringTypeName = declaringTypeAndSignatureLabel.lastIndexOf('.');
         return new String[]{
                 declaringTypeAndSignatureLabel.substring(0, endOfDeclaringTypeName),

@@ -9,6 +9,8 @@ import de.tu_darmstadt.stg.mudetect.aug.model.data.ExceptionNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.VariableNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.AUGLabelProvider;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
 import de.tu_darmstadt.stg.mudetect.aug.visitors.NodeVisitor;
 
 import java.util.*;
@@ -16,6 +18,7 @@ import java.util.*;
 public class TestAUGBuilder {
     private static int randomAUGCount = 0;
     private static Map<String, String> infixOperatorsToLabels = new HashMap<>();
+    private static AUGLabelProvider labelProvider = new BaseAUGLabelProvider();
 
     static {
         // TODO This label abstraction should move into an AUG transformer
@@ -110,7 +113,7 @@ public class TestAUGBuilder {
     private static TestAUGBuilder builderFrom(APIUsageGraph aug, String name) {
         TestAUGBuilder builder = new TestAUGBuilder(name);
         for (Node node : aug.vertexSet()) {
-            builder.withNode(node.getLabel(), node);
+            builder.withNode(labelProvider.getLabel(node), node);
         }
         builder.edges.addAll(aug.edgeSet());
         return builder;
@@ -145,14 +148,9 @@ public class TestAUGBuilder {
             } else {
                 return withNode(id, new MethodCallNode("", nodeName) {
                     @Override
-                    public String getLabel() {
-                        return nodeName;
-                    }
-
-                    @Override
                     public <R> R apply(NodeVisitor<R> visitor) {
                         // TODO make test builder return proper nodes to fix this ugly hack
-                        return null;
+                        return (R) nodeName;
                     }
                 });
             }

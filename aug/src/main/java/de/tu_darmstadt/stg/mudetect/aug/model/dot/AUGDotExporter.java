@@ -5,6 +5,8 @@ import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
 import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.AUGLabelProvider;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
 import org.jgrapht.ext.DOTExporter;
 import org.jgrapht.ext.IntegerNameProvider;
 import org.jgrapht.ext.VertexNameProvider;
@@ -12,6 +14,7 @@ import org.jgrapht.ext.VertexNameProvider;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class AUGDotExporter {
     private static final String WINDOWS_EXEC_DOT = "D:/Program Files (x86)/Graphviz2.36/bin/dot.exe";	// Windows
@@ -30,11 +33,18 @@ public class AUGDotExporter {
     private final IntegerNameProvider<Node> nodeIdProvider = new IntegerNameProvider<>();
     private final DOTExporter<Node, Edge> exporter;
 
-    public AUGDotExporter(VertexNameProvider<Node> nodeLabelProvider,
+    public AUGDotExporter(AUGLabelProvider labelProvider,
+                          AUGNodeAttributeProvider nodeAttributeProvider,
+                          AUGEdgeAttributeProvider edgeAttributeProvider) {
+        this(labelProvider::getLabel, labelProvider::getLabel, nodeAttributeProvider, edgeAttributeProvider);
+    }
+
+    public AUGDotExporter(Function<Node, String> nodeLabelProvider,
+                          Function<Edge, String> edgeLabelProvider,
                           AUGNodeAttributeProvider nodeAttributeProvider,
                           AUGEdgeAttributeProvider edgeAttributeProvider) {
         exporter = new DOTExporter<>(nodeIdProvider,
-                nodeLabelProvider, Edge::getLabel,
+                nodeLabelProvider::apply, edgeLabelProvider::apply,
                 nodeAttributeProvider, edgeAttributeProvider);
     }
 

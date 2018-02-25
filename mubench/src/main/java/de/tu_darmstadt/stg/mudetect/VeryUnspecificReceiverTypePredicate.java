@@ -21,6 +21,9 @@ public class VeryUnspecificReceiverTypePredicate implements Predicate<Node> {
         veryUnspecificTypes.add("CharSequence");
         veryUnspecificTypes.add("StringBuilder");
         veryUnspecificTypes.add("AbstractStringBuilder");
+        veryUnspecificTypes.add("StringBuffer");
+        veryUnspecificTypes.add("Appendable");
+        veryUnspecificTypes.add("Arrays");
     }
 
     @Override

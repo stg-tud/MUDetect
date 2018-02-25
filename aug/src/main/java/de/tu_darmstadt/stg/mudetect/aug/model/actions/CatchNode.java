@@ -16,11 +16,6 @@ public class CatchNode extends BaseNode implements ActionNode {
         this.exceptionType = exceptionType;
     }
 
-    @Override
-    public String getLabel() {
-        return "<catch>";
-    }
-
     public String getExceptionType() {
         return exceptionType;
     }

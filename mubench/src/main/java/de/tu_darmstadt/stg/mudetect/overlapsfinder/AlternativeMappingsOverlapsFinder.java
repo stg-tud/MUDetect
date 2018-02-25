@@ -4,14 +4,11 @@ import de.tu_darmstadt.stg.mubench.NoEdgeOrder;
 import de.tu_darmstadt.stg.mudetect.InstanceMethodCallPredicate;
 import de.tu_darmstadt.stg.mudetect.OverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.aug.model.*;
-import de.tu_darmstadt.stg.mudetect.aug.model.actions.ConstructorCallNode;
-import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.OrderEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGDotExporter;
-import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGEdgeAttributeProvider;
-import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGNodeAttributeProvider;
+import de.tu_darmstadt.stg.mudetect.aug.model.dot.DisplayAUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import org.slf4j.Logger;
@@ -431,7 +428,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
          * Predicate stating whether a target-edge label (first argument) is matched by a pattern-edge label (second
          * argument). The predicate may be asymmetric.
          */
-        public BiPredicate<Edge, Edge> edgeMatcher = (e1, e2) -> e1.getLabel().equals(e2.getLabel());
+        public BiPredicate<Edge, Edge> edgeMatcher;
 
         /**
          * A predicate expressing a (partial) order over edges. When the predicate evaluates to <code>true</code>, the
@@ -449,10 +446,6 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
 
     public static long numberOfExploredAlternatives = 0;
 
-    public AlternativeMappingsOverlapsFinder(BiPredicate<Node, Node> aNodeMatcher) {
-        this(new Config() {{ nodeMatcher = aNodeMatcher; }});
-    }
-
     public AlternativeMappingsOverlapsFinder(Config config) {
         this.config = config;
     }
@@ -463,8 +456,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
         Set<Node> coveredTargetNodes = new HashSet<>();
         Set<Node> startTargetNodes = getStartNodes(target);
         if (!startTargetNodes.isEmpty()) {
-            AUGDotExporter exporter = new AUGDotExporter(
-                    Node::getLabel, new AUGNodeAttributeProvider(), new AUGEdgeAttributeProvider());
+            AUGDotExporter exporter = new DisplayAUGDotExporter();
             LOGGER.debug("Target: {}", exporter.toDotGraph(target));
             LOGGER.debug("Pattern: {}", exporter.toDotGraph(pattern));
         }

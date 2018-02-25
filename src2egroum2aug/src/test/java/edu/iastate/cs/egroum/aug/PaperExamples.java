@@ -1,6 +1,7 @@
 package edu.iastate.cs.egroum.aug;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.DataNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.DisplayAUGDotExporter;
 import org.junit.Test;
@@ -57,7 +58,7 @@ public class PaperExamples {
     private void printAUG(String exampleName, String code) throws IOException, InterruptedException {
         APIUsageExample aug = AUGBuilderTestUtils.buildAUGForMethod(code);
         List<Node> scaffoldNodes = aug.vertexSet().stream()
-                .filter(node -> node.getLabel().equals("C")).collect(Collectors.toList());
+                .filter(node -> node instanceof DataNode && ((DataNode) node).getType().equals("C")).collect(Collectors.toList());
         for (Node scaffoldNode : scaffoldNodes) {
             aug.removeVertex(scaffoldNode);
         }

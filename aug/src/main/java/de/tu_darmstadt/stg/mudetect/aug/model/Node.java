@@ -20,8 +20,6 @@ public interface Node extends Cloneable {
         return false;
     }
 
-    String getLabel();
-
     default Optional<String> getAPI() {
         return Optional.empty();
     }

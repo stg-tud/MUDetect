@@ -3,6 +3,7 @@ package de.tu_darmstadt.stg.mudetect.aug.matchers;
 import de.tu_darmstadt.stg.mudetect.aug.model.DataNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -16,7 +17,7 @@ import static org.hamcrest.Matchers.instanceOf;
 
 public class NodePropertyMatchers {
     public static Matcher<Node> label(String label) {
-        return propertyEquals(Node::getLabel, "label", label);
+        return propertyEquals(new BaseAUGLabelProvider()::getLabel, "label", label);
     }
 
     public static Matcher<Node> type(Class<? extends Node> nodeType) {

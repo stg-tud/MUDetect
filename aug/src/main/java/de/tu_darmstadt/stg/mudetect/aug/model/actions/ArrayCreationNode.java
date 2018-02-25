@@ -12,11 +12,6 @@ public class ArrayCreationNode extends ConstructorCallNode {
     }
 
     @Override
-    public String getLabel() {
-        return "{" + getDeclaringTypeName() + "}";
-    }
-
-    @Override
     public boolean isCoreAction() {
         return false;
     }

@@ -35,9 +35,4 @@ public abstract class ConditionEdge extends BaseEdge implements ControlFlowEdge 
     public ConditionType getConditionType() {
         return conditionType;
     }
-
-    @Override
-    public String getLabel() {
-        return getConditionType().getLabel();
-    }
 }

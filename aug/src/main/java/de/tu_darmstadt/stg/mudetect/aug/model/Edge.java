@@ -41,10 +41,6 @@ public interface Edge extends Cloneable {
         return true;
     }
 
-    default String getLabel() {
-        return getType().getLabel();
-    }
-
     Edge clone();
 
     Edge clone(Node newSourceNode, Node newTargetNode);

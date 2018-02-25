@@ -4,6 +4,8 @@ import de.tu_darmstadt.stg.mudetect.InstanceMethodCallPredicate;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.ConstructorCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.AUGLabelProvider;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -39,10 +41,7 @@ public class Configuration {
      */
     public String outputPath = "output/patterns";
 
-    /**
-     * Function that maps nodes to labels used in the mining.
-     */
-    public Function<Node, String> nodeToLabel = Node::getLabel;
+    public AUGLabelProvider labelProvider = new BaseAUGLabelProvider();
     
     public enum Level {WITHIN_METHOD, CROSS_METHOD, CROSS_PROJECT}
     /**

@@ -21,11 +21,6 @@ public class AggregateDataNode extends BaseNode implements DataNode {
     }
 
     @Override
-    public String getLabel() {
-        return getType();
-    }
-
-    @Override
     public String getName() {
         return getFirstOrNull(getAggregatedNames());
     }

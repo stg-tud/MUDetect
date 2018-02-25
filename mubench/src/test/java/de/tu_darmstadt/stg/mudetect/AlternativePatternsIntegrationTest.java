@@ -2,6 +2,8 @@ package de.tu_darmstadt.stg.mudetect;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
+import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledEdgeMatcher;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.matcher.SubtypeDataNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
@@ -29,7 +31,12 @@ public class AlternativePatternsIntegrationTest {
         APIUsageExample target = buildAUGForMethod("void t(Integer i) { i.hashCode(); }");
         TypeHierarchy typeHierarchy = new TypeHierarchy() {{ addSupertype("Integer", "Object"); }};
         MuDetect detector = new MuDetect(() -> asSet(pattern),
-                new AlternativeMappingsOverlapsFinder(new SubtypeDataNodeMatcher(typeHierarchy).or(new EquallyLabelledNodeMatcher())),
+                new AlternativeMappingsOverlapsFinder(
+                        new AlternativeMappingsOverlapsFinder.Config() {{
+                            BaseAUGLabelProvider labelProvider = new BaseAUGLabelProvider();
+                            nodeMatcher = new SubtypeDataNodeMatcher(typeHierarchy).or(new EquallyLabelledNodeMatcher(labelProvider));
+                            edgeMatcher = new EquallyLabelledEdgeMatcher(labelProvider);
+                        }}),
                 new MissingElementViolationPredicate(),
                 new NoRankingStrategy()::rankViolations);
 
@@ -57,7 +64,12 @@ public class AlternativePatternsIntegrationTest {
                 "  }\n" +
                 "}");
         MuDetect detector = new MuDetect(() -> asSet(pattern),
-                new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher()),
+                new AlternativeMappingsOverlapsFinder(
+                        new AlternativeMappingsOverlapsFinder.Config() {{
+                            BaseAUGLabelProvider labelProvider = new BaseAUGLabelProvider();
+                            nodeMatcher = new EquallyLabelledNodeMatcher(labelProvider);
+                            edgeMatcher = new EquallyLabelledEdgeMatcher(labelProvider);
+                        }}),
                 new MissingElementViolationPredicate(),
                 new NoRankingStrategy()::rankViolations);
 
@@ -99,7 +111,12 @@ public class AlternativePatternsIntegrationTest {
                 "}");
 
         MuDetect detector = new MuDetect(() -> asSet(pattern),
-                new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher()),
+                new AlternativeMappingsOverlapsFinder(
+                        new AlternativeMappingsOverlapsFinder.Config() {{
+                            BaseAUGLabelProvider labelProvider = new BaseAUGLabelProvider();
+                            nodeMatcher = new EquallyLabelledNodeMatcher(labelProvider);
+                            edgeMatcher = new EquallyLabelledEdgeMatcher(labelProvider);
+                        }}),
                 new MissingElementViolationPredicate(),
                 new NoRankingStrategy()::rankViolations);
 

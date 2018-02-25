@@ -9,7 +9,6 @@ import java.util.Optional;
 public class MethodCallNode extends BaseNode implements ActionNode {
     private final String declaringTypeName;
     private final String methodSignature;
-    private String labelCache = null;
 
     public MethodCallNode(String declaringTypeName, String methodSignature) {
         this.declaringTypeName = declaringTypeName;
@@ -25,14 +24,6 @@ public class MethodCallNode extends BaseNode implements ActionNode {
     @Override
     public boolean isCoreAction() {
         return !getMethodSignature().startsWith("get");
-    }
-
-    @Override
-    public String getLabel() {
-        if (labelCache == null) {
-            labelCache = getDeclaringTypeName() + "." + getMethodSignature();
-        }
-        return labelCache;
     }
 
     @Override

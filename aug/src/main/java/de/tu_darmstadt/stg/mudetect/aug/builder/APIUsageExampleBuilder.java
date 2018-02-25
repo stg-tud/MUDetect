@@ -106,8 +106,8 @@ public class APIUsageExampleBuilder {
 
     // Data Nodes
 
-    public APIUsageExampleBuilder withAnonymousClassMethod(String nodeId, String methodSignature) {
-        return withNode(nodeId, new AnonymousClassMethodNode(methodSignature));
+    public APIUsageExampleBuilder withAnonymousClassMethod(String nodeId, String baseType, String methodSignature) {
+        return withNode(nodeId, new AnonymousClassMethodNode(baseType, methodSignature));
     }
 
     public APIUsageExampleBuilder withAnonymousObject(String nodeId, String typeName) {

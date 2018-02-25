@@ -8,13 +8,10 @@ import edu.iastate.cs.egroum.dot.DotGraph;
 
 import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.DEFINITION;
 import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.THROW;
-import static edu.iastate.cs.mudetect.mining.Configuration.DataNodeExtensionStrategy.ALWAYS;
-import static edu.iastate.cs.mudetect.mining.Configuration.DataNodeExtensionStrategy.IF_INCOMING;
-import static edu.iastate.cs.mudetect.mining.Configuration.DataNodeExtensionStrategy.IF_INCOMING_AND_OUTGOING;
+import static edu.iastate.cs.mudetect.mining.Configuration.DataNodeExtensionStrategy.*;
 
 /**
  * @author Nguyen Anh Hoan
@@ -58,14 +55,14 @@ public class Fragment {
 		for (Node en : ens) {
 			this.nodes.add(en);
 			this.idSum += en.getId();
-			ExasFeature exasFeature = new ExasFeature(nodes, config.nodeToLabel);
+			ExasFeature exasFeature = new ExasFeature(nodes, config.labelProvider);
 			buildVector(en, exasFeature);
 		}
 	}
 	
 	public void buildVector(Node node, ExasFeature exasFeature) {
 		ArrayList<String> sequence = new ArrayList<>();
-		sequence.add(config.nodeToLabel.apply(node));
+		sequence.add(config.labelProvider.getLabel(node));
 		backwardDFS(node, node, sequence, exasFeature);
 	}
 	
@@ -77,8 +74,8 @@ public class Fragment {
 			for(Edge e : graph.incomingEdgesOf(firstNode)) {
 				Node n = graph.getEdgeSource(e);
 				if (nodes.contains(n)) {
-					sequence.add(0, e.getLabel());
-					sequence.add(0, config.nodeToLabel.apply(n));
+					sequence.add(0, config.labelProvider.getLabel(e));
+					sequence.add(0, config.labelProvider.getLabel(n));
 					backwardDFS(n, lastNode, sequence, exasFeature);
 					sequence.remove(0);
 					sequence.remove(0);
@@ -96,8 +93,8 @@ public class Fragment {
 			for(Edge e : graph.outgoingEdgesOf(lastNode)) {
 				Node n = graph.getEdgeTarget(e);
 				if (nodes.contains(n)) {
-					sequence.add(e.getLabel());
-					sequence.add(config.nodeToLabel.apply(n));
+					sequence.add(config.labelProvider.getLabel(e));
+					sequence.add(config.labelProvider.getLabel(n));
 					forwardDFS(firstNode, n, sequence, exasFeature);
 					sequence.remove(sequence.size()-1);
 					sequence.remove(sequence.size()-1);
@@ -337,11 +334,11 @@ public class Fragment {
 			id++;
 			ids.put(node, id);
 			if(node instanceof DataNode)
-				graph.append(dg.addNode(id, node.getLabel(), DotGraph.SHAPE_ELLIPSE, null, null, null));
+				graph.append(dg.addNode(id, config.labelProvider.getLabel(node), DotGraph.SHAPE_ELLIPSE, null, null, null));
 			else if (node instanceof ActionNode)
-				graph.append(dg.addNode(id, node.getLabel(), DotGraph.SHAPE_BOX, null, null, null));
+				graph.append(dg.addNode(id, config.labelProvider.getLabel(node), DotGraph.SHAPE_BOX, null, null, null));
 			else
-				graph.append(dg.addNode(id, node.getLabel(), DotGraph.SHAPE_DIAMOND, null, null, null));
+				graph.append(dg.addNode(id, config.labelProvider.getLabel(node), DotGraph.SHAPE_DIAMOND, null, null, null));
 		}
 		// add edges
 		for(Node node : nodes) {
@@ -351,7 +348,7 @@ public class Fragment {
 				Node target = graph1.getEdgeTarget(out);
 				if (nodes.contains(target)) {
 					int eId = ids.get(target);
-					graph.append(dg.addEdge(sId, eId, out.isDirect() ? null : DotGraph.STYLE_DOTTED, null, out.getLabel()));
+					graph.append(dg.addEdge(sId, eId, out.isDirect() ? null : DotGraph.STYLE_DOTTED, null, config.labelProvider.getLabel(out)));
 				}
 			}
 		}
@@ -408,7 +405,7 @@ public class Fragment {
 			for (Edge e : graph.incomingEdgesOf(node)) {
                 Node n = e.getSource();
                 boolean extendAlongEdge = isExtendAlongEdge(e);
-                if (n.isCoreAction() && n.getLabel().equals(node.getLabel()))
+                if (n.isCoreAction() && config.labelProvider.getLabel(n).equals(config.labelProvider.getLabel(node)))
                     exclusions.add(n);
                 else if (!nodes.contains(n) && extendAlongEdge)
                     ens.add(n);
@@ -417,7 +414,7 @@ public class Fragment {
             for (Edge e : graph.outgoingEdgesOf(node)) {
                 Node n = e.getTarget();
                 boolean extendAlongEdge = isExtendAlongEdge(e);
-                if (n.isCoreAction() && n.getLabel().equals(node.getLabel()))
+                if (n.isCoreAction() && config.labelProvider.getLabel(n).equals(config.labelProvider.getLabel(node)))
                     exclusions.add(n);
                 else if (!nodes.contains(n) && extendAlongEdge)
                     ens.add(n);
@@ -555,7 +552,7 @@ public class Fragment {
     }
 
     private void add(Node node, HashMap<String, HashSet<ArrayList<Node>>> lens) {
-		String label = config.nodeToLabel.apply(node);
+		String label = config.labelProvider.getLabel(node);
 		HashSet<ArrayList<Node>> s = lens.computeIfAbsent(label, k -> new HashSet<>());
 		ArrayList<Node> l = new ArrayList<>();
 		l.add(node);
@@ -563,7 +560,7 @@ public class Fragment {
 	}
 
 	private void add(Node node, Node next, HashMap<String, HashSet<ArrayList<Node>>> lens) {
-		String label = config.nodeToLabel.apply(node) + "-" + config.nodeToLabel.apply(next);
+		String label = config.labelProvider.getLabel(node) + "-" + config.labelProvider.getLabel(next);
 		HashSet<ArrayList<Node>> s = lens.computeIfAbsent(label, k -> new HashSet<>());
 		ArrayList<Node> l = new ArrayList<>();
 		l.add(node);

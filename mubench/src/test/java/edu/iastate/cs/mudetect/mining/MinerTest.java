@@ -4,6 +4,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
 import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.DisplayAUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 import org.junit.Ignore;
@@ -157,11 +158,12 @@ public class MinerTest {
 
 		boolean contains = false;
 		for (APIUsagePattern p : patterns) {
-			for (Node node : p.vertexSet())
-				if (node.getLabel().equals("Cipher.getInstance()")) {
+			for (Node node : p.vertexSet()) {
+				if (isMethodCall(node, "Cipher", "getInstance()")) {
 					contains = true;
 					break;
 				}
+			}
 		}
 		assertThat(contains, is(true));
 	}
@@ -169,31 +171,31 @@ public class MinerTest {
 	@Ignore
 	@Test
 	public void jackrabbit1() {
-		String targetSource = "public class ItemManager {\n" + 
-				"    private SessionImpl session;" + 
-				"    private boolean canRead(ItemData data, Path path) throws AccessDeniedException, RepositoryException {\n" + 
-				"        if (data.getState().getStatus() == ItemState.STATUS_NEW && !data.getDefinition().isProtected()) {\n" + 
-				"            return true;\n" + 
-				"        } else {\n" + 
-				"            return (path == null) ? canRead(data.getId()) : session.getAccessManager().canRead(path);\n" + 
-				"        }\n" + 
-				"    }\n" + 
-				"  private boolean canRead(ItemId id) { return true; }\n" + 
+		String targetSource = "public class ItemManager {\n" +
+				"    private SessionImpl session;" +
+				"    private boolean canRead(ItemData data, Path path) throws AccessDeniedException, RepositoryException {\n" +
+				"        if (data.getState().getStatus() == ItemState.STATUS_NEW && !data.getDefinition().isProtected()) {\n" +
+				"            return true;\n" +
+				"        } else {\n" +
+				"            return (path == null) ? canRead(data.getId()) : session.getAccessManager().canRead(path);\n" +
+				"        }\n" +
+				"    }\n" +
+				"  private boolean canRead(ItemId id) { return true; }\n" +
 				"}";
-		String patternSource = "class CheckStateNotNull {\n" + 
-			"  boolean canRead(ItemData data, Path path, SessionImpl session) throws AccessDeniedException, RepositoryException {\n" + 
-			"    ItemState state = data.getState();\n" + 
-			"    if (state == null) {\n" + 
-			"        throw new InvalidItemStateException(data.getId() + \": the item does not exist anymore\");\n" + 
-			"    }\n" + 
-			"    if (state.getStatus() == ItemState.STATUS_NEW && !data.getDefinition().isProtected()) {\n" + 
-			"        return true;\n" + 
-			"    } else {\n" + 
-			"        return (path == null) ? canRead(data.getId()) : session.getAccessManager().canRead(path);\n" + 
-			"    }\n" + 
-			"  }\n" + 
-			"  \n" + 
-			"  private boolean canRead(ItemId id) { return true; }\n" + 
+		String patternSource = "class CheckStateNotNull {\n" +
+			"  boolean canRead(ItemData data, Path path, SessionImpl session) throws AccessDeniedException, RepositoryException {\n" +
+			"    ItemState state = data.getState();\n" +
+			"    if (state == null) {\n" +
+			"        throw new InvalidItemStateException(data.getId() + \": the item does not exist anymore\");\n" +
+			"    }\n" +
+			"    if (state.getStatus() == ItemState.STATUS_NEW && !data.getDefinition().isProtected()) {\n" +
+			"        return true;\n" +
+			"    } else {\n" +
+			"        return (path == null) ? canRead(data.getId()) : session.getAccessManager().canRead(path);\n" +
+			"    }\n" +
+			"  }\n" +
+			"  \n" +
+			"  private boolean canRead(ItemId id) { return true; }\n" +
 			"}";
 		Collection<APIUsageExample> groums = buildAUGsForClasses(new String[]{targetSource, patternSource});
 		List<APIUsagePattern> patterns = mineWithMinSupport2(groums);
@@ -207,38 +209,38 @@ public class MinerTest {
 	 */
 	@Test
 	public void acmath_1() {
-		String targetSource = "class SubLine {\n" + 
+		String targetSource = "class SubLine {\n" +
 				"    private Line line;" +
-				"    public Vector3D intersection(final SubLine subLine, final boolean includeEndPoints) {\n" + 
-				"        // compute the intersection on infinite line\n" + 
-				"        Vector3D v1D = line.intersection(subLine.line);\n" + 
-				"        // check location of point with respect to first sub-line\n" + 
-				"        Location loc1 = remainingRegion.checkPoint(line.toSubSpace(v1D));\n" + 
-				"        // check location of point with respect to second sub-line\n" + 
-				"        Location loc2 = subLine.remainingRegion.checkPoint(subLine.line.toSubSpace(v1D));\n" + 
-				"        if (includeEndPoints) {\n" + 
-				"            return ((loc1 != Location.OUTSIDE) && (loc2 != Location.OUTSIDE)) ? v1D : null;\n" + 
-				"        } else {\n" + 
-				"            return ((loc1 == Location.INSIDE) && (loc2 == Location.INSIDE)) ? v1D : null;\n" + 
-				"        }\n" + 
-				"    }\n" + 
+				"    public Vector3D intersection(final SubLine subLine, final boolean includeEndPoints) {\n" +
+				"        // compute the intersection on infinite line\n" +
+				"        Vector3D v1D = line.intersection(subLine.line);\n" +
+				"        // check location of point with respect to first sub-line\n" +
+				"        Location loc1 = remainingRegion.checkPoint(line.toSubSpace(v1D));\n" +
+				"        // check location of point with respect to second sub-line\n" +
+				"        Location loc2 = subLine.remainingRegion.checkPoint(subLine.line.toSubSpace(v1D));\n" +
+				"        if (includeEndPoints) {\n" +
+				"            return ((loc1 != Location.OUTSIDE) && (loc2 != Location.OUTSIDE)) ? v1D : null;\n" +
+				"        } else {\n" +
+				"            return ((loc1 == Location.INSIDE) && (loc2 == Location.INSIDE)) ? v1D : null;\n" +
+				"        }\n" +
+				"    }\n" +
 				"}";
-		String patternSource = "class CheckStateNotNull {\n" + 
-			"  public Vector3D pattern(Line line, Line other) {\n" + 
-			"    Vector3D v1D = line.intersection(other);\n" + 
-			"    if (v1D == null) {\n" + 
-			"        return null;\n" + 
-			"    }\n" + 
-			"    line.toSubSpace(v1D);\n" + 
-			"    other.toSubSpace(v1D);\n" + 
-			"    return v1D;\n" + 
-			"  }\n" + 
+		String patternSource = "class CheckStateNotNull {\n" +
+			"  public Vector3D pattern(Line line, Line other) {\n" +
+			"    Vector3D v1D = line.intersection(other);\n" +
+			"    if (v1D == null) {\n" +
+			"        return null;\n" +
+			"    }\n" +
+			"    line.toSubSpace(v1D);\n" +
+			"    other.toSubSpace(v1D);\n" +
+			"    return v1D;\n" +
+			"  }\n" +
 			"}";
 
 		List<APIUsagePattern> patterns = mineMethods(new Configuration() {{
 			minPatternSupport = 2; abstractConditionEdges = true; extendAlongOrderEdges = true;
 		}}, targetSource, patternSource);
-		
+
 		print(patterns);
 		assertThat(patterns, hasSize(2));
 	}
@@ -268,7 +270,7 @@ public class MinerTest {
 		assertThat(patterns, hasSize(1));
 		APIUsagePattern pattern = patterns.get(0);
 		Collection<Node> patternNodes = pattern.vertexSet();
-		long numberOfAppendCalls = patternNodes.stream().filter(node -> node.getLabel().equals("AbstractStringBuilder.append()")).count();
+		long numberOfAppendCalls = patternNodes.stream().filter(node -> isMethodCall(node, "AbstractStringBuilder", "append()")).count();
 		assertThat(numberOfAppendCalls, is(1L));
 	}
 
@@ -283,6 +285,15 @@ public class MinerTest {
         assertThat(patterns.get(0), not(hasOrderEdge(actionNodeWith(label("A.m()")), actionNodeWith(label("Z.f()")))));
         assertThat(patterns.get(1), not(hasOrderEdge(actionNodeWith(label("A.m()")), actionNodeWith(label("Z.f()")))));
     }
+
+	private boolean isMethodCall(Node node, String declaringType, String methodSignature) {
+		if (node instanceof MethodCallNode) {
+			MethodCallNode callNode = (MethodCallNode) node;
+			return callNode.getDeclaringTypeName().equals(declaringType) && callNode.getMethodSignature().equals(methodSignature);
+		} else {
+			return false;
+		}
+	}
 
 	private void print(APIUsageGraph graph) {
 		System.out.println(new DisplayAUGDotExporter().toDotGraph(graph));

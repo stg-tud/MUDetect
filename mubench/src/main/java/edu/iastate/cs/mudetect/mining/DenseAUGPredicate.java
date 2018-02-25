@@ -3,10 +3,10 @@ package edu.iastate.cs.mudetect.mining;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
 import de.tu_darmstadt.stg.mudetect.aug.model.DataNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
-import de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ReceiverEdge;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.AUGLabelProvider;
 
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -15,8 +15,10 @@ public class DenseAUGPredicate implements Predicate<APIUsageGraph> {
     private static final int MAX_BRANCHES = 100;
     private static final int MAX_REFERENCES = 9;
 
-    public static boolean isTooDense(APIUsageGraph graph) {
-        return new DenseAUGPredicate().test(graph);
+    private final AUGLabelProvider labelProvider;
+
+    public DenseAUGPredicate(AUGLabelProvider labelProvider) {
+        this.labelProvider = labelProvider;
     }
 
     @Override
@@ -49,6 +51,6 @@ public class DenseAUGPredicate implements Predicate<APIUsageGraph> {
     }
 
     private String edgeAndTargetId(APIUsageGraph graph, Edge edge) {
-        return edge.getLabel() + "->" + graph.getEdgeTarget(edge).getLabel();
+        return labelProvider.getLabel(edge) + "->" + labelProvider.getLabel(graph.getEdgeTarget(edge));
     }
 }

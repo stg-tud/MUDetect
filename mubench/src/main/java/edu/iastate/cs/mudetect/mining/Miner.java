@@ -38,7 +38,7 @@ public class Miner {
 	}
 
 	public Set<Pattern> mine(ArrayList<APIUsageExample> augs) {
-		augs.removeIf(DenseAUGPredicate::isTooDense);
+		augs.removeIf(new DenseAUGPredicate(config.labelProvider));
 		for (APIUsageExample aug : augs) {
 			//aug.deleteUnaryOperationNodes();
 			collapseLiterals(aug);
@@ -48,7 +48,7 @@ public class Miner {
 		for (APIUsageExample aug : augs) {
 			for (Node node : aug.vertexSet()) {
 				node.setGraph(aug);
-				String label = config.nodeToLabel.apply(node);
+				String label = config.labelProvider.getLabel(node);
 				HashSet<Node> nodes = nodesOfLabel.get(label);
 				if (nodes == null)
 					nodes = new HashSet<>();
@@ -119,7 +119,7 @@ public class Miner {
 			HashMap<String, ArrayList<Node>> labelLiterals = new HashMap<>();
 			for (Node n : aug.incomingNodesOf(node)) {
 				if (n instanceof LiteralNode) {
-					String label = n.getLabel();
+					String label = ((LiteralNode) n).getType();
 					ArrayList<Node> lits = labelLiterals.computeIfAbsent(label, k -> new ArrayList<>());
 					lits.add(n);
 				}
@@ -260,7 +260,7 @@ public class Miner {
 				}
 				if (rep != null && xrep != null) {
 					for (int j = rep.getNodes().size(); j < xrep.getNodes().size(); j++)
-						labels.add(xrep.getNodes().get(j).getLabel());
+						labels.add(config.labelProvider.getLabel(xrep.getNodes().get(j)));
 					System.out.println("{Extending pattern of size " + rep.getNodes().size()
 							+ " " + rep.getNodes()
 							+ " occurences: " + pattern.getFragments().size()

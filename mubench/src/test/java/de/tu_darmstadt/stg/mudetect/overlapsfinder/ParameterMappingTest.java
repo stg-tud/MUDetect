@@ -1,6 +1,8 @@
 package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
+import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledEdgeMatcher;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
@@ -22,9 +24,12 @@ public class ParameterMappingTest {
 
     @Before
     public void setUp() {
-        overlapsFinder = new AlternativeMappingsOverlapsFinder(new AlternativeMappingsOverlapsFinder.Config() {{
-            nodeMatcher = new EquallyLabelledNodeMatcher();
-        }});
+        overlapsFinder = new AlternativeMappingsOverlapsFinder(
+                new AlternativeMappingsOverlapsFinder.Config() {{
+                    BaseAUGLabelProvider labelProvider = new BaseAUGLabelProvider();
+                    nodeMatcher = new EquallyLabelledNodeMatcher(labelProvider);
+                    edgeMatcher = new EquallyLabelledEdgeMatcher(labelProvider);
+                }});
     }
 
     @Test

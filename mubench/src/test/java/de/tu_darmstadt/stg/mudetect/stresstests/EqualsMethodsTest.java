@@ -3,6 +3,8 @@ package de.tu_darmstadt.stg.mudetect.stresstests;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
+import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledEdgeMatcher;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import org.junit.Test;
@@ -96,6 +98,10 @@ public class EqualsMethodsTest {
                 .withEdge("eq", DEFINITION, "b8");
         APIUsagePattern pattern = somePattern(patternAUG);
 
-        new AlternativeMappingsOverlapsFinder(new EquallyLabelledNodeMatcher()).findOverlaps(target, pattern);
+        new AlternativeMappingsOverlapsFinder(new AlternativeMappingsOverlapsFinder.Config() {{
+            BaseAUGLabelProvider labelProvider = new BaseAUGLabelProvider();
+            nodeMatcher = new EquallyLabelledNodeMatcher(labelProvider);
+            edgeMatcher = new EquallyLabelledEdgeMatcher(labelProvider);
+        }}).findOverlaps(target, pattern);
     }
 }

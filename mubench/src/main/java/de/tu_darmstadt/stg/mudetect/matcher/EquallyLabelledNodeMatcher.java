@@ -1,18 +1,16 @@
 package de.tu_darmstadt.stg.mudetect.matcher;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.AUGLabelProvider;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
 
 import java.util.function.Function;
 
 public class EquallyLabelledNodeMatcher implements NodeMatcher {
     private final Function<Node, String> getLabel;
 
-    public EquallyLabelledNodeMatcher() {
-        this(Node::getLabel);
-    }
-
-    public EquallyLabelledNodeMatcher(Function<Node, String> getLabel) {
-        this.getLabel = getLabel;
+    public EquallyLabelledNodeMatcher(AUGLabelProvider labelProvider) {
+        this.getLabel = labelProvider::getLabel;
     }
 
     @Override

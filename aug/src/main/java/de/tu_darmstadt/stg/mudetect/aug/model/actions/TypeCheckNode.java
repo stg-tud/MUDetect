@@ -15,9 +15,8 @@ public class TypeCheckNode extends OperatorNode {
         this.targetTypeName = targetTypeName;
     }
 
-    @Override
-    public String getLabel() {
-        return targetTypeName + ".<instanceof>";
+    public String getTargetTypeName() {
+        return targetTypeName;
     }
 
     @Override

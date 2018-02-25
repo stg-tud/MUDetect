@@ -5,7 +5,9 @@ import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.OrderEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGDotExporter;
-import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGNodeLabelProvider;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.AUGLabelProvider;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.WithSourceLineNumberLabelProvider;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import de.tu_darmstadt.stg.mudetect.model.Violation;
 
@@ -19,8 +21,11 @@ public class ViolationDotExporter {
      */
     public String toDotGraph(Violation violation) {
         Overlap overlap = violation.getOverlap();
+        BaseAUGLabelProvider baseLabelProvider = new BaseAUGLabelProvider();
+        AUGLabelProvider withLineLabelProvider = new WithSourceLineNumberLabelProvider(baseLabelProvider);
         return new AUGDotExporter(
-                new OverlapTargetNodeNameProvider(overlap),
+                node -> overlap.mapsNode(node) ? overlap.getMappedTargetNode(node).apply(withLineLabelProvider) : node.apply(baseLabelProvider),
+                edge -> edge.apply(withLineLabelProvider),
                 new OverlapNodeAttributeProvider(overlap, "red"),
                 new OverlapEdgeAttributeProvider(overlap, "red"))
                 .toDotGraph(overlap.getPattern());
@@ -37,7 +42,7 @@ public class ViolationDotExporter {
 
     private String toTargetDotGraph(Overlap instance, APIUsageExample target, Map<String, String> graphAttributes) {
         return new AUGDotExporter(
-                new AUGNodeLabelProvider(),
+                new WithSourceLineNumberLabelProvider(new BaseAUGLabelProvider()),
                 new OverlapNodeAttributeProvider(instance, "gray"),
                 new OverlapEdgeAttributeProvider(instance, "gray"))
                 .toDotGraph(target, graphAttributes);

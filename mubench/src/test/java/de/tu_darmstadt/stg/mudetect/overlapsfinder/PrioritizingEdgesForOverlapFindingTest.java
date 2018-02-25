@@ -2,6 +2,8 @@ package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
 import de.tu_darmstadt.stg.mudetect.OverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
+import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledEdgeMatcher;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder;
 import org.junit.Test;
@@ -16,10 +18,13 @@ import static org.junit.Assert.assertThat;
 public class PrioritizingEdgesForOverlapFindingTest {
     @Test
     public void prioritizesEdge() {
-        OverlapsFinder overlapsFinder = new AlternativeMappingsOverlapsFinder(new AlternativeMappingsOverlapsFinder.Config() {{
-            nodeMatcher = new EquallyLabelledNodeMatcher();
-            edgeOrder = (e1, e2) -> e1.getType() == RECEIVER;
-        }});
+        OverlapsFinder overlapsFinder = new AlternativeMappingsOverlapsFinder(
+                new AlternativeMappingsOverlapsFinder.Config() {{
+                    BaseAUGLabelProvider labelProvider = new BaseAUGLabelProvider();
+                    nodeMatcher = new EquallyLabelledNodeMatcher(labelProvider);
+                    edgeMatcher = new EquallyLabelledEdgeMatcher(labelProvider);
+                    edgeOrder = (e1, e2) -> e1.getType() == RECEIVER;
+                }});
         TestAUGBuilder target = buildAUG().withActionNode("O.equals()").withDataNode("O")
                 .withEdge("O", RECEIVER, "O.equals()").withEdge("O", PARAMETER, "O.equals()");
         TestAUGBuilder pattern = buildAUG().withActionNode("O.equals()").withDataNode("O1", "O").withDataNode("O2", "O")

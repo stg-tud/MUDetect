@@ -104,7 +104,7 @@ public class EncodeCallsTest {
                 "}", conf);
 
 		if (conf.buildTransitiveDataEdges)
-            assertThat(aug, hasParameterEdge(actionNodeWith(label("Collection.isEmpty()")), actionNodeWith(label("return"))));
-        assertThat(aug, hasParameterEdge(dataNodeWith(label("boolean")), actionNodeWith(label("return"))));
+            assertThat(aug, hasParameterEdge(actionNodeWith(label("Collection.isEmpty()")), actionNodeWith(label("<return>"))));
+        assertThat(aug, hasParameterEdge(dataNodeWith(label("boolean")), actionNodeWith(label("<return>"))));
     }
 }

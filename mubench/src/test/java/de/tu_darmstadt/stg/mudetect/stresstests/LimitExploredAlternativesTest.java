@@ -1,6 +1,8 @@
 package de.tu_darmstadt.stg.mudetect.stresstests;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
+import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledEdgeMatcher;
 import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
@@ -31,7 +33,9 @@ public class LimitExploredAlternativesTest {
 
         AlternativeMappingsOverlapsFinder finder = new AlternativeMappingsOverlapsFinder(
                 new AlternativeMappingsOverlapsFinder.Config() {{
-                    nodeMatcher = new EquallyLabelledNodeMatcher();
+                    BaseAUGLabelProvider labelProvider = new BaseAUGLabelProvider();
+                    nodeMatcher = new EquallyLabelledNodeMatcher(labelProvider);
+                    edgeMatcher = new EquallyLabelledEdgeMatcher(labelProvider);
                     maxNumberOfAlternatives = 2;
                 }});
         List<Overlap> overlaps = finder.findOverlaps(target.build(), somePattern(pattern));

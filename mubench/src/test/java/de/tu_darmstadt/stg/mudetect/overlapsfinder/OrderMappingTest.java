@@ -1,6 +1,8 @@
 package de.tu_darmstadt.stg.mudetect.overlapsfinder;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
+import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledEdgeMatcher;
 import de.tu_darmstadt.stg.mudetect.matcher.EquallyLabelledNodeMatcher;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import org.junit.Test;
@@ -22,9 +24,12 @@ public class OrderMappingTest {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A.m()", "C.f()")
                 .withEdge("A.m()", ORDER, "C.f()").withEdge("A.m()", SELECTION, "C.f()");
 
-        AlternativeMappingsOverlapsFinder overlapsFinder = new AlternativeMappingsOverlapsFinder(new AlternativeMappingsOverlapsFinder.Config() {{
-            nodeMatcher = new EquallyLabelledNodeMatcher();
-        }});
+        AlternativeMappingsOverlapsFinder overlapsFinder = new AlternativeMappingsOverlapsFinder(
+                new AlternativeMappingsOverlapsFinder.Config() {{
+                    BaseAUGLabelProvider labelProvider = new BaseAUGLabelProvider();
+                    nodeMatcher = new EquallyLabelledNodeMatcher(labelProvider);
+                    edgeMatcher = new EquallyLabelledEdgeMatcher(labelProvider);
+                }});
         // SMELL why does this return a list? The order is arbitrary, isn't it?
         List<Overlap> overlaps = overlapsFinder.findOverlaps(target.build(), somePattern(pattern));
 
@@ -40,9 +45,12 @@ public class OrderMappingTest {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A.m()", "C.f()")
                 .withEdge("A.m()", ORDER, "C.f()").withEdge("A.m()", SELECTION, "C.f()");
 
-        AlternativeMappingsOverlapsFinder overlapsFinder = new AlternativeMappingsOverlapsFinder(new AlternativeMappingsOverlapsFinder.Config() {{
-            nodeMatcher = new EquallyLabelledNodeMatcher();
-        }});
+        AlternativeMappingsOverlapsFinder overlapsFinder = new AlternativeMappingsOverlapsFinder(
+                new AlternativeMappingsOverlapsFinder.Config() {{
+                    BaseAUGLabelProvider labelProvider = new BaseAUGLabelProvider();
+                    nodeMatcher = new EquallyLabelledNodeMatcher(labelProvider);
+                    edgeMatcher = new EquallyLabelledEdgeMatcher(labelProvider);
+                }});
         List<Overlap> overlaps = overlapsFinder.findOverlaps(target.build(), somePattern(pattern));
 
         assertThat(overlaps, contains(buildOverlap(pattern, target).withNodes("A.m()", "C.f()")

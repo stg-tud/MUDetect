@@ -18,9 +18,8 @@ public class CastNode extends BaseNode implements ActionNode {
         this.targetType = targetType;
     }
 
-    @Override
-    public String getLabel() {
-        return targetType + ".<cast>";
+    public String getTargetType() {
+        return targetType;
     }
 
     @Override

@@ -29,11 +29,6 @@ public class LiteralNode extends BaseNode implements DataNode {
     }
 
     @Override
-    public String getLabel() {
-        return getType();
-    }
-
-    @Override
     public <R> R apply(NodeVisitor<R> visitor) {
         return visitor.visit(this);
     }

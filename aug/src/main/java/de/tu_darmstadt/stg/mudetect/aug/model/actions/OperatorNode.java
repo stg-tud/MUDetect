@@ -16,8 +16,7 @@ public abstract class OperatorNode extends BaseNode implements ActionNode {
         this.operator = operator;
     }
 
-    @Override
-    public String getLabel() {
+    public String getOperator() {
         return operator;
     }
 

@@ -23,6 +23,8 @@ import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
 
 public class DefaultAUGMinerTest {
+    private static final Configuration MINING_CONFIG = new Configuration() {{ minPatternSupport = 2; extendByDataNode = IF_INCOMING; }};
+
     @Test
     public void findsPattern() {
         Collection<APIUsageExample> groums = buildAUGsForClass("class A {" +
@@ -94,13 +96,12 @@ public class DefaultAUGMinerTest {
     }
 
     private Set<APIUsagePattern> minePatterns(Collection<APIUsageExample> groums) {
-        Configuration config = new Configuration() {{ minPatternSupport = 2; extendByDataNode = IF_INCOMING; }};
-        return new DefaultAUGMiner(config).mine(groums).getPatterns();
+        return new DefaultAUGMiner(MINING_CONFIG).mine(groums).getPatterns();
     }
 
     private AggregateDataNode node(String label, APIUsagePattern aug) {
         for (Node node : aug.vertexSet()) {
-            if (node.getLabel().equals(label) && node instanceof AggregateDataNode) {
+            if (MINING_CONFIG.labelProvider.getLabel(node).equals(label) && node instanceof AggregateDataNode) {
                 return (AggregateDataNode) node;
             }
         }
@@ -155,7 +156,7 @@ public class DefaultAUGMinerTest {
 
     private static Set<String> getNodeLabels(APIUsageGraph expected) {
         Set<String> expectedNodeLabels = expected.vertexSet().stream()
-                .map(Node::getLabel).collect(Collectors.toSet());
+                .map(MINING_CONFIG.labelProvider::getLabel).collect(Collectors.toSet());
         if (expectedNodeLabels.size() < expected.getNodeSize()) {
             throw new IllegalArgumentException("cannot handle AUG with multiple equally-labelled nodes");
         }
@@ -172,7 +173,9 @@ public class DefaultAUGMinerTest {
     }
 
     private static String getEdgeLabel(Edge edge) {
-        return edge.getSource().getLabel() + "--(" + edge.getLabel() + ")-->" + edge.getTarget().getLabel();
+        return MINING_CONFIG.labelProvider.getLabel(edge.getSource()) + "--(" +
+                MINING_CONFIG.labelProvider.getLabel(edge) + ")-->" +
+                MINING_CONFIG.labelProvider.getLabel(edge.getTarget());
     }
 
 }

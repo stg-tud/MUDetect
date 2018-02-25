@@ -1,10 +1,8 @@
 package de.tu_darmstadt.stg.mudetect.aug.matchers;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
-import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGDotExporter;
-import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGEdgeAttributeProvider;
-import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGNodeAttributeProvider;
+import de.tu_darmstadt.stg.mudetect.aug.model.dot.DisplayAUGDotExporter;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -14,8 +12,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 public class AUGElementMatcher<E> extends BaseMatcher<APIUsageGraph> {
-    private final static AUGDotExporter augDotExporter = new AUGDotExporter(
-            Node::getLabel, new AUGNodeAttributeProvider(), new AUGEdgeAttributeProvider());
+    private final static AUGDotExporter augDotExporter = new DisplayAUGDotExporter();
 
     private final Function<APIUsageGraph, Set<E>> selector;
     private final Matcher<? super E> elementMatcher;

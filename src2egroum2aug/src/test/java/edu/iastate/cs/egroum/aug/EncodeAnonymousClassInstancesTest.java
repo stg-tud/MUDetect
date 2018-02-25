@@ -40,12 +40,12 @@ public class EncodeAnonymousClassInstancesTest {
 
     @Test
     public void addsDataNodeForAnyonymousClassMethods() {
-        assertThat(aug, hasNode(dataNodeWith(label("Runnable.run()"))));
+        assertThat(aug, hasNode(dataNodeWith(label("run()"))));
     }
 
     @Test
     public void addsContainsEdges() {
-        assertThat(aug, hasContainsEdge(dataNodeWith(label("Runnable")), dataNodeWith(label("Runnable.run()"))));
-        assertThat(aug, hasContainsEdge(dataNodeWith(label("Runnable.run()")), actionNodeWith(label("Object.<init>"))));
+        assertThat(aug, hasContainsEdge(dataNodeWith(label("Runnable")), dataNodeWith(label("run()"))));
+        assertThat(aug, hasContainsEdge(dataNodeWith(label("run()")), actionNodeWith(label("Object.<init>"))));
     }
 }

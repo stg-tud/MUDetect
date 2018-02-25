@@ -12,11 +12,6 @@ public class SuperConstructorCallNode extends ConstructorCallNode {
     }
 
     @Override
-    public String getLabel() {
-        return getDeclaringTypeName() + "()";
-    }
-
-    @Override
     public <R> R apply(NodeVisitor<R> visitor) {
         return visitor.visit(this);
     }

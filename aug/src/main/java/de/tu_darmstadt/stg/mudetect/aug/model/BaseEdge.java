@@ -1,5 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.aug.model;
 
+import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
+
 public abstract class BaseEdge implements Edge {
     private Node source;
     private Node target;
@@ -56,6 +58,6 @@ public abstract class BaseEdge implements Edge {
 
     @Override
     public String toString() {
-        return getSource() + "-(" + getLabel() + ")->" + getTarget();
+        return getSource() + "-(" + new BaseAUGLabelProvider().getLabel(this) + ")->" + getTarget();
     }
 }

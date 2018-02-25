@@ -1,5 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.aug.model;
 
+import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
+
 import java.util.Optional;
 
 public abstract class BaseNode implements Node {
@@ -31,7 +33,7 @@ public abstract class BaseNode implements Node {
         return aug;
     }
 
-    protected Optional<Integer> getSourceLineNumber() {
+    public Optional<Integer> getSourceLineNumber() {
         return sourceLineNumber > -1 ? Optional.of(sourceLineNumber) : Optional.empty();
     }
 
@@ -50,6 +52,6 @@ public abstract class BaseNode implements Node {
         if (type.endsWith("Node")) {
             type = type.substring(0, type.length() - 4);
         }
-        return type + ":" + getLabel();
+        return type + ":" + new BaseAUGLabelProvider().getLabel(this);
     }
 }
