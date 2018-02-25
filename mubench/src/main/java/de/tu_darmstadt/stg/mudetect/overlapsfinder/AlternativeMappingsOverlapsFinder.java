@@ -386,7 +386,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
 
         private boolean match(Edge targetEdge, Edge patternEdge) {
             return config.nodeMatcher.test(targetEdge.getSource(), patternEdge.getSource())
-                    && config.edgeMatcher.test(targetEdge.getLabel(), patternEdge.getLabel())
+                    && config.edgeMatcher.test(targetEdge, patternEdge)
                     && config.nodeMatcher.test(targetEdge.getTarget(), patternEdge.getTarget());
         }
 
@@ -431,7 +431,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
          * Predicate stating whether a target-edge label (first argument) is matched by a pattern-edge label (second
          * argument). The predicate may be asymmetric.
          */
-        public BiPredicate<String, String> edgeMatcher = String::equals;
+        public BiPredicate<Edge, Edge> edgeMatcher = (e1, e2) -> e1.getLabel().equals(e2.getLabel());
 
         /**
          * A predicate expressing a (partial) order over edges. When the predicate evaluates to <code>true</code>, the
