@@ -9,6 +9,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.data.ExceptionNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.VariableNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.NodeVisitor;
 
 import java.util.*;
 
@@ -146,6 +147,12 @@ public class TestAUGBuilder {
                     @Override
                     public String getLabel() {
                         return nodeName;
+                    }
+
+                    @Override
+                    public <R> R apply(NodeVisitor<R> visitor) {
+                        // TODO make test builder return proper nodes to fix this ugly hack
+                        return null;
                     }
                 });
             }

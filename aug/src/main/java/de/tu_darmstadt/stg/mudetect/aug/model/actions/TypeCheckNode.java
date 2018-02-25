@@ -1,5 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.aug.model.actions;
 
+import de.tu_darmstadt.stg.mudetect.aug.visitors.NodeVisitor;
+
 public class TypeCheckNode extends OperatorNode {
     private final String targetTypeName;
 
@@ -21,5 +23,10 @@ public class TypeCheckNode extends OperatorNode {
     @Override
     public boolean isCoreAction() {
         return false;
+    }
+
+    @Override
+    public <R> R apply(NodeVisitor<R> visitor) {
+        return visitor.visit(this);
     }
 }

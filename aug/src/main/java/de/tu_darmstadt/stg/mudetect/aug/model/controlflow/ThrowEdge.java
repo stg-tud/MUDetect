@@ -4,6 +4,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.BaseEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.ControlFlowEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.DataFlowEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.EdgeVisitor;
 
 /**
  * Throw edges connect from the throwing action to the data node representing the exception, e.g.,
@@ -13,5 +14,10 @@ import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 public class ThrowEdge extends BaseEdge implements DataFlowEdge {
     public ThrowEdge(Node source, Node target) {
         super(source, target, Type.THROW);
+    }
+
+    @Override
+    public <R> R apply(EdgeVisitor<R> visitor) {
+        return visitor.visit(this);
     }
 }

@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mudetect.aug.model.actions;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.ActionNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.BaseNode;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.NodeVisitor;
 
 import java.util.Optional;
 
@@ -49,5 +50,10 @@ public class MethodCallNode extends BaseNode implements ActionNode {
 
     public String getDeclaringTypeName() {
         return declaringTypeName;
+    }
+
+    @Override
+    public <R> R apply(NodeVisitor<R> visitor) {
+        return visitor.visit(this);
     }
 }

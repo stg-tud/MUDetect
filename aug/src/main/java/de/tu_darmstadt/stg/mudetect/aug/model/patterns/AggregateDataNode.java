@@ -4,6 +4,7 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import de.tu_darmstadt.stg.mudetect.aug.model.BaseNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.DataNode;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.NodeVisitor;
 
 import java.util.Objects;
 import java.util.Set;
@@ -47,17 +48,22 @@ public class AggregateDataNode extends BaseNode implements DataNode {
         return dataType;
     }
 
-    private HashMultiset<String> mapAggregatedNodes(Function<DataNode, String> getName) {
+    private <R> HashMultiset<R> mapAggregatedNodes(Function<DataNode, R> getName) {
         return HashMultiset.create(aggregatedNodes.stream()
                 .map(getName).filter(Objects::nonNull)
                 .collect(Collectors.toList()));
     }
 
-    private String getFirstOrNull(Multiset<String> aggregatedNames) {
+    private <R> R getFirstOrNull(Multiset<R> aggregatedNames) {
         if (aggregatedNames.isEmpty()) {
             return null;
         } else {
             return aggregatedNames.iterator().next();
         }
+    }
+
+    @Override
+    public <R> R apply(NodeVisitor<R> visitor) {
+        return getFirstOrNull(mapAggregatedNodes(node -> node.apply(visitor)));
     }
 }

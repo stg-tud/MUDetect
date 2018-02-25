@@ -1,5 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.aug.model;
 
+import de.tu_darmstadt.stg.mudetect.aug.visitors.NodeVisitor;
+
 import java.util.Optional;
 
 public interface Node extends Cloneable {
@@ -25,4 +27,6 @@ public interface Node extends Cloneable {
     }
 
     Node clone();
+
+    <R> R apply(NodeVisitor<R> visitor);
 }

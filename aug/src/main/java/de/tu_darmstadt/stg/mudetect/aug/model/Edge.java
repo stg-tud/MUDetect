@@ -1,5 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.aug.model;
 
+import de.tu_darmstadt.stg.mudetect.aug.visitors.EdgeVisitor;
+
 public interface Edge extends Cloneable {
     enum Type {
         RECEIVER("recv"),
@@ -46,4 +48,6 @@ public interface Edge extends Cloneable {
     Edge clone();
 
     Edge clone(Node newSourceNode, Node newTargetNode);
+
+    <R> R apply(EdgeVisitor<R> visitor);
 }

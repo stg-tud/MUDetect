@@ -2,8 +2,9 @@ package de.tu_darmstadt.stg.mudetect.aug.model.actions;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.ActionNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.BaseNode;
+import de.tu_darmstadt.stg.mudetect.aug.visitors.NodeVisitor;
 
-abstract class OperatorNode extends BaseNode implements ActionNode {
+public abstract class OperatorNode extends BaseNode implements ActionNode {
     private final String operator;
 
     OperatorNode(String operator) {
@@ -23,5 +24,10 @@ abstract class OperatorNode extends BaseNode implements ActionNode {
     @Override
     public boolean isCoreAction() {
         return false;
+    }
+
+    @Override
+    public <R> R apply(NodeVisitor<R> visitor) {
+        return visitor.visit(this);
     }
 }

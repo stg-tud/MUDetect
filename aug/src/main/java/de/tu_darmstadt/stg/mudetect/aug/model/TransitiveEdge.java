@@ -1,5 +1,7 @@
 package de.tu_darmstadt.stg.mudetect.aug.model;
 
+import de.tu_darmstadt.stg.mudetect.aug.visitors.EdgeVisitor;
+
 public class TransitiveEdge extends BaseEdge implements Edge {
     private Edge correspondingDirectEdge;
 
@@ -15,5 +17,10 @@ public class TransitiveEdge extends BaseEdge implements Edge {
     @Override
     public boolean isDirect() {
         return false;
+    }
+
+    @Override
+    public <R> R apply(EdgeVisitor<R> visitor) {
+        return getCorrespondingDirectEdge().apply(visitor);
     }
 }
