@@ -126,7 +126,7 @@ public class AUGImprovement2 {
         AUGConfiguration conf = new AUGConfiguration() {{
             removeImplementationCode = 2;
             groum = false;
-            buildTransitiveDataEdges = false;
+            encodeQualifiers = true;
         }};
         Collection<APIUsageExample> augs = buildAUGsFromFile("input/Test_qualified_name.java", conf);
 

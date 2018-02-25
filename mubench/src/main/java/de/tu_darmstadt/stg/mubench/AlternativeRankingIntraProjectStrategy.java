@@ -14,7 +14,6 @@ public class AlternativeRankingIntraProjectStrategy extends IntraProjectStrategy
                 new FirstDecisionViolationPredicate(
                         new MissingDefPrefixNoViolationPredicate(),
                         new OnlyDefPrefixNoViolationPredicate(),
-                        new MissingQualifierNoViolationPredicate(),
                         new MissingCatchNoViolationPredicate(),
                         new MissingElementViolationPredicate()),
                 new AlternativeRankingAndFilterStrategy());

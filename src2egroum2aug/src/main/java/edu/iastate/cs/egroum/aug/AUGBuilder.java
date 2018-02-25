@@ -9,6 +9,8 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static edu.iastate.cs.egroum.aug.EGroumDataEdge.Type.QUALIFIER;
+
 public class AUGBuilder {
     private static final Logger LOGGER = Logger.getLogger(AUGBuilder.class.getSimpleName());
 
@@ -51,7 +53,7 @@ public class AUGBuilder {
         EGroumBuilder builder = new EGroumBuilder(configuration);
         return Arrays.stream(sourcePaths)
                 .flatMap(sourcePath -> builder.buildBatch(sourcePath, classpaths).stream())
-                .map(AUGBuilder::toAUG)
+                .map(this::toAUG)
                 .collect(Collectors.toList());
     }
 
@@ -61,10 +63,10 @@ public class AUGBuilder {
 
     public Collection<APIUsageExample> build(String source, String basePath, String projectName, String[] classpath) {
         return new EGroumBuilder(configuration).buildGroums(source, basePath, projectName, classpath).stream()
-                .map(AUGBuilder::toAUG).collect(Collectors.toList());
+                .map(this::toAUG).collect(Collectors.toList());
     }
 
-    private static APIUsageExample toAUG(EGroumGraph groum) {
+    private APIUsageExample toAUG(EGroumGraph groum) {
         LOGGER.info("Converting to AUG: " + groum.getFilePath() + " " + groum.getName());
         APIUsageExampleBuilder builder = APIUsageExampleBuilder.buildAUG(
                 new Location(groum.getProjectName(), groum.getFilePath(), getMethodSignature(groum)));
@@ -79,7 +81,7 @@ public class AUGBuilder {
         return builder.build();
     }
 
-    private static void addEdge(APIUsageExampleBuilder builder, EGroumEdge edge) {
+    private void addEdge(APIUsageExampleBuilder builder, EGroumEdge edge) {
         Edge newEdge = convertDirectEdge(builder, edge);
         if (!edge.isDirect()) {
             // TODO the transitive edge should not wrap its 'newEdge', but the new edge for the corresponding direct
@@ -89,7 +91,7 @@ public class AUGBuilder {
         }
     }
 
-    private static Edge convertDirectEdge(APIUsageExampleBuilder builder, EGroumEdge edge) {
+    private Edge convertDirectEdge(APIUsageExampleBuilder builder, EGroumEdge edge) {
         String sourceNodeId = getNodeId(edge.getSource());
         String targetNodeId = getNodeId(edge.getTarget());
         if (edge instanceof EGroumDataEdge) {
@@ -108,7 +110,9 @@ public class AUGBuilder {
                     builder.withDefinitionEdge(sourceNodeId, targetNodeId);
                     break;
                 case QUALIFIER:
-                    builder.withQualifierEdge(sourceNodeId, targetNodeId);
+                    if (configuration.encodeQualifiers) {
+                        builder.withQualifierEdge(sourceNodeId, targetNodeId);
+                    }
                     break;
                 case CONDITION:
                     String label = edge.getLabel();
@@ -146,10 +150,17 @@ public class AUGBuilder {
         throw new IllegalArgumentException("unsupported edge: " + edge.getLabel());
     }
 
-    private static void addNode(APIUsageExampleBuilder builder, EGroumNode node) {
+    private void addNode(APIUsageExampleBuilder builder, EGroumNode node) {
         String nodeId = getNodeId(node);
         if (node instanceof EGroumDataNode) {
             // TODO there's Exception nodes in catch blocks without incoming THROW edges
+            // drop nodes that are only connected by qualifier edges, since we also drop qualifier edges and these nodes
+            // would become disconnected.
+            if (!configuration.encodeQualifiers && node.getInEdges().isEmpty()
+                    && node.getOutEdges().stream().allMatch(AUGBuilder::isQualifierEdge)) {
+                return;
+            }
+
             EGroumDataNode dataNode = (EGroumDataNode) node;
             String dataType = node.getDataType();
             String dataName = dataNode.getDataName();
@@ -261,6 +272,10 @@ public class AUGBuilder {
             }
         }
         throw new IllegalArgumentException("unsupported node: " + node);
+    }
+
+    private static boolean isQualifierEdge(EGroumEdge edge) {
+        return edge instanceof EGroumDataEdge && ((EGroumDataEdge) edge).getType() == QUALIFIER;
     }
 
     private static String getNodeId(EGroumNode node) {
