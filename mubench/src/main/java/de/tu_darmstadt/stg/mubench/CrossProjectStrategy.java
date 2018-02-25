@@ -29,16 +29,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 class CrossProjectStrategy implements DetectionStrategy {
-    private final Mode mode;
-
-    public enum Mode {
-        OFFLINE, ONLINE
-    }
-
-    CrossProjectStrategy(Mode mode) {
-        this.mode = mode;
-    }
-
     @Override
     public DetectorOutput detectViolations(DetectorArgs args, DetectorOutput.Builder output) throws Exception {
         TargetProject targetProject = TargetProject.find(getIndexFilePath(), args.getTargetSrcPaths());
@@ -52,26 +42,13 @@ class CrossProjectStrategy implements DetectionStrategy {
 
             String logPrefix;
             TypeUsageExamplePredicate examplePredicate;
-            switch (mode) {
-                case OFFLINE:
-                    if (minedForAPIs.contains(api.getName()))
-                        continue;
+            if (minedForAPIs.contains(api.getName()))
+                continue;
 
-                    System.out.println(String.format("[MuDetectXProject] Target API = %s", api));
-                    examplePredicate = TypeUsageExamplePredicate.usageExamplesOf(api.getName());
-                    logPrefix = api.getSimpleName();
-                    minedForAPIs.add(api.getName());
-                    break;
-                case ONLINE:
-
-                    System.out.println(String.format("[MuDetectXProject] Target API = %s, Misuse = %s", api, misuse.getId()));
-                    APIUsageExample misuseInstance = findMisuseInstance(misuse, targets);
-                    examplePredicate = SimilarUsageExamplePredicate.examplesSimilarTo(misuseInstance, api);
-                    logPrefix = "M-" + misuse.getId() + "-" + api.getSimpleName();
-                    break;
-                default:
-                    throw new IllegalStateException("no such mode: " + mode);
-            }
+            System.out.println(String.format("[MuDetectXProject] Target API = %s", api));
+            examplePredicate = TypeUsageExamplePredicate.usageExamplesOf(api.getName());
+            logPrefix = api.getSimpleName();
+            minedForAPIs.add(api.getName());
 
             Collection<APIUsageExample> trainingExamples = loadTrainingExamples(api, logPrefix, examplePredicate, args, output);
             output.withRunInfo(logPrefix + "-numberOfTrainingExamples", trainingExamples.size());
@@ -90,15 +67,6 @@ class CrossProjectStrategy implements DetectionStrategy {
         output.withRunInfo("numberOfExploredAlternatives", AlternativeMappingsOverlapsFinder.numberOfExploredAlternatives);
 
         return output.withFindings(violations, ViolationUtils::toFinding);
-    }
-
-    private APIUsageExample findMisuseInstance(Misuse misuse, Collection<APIUsageExample> targets) {
-        for (APIUsageExample target : targets) {
-            if (target.getLocation().getMethodSignature().equals(misuse.getMethodSignature())) {
-                return target;
-            }
-        }
-        throw new IllegalStateException("no target for misuse.");
     }
 
     private Collection<APIUsageExample> loadTrainingExamples(API targetType, String logPrefix, TypeUsageExamplePredicate examplePredicate, DetectorArgs args, DetectorOutput.Builder output) {
