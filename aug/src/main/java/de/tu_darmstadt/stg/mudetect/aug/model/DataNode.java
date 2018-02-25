@@ -34,7 +34,7 @@ public interface DataNode extends Node {
                 if (dataType.endsWith("[]")) {
                     return Optional.empty();
                 } else {
-                    return Optional.of(getLabel());
+                    return Optional.of(getType());
                 }
         }
     }
