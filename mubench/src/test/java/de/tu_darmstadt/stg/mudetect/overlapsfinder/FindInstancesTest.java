@@ -7,16 +7,16 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.*;
 import static de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder.buildAUG;
 import static de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge.ConditionType.SELECTION;
-import static de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type.*;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.buildOverlap;
 import static de.tu_darmstadt.stg.mudetect.model.TestOverlapBuilder.instance;
 import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.assertFindsOverlaps;
 import static de.tu_darmstadt.stg.mudetect.overlapsfinder.OverlapsFinderTestUtils.findOverlaps;
+import static de.tu_darmstadt.stg.mudetect.utils.CollectionUtils.only;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static de.tu_darmstadt.stg.mudetect.utils.CollectionUtils.only;
 
 public class FindInstancesTest {
     @Test
@@ -26,42 +26,42 @@ public class FindInstancesTest {
 
     @Test
     public void findsTwoNodeInstance() {
-        assertFindsInstance(buildAUG().withActionNodes("C.a()", "C.b()").withEdge("C.a()", CONDITION, "C.b()"));
+        assertFindsInstance(buildAUG().withActionNodes("C.a()", "C.b()").withEdge("C.a()", SELECTION, "C.b()"));
     }
 
     @Test
     public void findsThreeNodeChain() {
         assertFindsInstance(buildAUG().withActionNodes("A", "B", "C")
-                .withEdge("A", CONDITION, "B").withEdge("B", CONDITION, "C"));
+                .withEdge("A", SELECTION, "B").withEdge("B", SELECTION, "C"));
     }
 
     @Test
     public void findsFourNodeChain() {
         assertFindsInstance(buildAUG().withActionNodes("A", "B", "C", "D")
-                .withEdge("A", CONDITION, "B").withEdge("B", CONDITION, "C").withEdge("C", CONDITION, "D"));
+                .withEdge("A", SELECTION, "B").withEdge("B", SELECTION, "C").withEdge("C", SELECTION, "D"));
     }
 
     @Test
     public void ignoresUnmappableTargetNode() {
-        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withEdge("A", CONDITION, "B");
-        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withEdge("A", CONDITION, "B")
-                .withDataNode("C").withEdge("A", CONDITION, "C");
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withEdge("A", SELECTION, "B");
+        TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withEdge("A", SELECTION, "B")
+                .withDataNode("C").withEdge("A", SELECTION, "C");
 
-        TestOverlapBuilder instance = buildOverlap(pattern, target).withNodes("A", "B").withEdge("A", CONDITION, "B");
+        TestOverlapBuilder instance = buildOverlap(pattern, target).withNodes("A", "B").withEdge("A", SELECTION, "B");
 
         assertFindsOverlaps(pattern, target, instance);
     }
 
     @Test
     public void findsTwoOverlappingInstances() {
-        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withEdge("A", CONDITION, "B");
+        TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withEdge("A", SELECTION, "B");
         TestAUGBuilder target = buildAUG().withActionNode("A").withActionNode("B1", "B").withActionNode("B2", "B")
-                .withEdge("A", CONDITION, "B1").withEdge("A", CONDITION, "B2");
+                .withEdge("A", SELECTION, "B1").withEdge("A", SELECTION, "B2");
 
         TestOverlapBuilder instance1 = buildOverlap(pattern, target).withNode("A", "A")
-                .withNode("B1", "B").withEdge("A", "A", CONDITION, "B1", "B");
+                .withNode("B1", "B").withEdge("A", "A", SELECTION, "B1", "B");
         TestOverlapBuilder instance2 = buildOverlap(pattern, target).withNode("A", "A")
-                .withNode("B2", "B").withEdge("A", "A", CONDITION, "B2", "B");
+                .withNode("B2", "B").withEdge("A", "A", SELECTION, "B2", "B");
         assertFindsOverlaps(pattern, target, instance1, instance2);
     }
 
@@ -93,7 +93,7 @@ public class FindInstancesTest {
     @Test
     public void findsConditionPredicate() {
         assertFindsInstance(buildAUG().withActionNodes("A.predicate()", "B.m()")
-                .withEdge("A.predicate()", CONDITION, "B.m()"));
+                .withEdge("A.predicate()", SELECTION, "B.m()"));
     }
 
     @Test
@@ -101,7 +101,7 @@ public class FindInstancesTest {
         assertFindsInstance(buildAUG().withDataNode("int").withActionNodes("List.size()", "List.get()", ">")
                 .withEdge("List.size()", PARAMETER, ">")
                 .withEdge("int", PARAMETER, ">")
-                .withEdge(">", CONDITION, "List.get()"));
+                .withEdge(">", SELECTION, "List.get()"));
     }
 
     @Test
@@ -115,7 +115,7 @@ public class FindInstancesTest {
         assertFindsInstance(buildAUG().withActionNodes("C.throws()", "E.handler()")
                 .withDataNode("SomeException")
                 .withEdge("C.throws()", THROW, "SomeException")
-                .withEdge("SomeException", CONDITION, "E.handler()")
+                .withEdge("SomeException", SELECTION, "E.handler()")
                 .withEdge("SomeException", PARAMETER, "E.handler()"));
     }
 
@@ -138,9 +138,9 @@ public class FindInstancesTest {
         assertFindsInstance(buildAUG().withActionNodes("A.check()", "C.foo()")
                 .withActionNode("B1", "B.op()")
                 .withActionNode("B2", "B.op()")
-                .withEdge("B1", CONDITION, "C.foo()")
-                .withEdge("A.check()", CONDITION, "B1")
-                .withEdge("A.check()", CONDITION, "B2"));
+                .withEdge("B1", SELECTION, "C.foo()")
+                .withEdge("A.check()", SELECTION, "B1")
+                .withEdge("A.check()", SELECTION, "B2"));
     }
 
     /**

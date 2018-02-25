@@ -7,9 +7,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.actions.ReturnNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.ExceptionNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.VariableNode;
-import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.BaseDataFlowEdge;
-import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.DefinitionEdge;
-import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
 
 import java.util.*;
@@ -201,8 +199,26 @@ public class TestAUGBuilder {
             case DEFINITION:
                 edges.add(new DefinitionEdge(sourceNode, targetNode));
                 break;
-            default:
-                edges.add(new BaseDataFlowEdge(sourceNode, targetNode, type));
+            case RECEIVER:
+                edges.add(new ReceiverEdge(sourceNode, targetNode));
+                break;
+            case SYNCHRONIZE:
+                edges.add(new SynchronizationEdge(sourceNode, targetNode));
+                break;
+            case QUALIFIER:
+                edges.add(new QualifierEdge(sourceNode, targetNode));
+                break;
+            case EXCEPTION_HANDLING:
+                edges.add(new ExceptionHandlingEdge(sourceNode, targetNode));
+                break;
+            case FINALLY:
+                edges.add(new FinallyEdge(sourceNode, targetNode));
+                break;
+            case CONTAINS:
+                edges.add(new ContainsEdge(sourceNode, targetNode));
+                break;
+            case CONDITION:
+                throw new IllegalArgumentException("cannot instantiate abstract condition edge, use condition type instead");
         }
         return this;
     }
