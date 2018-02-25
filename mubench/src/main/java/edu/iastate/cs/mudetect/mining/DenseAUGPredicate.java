@@ -5,6 +5,8 @@ import de.tu_darmstadt.stg.mudetect.aug.model.DataNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.model.Edge.Type;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ReceiverEdge;
 
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -43,7 +45,7 @@ public class DenseAUGPredicate implements Predicate<APIUsageGraph> {
     }
 
     private boolean isDirectReceiverOrParameterEdge(Edge succ) {
-        return succ.isDirect() && (succ.getType() == Type.RECEIVER || succ.getType() == Type.PARAMETER);
+        return succ.isDirect() && (succ instanceof ReceiverEdge || succ instanceof ParameterEdge);
     }
 
     private String edgeAndTargetId(APIUsageGraph graph, Edge edge) {

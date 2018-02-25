@@ -5,6 +5,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.CastNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.actions.TypeCheckNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.DisplayAUGDotExporter;
 import org.hamcrest.core.Is;
 import org.junit.Rule;
@@ -79,7 +80,7 @@ public class AUGImprovement2 {
         }});
 
         APIUsageExample aug = augs.iterator().next();
-        assertThat(aug.vertexSet().stream().filter(node -> node.getLabel().endsWith(".<instanceof>")).count(), is(1L));
+        assertThat(aug.vertexSet().stream().filter(node -> node instanceof TypeCheckNode).count(), is(1L));
     }
 
     @Test

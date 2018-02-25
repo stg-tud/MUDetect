@@ -1,5 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.ranking;
 
+import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.model.TestAUGBuilder;
 import de.tu_darmstadt.stg.mudetect.model.Overlap;
 import org.junit.Test;
@@ -45,11 +46,12 @@ public class OverlapWithoutEdgesToMissingNodesWeightFunctionTest {
     @Test
     public void considersNodeImportance() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B");
+        Node nodeB = pattern.getNode("B");
         TestAUGBuilder target = buildAUG().withActionNode("A");
         Overlap violation = buildOverlap(pattern, target).withNode("A").build();
 
         double weightWithEqualImportance = getWeight(violation, node -> 1);
-        double weightWithMissingNodeDoubleImportance = getWeight(violation, node -> node.getLabel().equals("B") ? 2 : 1);
+        double weightWithMissingNodeDoubleImportance = getWeight(violation, node -> node == nodeB ? 2 : 1);
 
         assertThat(weightWithEqualImportance, is(lessThan(weightWithMissingNodeDoubleImportance)));
     }
@@ -58,11 +60,12 @@ public class OverlapWithoutEdgesToMissingNodesWeightFunctionTest {
     public void considerNodeImportance2() {
         TestAUGBuilder pattern = buildAUG().withActionNodes("A", "B", "C")
                 .withEdge("A", ORDER, "B").withEdge("A", ORDER, "C").withEdge("B", ORDER, "C");
+        Node nodeC = pattern.getNode("C");
         TestAUGBuilder target = buildAUG().withActionNodes("A", "B").withEdge("A", ORDER, "B");
         Overlap violation = buildOverlap(pattern, target).withNodes("A", "B").withEdge("A", ORDER, "B").build();
 
         double weightWithEqualImportance = getWeight(violation, node -> 1);
-        double weightWithMissingNodeDoubleImportance = getWeight(violation, node -> node.getLabel().equals("C") ? 2 : 1);
+        double weightWithMissingNodeDoubleImportance = getWeight(violation, node -> node == nodeC ? 2 : 1);
 
         assertThat(weightWithEqualImportance, is(lessThan(weightWithMissingNodeDoubleImportance)));
     }
