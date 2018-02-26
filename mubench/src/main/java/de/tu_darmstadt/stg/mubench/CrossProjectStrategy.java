@@ -204,6 +204,7 @@ class CrossProjectStrategy implements DetectionStrategy {
                         new MissingDefPrefixNoViolationPredicate(),
                         new OnlyDefPrefixNoViolationPredicate(),
                         new MissingCatchNoViolationPredicate(),
+                        new MissingAssignmentNoViolationPredicate(),
                         new MissingElementViolationPredicate()),
                 new DefaultFilterAndRankingStrategy(
                         new WeightRankingStrategy(
