@@ -1,9 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.aug.model;
 
-import de.tu_darmstadt.stg.mudetect.aug.model.actions.CatchNode;
-import de.tu_darmstadt.stg.mudetect.aug.model.actions.InfixOperatorNode;
-import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
-import de.tu_darmstadt.stg.mudetect.aug.model.actions.ReturnNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.actions.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.ExceptionNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.VariableNode;
@@ -134,7 +131,9 @@ public class TestAUGBuilder {
     }
 
     public TestAUGBuilder withActionNode(String id, final String nodeName) {
-        if (infixOperatorsToLabels.containsKey(nodeName)) {
+        if (nodeName.equals("=")) {
+            return withNode(id, new AssignmentNode());
+        } else if (infixOperatorsToLabels.containsKey(nodeName)) {
             String abstractOperatorName = infixOperatorsToLabels.get(nodeName);
             return withNode(id, new InfixOperatorNode(abstractOperatorName));
         } else if (nodeName.equals("return")) {
