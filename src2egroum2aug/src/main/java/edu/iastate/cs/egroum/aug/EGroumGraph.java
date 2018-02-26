@@ -1666,15 +1666,32 @@ public class EGroumGraph implements Serializable {
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, AssertStatement astNode) {
-		// skip assert statement
-		return new EGroumGraph(context, configuration);
-		/*EGroumGraph pdg = buildArgumentPDG(control, branch,
-				astNode.getExpression());
-		EGroumNode node = new EGroumActionNode(control, branch,
-				astNode, astNode.getNodeType(), null, null, "assert");
-		pdg.mergeSequentialData(node, Type.PARAMETER);
-		// skip astNode.getMessage()
-		return pdg;*/
+		context.addScope();
+		EGroumGraph pdg = buildArgumentPDG(control, branch, astNode.getExpression());
+		EGroumControlNode node = new EGroumControlNode(control, branch, astNode, ASTNode.IF_STATEMENT);
+		pdg.mergeSequentialData(node, CONDITION);
+		EGroumGraph etg = new EGroumGraph(context, new EGroumActionNode(node, "T",
+				null, ASTNode.EMPTY_STATEMENT, null, null, "empty"), configuration);
+		EGroumGraph tg = buildThrowPDG(node, "T", "AssertionError");
+		if (!tg.isEmpty())
+			etg.mergeSequential(tg);
+		EGroumGraph efg = new EGroumGraph(context, new EGroumActionNode(node, "F",
+				null, ASTNode.EMPTY_STATEMENT, null, null, "empty"), configuration);
+		pdg.mergeBranches(etg, efg);
+		context.removeScope();
+		return pdg;
+	}
+
+	private EGroumGraph buildThrowPDG(EGroumControlNode control, String branch, String throwable) {
+		EGroumActionNode init = new EGroumActionNode(control, branch, null, ASTNode.CLASS_INSTANCE_CREATION, null, throwable + ".<init>", "<init>");
+		EGroumGraph pdg = new EGroumGraph(context, init, configuration);
+		EGroumActionNode node = new EGroumActionNode(control, branch, null, ASTNode.THROW_STATEMENT, null, null, "throw");
+		pdg.mergeSequentialData(node, PARAMETER);
+		pdg.returns.add(node);
+		pdg.sinks.remove(node);
+		pdg.statementSinks.remove(node);
+		pdg.clearDefStore();
+		return pdg;
 	}
 
 	private EGroumGraph buildPDG(EGroumNode control, String branch, ArrayInitializer astNode) {

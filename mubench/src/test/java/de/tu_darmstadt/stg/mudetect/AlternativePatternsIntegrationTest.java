@@ -105,8 +105,6 @@ public class AlternativePatternsIntegrationTest {
                 "    }\n" +
                 "    tvd.copyBytes(reader.getTvdStream(), tvdPosition-tvdStart);\n" +
                 "    tvf.copyBytes(reader.getTvfStream(), tvfPosition-tvfStart);\n" +
-                "    assert tvd.getFilePointer() == tvdPosition;\n" +
-                "    assert tvf.getFilePointer() == tvfPosition;" +
                 "  }\n" +
                 "}");
 
