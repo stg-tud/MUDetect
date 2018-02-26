@@ -242,7 +242,7 @@ public class AUGBuilder {
                 return;
             } else if (ASSIGNMENT_OPERATORS.contains(label)) {
                 // this happens because we transform operators such as += and -= into and = and the respective
-                // operation, but to not apply the operator abstraction afterwards, i.e., this is actually a bug
+                // operation, but do not apply the operator abstraction afterwards, i.e., this is actually a bug
                 // in the transformation.
                 // TODO ensure consistent handling of operators
                 builder.withInfixOperator(nodeId, label, sourceLineNumber);
