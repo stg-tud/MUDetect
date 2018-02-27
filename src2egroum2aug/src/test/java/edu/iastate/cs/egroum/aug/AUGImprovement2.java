@@ -139,6 +139,14 @@ public class AUGImprovement2 {
     }
 
     @Test
+    public void catch_() {
+        buildAUGsFromFile("input/Test_catch.java", new AUGConfiguration() {{
+            removeImplementationCode = 2;
+            groum = false;
+        }});
+    }
+
+    @Test
     public void cast() {
         AUGConfiguration conf = new AUGConfiguration() {{
             removeImplementationCode = 2;

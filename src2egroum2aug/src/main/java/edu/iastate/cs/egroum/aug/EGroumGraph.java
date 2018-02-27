@@ -62,8 +62,10 @@ public class EGroumGraph implements Serializable {
 				mergeSequential(pdg);
 			}
 		}
-		if (context.interprocedural)
+		if (context.interprocedural) {
+			context.popInnerTry();
 			statementSinks.addAll(context.popTry());
+		}
 		adjustControlEdges();
 		context.removeScope();
 		deleteOperators();
@@ -540,6 +542,7 @@ public class EGroumGraph implements Serializable {
 			pdg = new EGroumGraph(context, configuration);
 		}
 		EGroumGraph bg = buildPDG(control, branch, astNode.getBody());
+		ArrayList<EGroumActionNode> innerTriedMethods = context.popInnerTry();
 		ArrayList<EGroumActionNode> triedMethods = context.popTry();
 		if (!resourceNames.isEmpty()) {
 			HashMap<String, EGroumActionNode> closeNodes = new HashMap<>();
@@ -589,6 +592,10 @@ public class EGroumGraph implements Serializable {
 			pdg.mergeSequential(fg);
 			for (EGroumActionNode m : triedMethods) {
 				if (triedMethods.size() == 1 || (m.exceptionTypes != null && !m.exceptionTypes.isEmpty()))
+					new EGroumDataEdge(m, fn, FINALLY);
+			}
+			for (EGroumActionNode m : innerTriedMethods) {
+				if ((triedMethods.size() == 0 && innerTriedMethods.size() == 1) || (m.exceptionTypes != null && !m.exceptionTypes.isEmpty()))
 					new EGroumDataEdge(m, fn, FINALLY);
 			}
 		}

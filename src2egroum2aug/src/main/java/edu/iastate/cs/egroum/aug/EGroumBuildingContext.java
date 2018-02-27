@@ -31,7 +31,7 @@ public class EGroumBuildingContext {
 	private MethodDeclaration method;
 	private String type = "this", superType = "Object";
 	protected boolean interprocedural;
-	private Stack<ArrayList<EGroumActionNode>> stkTrys = new Stack<>();
+	private Stack<ArrayList<EGroumActionNode>> stkTrys = new Stack<>(), stkInnerTrys = new Stack<>();
 	private Stack<HashMap<String, String>> localVariables = new Stack<>(), localVariableTypes = new Stack<>();
 	private HashMap<String, String> fieldTypes = new HashMap<>();
 	
@@ -127,10 +127,21 @@ public class EGroumBuildingContext {
 
 	public void pushTry() {
 		stkTrys.push(new ArrayList<EGroumActionNode>());
+		stkInnerTrys.push(new ArrayList<EGroumActionNode>());
 	}
 	
 	public ArrayList<EGroumActionNode> popTry() {
-		return stkTrys.pop();
+		ArrayList<EGroumActionNode> methods = stkTrys.pop();
+		if (!stkInnerTrys.isEmpty())
+			stkInnerTrys.peek().addAll(methods);
+		return methods;
+	}
+
+	public ArrayList<EGroumActionNode> popInnerTry() {
+		ArrayList<EGroumActionNode> methods = stkInnerTrys.pop();
+		if (!stkInnerTrys.isEmpty())
+			stkInnerTrys.peek().addAll(methods);
+		return methods;
 	}
 
 	public HashSet<EGroumActionNode> getTrys(String catchExceptionType, ArrayList<EGroumActionNode> triedMethods) {
