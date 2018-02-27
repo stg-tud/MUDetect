@@ -157,7 +157,7 @@ class CrossProjectStrategy implements DetectionStrategy {
     }
 
     private Path getExamplesBasePath() {
-        return Paths.get(getMuBenchBasePath().toString(), "checkouts/_examples/");
+        return Paths.get(getMuBenchBasePath().toString(), "checkouts-xp");
     }
 
     private Path getMuBenchBasePath() {
