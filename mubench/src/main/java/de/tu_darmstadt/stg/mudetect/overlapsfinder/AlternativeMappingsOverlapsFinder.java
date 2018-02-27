@@ -4,9 +4,10 @@ import de.tu_darmstadt.stg.mubench.NoEdgeOrder;
 import de.tu_darmstadt.stg.mudetect.InstanceMethodCallPredicate;
 import de.tu_darmstadt.stg.mudetect.OverlapsFinder;
 import de.tu_darmstadt.stg.mudetect.aug.model.*;
-import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
-import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.OrderEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.DefinitionEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ReceiverEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.DisplayAUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
@@ -204,7 +205,7 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
                 int numberOfAlternatives = 0;
                 for (Alternative alternative : alternatives) {
                     Set<Edge> mappingAlternatives = null;
-                    if (targetExtensionEdge instanceof OrderEdge) {
+                    if (!config.extensionEdgeTypes.contains(targetExtensionEdge.getClass())) {
                         Node patternSourceNode = alternative.getMappedPatternNode(targetEdgeSourceIndex);
                         Node patternTargetNode = alternative.getMappedPatternNode(targetEdgeTargetIndex);
                         if (patternSourceNode == null || patternTargetNode == null) {
@@ -442,6 +443,13 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
         public int maxNumberOfAlternatives = 100000;
 
         public boolean matchEntireConditions = false;
+
+        public Set<Class<?>> extensionEdgeTypes = new HashSet<>(Arrays.asList(
+                ThrowEdge.class, ExceptionHandlingEdge.class, FinallyEdge.class,
+                SynchronizationEdge.class,
+                RepetitionEdge.class, SelectionEdge.class,
+                ReceiverEdge.class, ParameterEdge.class, DefinitionEdge.class, ContainsEdge.class
+        ));
     }
 
     public static long numberOfExploredAlternatives = 0;

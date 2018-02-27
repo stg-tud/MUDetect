@@ -1,12 +1,20 @@
 package edu.iastate.cs.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.InstanceMethodCallPredicate;
+import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.ConstructorCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.*;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.DefinitionEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ReceiverEdge;
 import de.tu_darmstadt.stg.mudetect.aug.visitors.AUGLabelProvider;
 import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -48,10 +56,14 @@ public class Configuration {
      * The level of occurrence of instances of a pattern
      */
     public Level occurenceLevel = Level.WITHIN_METHOD;
-    
+
     /**
-     * Whether to extend patterns along order edges. If set to false, order edges will appear in patterns only between
-     * nodes that are also connected by a different type of edge, either directly or via other nodes.
+     * Types of edges to extend along. Any edge of a type not in this set may only be added to a pattern if both end
+     * nodes are included in the pattern already.
      */
-    public boolean extendAlongOrderEdges = false;
+    public Set<Class<?>> extensionEdgeTypes = new HashSet<>(Arrays.asList(
+            ThrowEdge.class, ExceptionHandlingEdge.class, FinallyEdge.class,
+            SynchronizationEdge.class,
+            ReceiverEdge.class, ParameterEdge.class, DefinitionEdge.class, ContainsEdge.class
+    ));
 }

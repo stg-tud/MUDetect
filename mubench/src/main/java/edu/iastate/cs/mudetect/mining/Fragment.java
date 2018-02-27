@@ -1,8 +1,6 @@
 package edu.iastate.cs.mudetect.mining;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.*;
-import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge;
-import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.OrderEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.VariableNode;
 import edu.iastate.cs.egroum.dot.DotGraph;
 
@@ -544,11 +542,7 @@ public class Fragment {
     }
 
     private boolean isExtendAlongEdge(Edge e) {
-        if (e instanceof OrderEdge) {
-            return config.extendAlongOrderEdges;
-        } else {
-            return !(e instanceof ConditionEdge);
-        }
+		return config.extensionEdgeTypes.contains(e.getClass());
     }
 
     private void add(Node node, HashMap<String, HashSet<ArrayList<Node>>> lens) {

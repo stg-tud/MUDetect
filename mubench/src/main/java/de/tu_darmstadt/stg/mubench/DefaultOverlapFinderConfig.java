@@ -7,16 +7,12 @@ import de.tu_darmstadt.stg.mudetect.matcher.SelAndRepSameLabelProvider;
 import de.tu_darmstadt.stg.mudetect.overlapsfinder.AlternativeMappingsOverlapsFinder;
 import edu.iastate.cs.mudetect.mining.Configuration;
 
-import java.util.HashSet;
-
-import static de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge.ConditionType.REPETITION;
-import static de.tu_darmstadt.stg.mudetect.aug.model.controlflow.ConditionEdge.ConditionType.SELECTION;
-
 class DefaultOverlapFinderConfig extends AlternativeMappingsOverlapsFinder.Config {
     DefaultOverlapFinderConfig(Configuration config) {
         isStartNode = super.isStartNode.and(new VeryUnspecificReceiverTypePredicate().negate());
         nodeMatcher = new EquallyLabelledNodeMatcher(config.labelProvider);
         edgeMatcher = new EquallyLabelledEdgeMatcher(config.labelProvider);
         edgeOrder = new DataEdgeTypePriorityOrder();
+        extensionEdgeTypes = config.extensionEdgeTypes;
     }
 }
