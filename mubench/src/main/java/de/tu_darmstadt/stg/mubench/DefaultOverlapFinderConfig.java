@@ -11,7 +11,7 @@ class DefaultOverlapFinderConfig extends AlternativeMappingsOverlapsFinder.Confi
     DefaultOverlapFinderConfig(Configuration config) {
         isStartNode = super.isStartNode.and(new VeryUnspecificReceiverTypePredicate().negate());
         nodeMatcher = new EquallyLabelledNodeMatcher(config.labelProvider);
-        edgeMatcher = new EquallyLabelledEdgeMatcher(config.labelProvider);
+        edgeMatcher = new EquallyLabelledEdgeMatcher(new SelAndRepSameLabelProvider(config.labelProvider));
         edgeOrder = new DataEdgeTypePriorityOrder();
         extensionEdgeTypes = config.extensionEdgeTypes;
     }
