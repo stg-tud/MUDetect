@@ -572,16 +572,20 @@ public class EGroumGraph implements Serializable {
 			}
 		}
 		pdg.mergeSequential(bg);
-		EGroumGraph[] gs = new EGroumGraph[astNode.catchClauses().size()];
-		for (int i = 0; i < astNode.catchClauses().size(); i++) {
-			CatchClause cc = (CatchClause) astNode.catchClauses().get(i);
-			gs[i] = buildPDG(control, branch, cc, triedMethods);
+		if (astNode.catchClauses().size() > 0) {
+			EGroumGraph[] gs = new EGroumGraph[astNode.catchClauses().size() + 1];
+			for (int i = 0; i < astNode.catchClauses().size(); i++) {
+				CatchClause cc = (CatchClause) astNode.catchClauses().get(i);
+				gs[i] = buildPDG(control, branch, cc, triedMethods);
+			}
+			gs[gs.length-1] = new EGroumGraph(context, new EGroumActionNode(control, branch,
+					null, ASTNode.EMPTY_STATEMENT, null, null, "empty"), configuration);
+			HashSet<EGroumNode> sinks = new HashSet<>(pdg.statementSinks);
+			pdg.mergeBranches(gs);
+			for (EGroumNode sink : sinks)
+				if (sink.outEdges.isEmpty())
+					pdg.statementSinks.add(sink);
 		}
-		HashSet<EGroumNode> sinks = new HashSet<>(pdg.statementSinks);
-		pdg.mergeBranches(gs);
-		for (EGroumNode sink : sinks)
-			if (sink.outEdges.isEmpty())
-				pdg.statementSinks.add(sink);
 		if (astNode.getFinally() != null) {
 			// TODO append finally block to all possible throw points
 			EGroumControlNode fn = new EGroumControlNode(control, branch, astNode.getFinally(), astNode.getFinally().getNodeType());
@@ -1770,11 +1774,11 @@ public class EGroumGraph implements Serializable {
             for (EGroumDataNode source : pdg.dataSources) {
                 for (EGroumNode sink : sinks) {
                     HashSet<EGroumDataNode> defs = sink.defStore.get(source.key);
-                    if (defs == null || defs.isEmpty())
+					if (defs == null || defs.isEmpty() || defs.contains(null))
                         remains.add(source);
-                    else
+					if (defs != null)
                         for (EGroumDataNode def : defs)
-                            if (!source.hasInDataNode(def, REFERENCE))
+							if (def != null && !source.hasInDataNode(def, REFERENCE))
                                 new EGroumDataEdge(def, source, REFERENCE);
                 }
             }

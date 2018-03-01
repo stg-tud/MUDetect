@@ -1,10 +1,6 @@
 package edu.iastate.cs.egroum.aug;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.*;
 
 import edu.iastate.cs.egroum.utils.JavaASTUtil;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -513,24 +509,31 @@ public abstract class EGroumNode {
 	public void consumeDefStore(HashMap<String, HashSet<EGroumDataNode>> otherDefStore) {
 		HashMap<String, HashSet<EGroumDataNode>> temp = new HashMap<>();
 		for (String key : otherDefStore.keySet())
-			if (!this.defStore.containsKey(key))
+			if (!this.defStore.containsKey(key) || this.defStore.get(key).contains(null))
 				temp.put(key, new HashSet<>(otherDefStore.get(key)));
 		for (String key : temp.keySet()) {
 			HashSet<EGroumDataNode> otherDefs = temp.get(key), defs = this.defStore.get(key);
 			if (defs == null) {
 				defs = new HashSet<>();
 				this.defStore.put(key, defs);
+				defs.addAll(otherDefs);
+			} else if (defs.contains(null)) {
+				defs.addAll(otherDefs);
+				if (!otherDefs.contains(null))
+					defs.remove(null);
 			}
-			defs.addAll(otherDefs);
 			otherDefs.clear();
 		}
 		temp.clear();
 	}
 
 	public void consumeDefStore(HashSet<EGroumNode> sinks) {
-		HashMap<String, HashSet<EGroumDataNode>> defStores = new HashMap<>();
-		for (EGroumNode sink : sinks)
-			update(defStores, sink.defStore);
+		if (sinks.isEmpty())
+			return;
+		List<EGroumNode> l = new ArrayList<>(sinks);
+		HashMap<String, HashSet<EGroumDataNode>> defStores = new HashMap<>(l.get(0).defStore);
+		for (int i = 1; i < l.size(); i++)
+			update(defStores, l.get(i).defStore);
 		consumeDefStore(defStores);
 	}
 
@@ -543,9 +546,14 @@ public abstract class EGroumNode {
 			HashSet<EGroumDataNode> defs = defStores.get(key);
 			if (defs == null) {
 				defs = new HashSet<>();
+				defs.add(null);
 				defStores.put(key, defs);
 			}
 			defs.addAll(otherDefStore.get(key));
+		}
+		for (String key : defStores.keySet()) {
+			if (!otherDefStore.containsKey(key))
+				defStores.get(key).add(null);
 		}
 	}
 }

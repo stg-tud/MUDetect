@@ -139,8 +139,16 @@ public class AUGImprovement2 {
     }
 
     @Test
-    public void catch_() {
+    public void catch_1() {
         buildAUGsFromFile("input/Test_catch.java", new AUGConfiguration() {{
+            removeImplementationCode = 2;
+            groum = false;
+        }});
+    }
+
+    @Test
+    public void catch_2() {
+        buildAUGsFromFile("input/SocialNetworkDatabaseBoards.java", new AUGConfiguration(){{
             removeImplementationCode = 2;
             groum = false;
         }});
@@ -378,6 +386,11 @@ public class AUGImprovement2 {
         }});
 
         //exportAUGsAsPNG(augs);
+    }
+
+    @Test
+    public void definition() throws Exception {
+        buildAUGsFromFile("input/Test_definition.java", new AUGConfiguration());
     }
 
     @Test
