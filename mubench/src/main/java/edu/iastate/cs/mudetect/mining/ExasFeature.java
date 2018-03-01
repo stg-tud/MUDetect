@@ -12,22 +12,6 @@ public class ExasFeature {
 	public static final int MAX_LENGTH = 4 * 2 - 1;
 	private static HashMap<String, Integer> edgeFeatures = new HashMap<>();
 
-	static {
-		edgeFeatures.put(Edge.Type.CONDITION.getLabel(), edgeFeatures.size());
-		edgeFeatures.put(Edge.Type.DEFINITION.getLabel(),  edgeFeatures.size());
-		edgeFeatures.put(Edge.Type.PARAMETER.getLabel(), edgeFeatures.size());
-		edgeFeatures.put(Edge.Type.QUALIFIER.getLabel(), edgeFeatures.size());
-		edgeFeatures.put(Edge.Type.RECEIVER.getLabel(), edgeFeatures.size());
-		edgeFeatures.put(Edge.Type.ORDER.getLabel(), edgeFeatures.size());
-		edgeFeatures.put(Edge.Type.THROW.getLabel(), edgeFeatures.size());
-		edgeFeatures.put(Edge.Type.FINALLY.getLabel(), edgeFeatures.size());
-		edgeFeatures.put(Edge.Type.CONTAINS.getLabel(), edgeFeatures.size());
-		edgeFeatures.put(ConditionEdge.ConditionType.SELECTION.getLabel(), edgeFeatures.size());
-		edgeFeatures.put(ConditionEdge.ConditionType.REPETITION.getLabel(), edgeFeatures.size());
-		edgeFeatures.put(Edge.Type.SYNCHRONIZE.getLabel(), edgeFeatures.size());
-		edgeFeatures.put(Edge.Type.EXCEPTION_HANDLING.getLabel(), edgeFeatures.size());
-	}
-
 	public static void abstractConditionEdges() {
 		Integer conditionFeatureId = edgeFeatures.get(Edge.Type.CONDITION.getLabel());
 		edgeFeatures.put(ConditionEdge.ConditionType.SELECTION.getLabel(), conditionFeatureId);
@@ -51,6 +35,9 @@ public class ExasFeature {
 	}
 
 	private int getEdgeFeature(String label) {
+		if (!edgeFeatures.containsKey(label)) {
+			edgeFeatures.put(label, edgeFeatures.size());
+		}
 		return edgeFeatures.get(label);
 	}
 
