@@ -14,6 +14,6 @@ class DefaultMiningConfiguration extends Configuration {
         extendByDataNode = DataNodeExtensionStrategy.IF_INCOMING;
         disableSystemOut = true;
         outputPath = System.getProperty("mudetect.mining.outputpath");
-        labelProvider = new AllDataNodesSameLabelProvider(new BaseAUGLabelProvider());
+        labelProvider = new SelAndRepSameLabelProvider(new AllDataNodesSameLabelProvider(new BaseAUGLabelProvider()));
     }
 }

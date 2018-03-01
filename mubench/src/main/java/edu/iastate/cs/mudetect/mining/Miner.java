@@ -29,8 +29,6 @@ public class Miner {
 	public Miner(String projectName, Configuration config) {
 		this.projectName = projectName;
 		this.config = config;
-		if (config.abstractConditionEdges)
-			ExasFeature.abstractConditionEdges();
 	}
 	
 	public String getProjectName() {

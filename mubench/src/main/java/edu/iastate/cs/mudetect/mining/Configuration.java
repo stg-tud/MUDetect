@@ -50,11 +50,6 @@ public class Configuration {
     public Level occurenceLevel = Level.WITHIN_METHOD;
     
     /**
-     * Abstract labels of condition edges (sel, rep, sync, handle)
-     */
-    public boolean abstractConditionEdges = false;
-
-    /**
      * Whether to extend patterns along order edges. If set to false, order edges will appear in patterns only between
      * nodes that are also connected by a different type of edge, either directly or via other nodes.
      */

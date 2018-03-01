@@ -238,7 +238,7 @@ public class MinerTest {
 			"}";
 
 		List<APIUsagePattern> patterns = mineMethods(new Configuration() {{
-			minPatternSupport = 2; abstractConditionEdges = true; extendAlongOrderEdges = true;
+			minPatternSupport = 2;
 		}}, targetSource, patternSource);
 
 		print(patterns);

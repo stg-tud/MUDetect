@@ -12,14 +12,6 @@ public class ExasFeature {
 	public static final int MAX_LENGTH = 4 * 2 - 1;
 	private static HashMap<String, Integer> edgeFeatures = new HashMap<>();
 
-	public static void abstractConditionEdges() {
-		Integer conditionFeatureId = edgeFeatures.get(Edge.Type.CONDITION.getLabel());
-		edgeFeatures.put(ConditionEdge.ConditionType.SELECTION.getLabel(), conditionFeatureId);
-		edgeFeatures.put(ConditionEdge.ConditionType.REPETITION.getLabel(), conditionFeatureId);
-		edgeFeatures.put(Edge.Type.SYNCHRONIZE.getLabel(), conditionFeatureId);
-		edgeFeatures.put(Edge.Type.EXCEPTION_HANDLING.getLabel(), conditionFeatureId);
-	}
-
 	private HashMap<String, Integer> nodeFeatures = new HashMap<>();
 
 	public ExasFeature(ArrayList<Node> nodes, AUGLabelProvider labelProvider) {
