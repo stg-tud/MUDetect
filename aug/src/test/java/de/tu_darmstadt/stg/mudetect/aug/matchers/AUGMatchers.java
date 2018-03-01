@@ -13,6 +13,12 @@ import org.jgrapht.graph.AbstractBaseGraph;
 import java.util.ArrayList;
 import java.util.List;
 
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.constantNodeWith;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.literalNodeWith;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodePropertyMatchers.name;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodePropertyMatchers.type;
+import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodePropertyMatchers.value;
+import static org.hamcrest.Matchers.both;
 import static org.hamcrest.core.AllOf.allOf;
 
 public class AUGMatchers {
@@ -29,6 +35,14 @@ public class AUGMatchers {
         }
 
         return allOf(all);
+    }
+
+    public static Matcher<APIUsageGraph> hasLiteralNode(String dataType, String value) {
+        return hasNode(literalNodeWith(both(type(dataType)).and(name(value))));
+    }
+
+    public static Matcher<APIUsageGraph> hasConstantNode(String dataType, String name, String value) {
+        return hasNode(constantNodeWith(both(type(dataType)).and(name(name)).and(value(value))));
     }
 
     public static Matcher<APIUsageGraph> hasReceiverEdge(Matcher<? super Node> sourceNodeMatcher,

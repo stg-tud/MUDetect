@@ -4,6 +4,8 @@ import de.tu_darmstadt.stg.mudetect.aug.model.ActionNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.DataNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.data.ConstantNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.data.LiteralNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.VariableNode;
 import de.tu_darmstadt.stg.utils.StringUtils;
 import org.hamcrest.BaseMatcher;
@@ -43,6 +45,14 @@ public abstract class NodeMatchers {
 
     public static Matcher<Node> nodeWith(Matcher<? super Node> matcher) {
         return nodeWith(Node.class, matcher);
+    }
+
+    static Matcher<Node> literalNodeWith(Matcher<? super LiteralNode> matcher) {
+        return nodeWith(LiteralNode.class, matcher);
+    }
+
+    static Matcher<Node> constantNodeWith(Matcher<? super ConstantNode> matcher) {
+        return nodeWith(ConstantNode.class, matcher);
     }
 
     private static <N extends Node> Matcher<Node> nodeWith(Class<N> clazz, Matcher<? super N> matcher) {

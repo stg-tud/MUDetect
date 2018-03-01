@@ -238,7 +238,7 @@ public class EGroumGraph implements Serializable {
 	}
 
 	private void init(EGroumNode node) {
-		if (node instanceof EGroumDataNode && !node.isLiteral())
+		if (node instanceof EGroumDataNode && (((EGroumDataNode) node).isField || !node.isLiteral()))
 			dataSources.add((EGroumDataNode) node);
 		sinks.add(node);
 		nodes.add(node);

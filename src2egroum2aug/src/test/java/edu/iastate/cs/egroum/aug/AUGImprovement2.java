@@ -3,11 +3,14 @@ package edu.iastate.cs.egroum.aug;
 import de.tu_darmstadt.stg.mudetect.aug.AUGTestUtils;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
+import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.CastNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.MethodCallNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.TypeCheckNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.DisplayAUGDotExporter;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.hamcrest.core.Is;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -119,6 +122,23 @@ public class AUGImprovement2 {
         assertThat(buildAUGsFromFile("input/Test_filter_API.java", new AUGConfiguration() {{
             usageExamplePredicate = usageExamplesOf("java.util.Collection", "java.util.Iterator");
         }}), is(not(empty())));
+    }
+
+    @Test
+    public void constant() throws Exception {
+        Collection<APIUsageExample> augs = buildAUGsFromFile("input/Test_constant.java", new AUGConfiguration(){{removeImplementationCode = 2;}});
+        assertThat(augs.size(), is(1));
+        APIUsageExample aug = augs.iterator().next();
+
+        assertThat(aug.getNodeSize(), Is.is(19));
+        assertThat(aug.getEdgeSize(), Is.is(60));
+
+        // TODO capturing of names and values is inconsistent
+        assertThat(aug, hasConstantNode("int", "Test_constant.n", "0"));
+        assertThat(aug, hasConstantNode("char", "c", null));
+        assertThat(aug, hasConstantNode("String", "s", null));
+        assertThat(aug, hasConstantNode("boolean", "b", null));
+        assertThat(aug, hasConstantNode("int", "Integer.MAX_VALUE", String.valueOf(Integer.MAX_VALUE)));
     }
 
     @Test
