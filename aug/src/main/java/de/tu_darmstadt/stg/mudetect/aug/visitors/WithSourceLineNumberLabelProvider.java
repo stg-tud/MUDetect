@@ -4,8 +4,6 @@ import de.tu_darmstadt.stg.mudetect.aug.model.BaseNode;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.*;
 
-import java.util.Optional;
-
 public class WithSourceLineNumberLabelProvider extends DelegateAUGVisitor<String> implements AUGLabelProvider {
     public WithSourceLineNumberLabelProvider(AUGLabelProvider delegate) {
         super(delegate);
