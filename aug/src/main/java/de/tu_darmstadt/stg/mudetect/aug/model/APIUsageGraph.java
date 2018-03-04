@@ -14,7 +14,7 @@ public class APIUsageGraph extends DirectedMultigraph<Node, Edge> {
     private int hash;
     private Set<Node> meaningfullActionNodesCache = null;
 
-    protected APIUsageGraph() {
+    public APIUsageGraph() {
         super(Edge.class);
     }
 
