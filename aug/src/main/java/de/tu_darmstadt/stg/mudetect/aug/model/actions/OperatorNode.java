@@ -24,9 +24,4 @@ public abstract class OperatorNode extends BaseNode implements ActionNode {
     public boolean isCoreAction() {
         return false;
     }
-
-    @Override
-    public <R> R apply(NodeVisitor<R> visitor) {
-        return visitor.visit(this);
-    }
 }

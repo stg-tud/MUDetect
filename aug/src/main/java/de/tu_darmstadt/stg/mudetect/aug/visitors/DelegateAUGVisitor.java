@@ -136,11 +136,6 @@ public class DelegateAUGVisitor<R> implements AUGElementVisitor<R> {
     }
 
     @Override
-    public R visit(OperatorNode node) {
-        return delegate.visit(node);
-    }
-
-    @Override
     public R visit(ReturnNode node) {
         return delegate.visit(node);
     }

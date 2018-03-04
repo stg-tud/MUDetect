@@ -17,7 +17,6 @@ public interface NodeVisitor<R> {
     R visit(InfixOperatorNode node);
     R visit(MethodCallNode node);
     R visit(NullCheckNode node);
-    R visit(OperatorNode node);
     R visit(ReturnNode node);
     R visit(SuperConstructorCallNode node);
     R visit(ThrowNode node);

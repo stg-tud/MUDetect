@@ -129,8 +129,7 @@ public class BaseAUGLabelProvider implements AUGLabelProvider {
         return visit((InfixOperatorNode) node);
     }
 
-    @Override
-    public String visit(OperatorNode node) {
+    private String visit(OperatorNode node) {
         return node.getOperator();
     }
 

@@ -78,11 +78,6 @@ public class WithSourceLineNumberLabelProvider extends DelegateAUGVisitor<String
     }
 
     @Override
-    public String visit(OperatorNode node) {
-        return getLabel(node, super.visit(node));
-    }
-
-    @Override
     public String visit(ReturnNode node) {
         return getLabel(node, super.visit(node));
     }
