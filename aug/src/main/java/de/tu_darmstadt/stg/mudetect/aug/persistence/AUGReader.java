@@ -13,12 +13,12 @@ import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class AUGReader2<G extends APIUsageGraph> implements AutoCloseable {
+public class AUGReader<G extends APIUsageGraph> implements AutoCloseable {
     private final ZipInputStream zip;
     private final PersistenceAUGDotImporter importer;
     private final Supplier<G> emptyGraphFactory;
 
-    public AUGReader2(InputStream in, PersistenceAUGDotImporter importer, Supplier<G> emptyGraphFactory) {
+    public AUGReader(InputStream in, PersistenceAUGDotImporter importer, Supplier<G> emptyGraphFactory) {
         this.zip = new ZipInputStream(in);
         this.importer = importer;
         this.emptyGraphFactory = emptyGraphFactory;

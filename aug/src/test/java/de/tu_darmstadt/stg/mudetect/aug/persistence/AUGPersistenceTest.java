@@ -57,14 +57,14 @@ public class AUGPersistenceTest {
 
     private Collection<APIUsageGraph> persistAndRestore(APIUsageGraph... augs) throws IOException, ImportException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try (AUGWriter2 writer = new AUGWriter2(out, new PersistenceAUGDotExporter())) {
+        try (AUGWriter writer = new AUGWriter(out, new PersistenceAUGDotExporter())) {
             for (int i = 0; i < augs.length; i++) {
                 writer.write(augs[i], "aug-" + i);
             }
         }
         byte[] buf = out.toByteArray();
         ByteArrayInputStream in = new ByteArrayInputStream(buf);
-        try (AUGReader2<APIUsageGraph> reader = new AUGReader2<>(in, new PersistenceAUGDotImporter(), APIUsageGraph::new)) {
+        try (AUGReader<APIUsageGraph> reader = new AUGReader<>(in, new PersistenceAUGDotImporter(), APIUsageGraph::new)) {
             return reader.readAll();
         }
     }

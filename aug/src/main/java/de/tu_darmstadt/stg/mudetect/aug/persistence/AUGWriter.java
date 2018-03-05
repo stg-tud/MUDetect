@@ -8,11 +8,11 @@ import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class AUGWriter2 implements AutoCloseable {
+public class AUGWriter implements AutoCloseable {
     private final ZipOutputStream zip;
     private final AUGDotExporter exporter;
 
-    public AUGWriter2(OutputStream out, AUGDotExporter exporter) {
+    public AUGWriter(OutputStream out, AUGDotExporter exporter) {
         zip = new ZipOutputStream(out);
         this.exporter = exporter;
     }
