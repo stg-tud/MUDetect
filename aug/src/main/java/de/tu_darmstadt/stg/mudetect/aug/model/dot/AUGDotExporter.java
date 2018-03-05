@@ -7,6 +7,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.visitors.AUGLabelProvider;
 import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
+import org.jgrapht.ext.ComponentAttributeProvider;
 import org.jgrapht.ext.DOTExporter;
 import org.jgrapht.ext.IntegerNameProvider;
 import org.jgrapht.ext.VertexNameProvider;
@@ -32,33 +33,39 @@ public class AUGDotExporter {
 
     private final IntegerNameProvider<Node> nodeIdProvider = new IntegerNameProvider<>();
     private final DOTExporter<Node, Edge> exporter;
+    private final AUGAttributeProvider<APIUsageGraph> graphAttributeProvider;
 
     public AUGDotExporter(AUGLabelProvider labelProvider,
-                          AUGNodeAttributeProvider nodeAttributeProvider,
-                          AUGEdgeAttributeProvider edgeAttributeProvider) {
+                          ComponentAttributeProvider<Node> nodeAttributeProvider,
+                          ComponentAttributeProvider<Edge> edgeAttributeProvider) {
         this(labelProvider::getLabel, labelProvider::getLabel, nodeAttributeProvider, edgeAttributeProvider);
     }
 
     public AUGDotExporter(Function<Node, String> nodeLabelProvider,
                           Function<Edge, String> edgeLabelProvider,
-                          AUGNodeAttributeProvider nodeAttributeProvider,
-                          AUGEdgeAttributeProvider edgeAttributeProvider) {
-        exporter = new DOTExporter<>(nodeIdProvider,
+                          ComponentAttributeProvider<Node> nodeAttributeProvider,
+                          ComponentAttributeProvider<Edge> edgeAttributeProvider) {
+        this(nodeLabelProvider, edgeLabelProvider, nodeAttributeProvider, edgeAttributeProvider, null);
+    }
+
+    public AUGDotExporter(Function<Node, String> nodeLabelProvider,
+                          Function<Edge, String> edgeLabelProvider,
+                          ComponentAttributeProvider<Node> nodeAttributeProvider,
+                          ComponentAttributeProvider<Edge> edgeAttributeProvider,
+                          AUGAttributeProvider<APIUsageGraph> graphAttributeProvider) {
+        this.exporter = new DOTExporter<>(nodeIdProvider,
                 nodeLabelProvider::apply, edgeLabelProvider::apply,
                 nodeAttributeProvider, edgeAttributeProvider);
+        this.graphAttributeProvider = graphAttributeProvider;
     }
 
     public String toDotGraph(APIUsageGraph aug) {
-        return toDotGraph(aug, new HashMap<>());
-    }
-
-    public String toDotGraph(APIUsageGraph aug, Map<String, String> graphAttributes) {
         StringWriter writer = new StringWriter();
-        toDotGraph(aug, graphAttributes, writer);
+        toDotGraph(aug, writer);
         return writer.toString();
     }
 
-    private void toDotGraph(APIUsageGraph aug, Map<String, String> graphAttributes, Writer writer) {
+    private void toDotGraph(APIUsageGraph aug, Writer writer) {
         nodeIdProvider.clear();
         exporter.export(new PrintWriter(writer) {
             @Override
@@ -66,8 +73,10 @@ public class AUGDotExporter {
                 if (s.equals("digraph G {")) {
                     String methodName = aug instanceof APIUsageExample ? ((APIUsageExample) aug).getLocation().getMethodSignature() : "AUG";
                     StringBuilder data = new StringBuilder("digraph \"").append(methodName).append("\" {").append(NEW_LINE);
-                    for (Map.Entry<String, String> attribute : graphAttributes.entrySet()) {
-                        data.append(attribute.getKey()).append("=").append(attribute.getValue()).append(";").append(NEW_LINE);
+                    if (graphAttributeProvider != null) {
+                        for (Map.Entry<String, String> attribute : graphAttributeProvider.getAUGAttributes(aug).entrySet()) {
+                            data.append(attribute.getKey()).append("=").append(attribute.getValue()).append(";").append(NEW_LINE);
+                        }
                     }
                     super.write(data.toString(), 0, data.length());
                 } else {

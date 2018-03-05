@@ -2,7 +2,6 @@ package de.tu_darmstadt.stg.mudetect.aug.persistence;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.sun.tools.internal.jxc.ap.Const;
 import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.model.actions.*;
@@ -12,15 +11,14 @@ import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.DefinitionEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.QualifierEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ReceiverEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.aug.visitors.NodeVisitor;
 import org.jgrapht.ext.ComponentAttributeProvider;
-import org.jgrapht.ext.DOTExporter;
-import org.jgrapht.ext.IntegerNameProvider;
 
 import java.util.HashMap;
 import java.util.Map;
 
-class AUGWriter extends DOTExporter<Node, Edge> {
+public class PersistenceAUGDotExporter extends AUGDotExporter {
     static final String SOURCE_LINE_NUMBER = "l";
     static final String DECLARING_TYPE = "t";
     static final String METHOD_SIGNATURE = "s";
@@ -75,9 +73,8 @@ class AUGWriter extends DOTExporter<Node, Edge> {
         AUG_ELEMENT_TYPE_TO_LABEL.put(ReceiverEdge.class, "R");
     }
 
-    AUGWriter() {
-        super(new IntegerNameProvider<>(), AUGWriter::getNodeType, AUGWriter::getEdgeType,
-                new NodeAttributeProvider(new AttributeProvider()), null);
+    public PersistenceAUGDotExporter() {
+        super(PersistenceAUGDotExporter::getNodeType, PersistenceAUGDotExporter::getEdgeType, new NodeAttributeProvider(new AttributeProvider()), null);
     }
 
     private static String getNodeType(Node node) {

@@ -41,11 +41,13 @@ public class ViolationDotExporter {
     }
 
     private String toTargetDotGraph(Overlap instance, APIUsageExample target, Map<String, String> graphAttributes) {
+        AUGLabelProvider labelProvider = new WithSourceLineNumberLabelProvider(new BaseAUGLabelProvider());
         return new AUGDotExporter(
-                new WithSourceLineNumberLabelProvider(new BaseAUGLabelProvider()),
+                labelProvider::getLabel, labelProvider::getLabel,
                 new OverlapNodeAttributeProvider(instance, "gray"),
-                new OverlapEdgeAttributeProvider(instance, "gray"))
-                .toDotGraph(target, graphAttributes);
+                new OverlapEdgeAttributeProvider(instance, "gray"),
+                graph -> graphAttributes)
+                .toDotGraph(target);
     }
 
     /**

@@ -13,13 +13,13 @@ import org.jgrapht.ext.DOTImporter;
 
 import java.util.Map;
 
-import static de.tu_darmstadt.stg.mudetect.aug.persistence.AUGWriter.*;
+import static de.tu_darmstadt.stg.mudetect.aug.persistence.PersistenceAUGDotExporter.*;
 
-class AUGReader extends DOTImporter<Node, Edge> {
-    private static final Map<String, Class> AUG_ELEMENT_LABEL_TO_TYPE = AUGWriter.AUG_ELEMENT_TYPE_TO_LABEL.inverse();
+public class PersistenceAUGDotImporter extends DOTImporter<Node, Edge> {
+    private static final Map<String, Class> AUG_ELEMENT_LABEL_TO_TYPE = PersistenceAUGDotExporter.AUG_ELEMENT_TYPE_TO_LABEL.inverse();
 
-    public AUGReader() {
-        super(AUGReader::createNode, AUGReader::createEdge);
+    public PersistenceAUGDotImporter() {
+        super(PersistenceAUGDotImporter::createNode, PersistenceAUGDotImporter::createEdge);
     }
 
     private static Node createNode(String label, Map<String, String> attributes) {
