@@ -11,7 +11,7 @@ This is the codebase of the API-misuse detector MUDetect. Please feel free to co
 
 ## Publications
 
-* "MuDetect: The Next Step in API-Misuse Detection" (Under Review)
+* (Under Review)
 
 ## Usage
 
