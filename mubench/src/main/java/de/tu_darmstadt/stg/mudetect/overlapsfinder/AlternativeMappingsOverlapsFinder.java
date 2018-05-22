@@ -164,14 +164,15 @@ public class AlternativeMappingsOverlapsFinder implements OverlapsFinder {
                 int nextExtensionEdgeTargetIndex = getOrCreateTargetNodeIndex(target.getEdgeTarget(nextExtensionEdge));
                 LOGGER.debug("  Extending along {}...", nextExtensionEdge);
 
-                Set<Alternative> newAlternatives = alternatives.stream().flatMap(alternative ->
+                // Do not inline this variable, because the Eclipse compiler doesn't manage the type inference.
+                Stream<Alternative> alternativeStream = alternatives.stream().flatMap(alternative ->
                         getNextExtensionEdgeMappingAlternatives(alternative).stream()
                                 .map(patternEdge -> alternative.createExtension(
                                         nextExtensionEdgeIndex,
                                         nextExtensionEdgeSourceIndex,
                                         nextExtensionEdgeTargetIndex,
-                                        patternEdge)))
-                        .collect(Collectors.toSet());
+                                        patternEdge)));
+                Set<Alternative> newAlternatives = alternativeStream.collect(Collectors.toSet());
 
                 if (!newAlternatives.isEmpty()) {
                     alternatives.clear();
