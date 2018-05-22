@@ -9,11 +9,11 @@ import de.tu_darmstadt.stg.mudetect.model.Violation;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class ViolationUtils {
+public class ViolationUtils {
     private static final ViolationDotExporter violationDotExporter = new ViolationDotExporter();
     public static final String CHECKOUTS_PATH_SUFFIX = "checkouts/";
 
-    static DetectorFinding toFinding(Violation violation) {
+    public static DetectorFinding toFinding(Violation violation) {
         Location location = violation.getLocation();
         DetectorFinding finding = new DetectorFinding(location.getFilePath(), location.getMethodSignature());
         finding.put("pattern_violation", violationDotExporter.toDotGraph(violation));

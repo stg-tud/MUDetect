@@ -16,11 +16,11 @@ import java.util.stream.Collectors;
 
 import static de.tu_darmstadt.stg.mudetect.AlternativeViolationPredicate.firstAlternativeViolation;
 
-class DefaultFilterAndRankingStrategy implements BiFunction<Overlaps, Model, List<Violation>> {
+public class DefaultFilterAndRankingStrategy implements BiFunction<Overlaps, Model, List<Violation>> {
     private final ViolationRankingStrategy rankingStrategy;
     private final AlternativePatternInstancePredicate alternativePatternInstancePredicate;
 
-    DefaultFilterAndRankingStrategy(ViolationRankingStrategy rankingStrategy) {
+    public DefaultFilterAndRankingStrategy(ViolationRankingStrategy rankingStrategy) {
         this.rankingStrategy = rankingStrategy;
         alternativePatternInstancePredicate = new AlternativePatternInstancePredicate();
     }
