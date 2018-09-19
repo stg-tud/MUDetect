@@ -6,14 +6,12 @@ import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
 import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.visitors.AUGLabelProvider;
-import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
-import org.jgrapht.ext.ComponentAttributeProvider;
-import org.jgrapht.ext.DOTExporter;
-import org.jgrapht.ext.IntegerNameProvider;
-import org.jgrapht.ext.VertexNameProvider;
+import org.jgrapht.Graph;
+import org.jgrapht.io.ComponentAttributeProvider;
+import org.jgrapht.io.DOTExporter;
+import org.jgrapht.io.IntegerComponentNameProvider;
 
 import java.io.*;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -31,9 +29,9 @@ public class AUGDotExporter {
 
     private static final String NEW_LINE = System.getProperty("line.separator");
 
-    private final IntegerNameProvider<Node> nodeIdProvider = new IntegerNameProvider<>();
+    private final IntegerComponentNameProvider<Node> nodeIdProvider = new IntegerComponentNameProvider<>();
     private final DOTExporter<Node, Edge> exporter;
-    private final AUGAttributeProvider<APIUsageGraph> graphAttributeProvider;
+    private final AUGAttributeProvider<APIUsageGraph> augAttributeProvider;
 
     public AUGDotExporter(AUGLabelProvider labelProvider,
                           ComponentAttributeProvider<Node> nodeAttributeProvider,
@@ -52,11 +50,19 @@ public class AUGDotExporter {
                           Function<Edge, String> edgeLabelProvider,
                           ComponentAttributeProvider<Node> nodeAttributeProvider,
                           ComponentAttributeProvider<Edge> edgeAttributeProvider,
-                          AUGAttributeProvider<APIUsageGraph> graphAttributeProvider) {
+                          AUGAttributeProvider<APIUsageGraph> augAttributeProvider) {
         this.exporter = new DOTExporter<>(nodeIdProvider,
                 nodeLabelProvider::apply, edgeLabelProvider::apply,
-                nodeAttributeProvider, edgeAttributeProvider);
-        this.graphAttributeProvider = graphAttributeProvider;
+                nodeAttributeProvider, edgeAttributeProvider, this::getGraphName);
+        this.augAttributeProvider = augAttributeProvider;
+    }
+
+    private String getGraphName(Graph<Node, Edge> g) {
+        if (g instanceof APIUsageExample) {
+            return ((APIUsageExample) g).getLocation().getMethodSignature();
+        } else {
+            return "AUG";
+        }
     }
 
     public String toDotGraph(APIUsageGraph aug) {
@@ -65,25 +71,21 @@ public class AUGDotExporter {
         return writer.toString();
     }
 
-    private void toDotGraph(APIUsageGraph aug, Writer writer) {
+    public void toDotGraph(APIUsageGraph aug, Writer writer) {
         nodeIdProvider.clear();
-        exporter.export(new PrintWriter(writer) {
-            @Override
-            public void write(String s, int off, int len) {
-                if (s.equals("digraph G {")) {
-                    String methodName = aug instanceof APIUsageExample ? ((APIUsageExample) aug).getLocation().getMethodSignature() : "AUG";
-                    StringBuilder data = new StringBuilder("digraph \"").append(methodName).append("\" {").append(NEW_LINE);
-                    if (graphAttributeProvider != null) {
-                        for (Map.Entry<String, String> attribute : graphAttributeProvider.getAUGAttributes(aug).entrySet()) {
-                            data.append(attribute.getKey()).append("=").append(attribute.getValue()).append(";").append(NEW_LINE);
-                        }
-                    }
-                    super.write(data.toString(), 0, data.length());
-                } else {
-                    super.write(s, off, len);
-                }
+        Map<String, String> augAttributes = null;
+        if (augAttributeProvider != null) {
+            augAttributes = augAttributeProvider.getAUGAttributes(aug);
+            for (Map.Entry<String, String> attribute : augAttributes.entrySet()) {
+                exporter.putGraphAttribute(attribute.getKey(), attribute.getValue());
             }
-        }, aug);
+        }
+        exporter.exportGraph(aug, writer);
+        if (augAttributes != null) {
+            for (String attributeKey : augAttributes.keySet()) {
+                exporter.removeGraphAttribute(attributeKey);
+            }
+        }
     }
 
     public void toDotFile(APIUsageGraph aug, File file) throws IOException {

@@ -13,7 +13,10 @@ import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.QualifierEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ReceiverEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.AUGDotExporter;
 import de.tu_darmstadt.stg.mudetect.aug.visitors.NodeVisitor;
-import org.jgrapht.ext.ComponentAttributeProvider;
+import org.jgrapht.io.Attribute;
+import org.jgrapht.io.AttributeType;
+import org.jgrapht.io.ComponentAttributeProvider;
+import org.jgrapht.io.DefaultAttribute;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -93,203 +96,207 @@ public class PersistenceAUGDotExporter extends AUGDotExporter {
         }
 
         @Override
-        public Map<String, String> getComponentAttributes(Node node) {
+        public Map<String, Attribute> getComponentAttributes(Node node) {
             return node.apply(provider);
         }
     }
 
-    private static class AttributeProvider implements NodeVisitor<Map<String, String>> {
+    private static class AttributeProvider implements NodeVisitor<Map<String, Attribute>> {
         @Override
-        public Map<String, String> visit(ArrayAccessNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            attributes.put(DECLARING_TYPE, node.getDeclaringTypeName());
-            node.getSourceLineNumber().ifPresent(lineNumber -> attributes.put(SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
+        public Map<String, Attribute> visit(ArrayAccessNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            put(attributes, DECLARING_TYPE, node.getDeclaringTypeName());
+            node.getSourceLineNumber().ifPresent(lineNumber -> put(attributes, SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
+            return attributes;
+        }
+
+        private void put(Map<String, Attribute> attributes, String key, String value) {
+            if (value != null) attributes.put(key, new DefaultAttribute<>(value, AttributeType.STRING));
+        }
+
+        @Override
+        public Map<String, Attribute> visit(ArrayAssignmentNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            put(attributes, DECLARING_TYPE, node.getDeclaringTypeName());
+            node.getSourceLineNumber().ifPresent(lineNumber -> put(attributes, SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
             return attributes;
         }
 
         @Override
-        public Map<String, String> visit(ArrayAssignmentNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            attributes.put(DECLARING_TYPE, node.getDeclaringTypeName());
-            node.getSourceLineNumber().ifPresent(lineNumber -> attributes.put(SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
+        public Map<String, Attribute> visit(ArrayCreationNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            put(attributes, DECLARING_TYPE, node.getDeclaringTypeName());
+            node.getSourceLineNumber().ifPresent(lineNumber -> put(attributes, SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
             return attributes;
         }
 
         @Override
-        public Map<String, String> visit(ArrayCreationNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            attributes.put(DECLARING_TYPE, node.getDeclaringTypeName());
-            node.getSourceLineNumber().ifPresent(lineNumber -> attributes.put(SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
+        public Map<String, Attribute> visit(AssignmentNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            node.getSourceLineNumber().ifPresent(lineNumber -> put(attributes, SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
             return attributes;
         }
 
         @Override
-        public Map<String, String> visit(AssignmentNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            node.getSourceLineNumber().ifPresent(lineNumber -> attributes.put(SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
+        public Map<String, Attribute> visit(BreakNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            node.getSourceLineNumber().ifPresent(lineNumber -> put(attributes, SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
             return attributes;
         }
 
         @Override
-        public Map<String, String> visit(BreakNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            node.getSourceLineNumber().ifPresent(lineNumber -> attributes.put(SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
-            return attributes;
-        }
-
-        @Override
-        public Map<String, String> visit(CastNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            attributes.put(TARGET_TYPE, node.getTargetType());
-            node.getSourceLineNumber().ifPresent(lineNumber -> attributes.put(SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
-            return attributes;
-
-        }
-
-        @Override
-        public Map<String, String> visit(CatchNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            attributes.put(CATCH_TYPE, node.getExceptionType());
-            node.getSourceLineNumber().ifPresent(lineNumber -> attributes.put(SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
+        public Map<String, Attribute> visit(CastNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            put(attributes, TARGET_TYPE, node.getTargetType());
+            node.getSourceLineNumber().ifPresent(lineNumber -> put(attributes, SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
             return attributes;
 
         }
 
         @Override
-        public Map<String, String> visit(ConstructorCallNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            attributes.put(DECLARING_TYPE, node.getDeclaringTypeName());
-            node.getSourceLineNumber().ifPresent(lineNumber -> attributes.put(SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
+        public Map<String, Attribute> visit(CatchNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            put(attributes, CATCH_TYPE, node.getExceptionType());
+            node.getSourceLineNumber().ifPresent(lineNumber -> put(attributes, SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
             return attributes;
 
         }
 
         @Override
-        public Map<String, String> visit(ContinueNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            node.getSourceLineNumber().ifPresent(lineNumber -> attributes.put(SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
+        public Map<String, Attribute> visit(ConstructorCallNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            put(attributes, DECLARING_TYPE, node.getDeclaringTypeName());
+            node.getSourceLineNumber().ifPresent(lineNumber -> put(attributes, SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
             return attributes;
 
         }
 
         @Override
-        public Map<String, String> visit(InfixOperatorNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            attributes.put(OPERATOR, node.getOperator());
-            node.getSourceLineNumber().ifPresent(lineNumber -> attributes.put(SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
+        public Map<String, Attribute> visit(ContinueNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            node.getSourceLineNumber().ifPresent(lineNumber -> put(attributes, SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
             return attributes;
 
         }
 
         @Override
-        public Map<String, String> visit(MethodCallNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            attributes.put(DECLARING_TYPE, node.getDeclaringTypeName());
-            attributes.put(METHOD_SIGNATURE, node.getMethodSignature());
-            node.getSourceLineNumber().ifPresent(lineNumber -> attributes.put(SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
-            return attributes;
-        }
-
-        @Override
-        public Map<String, String> visit(NullCheckNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            node.getSourceLineNumber().ifPresent(lineNumber -> attributes.put(SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
+        public Map<String, Attribute> visit(InfixOperatorNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            put(attributes, OPERATOR, node.getOperator());
+            node.getSourceLineNumber().ifPresent(lineNumber -> put(attributes, SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
             return attributes;
 
         }
 
         @Override
-        public Map<String, String> visit(ReturnNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            node.getSourceLineNumber().ifPresent(lineNumber -> attributes.put(SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
+        public Map<String, Attribute> visit(MethodCallNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            put(attributes, DECLARING_TYPE, node.getDeclaringTypeName());
+            put(attributes, METHOD_SIGNATURE, node.getMethodSignature());
+            node.getSourceLineNumber().ifPresent(lineNumber -> put(attributes, SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
+            return attributes;
+        }
+
+        @Override
+        public Map<String, Attribute> visit(NullCheckNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            node.getSourceLineNumber().ifPresent(lineNumber -> put(attributes, SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
             return attributes;
 
         }
 
         @Override
-        public Map<String, String> visit(SuperConstructorCallNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            attributes.put(DECLARING_TYPE, node.getDeclaringTypeName());
-            node.getSourceLineNumber().ifPresent(lineNumber -> attributes.put(SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
+        public Map<String, Attribute> visit(ReturnNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            node.getSourceLineNumber().ifPresent(lineNumber -> put(attributes, SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
             return attributes;
 
         }
 
         @Override
-        public Map<String, String> visit(ThrowNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            node.getSourceLineNumber().ifPresent(lineNumber -> attributes.put(SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
+        public Map<String, Attribute> visit(SuperConstructorCallNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            put(attributes, DECLARING_TYPE, node.getDeclaringTypeName());
+            node.getSourceLineNumber().ifPresent(lineNumber -> put(attributes, SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
             return attributes;
 
         }
 
         @Override
-        public Map<String, String> visit(TypeCheckNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            attributes.put(TARGET_TYPE, node.getTargetTypeName());
-            node.getSourceLineNumber().ifPresent(lineNumber -> attributes.put(SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
+        public Map<String, Attribute> visit(ThrowNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            node.getSourceLineNumber().ifPresent(lineNumber -> put(attributes, SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
             return attributes;
 
         }
 
         @Override
-        public Map<String, String> visit(UnaryOperatorNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            attributes.put(OPERATOR, node.getOperator());
-            node.getSourceLineNumber().ifPresent(lineNumber -> attributes.put(SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
+        public Map<String, Attribute> visit(TypeCheckNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            put(attributes, TARGET_TYPE, node.getTargetTypeName());
+            node.getSourceLineNumber().ifPresent(lineNumber -> put(attributes, SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
             return attributes;
 
         }
 
         @Override
-        public Map<String, String> visit(AnonymousClassMethodNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            attributes.put(DATA_TYPE, node.getType());
-            attributes.put(METHOD_SIGNATURE, node.getName());
+        public Map<String, Attribute> visit(UnaryOperatorNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            put(attributes, OPERATOR, node.getOperator());
+            node.getSourceLineNumber().ifPresent(lineNumber -> put(attributes, SOURCE_LINE_NUMBER, String.valueOf(lineNumber)));
             return attributes;
 
         }
 
         @Override
-        public Map<String, String> visit(AnonymousObjectNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            attributes.put(DATA_TYPE, node.getType());
+        public Map<String, Attribute> visit(AnonymousClassMethodNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            put(attributes, DATA_TYPE, node.getType());
+            put(attributes, METHOD_SIGNATURE, node.getName());
             return attributes;
 
         }
 
         @Override
-        public Map<String, String> visit(ConstantNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            attributes.put(DATA_TYPE, node.getType());
-            attributes.put(DATA_NAME, node.getName());
-            attributes.put(DATA_VALUE, node.getValue());
+        public Map<String, Attribute> visit(AnonymousObjectNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            put(attributes, DATA_TYPE, node.getType());
             return attributes;
 
         }
 
         @Override
-        public Map<String, String> visit(ExceptionNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            attributes.put(DATA_TYPE, node.getType());
-            attributes.put(DATA_NAME, node.getName());
+        public Map<String, Attribute> visit(ConstantNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            put(attributes, DATA_TYPE, node.getType());
+            put(attributes, DATA_NAME, node.getName());
+            put(attributes, DATA_VALUE, node.getValue());
             return attributes;
 
         }
 
         @Override
-        public Map<String, String> visit(LiteralNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            attributes.put(DATA_TYPE, node.getType());
-            attributes.put(DATA_VALUE, node.getValue());
+        public Map<String, Attribute> visit(ExceptionNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            put(attributes, DATA_TYPE, node.getType());
+            put(attributes, DATA_NAME, node.getName());
+            return attributes;
+
+        }
+
+        @Override
+        public Map<String, Attribute> visit(LiteralNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            put(attributes, DATA_TYPE, node.getType());
+            put(attributes, DATA_VALUE, node.getValue());
             return attributes;
         }
 
         @Override
-        public Map<String, String> visit(VariableNode node) {
-            HashMap<String, String> attributes = new HashMap<>();
-            attributes.put(DATA_TYPE, node.getType());
-            attributes.put(DATA_NAME, node.getName());
+        public Map<String, Attribute> visit(VariableNode node) {
+            HashMap<String, Attribute> attributes = new HashMap<>();
+            put(attributes, DATA_TYPE, node.getType());
+            put(attributes, DATA_NAME, node.getName());
             return attributes;
         }
     }

@@ -1,12 +1,10 @@
 package de.tu_darmstadt.stg.mudetect.aug.persistence;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.CharStreams;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
-import org.jgrapht.ext.ImportException;
+import org.jgrapht.io.ImportException;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Supplier;
@@ -29,10 +27,8 @@ public class AUGReader<G extends APIUsageGraph> implements AutoCloseable {
         if (entry == null) {
             return null;
         } else {
-            ByteArrayOutputStream contentStream = new ByteArrayOutputStream();
-            ByteStreams.copy(zip, contentStream);
             G graph = emptyGraphFactory.get();
-            importer.read(contentStream.toString(Charsets.UTF_8.name()), graph);
+            importer.importGraph(graph, zip);
             return graph;
         }
     }

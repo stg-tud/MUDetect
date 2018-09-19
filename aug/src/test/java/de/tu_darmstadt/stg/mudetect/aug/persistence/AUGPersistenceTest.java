@@ -2,7 +2,7 @@ package de.tu_darmstadt.stg.mudetect.aug.persistence;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
-import org.jgrapht.ext.*;
+import org.jgrapht.io.*;
 import org.junit.Test;
 
 import java.io.*;

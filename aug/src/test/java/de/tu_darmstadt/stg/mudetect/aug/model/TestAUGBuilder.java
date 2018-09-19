@@ -65,7 +65,7 @@ public class TestAUGBuilder {
     }
 
     private static String getFreshAUGName() {
-        return ":AUG-" + (++randomAUGCount) + ":";
+        return "AUG" + (++randomAUGCount);
     }
 
     public static APIUsageExample someAUG(String name) {

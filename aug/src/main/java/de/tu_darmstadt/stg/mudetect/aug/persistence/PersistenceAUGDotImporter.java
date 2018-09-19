@@ -9,7 +9,8 @@ import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.DefinitionEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.QualifierEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ReceiverEdge;
-import org.jgrapht.ext.DOTImporter;
+import org.jgrapht.io.Attribute;
+import org.jgrapht.io.DOTImporter;
 
 import java.util.Map;
 
@@ -22,17 +23,17 @@ public class PersistenceAUGDotImporter extends DOTImporter<Node, Edge> {
         super(PersistenceAUGDotImporter::createNode, PersistenceAUGDotImporter::createEdge);
     }
 
-    private static Node createNode(String label, Map<String, String> attributes) {
+    private static Node createNode(String label, Map<String, Attribute> attributes) {
         Class nodeType = AUG_ELEMENT_LABEL_TO_TYPE.get(label);
 
         if (nodeType == ArrayAccessNode.class) {
-            return new ArrayAccessNode(attributes.get(DECLARING_TYPE), getSourceLineNumber(attributes));
+            return new ArrayAccessNode(get(attributes, DECLARING_TYPE), getSourceLineNumber(attributes));
         }
         if (nodeType == ArrayAssignmentNode.class) {
-            return new ArrayAssignmentNode(attributes.get(DECLARING_TYPE), getSourceLineNumber(attributes));
+            return new ArrayAssignmentNode(get(attributes, DECLARING_TYPE), getSourceLineNumber(attributes));
         }
         if (nodeType == ArrayCreationNode.class) {
-            return new ArrayCreationNode(attributes.get(DECLARING_TYPE), getSourceLineNumber(attributes));
+            return new ArrayCreationNode(get(attributes, DECLARING_TYPE), getSourceLineNumber(attributes));
         }
         if (nodeType == AssignmentNode.class) {
             return new AssignmentNode(getSourceLineNumber(attributes));
@@ -41,22 +42,22 @@ public class PersistenceAUGDotImporter extends DOTImporter<Node, Edge> {
             return new BreakNode(getSourceLineNumber(attributes));
         }
         if (nodeType == CastNode.class) {
-            return new CastNode(attributes.get(TARGET_TYPE), getSourceLineNumber(attributes));
+            return new CastNode(get(attributes, TARGET_TYPE), getSourceLineNumber(attributes));
         }
         if (nodeType == CatchNode.class) {
-            return new CatchNode(attributes.get(CATCH_TYPE), getSourceLineNumber(attributes));
+            return new CatchNode(get(attributes, CATCH_TYPE), getSourceLineNumber(attributes));
         }
         if (nodeType == ConstructorCallNode.class) {
-            return new ConstructorCallNode(attributes.get(DECLARING_TYPE), getSourceLineNumber(attributes));
+            return new ConstructorCallNode(get(attributes, DECLARING_TYPE), getSourceLineNumber(attributes));
         }
         if (nodeType == ContinueNode.class) {
             return new ContinueNode(getSourceLineNumber(attributes));
         }
         if (nodeType == InfixOperatorNode.class) {
-            return new InfixOperatorNode(attributes.get(OPERATOR), getSourceLineNumber(attributes));
+            return new InfixOperatorNode(get(attributes, OPERATOR), getSourceLineNumber(attributes));
         }
         if (nodeType == MethodCallNode.class) {
-            return new MethodCallNode(attributes.get(DECLARING_TYPE), attributes.get(METHOD_SIGNATURE), getSourceLineNumber(attributes));
+            return new MethodCallNode(get(attributes, DECLARING_TYPE), get(attributes, METHOD_SIGNATURE), getSourceLineNumber(attributes));
         }
         if (nodeType == NullCheckNode.class) {
             return new NullCheckNode(getSourceLineNumber(attributes));
@@ -65,45 +66,53 @@ public class PersistenceAUGDotImporter extends DOTImporter<Node, Edge> {
             return new ReturnNode(getSourceLineNumber(attributes));
         }
         if (nodeType == SuperConstructorCallNode.class) {
-            return new SuperConstructorCallNode(attributes.get(DECLARING_TYPE), getSourceLineNumber(attributes));
+            return new SuperConstructorCallNode(get(attributes, DECLARING_TYPE), getSourceLineNumber(attributes));
         }
         if (nodeType == ThrowNode.class) {
             return new ThrowNode(getSourceLineNumber(attributes));
         }
         if (nodeType == TypeCheckNode.class) {
-            return new TypeCheckNode(attributes.get(TARGET_TYPE), getSourceLineNumber(attributes));
+            return new TypeCheckNode(get(attributes, TARGET_TYPE), getSourceLineNumber(attributes));
         }
         if (nodeType == UnaryOperatorNode.class) {
-            return new UnaryOperatorNode(attributes.get(OPERATOR), getSourceLineNumber(attributes));
+            return new UnaryOperatorNode(get(attributes, OPERATOR), getSourceLineNumber(attributes));
         }
 
         if (nodeType == AnonymousClassMethodNode.class) {
-            return new AnonymousClassMethodNode(attributes.get(DATA_TYPE), attributes.get(METHOD_SIGNATURE));
+            return new AnonymousClassMethodNode(get(attributes, DATA_TYPE), get(attributes, METHOD_SIGNATURE));
         }
         if (nodeType == AnonymousObjectNode.class) {
-            return new AnonymousObjectNode(attributes.get(DATA_TYPE));
+            return new AnonymousObjectNode(get(attributes, DATA_TYPE));
         }
         if (nodeType == ConstantNode.class) {
-            return new ConstantNode(attributes.get(DATA_TYPE), attributes.get(DATA_NAME), attributes.get(DATA_VALUE));
+            return new ConstantNode(get(attributes, DATA_TYPE), get(attributes, DATA_NAME), get(attributes, DATA_VALUE));
         }
         if (nodeType == ExceptionNode.class) {
-            return new ExceptionNode(attributes.get(DATA_TYPE), attributes.get(DATA_NAME));
+            return new ExceptionNode(get(attributes, DATA_TYPE), get(attributes, DATA_NAME));
         }
         if (nodeType == LiteralNode.class) {
-            return new LiteralNode(attributes.get(DATA_TYPE), attributes.get(DATA_VALUE));
+            return new LiteralNode(get(attributes, DATA_TYPE), get(attributes, DATA_VALUE));
         }
         if (nodeType == VariableNode.class) {
-            return new VariableNode(attributes.get(DATA_TYPE), attributes.get(DATA_NAME));
+            return new VariableNode(get(attributes, DATA_TYPE), get(attributes, DATA_NAME));
         }
 
         throw new IllegalArgumentException("unsupported node type: " + label);
     }
 
-    private static int getSourceLineNumber(Map<String, String> attributes) {
-        return Integer.parseInt(attributes.getOrDefault(SOURCE_LINE_NUMBER, "-1"));
+    private static String get(Map<String, Attribute> attributes, String declaringType) {
+        return attributes.get(declaringType).getValue();
     }
 
-    private static Edge createEdge(Node from, Node to, String label, Map<String, String> attributes) {
+    private static int getSourceLineNumber(Map<String, Attribute> attributes) {
+        if (attributes.containsKey(SOURCE_LINE_NUMBER)) {
+            return Integer.parseInt(get(attributes, SOURCE_LINE_NUMBER));
+        } else {
+            return -1;
+        }
+    }
+
+    private static Edge createEdge(Node from, Node to, String label, Map<String, Attribute> attributes) {
         Class edgeType = AUG_ELEMENT_LABEL_TO_TYPE.get(label);
 
         if (edgeType == ContainsEdge.class) {

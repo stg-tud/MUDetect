@@ -1,12 +1,18 @@
 package de.tu_darmstadt.stg.mubench;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.Multiset;
+import com.google.common.io.CharStreams;
 import de.tu_darmstadt.stg.mubench.cli.DetectionStrategy;
 import de.tu_darmstadt.stg.mubench.cli.DetectorArgs;
 import de.tu_darmstadt.stg.mubench.cli.DetectorOutput;
 import de.tu_darmstadt.stg.mudetect.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.patterns.APIUsagePattern;
+import de.tu_darmstadt.stg.mudetect.aug.persistence.AUGReader;
+import de.tu_darmstadt.stg.mudetect.aug.persistence.AUGWriter;
+import de.tu_darmstadt.stg.mudetect.aug.persistence.PersistenceAUGDotImporter;
+import de.tu_darmstadt.stg.mudetect.aug.persistence.PersistenceAUGDotExporter;
 import edu.iastate.cs.mudetect.mining.AUGMiner;
 import edu.iastate.cs.mudetect.mining.DefaultAUGMiner;
 import edu.iastate.cs.mudetect.mining.MinPatternActionsModel;
@@ -18,6 +24,7 @@ import de.tu_darmstadt.stg.mustudies.UsageUtils;
 import de.tu_darmstadt.stg.yaml.YamlObject;
 import edu.iastate.cs.egroum.aug.TypeUsageExamplePredicate;
 import edu.iastate.cs.egroum.aug.AUGBuilder;
+import org.jgrapht.ext.ImportException;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
@@ -27,6 +34,9 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 class CrossProjectStrategy implements DetectionStrategy {
     @Override
@@ -58,6 +68,7 @@ class CrossProjectStrategy implements DetectionStrategy {
             output.withRunInfo(logPrefix + "-numberOfPatterns", model.getPatterns().size());
             output.withRunInfo(logPrefix + "-maxPatternSupport", model.getMaxPatternSupport());
 
+            persist(api, model);
             patterns.addAll(model.getPatterns());
         }
 
@@ -119,6 +130,29 @@ class CrossProjectStrategy implements DetectionStrategy {
                     .map(ExampleProject::create).collect(Collectors.toList());
         } catch (IOException e) {
             throw new IllegalArgumentException("failed to load example data for " + targetType, e);
+        }
+    }
+
+    private void persist(API api, Model model) throws IOException {
+        File modelsDir = new File(getExamplesBasePath().toString(), "models");
+        modelsDir.mkdirs();
+        try (AUGWriter writer = new AUGWriter(new FileOutputStream(new File(modelsDir, api + ".zip")), new PersistenceAUGDotExporter())) {
+            int patternIndex = 0;
+            for (APIUsagePattern pattern : model.getPatterns()) {
+                writer.write(pattern, String.valueOf(patternIndex));
+                patternIndex++;
+            }
+        }
+    }
+
+    private Model load(API api) throws IOException, ImportException {
+        File modelFile = new File(new File(getExamplesBasePath().toString(), "models"), api + "zip");
+        try (AUGReader<APIUsagePattern> reader = new AUGReader<APIUsagePattern>(
+                new FileInputStream(modelFile),
+                new PersistenceAUGDotImporter(),
+                () -> new APIUsagePattern(1, new HashSet<>()))) {
+            Set<APIUsagePattern> patterns = new HashSet<>(reader.readAll());
+            return () -> patterns;
         }
     }
 
