@@ -26,6 +26,7 @@ public class TargetProject {
                             Collectors.groupingBy(
                                     line -> new TargetProject(line[0], line[1], targetSrcPaths),
                                     Collectors.mapping(
+                                            // TODO use all target types (line[7+])
                                             line -> new Misuse(line[2], line[4], line[5], new API(line[6])),
                                             Collectors.toList()
                                     )
