@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 public class ViolationUtils {
     private static final ViolationDotExporter violationDotExporter = new ViolationDotExporter();
     public static final String CHECKOUTS_PATH_SUFFIX = "checkouts/";
+    public static final int UNKNOWN_LINE = -1;
 
     public static DetectorFinding toFinding(Violation violation) {
         Location location = violation.getLocation();
@@ -43,9 +44,10 @@ public class ViolationUtils {
 
     private static int getStartLine(Violation violation) {
         APIUsageExample target = violation.getOverlap().getTarget();
-        return violation.getOverlap().getMappedTargetNodes().stream()
+        int startLine = violation.getOverlap().getMappedTargetNodes().stream()
                 .mapToInt(node -> target.getSourceLineNumber(node).orElse(Integer.MAX_VALUE))
-                .min().orElse(0);
+                .min().orElse(UNKNOWN_LINE);
+        return (startLine == Integer.MAX_VALUE) ? UNKNOWN_LINE : startLine;
     }
 
 }
