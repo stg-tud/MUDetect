@@ -1,6 +1,8 @@
 package de.tu_darmstadt.stg.mudetect.aug.model;
 
-public class Location {
+import java.io.Serializable;
+
+public class Location implements Serializable {
     private final String projectName;
     private final String filePath;
     private final String methodSignature;
