@@ -10,9 +10,10 @@ import de.tu_darmstadt.stg.mudetect.aug.visitors.AUGLabelProvider;
 import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
 import de.tu_darmstadt.stg.mudetect.aug.visitors.NodeVisitor;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class TestAUGBuilder {
+public class TestAUGBuilder implements Serializable{
     private static int randomAUGCount = 0;
     private static Map<String, String> infixOperatorsToLabels = new HashMap<>();
     private static AUGLabelProvider labelProvider = new BaseAUGLabelProvider();
