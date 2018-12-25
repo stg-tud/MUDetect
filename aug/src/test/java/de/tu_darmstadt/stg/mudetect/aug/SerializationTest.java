@@ -137,13 +137,13 @@ public class SerializationTest {
     @Test
     public void testSerializeAndDeserializeAPIUsageGraph(){
         TestAUGBuilder builder = TestAUGBuilder.buildAUG()
-                                               .withActionNodes("A", "B")
+                                               .withActionNodes("A.m()", "B.n()")
                                                .withDataNodes("D1", "D2","D3")
-                                               .withEdge("A", PARAMETER, "B")
-                                               .withEdge("A", ORDER, "B")
-                                               .withEdge("D1",PARAMETER,"A")
-                                               .withEdge("D2",PARAMETER,"A")
-                                               .withEdge("D3",PARAMETER,"B");
+                                               .withEdge("A.m()", PARAMETER, "B.n()")
+                                               .withEdge("A.m()", ORDER, "B.n()")
+                                               .withEdge("D1",PARAMETER,"A.m()")
+                                               .withEdge("D2",PARAMETER,"A.m()")
+                                               .withEdge("D3",PARAMETER,"B.n()");
 
 
         APIUsageGraph augWrote = builder.build();

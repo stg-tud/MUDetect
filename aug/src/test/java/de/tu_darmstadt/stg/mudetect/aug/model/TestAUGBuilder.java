@@ -13,7 +13,7 @@ import de.tu_darmstadt.stg.mudetect.aug.visitors.NodeVisitor;
 import java.io.Serializable;
 import java.util.*;
 
-public class TestAUGBuilder implements Serializable{
+public class TestAUGBuilder {
     private static int randomAUGCount = 0;
     private static Map<String, String> infixOperatorsToLabels = new HashMap<>();
     private static AUGLabelProvider labelProvider = new BaseAUGLabelProvider();
