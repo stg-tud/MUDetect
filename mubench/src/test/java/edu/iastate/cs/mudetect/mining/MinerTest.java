@@ -204,10 +204,7 @@ public class MinerTest {
 		assertThat(patterns.size(), is(1));
 	}
 
-	/**
-	 * This test is indeterministic, the number of patterns changes between 2 and 3.
-	 */
-	@Test
+	@Test @Ignore("This test is indeterministic, the number of patterns changes between 2 and 3.")
 	public void acmath_1() {
 		String targetSource = "class SubLine {\n" +
 				"    private Line line;" +
