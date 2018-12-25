@@ -7,21 +7,60 @@ import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.DefinitionEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ReceiverEdge;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.jgrapht.graph.AbstractBaseGraph;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.constantNodeWith;
 import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodeMatchers.literalNodeWith;
 import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodePropertyMatchers.name;
 import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodePropertyMatchers.type;
 import static de.tu_darmstadt.stg.mudetect.aug.matchers.NodePropertyMatchers.value;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.core.AllOf.allOf;
 
 public class AUGMatchers {
+    public static Matcher<APIUsageGraph> isomorphicTo(APIUsageGraph expectedGraph) {
+        Set<String> expectedNodeLabels = getNodeLabels(expectedGraph);
+        if (expectedNodeLabels.size() < expectedGraph.getNodeSize()) {
+            throw new IllegalArgumentException("Graph-isomorphism matching does not support graphs with multiple" +
+                    " equally labelled nodes.");
+        }
+        Matcher<Set<String>> nodesByLabelMatcher = equalTo(expectedNodeLabels);
+        Matcher<Set<String>> edgesByLabelMatcher = equalTo(getEdgeLabels(expectedGraph));
+
+        return new BaseMatcher<APIUsageGraph>() {
+            @Override
+            public boolean matches(Object o) {
+                if (o instanceof APIUsageGraph) {
+                    APIUsageGraph actualGraph = (APIUsageGraph) o;
+                    return nodesByLabelMatcher.matches(getNodeLabels(actualGraph))
+                            && edgesByLabelMatcher.matches(getEdgeLabels(actualGraph));
+                }
+                return false;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("graph isomorphic to ");
+                description.appendValue(expectedGraph);
+            }
+        };
+    }
+
+    private static Set<String> getEdgeLabels(APIUsageGraph graph) {
+        return graph.edgeSet().stream().map(Object::toString).collect(Collectors.toSet());
+    }
+
+    private static Set<String> getNodeLabels(APIUsageGraph graph) {
+        return graph.vertexSet().stream().map(Objects::toString).collect(Collectors.toSet());
+    }
+
     public static Matcher<APIUsageGraph> hasNode(Matcher<? super Node> nodeMatcher) {
         return new AUGElementMatcher<>(AbstractBaseGraph::vertexSet, nodeMatcher);
     }
