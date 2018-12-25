@@ -56,7 +56,7 @@ To use the entire detector (AUG model, mining algorithm, and detection algorithm
     <dependency>
         <groupId>de.tu-darmstadt.stg.mudetect</groupId>
         <artifactId>mubench</artifactId>
-        <version>0.0.2-SNAPSHOT</version>
+        <version>0.0.3-SNAPSHOT</version>
     </dependency>
 
 To use only our model of API-usage graphs (AUGs), add the following dependency:
@@ -64,7 +64,7 @@ To use only our model of API-usage graphs (AUGs), add the following dependency:
     <dependency>
         <groupId>de.tu-darmstadt.stg.mudetect</groupId>
         <artifactId>augs</artifactId>
-        <version>0.0.2-SNAPSHOT</version>
+        <version>0.0.3-SNAPSHOT</version>
     </dependency>
 
 ## License
