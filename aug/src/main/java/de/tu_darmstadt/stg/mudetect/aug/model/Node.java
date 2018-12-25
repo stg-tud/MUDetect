@@ -2,9 +2,10 @@ package de.tu_darmstadt.stg.mudetect.aug.model;
 
 import de.tu_darmstadt.stg.mudetect.aug.visitors.NodeVisitor;
 
+import java.io.Serializable;
 import java.util.Optional;
 
-public interface Node extends Cloneable {
+public interface Node extends Cloneable, Serializable {
     int getId();
 
     void setGraph(APIUsageGraph aug);

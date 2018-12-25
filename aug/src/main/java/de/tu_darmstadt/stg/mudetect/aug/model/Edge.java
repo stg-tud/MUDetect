@@ -2,7 +2,9 @@ package de.tu_darmstadt.stg.mudetect.aug.model;
 
 import de.tu_darmstadt.stg.mudetect.aug.visitors.EdgeVisitor;
 
-public interface Edge extends Cloneable {
+import java.io.Serializable;
+
+public interface Edge extends Cloneable, Serializable {
     enum Type {
         RECEIVER("recv"),
         PARAMETER("para"),
