@@ -69,6 +69,6 @@ To use only our model of API-usage graphs (AUGs), add the following dependency:
 
 ## License
 
-All software provided in this repository is subject to the [CRAPL license](./CRAPL-LICENSE.txt).
+All software provided in this repository is subject to the [Mozilla Public License Version 2.0](LICENSE.txt).
 
 The project artwork is subject to the [Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).
