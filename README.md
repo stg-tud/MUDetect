@@ -11,7 +11,7 @@ This is the codebase of the API-misuse detector MUDetect. Please feel free to co
 
 ## Publications
 
-* (Under Review)
+* Amann, S.; Nguyen, H.; Nadi, S.; Nguyen, T.; and Mezini, M. [Investigating Next-Steps in Static API-Misuse Detection](http://sven-amann.de/publications/mudetect-msr19.pdf). In Proceedings of the 16th International Conference on Mining Software Repositories (MSR '19) , 2019. 
 
 ## Usage
 
