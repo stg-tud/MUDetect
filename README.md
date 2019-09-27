@@ -18,7 +18,7 @@ This is the codebase of the API-misuse detector MUDetect. Please feel free to co
 ### Through MUBench
 
 We run the detector in our experiments through [the benchmarking pipeline MUBench](https://github.com/stg-tud/MUBench).
-The respective detector runners are [MuDetectRunner](./src/de/tu_darmstadt/stg/mubench/MuDetectRunner.java) and [MuDetectCrossProjectRunner](./src/de/tu_darmstadt/stg/mubench/MuDetectCrossProjectRunner.java).
+The respective detector runners are [MuDetectRunner](./mubench/src/main/java/de/tu_darmstadt/stg/mubench/MuDetectRunner.java) and [MuDetectCrossProjectRunner](./mubench/src/main/java/de/tu_darmstadt/stg/mubench/MuDetectCrossProjectRunner.java).
 
 ### Standalone
 
@@ -38,8 +38,9 @@ To run the detector directly, you may invoke it with one of the following comman
 ### From Code
 
 For examples on how to instantiate and invoke MUDetect from the code, please refer to
-[our configuration for the intra-project setting](./src/de/tu_darmstadt/stg/mubench/IntraProjectStrategy.java) (MUDetect) and
-[our configuration for the cross-project setting](./src/de/tu_darmstadt/stg/mubench/CrossProjectStrategy.java) (MUDetectXP).
+[our configuration for the intra-project setting](./mubench/src/main/java/de/tu_darmstadt/stg/mubench/IntraProjectStrategy.java) (MUDetect) and
+[our configuration for the cross-project setting](./mubench/src/main/java/de/tu_darmstadt/stg/mubench/CrossProjectStrategy.java
+) (MUDetectXP).
 
 To use our code in your project, you can import all parts of MUDetect as Maven dependencies via our own repository.
 Simply configure the following repository either in your project's `pom.xml` or in your local `settings.xml`:
